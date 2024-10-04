@@ -12,9 +12,9 @@ class TestItems(unittest.TestCase):
         
         # Sample data for testing
         self.sample_data = [
-            {"id": 1, "item_line": 1, "item_group": 1, "item_type": 1, "supplier_id": 1},
-            {"id": 2, "item_line": 1, "item_group": 2, "item_type": 1, "supplier_id": 2},
-            {"id": 3, "item_line": 2, "item_group": 1, "item_type": 2, "supplier_id": 1}
+            {"uid": 1, "item_line": 1, "item_group": 1, "item_type": 1, "supplier_id": 1},
+            {"uid": 2, "item_line": 1, "item_group": 2, "item_type": 1, "supplier_id": 2},
+            {"uid": 3, "item_line": 2, "item_group": 1, "item_type": 2, "supplier_id": 1}
         ]
         
         with open(self.items_file, "w") as f:
@@ -35,7 +35,7 @@ class TestItems(unittest.TestCase):
     def test_get_item(self):
         item = self.items.get_item(1)
         self.assertIsNotNone(item)
-        self.assertEqual(item["id"], 1)
+        self.assertEqual(item["uid"], 1)
 
     def test_get_items_for_item_line(self):
         items = self.items.get_items_for_item_line(1)
@@ -54,7 +54,7 @@ class TestItems(unittest.TestCase):
         self.assertEqual(len(items), 2)
 
     def test_add_item(self):
-        new_item = {"id": 4, "item_line": 3, "item_group": 3, "item_type": 3, "supplier_id": 3}
+        new_item = {"uid": 4, "item_line": 3, "item_group": 3, "item_type": 3, "supplier_id": 3}
         self.items.add_item(new_item)
         self.assertEqual(len(self.items.get_items()), 4)
         self.assertIsNotNone(self.items.get_item(4))
@@ -63,7 +63,7 @@ class TestItems(unittest.TestCase):
         original_item = self.items.get_item(1)
         original_updated_at = original_item.get("updated_at")
 
-        updated_item = {"id": 1, "item_line": 1, "item_group": 1, "item_type": 1, "supplier_id": 1, "updated_at": "new_timestamp"}
+        updated_item = {"uid": 1, "item_line": 1, "item_group": 1, "item_type": 1, "supplier_id": 1, "updated_at": "new_timestamp"}
         self.items.update_item(1, updated_item)
 
         item = self.items.get_item(1)
