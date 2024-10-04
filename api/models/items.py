@@ -15,7 +15,7 @@ class Items(Base):
 
     def get_item(self, item_id):
         for x in self.data:
-            if x["id"] == item_id:
+            if x["uid"] == item_id:
                 return x
         return None
 
