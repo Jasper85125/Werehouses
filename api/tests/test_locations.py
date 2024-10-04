@@ -33,11 +33,36 @@ class TestLocations(unittest.TestCase):
 
     def test_loaded(self):
         self.assertGreater(len(self.locations.get_locations()), 0)
+
+    def test_get_locations_in_item_warehouse(self):
+        locations = self.locations.get_locations_in_warehouse(1)
+        self.assertEqual(len(locations), 2)
     
-    def test_get_Location(self):
+    def test_get_location(self):
         item = self.locations.get_location(1)
         self.assertIsNotNone(item)
         self.assertEqual(item["id"], 1)
+    
+    def test_add_location(self):
+        new_location = {"id": 4, "warehouse_id": 1}
+        self.locations.add_location(new_location)
+        self.assertEqual(len(self.locations.get_locations()), 4)
+        self.assertIsNotNone(self.locations.get_location(4))
+    
+    def test_update_location(self):
+        original_location = self.locations.get_location(1)
+        original_updated_at = original_location.get("updated_at")
+
+        updated_location = {"id": 1, "warehouse_id": 2, "updated_at": "new_timestamp"}
+        self.locations.update_location(1, updated_location)
+
+        location = self.locations.get_location(1)
+        self.assertNotEqual(location["updated_at"], original_updated_at)
+
+    def test_remove_location(self):
+        self.locations.remove_location(1)
+        self.assertIsNone(self.locations.get_location(1))
+        self.assertEqual(len(self.locations.get_locations()), 2)
 
 
 if __name__ == "__main__":
