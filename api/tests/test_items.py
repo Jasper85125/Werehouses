@@ -58,18 +58,7 @@ class TestItems(unittest.TestCase):
         self.items.add_item(new_item)
         self.assertEqual(len(self.items.get_items()), 4)
         self.assertIsNotNone(self.items.get_item(4))
-
-    def test_update_item(self):
-        updated_item = {"id": 1, "item_line": 1, "item_group": 1, "item_type": 1, "supplier_id": 1, "updated_at": "new_timestamp"}
-        self.items.update_item(1, updated_item)
-        item = self.items.get_item(1)
-        self.assertEqual(item["updated_at"], "new_timestamp")
-
-    def test_remove_item(self):
-        self.items.remove_item(1)
-        self.assertIsNone(self.items.get_item(1))
-        self.assertEqual(len(self.items.get_items()), 2)
-
+    
     def test_update_item(self):
         original_item = self.items.get_item(1)
         original_updated_at = original_item.get("updated_at")
@@ -79,6 +68,11 @@ class TestItems(unittest.TestCase):
 
         item = self.items.get_item(1)
         self.assertNotEqual(item["updated_at"], original_updated_at)
-    
+
+    def test_remove_item(self):
+        self.items.remove_item(1)
+        self.assertIsNone(self.items.get_item(1))
+        self.assertEqual(len(self.items.get_items()), 2)
+
 if __name__ == "__main__":
     unittest.main()
