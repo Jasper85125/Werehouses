@@ -531,12 +531,12 @@ class ApiRequestHandler(http.server.BaseHTTPRequestHandler):
                         for x in transfer["items"]:
                             inventories = data_provider.fetch_inventory_pool().get_inventories_for_item(x["item_id"])
                             for y in inventories:
-                                if y["location_id"] == transfer["transfer_from"]:
+                                if y["locations"] == transfer["transfer_from"]:
                                     y["total_on_hand"] -= x["amount"]
                                     y["total_expected"] = y["total_on_hand"] + y["total_ordered"]
                                     y["total_available"] = y["total_on_hand"] - y["total_allocated"]
                                     data_provider.fetch_inventory_pool().update_inventory(y["id"], y)
-                                elif y["location_id"] == transfer["transfer_to"]:
+                                elif y["locations"] == transfer["transfer_to"]:
                                     y["total_on_hand"] += x["amount"]
                                     y["total_expected"] = y["total_on_hand"] + y["total_ordered"]
                                     y["total_available"] = y["total_on_hand"] - y["total_allocated"]
