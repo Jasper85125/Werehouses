@@ -46,6 +46,7 @@ class ItemLines(Base):
         f = open(self.data_path, "w")
         json.dump(self.data, f)
         f.close()
-        
+
+
 if __name__ == "__main__":
     unittest.main()
