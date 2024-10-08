@@ -1,5 +1,5 @@
 import json
-
+import unittest
 from models.base import Base
 
 ITEM_LINES = []
@@ -46,6 +46,7 @@ class ItemLines(Base):
         f = open(self.data_path, "w")
         json.dump(self.data, f)
         f.close()
-        
+
+
 if __name__ == "__main__":
     unittest.main()

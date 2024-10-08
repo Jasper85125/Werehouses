@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch, mock_open
 import json
 
+
 class TestItemGroups(unittest.TestCase):
     def setUp(self) -> None:
         self.test_data = json.dumps([{
@@ -61,18 +62,17 @@ class TestItemGroups(unittest.TestCase):
     #     # Mock the file operations for save
     #     mock_file().write = lambda x: None
     #     self.itemGroups.save()
-        
     #     # Mock the file operations for load
     #     mock_file().read = lambda: json.dumps([{
     #         "id": 1,
     #         "name": "Sample Group",
     #         "description": "This is a sample item group."
     #     }])
-        
     #     new_itemGroups = ItemGroups(root_path="test_path", is_debug=True)
     #     new_itemGroups.load(is_debug=True)
     #     self.assertEqual(len(new_itemGroups.get_item_groups()), 1)
-    #     self.assertEqual(new_itemGroups.get_item_group(1)["name"], "Sample Group")
+    #     self.assertEqual(
+    #       new_itemGroups.get_item_group(1)["name"], "Sample Group")
 
 
 if __name__ == "__main__":
