@@ -10,7 +10,7 @@ class TestItems(unittest.TestCase):
         self.test_data_path = "./test_data/"
         os.makedirs(self.test_data_path, exist_ok=True)
         self.items_file = os.path.join(self.test_data_path, "items.json")
-        
+
         # Sample data for testing
         self.sample_data = [
             {"uid": 1, "item_line": 1, "item_group": 1,
@@ -63,7 +63,7 @@ class TestItems(unittest.TestCase):
         self.items.add_item(new_item)
         self.assertEqual(len(self.items.get_items()), 4)
         self.assertIsNotNone(self.items.get_item(4))
-    
+
     def test_update_item(self):
         original_item = self.items.get_item(1)
         original_updated_at = original_item.get("updated_at")
