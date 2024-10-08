@@ -9,17 +9,21 @@ class TestTransfers(unittest.TestCase):
         # Assuming a test path or in-memory path for testing purposes
         self.test_path = "./test_data/"
         os.makedirs(self.test_path, exist_ok=True)
-        
+
         # Mock data for testing
         self.mock_data = [
-            {"id": "1", "items": [{"item_id": "item_1", "quantity": 10}], "transfer_status": "Scheduled", "created_at": "2024-01-01", "updated_at": "2024-01-01"},
-            {"id": "2", "items": [{"item_id": "item_2", "quantity": 5}], "transfer_status": "In Transit", "created_at": "2024-01-02", "updated_at": "2024-01-03"},
+            {"id": "1", "items": [{"item_id": "item_1", "quantity": 10}],
+             "transfer_status": "Scheduled", "created_at": "2024-01-01",
+             "updated_at": "2024-01-01"},
+            {"id": "2", "items": [{"item_id": "item_2", "quantity": 5}],
+             "transfer_status": "In Transit", "created_at": "2024-01-02",
+             "updated_at": "2024-01-03"},
         ]
 
         # Write mock data to a test file
         with open(os.path.join(self.test_path, "transfers.json"), 'w') as f:
             json.dump(self.mock_data, f)
-        
+
         # Initialize Transfers class with the test data path
         self.transfers = Transfers(self.test_path, is_debug=False)
 
