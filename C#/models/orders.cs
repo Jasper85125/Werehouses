@@ -180,14 +180,6 @@ public class Order
     public List<Item> Items { get; set; }
 }
 
-public class Item
-{
-    public int ItemId { get; set; }
-    public int Amount { get; set; }
-    public int TotalOnHand { get; set; }
-    public int TotalOrdered { get; set; }
-}
-
 public class BaseCS
 {
     protected DateTime GetTimestamp()
