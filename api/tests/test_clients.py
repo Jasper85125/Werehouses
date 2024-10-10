@@ -1,5 +1,6 @@
 from models.clients import Clients
 import unittest
+import unittest.mock
 
 
 class TestClients(unittest.TestCase):
