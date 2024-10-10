@@ -21,16 +21,25 @@ class TestInventories(unittest.TestCase):
         in_inventories = self.inventories.get_inventories_for_item("P000001")
         self.assertIsNotNone(in_inventories)
 
-    # def test_get_inventory_totals_for_item(self):
-    #     item_totals = self.inventories.get_inventory_totals_for_item("P000001")
-    #     self.assertGreater(item_totals, 0)
+    def test_get_inventory_totals_for_item(self):
+        item_totals = self.inventories.get_inventory_totals_for_item("P000001")
+        self.assertIsInstance(item_totals, dict)
+        self.assertGreater(item_totals.get("total", 0), 0)
 
-    # def test_add_inventory(self):
-    #     get_curr_inventories = self.inventories.get_inventories()
-    #     new_inventory = self.inventories.__new__(Inventories())
-    #     inventories_count = len(get_curr_inventories)
-    #     self.inventories.add_inventory(new_inventory)
-    #     self.assertGreater(get_curr_inventories, inventories_count)
+    def test_add_inventory(self):
+        get_curr_inventories = self.inventories.get_inventories()
+        # Create a valid inventory dictionary
+        new_inventory = {
+            "id": "new_id",
+            "name": "New Inventory",
+            "quantity": 10,
+            "created_at": None  # This will be set by the add_inventory method
+        }
+        inventories_count = len(get_curr_inventories)
+        self.inventories.add_inventory(new_inventory)
+        self.assertEqual(
+            len(self.inventories.get_inventories()), inventories_count + 1
+        )
 
     def test_update_inventory(self):
         get_inventory_1 = self.inventories.get_inventory(1)
