@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 
 public class Client
 {
@@ -10,7 +11,7 @@ public class Client
     // Add other client properties here
 }
 
-public class Clients : Base
+public class Clients : BaseCS
 {
     private string dataPath;
     private List<Client> data;

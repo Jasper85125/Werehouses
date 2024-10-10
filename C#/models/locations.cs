@@ -12,7 +12,7 @@ public class Location
     // Add other properties as needed
 }
 
-public class Locations : Base
+public class Locations : BaseCS
 {
     private string dataPath;
     private List<Location> data;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class Orders : Base
+public class Orders : BaseCS
 {
     private string dataPath;
     private List<Order> data;
@@ -188,7 +188,7 @@ public class Item
     public int TotalOrdered { get; set; }
 }
 
-public class Base
+public class BaseCS
 {
     protected DateTime GetTimestamp()
     {

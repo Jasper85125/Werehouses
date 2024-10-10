@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class ItemTypes : Base
+public class ItemTypes : BaseCS
 {
     private string dataPath;
     private List<Dictionary<string, object>> data;

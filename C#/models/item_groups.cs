@@ -11,7 +11,7 @@ public class ItemGroup
     public DateTime UpdatedAt { get; set; }
 }
 
-public class ItemGroups : Base
+public class ItemGroups : BaseCS
 {
     private string dataPath;
     private List<ItemGroup> data;

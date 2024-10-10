@@ -19,7 +19,7 @@ public class Item
     public int TotalOrdered { get; set; }
 }
 
-public class Shipments : Base
+public class Shipments : BaseCS
 {
     private string dataPath;
     private List<Shipment> data;
