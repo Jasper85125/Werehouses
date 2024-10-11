@@ -6,7 +6,13 @@ using Newtonsoft.Json;
 public class WarehouseCS
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string? Code { get; set; }
+    public string? Name { get; set; }
+    public string? Address { get; set; }
+    public string? Zip { get; set; }
+    public string? Province { get; set; }
+    public string? Country { get; set; }
+    public Dictionary<string, string> Contact { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -34,14 +40,14 @@ public class WarehousesCS : BaseCS
 
     public void AddWarehouseCS(WarehouseCS warehouse)
     {
-        warehouse.CreatedAt = GetTimestamp();
-        warehouse.UpdatedAt = GetTimestamp();
+        warehouse.CreatedAt = GetTimestampCS();
+        warehouse.UpdatedAt = GetTimestampCS();
         data.Add(warehouse);
     }
 
     public void UpdateWarehouseCS(int warehouseId, WarehouseCS warehouse)
     {
-        warehouse.UpdatedAt = GetTimestamp();
+        warehouse.UpdatedAt = GetTimestampCS();
         int index = data.FindIndex(x => x.Id == warehouseId);
         if (index != -1)
         {
@@ -78,10 +84,5 @@ public class WarehousesCS : BaseCS
     {
         string json = JsonConvert.SerializeObject(data, Formatting.Indented);
         File.WriteAllText(dataPath, json);
-    }
-
-    private DateTime GetTimestamp()
-    {
-        return DateTime.Now;
     }
 }

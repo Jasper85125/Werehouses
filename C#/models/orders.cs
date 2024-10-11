@@ -7,15 +7,15 @@ public class Order
 {
     public int Id { get; set; }
     public int SourceId { get; set; }
-    public string OrderDate { get; set; }
-    public string RequestDate { get; set; }
-    public string Reference { get; set; }
-    public string ReferenceExtra { get; set;}
-    public string OrderStatus { get; set; }
-    public string Notes { get; set;}
-    public string ShippingNotes { get; set; }
-    public string PickingNotes { get; set; }
-    public string WarehouseId { get; set; }
+    public string? OrderDate { get; set; }
+    public string? RequestDate { get; set; }
+    public string? Reference { get; set; }
+    public string? ReferenceExtra { get; set;}
+    public string? OrderStatus { get; set; }
+    public string? Notes { get; set;}
+    public string? ShippingNotes { get; set; }
+    public string? PickingNotes { get; set; }
+    public string? WarehouseId { get; set; }
     public int ShipTo { get; set; }
     public int BillTo { get; set; }
     public int ShipmentId { get; set; }
@@ -82,14 +82,14 @@ public class OrdersCS : BaseCS
 
     public void AddOrderCS(Order order)
     {
-        order.CreatedAt = GetTimestamp();
-        order.UpdatedAt = GetTimestamp();
+        order.CreatedAt = GetTimestampCS();
+        order.UpdatedAt = GetTimestampCS();
         data.Add(order);
     }
 
     public void UpdateOrderCS(int orderId, Order order)
     {
-        order.UpdatedAt = GetTimestamp();
+        order.UpdatedAt = GetTimestampCS();
         var index = data.FindIndex(x => x.Id == orderId);
         if (index != -1)
         {
@@ -136,7 +136,7 @@ public class OrdersCS : BaseCS
 
     public void UpdateOrdersInShipmentCS(int shipmentId, List<int> orders)
     {
-        var packedOrders = GetOrdersInShipment(shipmentId);
+        var packedOrders = GetOrdersInShipmentCS(shipmentId);
         foreach (var x in packedOrders)
         {
             if (!orders.Contains(x))

@@ -5,27 +5,27 @@ using Newtonsoft.Json;
 
 public class ItemCS
 {
-    public string Uid { get; set; }
-    public string Code { get; set; }
-    public string Description { get; set; }
-    public string ShortDescription { get; set; }
-    public string UpcCode { get; set; }
-    public string ModelNumber { get; set; }
-    public string CommodityCode { get; set; }
-    public string ItemLine { get; set; }
-    public string ItemGroup { get; set; }
-    public string ItemType { get; set; }
+    public required string Uid { get; set; }
+    public string? Code { get; set; }
+    public string? Description { get; set; }
+    public string? ShortDescription { get; set; }
+    public string? UpcCode { get; set; }
+    public string? ModelNumber { get; set; }
+    public string? CommodityCode { get; set; }
+    public string? ItemLine { get; set; }
+    public string? ItemGroup { get; set; }
+    public string? ItemType { get; set; }
     public int UnitPurchaseQuantity {get; set;}
     public int UnitOrderQuantity {get; set;}
     public int PackOrderQuantity {get; set;}
-    public string SupplierId { get; set; }
-    public string SupplierCode { get; set; }
-    public string SupplierPartNumber { get; set; }
+    public int SupplierId { get; set; }
+    public string? SupplierCode { get; set; }
+    public string? SupplierPartNumber { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
 
-public class ItemsCS
+public class ItemsCS : BaseCS
 {
     private string dataPath;
     private List<ItemCS> data;
@@ -62,21 +62,21 @@ public class ItemsCS
         return data.FindAll(x => x.ItemType == itemTypeId);
     }
 
-    public List<ItemCS> GetItemsForSupplierCS(string supplierId)
+    public List<ItemCS> GetItemsForSupplierCS(int supplierId)
     {
         return data.FindAll(x => x.SupplierId == supplierId);
     }
 
     public void AddItemCS(ItemCS item)
     {
-        item.CreatedAt = GetTimestampItemCS();
-        item.UpdatedAt = GetTimestampItemCS();
+        item.CreatedAt = GetTimestampCS();
+        item.UpdatedAt = GetTimestampCS();
         data.Add(item);
     }
 
     public void UpdateItemCS(string itemId, ItemCS item)
     {
-        item.UpdatedAt = GetTimestampItemCS();
+        item.UpdatedAt = GetTimestampCS();
         int index = data.FindIndex(x => x.Uid == itemId);
         if (index != -1)
         {
@@ -112,10 +112,5 @@ public class ItemsCS
             string json = JsonConvert.SerializeObject(data, Formatting.Indented);
             w.Write(json);
         }
-    }
-
-    private DateTime GetTimestampItemCS()
-    {
-        return DateTime.Now;
     }
 }
