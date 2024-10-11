@@ -3,16 +3,81 @@ using System.IO;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
-using Providers;
-using Processors;
 
 namespace WarehouseApi
 {
-    public class ApiRequestHandler : HttpListener
+    public static class AuthProvider
     {
+        public static void Init()
+        {
+            // Initialization logic for AuthProvider
+        }
+
+        public static bool HasAccess(User user, string[] path, string method)
+        {
+            // Access control logic
+            return true;
+        }
+
+        public static User GetUser(string apiKey)
+        {
+            // Logic to get user by API key
+            return new User();
+        }
+    }
+
+    public class User
+    {
+        // User class definition
+    }
+    public static class NotificationProcessor
+    {
+        public static void Start()
+        {
+            // Initialization logic for NotificationProcessor
+            Console.WriteLine("Notification Processor Started.");
+        }
+    }
+
+    public static class DataProvider
+    {
+        public class WarehousePool
+        {
+            public object GetWarehouses() 
+            {
+                // Logic to get warehouses
+                return new object();
+            }
+
+            public object GetWarehouse(int warehouseId) 
+            {
+                // Logic to get a specific warehouse
+                return new object();
+            }
+        }
+    
+        public static void Init()
+        {
+            // Initialization logic for DataProvider
+        }
+
+        public static WarehousePool FetchWarehousePool()
+        {
+            // Logic to fetch the warehouse pool
+            return new WarehousePool();
+        }
+
+        // Other methods and properties for DataProvider
+    }
+
+    public class ApiRequestHandler
+    {
+        private readonly HttpListener _listener;
+
         public ApiRequestHandler(string prefix)
         {
-            this.Prefixes.Add(prefix);
+            _listener = new HttpListener();
+            _listener.Prefixes.Add(prefix);
         }
 
         public void HandleGet(HttpListenerContext context, string[] path, User user)
@@ -101,7 +166,84 @@ namespace WarehouseApi
             }
         }
 
-        // Similar methods for HandleLocationsGet, HandleTransfersGet, HandleItemsGet, etc.
+        private void HandleLocationsGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling locations GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        private void HandleTransfersGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling transfers GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        private void HandleItemsGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling items GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        private void HandleItemLinesGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling item lines GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        private void HandleItemGroupsGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling item groups GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        private void HandleSuppliersGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling suppliers GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        private void HandleClientsGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling clients GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        private void HandleShipmentsGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling shipments GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        private void HandleOrdersGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling orders GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        // Similar methods for HandleItemsGet, etc.
+
+        private void HandleInventoriesGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling inventories GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
+
+        private void HandleItemTypesGet(HttpListenerContext context, string[] path)
+        {
+            // Implement the logic for handling item types GET request
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+            context.Response.Close();
+        }
 
         private void SendResponse(HttpListenerContext context, object data)
         {
@@ -145,45 +287,57 @@ namespace WarehouseApi
                 context.Response.Close();
                 return;
             }
-
-            // Handle DELETE logic based on path
         }
 
         public void Start()
         {
-            this.Start();
-            Console.WriteLine("Serving on port 3000...");
+            _listener.Start();
             while (true)
             {
-                var context = this.GetContext();
+                var context = _listener.GetContext();
                 var apiKey = context.Request.Headers["API_KEY"];
-                var user = AuthProvider.GetUser(apiKey);
-                if (user == null)
+                if (string.IsNullOrEmpty(apiKey))
                 {
-                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     context.Response.Close();
                 }
                 else
                 {
-                    var path = context.Request.Url.AbsolutePath.Trim('/').Split('/');
-                    switch (context.Request.HttpMethod)
+                    var user = AuthProvider.GetUser(apiKey);
+                    if (user == null)
                     {
-                        case "GET":
-                            HandleGet(context, path, user);
-                            break;
-                        case "POST":
-                            HandlePost(context, path, user);
-                            break;
-                        case "PUT":
-                            HandlePut(context, path, user);
-                            break;
-                        case "DELETE":
-                            HandleDelete(context, path, user);
-                            break;
-                        default:
-                            context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        context.Response.Close();
+                    }
+                    else
+                    {
+                        var url = context.Request.Url;
+                        if (url == null)
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                             context.Response.Close();
-                            break;
+                            continue;
+                        }
+                        var path = url.AbsolutePath.Trim('/').Split('/');
+                        switch (context.Request.HttpMethod)
+                        {
+                            case "GET":
+                                HandleGet(context, path, user);
+                                break;
+                            case "POST":
+                                HandlePost(context, path, user);
+                                break;
+                            case "PUT":
+                                HandlePut(context, path, user);
+                                break;
+                            case "DELETE":
+                                HandleDelete(context, path, user);
+                                break;
+                            default:
+                                context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                                context.Response.Close();
+                                break;
+                        }
                     }
                 }
             }

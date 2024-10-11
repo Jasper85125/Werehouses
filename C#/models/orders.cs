@@ -25,12 +25,13 @@ public class Order
     public double TotalSurcharge { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public List<ItemCS> Items { get; set; }
+    public List<ItemCS>? Items { get; set; }
 }
+
 public class OrdersCS : BaseCS
 {
     private string dataPath;
-    private List<Order> data;
+    private List<Order> data = new List<Order>();
 
     public OrdersCS(string rootPath, bool isDebug = false)
     {
@@ -45,7 +46,7 @@ public class OrdersCS : BaseCS
 
     public Order GetOrderCS(int orderId)
     {
-        return data.Find(x => x.Id == orderId);
+        return data.Find(x => x.Id == orderId)!;
     }
 
     public List<ItemCS> GetItemsInOrderCS(int orderId)
@@ -85,6 +86,11 @@ public class OrdersCS : BaseCS
         order.CreatedAt = GetTimestampCS();
         order.UpdatedAt = GetTimestampCS();
         data.Add(order);
+    }
+    
+    private DateTime GetTimestamp()
+    {
+        return DateTime.Now;
     }
 
     public void UpdateOrderCS(int orderId, Order order)
@@ -192,7 +198,7 @@ public class OrdersCS : BaseCS
     }
 }
 
-public class Item
+public class ItemCS
 {
     public int ItemId { get; set; }
     public int Amount { get; set; }
@@ -219,11 +225,4 @@ public class InventoryPool
     {
         // Replace with actual implementation
     }
-}
-
-public class Inventory
-{
-    public int Id { get; set; }
-    public int TotalAllocated { get; set; }
-    public int TotalExpected { get; set; }
 }
