@@ -7,15 +7,15 @@ public class Order
 {
     public int Id { get; set; }
     public int SourceId { get; set; }
-    public string OrderDate { get; set; }
-    public string RequestDate { get; set; }
-    public string Reference { get; set; }
-    public string ReferenceExtra { get; set;}
-    public string OrderStatus { get; set; }
-    public string Notes { get; set;}
-    public string ShippingNotes { get; set; }
-    public string PickingNotes { get; set; }
-    public string WarehouseId { get; set; }
+    public string? OrderDate { get; set; }
+    public string? RequestDate { get; set; }
+    public string? Reference { get; set; }
+    public string? ReferenceExtra { get; set;}
+    public string? OrderStatus { get; set; }
+    public string? Notes { get; set;}
+    public string? ShippingNotes { get; set; }
+    public string? PickingNotes { get; set; }
+    public string? WarehouseId { get; set; }
     public int ShipTo { get; set; }
     public int BillTo { get; set; }
     public int ShipmentId { get; set; }
@@ -25,12 +25,13 @@ public class Order
     public double TotalSurcharge { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public List<ItemCS> Items { get; set; }
+    public List<ItemCS>? Items { get; set; }
 }
+
 public class OrdersCS : BaseCS
 {
     private string dataPath;
-    private List<Order> data;
+    private List<Order> data = new List<Order>();
 
     public OrdersCS(string rootPath, bool isDebug = false)
     {
@@ -45,7 +46,7 @@ public class OrdersCS : BaseCS
 
     public Order GetOrderCS(int orderId)
     {
-        return data.Find(x => x.Id == orderId);
+        return data.Find(x => x.Id == orderId)!;
     }
 
     public List<ItemCS> GetItemsInOrderCS(int orderId)
@@ -85,6 +86,11 @@ public class OrdersCS : BaseCS
         order.CreatedAt = GetTimestamp();
         order.UpdatedAt = GetTimestamp();
         data.Add(order);
+    }
+    
+    private DateTime GetTimestamp()
+    {
+        return DateTime.Now;
     }
 
     public void UpdateOrderCS(int orderId, Order order)
@@ -136,7 +142,7 @@ public class OrdersCS : BaseCS
 
     public void UpdateOrdersInShipmentCS(int shipmentId, List<int> orders)
     {
-        var packedOrders = GetOrdersInShipment(shipmentId);
+        var packedOrders = GetOrdersInShipmentCS(shipmentId);
         foreach (var x in packedOrders)
         {
             if (!orders.Contains(x))
@@ -192,7 +198,7 @@ public class OrdersCS : BaseCS
     }
 }
 
-public class Item
+public class ItemCS
 {
     public int ItemId { get; set; }
     public int Amount { get; set; }
