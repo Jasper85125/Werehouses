@@ -11,14 +11,6 @@ public class Shipment
     public DateTime UpdatedAt { get; set; }
 }
 
-public class Item
-{
-    public int ItemId { get; set; }
-    public int Amount { get; set; }
-    public int TotalOnHand { get; set; }
-    public int TotalOrdered { get; set; }
-}
-
 public class Shipments : BaseCS
 {
     private string dataPath;
