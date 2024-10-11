@@ -208,10 +208,3 @@ public class InventoryPool
         // Replace with actual implementation
     }
 }
-
-public class Inventory
-{
-    public int Id { get; set; }
-    public int TotalAllocated { get; set; }
-    public int TotalExpected { get; set; }
-}
