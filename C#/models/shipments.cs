@@ -11,14 +11,14 @@ public class ShipmentCS
     public DateTime OrderDate { get; set; }
     public DateTime RequestDate { get; set; }
     public DateTime ShipmentDate { get; set; }
-    public string ShipmentType { get; set; }
-    public string ShipmentStatus { get; set; }
-    public string Notes { get; set; }
-    public string CarrierCode { get; set; }
-    public string CarrierDescription { get; set; }
-    public string ServiceCode { get; set; }
-    public string PaymentType { get; set; }
-    public string TransferMode { get; set; }
+    public string? ShipmentType { get; set; }
+    public string? ShipmentStatus { get; set; }
+    public string? Notes { get; set; }
+    public string? CarrierCode { get; set; }
+    public string? CarrierDescription { get; set; }
+    public string? ServiceCode { get; set; }
+    public string? PaymentType { get; set; }
+    public string? TransferMode { get; set; }
     public int TotalPackageCount { get; set; }
     public double TotalPackageWeight { get; set; }
     public List<ItemCS> Items { get; set; }
@@ -78,10 +78,10 @@ public class ShipmentsCS : BaseCS
         var currentItems = shipment.Items;
         foreach (var currentItem in currentItems)
         {
-            var found = items.Exists(x => x.ItemId == currentItem.ItemId);
+            var found = items.Exists(x => x.Uid == currentItem.Uid);
             if (!found)
             {
-                var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(currentItem.ItemId);
+                var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(currentItem.Uid);
                 var maxInventory = inventories.OrderByDescending(x => x.TotalOrdered).FirstOrDefault();
                 if (maxInventory != null)
                 {
@@ -96,9 +96,9 @@ public class ShipmentsCS : BaseCS
         {
             foreach (var newItem in items)
             {
-                if (currentItem.ItemId == newItem.ItemId)
+                if (currentItem.Uid == newItem.Uid)
                 {
-                    var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(currentItem.ItemId);
+                    var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(currentItem.Uid);
                     var maxInventory = inventories.OrderByDescending(x => x.TotalOrdered).FirstOrDefault();
                     if (maxInventory != null)
                     {
@@ -127,7 +127,7 @@ public class ShipmentsCS : BaseCS
     {
         if (isDebug)
         {
-            data = new List<ShipmentCS>();
+            data = new List<ShipmentCS>(); // Assuming SHIPMENTS is an empty list
         }
         else
         {

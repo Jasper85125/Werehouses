@@ -6,8 +6,8 @@ public class BaseCS
     {
     }
 
-    public static string GetTimestampCS()
+    public static DateTime GetTimestampCS()
     {
-        return DateTime.UtcNow.ToString("o");
+        return DateTime.UtcNow;
     }
 }
