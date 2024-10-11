@@ -3,45 +3,46 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class ItemLine
+public class ItemLineCS
 {
     public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set;}
     public string CreatedAt { get; set; }
     public string UpdatedAt { get; set; }
-    // Add other properties as needed
 }
 
-public class ItemLines : Base
+public class ItemLinesCS : BaseCS
 {
     private string dataPath;
-    private List<ItemLine> data;
+    private List<ItemLineCS> data;
 
-    public ItemLines(string rootPath, bool isDebug = false)
+    public ItemLinesCS(string rootPath, bool isDebug = false)
     {
         dataPath = Path.Combine(rootPath, "item_lines.json");
-        Load(isDebug);
+        LoadCS(isDebug);
     }
 
-    public List<ItemLine> GetItemLines()
+    public List<ItemLineCS> GetItemLinesCS()
     {
         return data;
     }
 
-    public ItemLine GetItemLine(int itemLineId)
+    public ItemLineCS GetItemLineCS(int itemLineId)
     {
         return data.Find(x => x.Id == itemLineId);
     }
 
-    public void AddItemLine(ItemLine itemLine)
+    public void AddItemLineCS(ItemLineCS itemLine)
     {
-        itemLine.CreatedAt = GetTimestamp();
-        itemLine.UpdatedAt = GetTimestamp();
+        itemLine.CreatedAt = GetTimestampCS();
+        itemLine.UpdatedAt = GetTimestampCS();
         data.Add(itemLine);
     }
 
-    public void UpdateItemLine(int itemLineId, ItemLine itemLine)
+    public void UpdateItemLineCS(int itemLineId, ItemLineCS itemLine)
     {
-        itemLine.UpdatedAt = GetTimestamp();
+        itemLine.UpdatedAt = GetTimestampCS();
         var index = data.FindIndex(x => x.Id == itemLineId);
         if (index != -1)
         {
@@ -49,38 +50,33 @@ public class ItemLines : Base
         }
     }
 
-    public void RemoveItemLine(int itemLineId)
+    public void RemoveItemLineCS(int itemLineId)
     {
         data.RemoveAll(x => x.Id == itemLineId);
     }
 
-    private void Load(bool isDebug)
+    private void LoadCS(bool isDebug)
     {
         if (isDebug)
         {
-            data = new List<ItemLine>(); // Replace with actual debug data if needed
+            data = new List<ItemLineCS>(); // Replace with actual debug data if needed
         }
         else
         {
             using (StreamReader r = new StreamReader(dataPath))
             {
                 string json = r.ReadToEnd();
-                data = JsonConvert.DeserializeObject<List<ItemLine>>(json);
+                data = JsonConvert.DeserializeObject<List<ItemLineCS>>(json);
             }
         }
     }
 
-    public void Save()
+    public void SaveCS()
     {
         using (StreamWriter w = new StreamWriter(dataPath))
         {
             string json = JsonConvert.SerializeObject(data, Formatting.Indented);
             w.Write(json);
         }
-    }
-
-    private string GetTimestamp()
-    {
-        return DateTime.UtcNow.ToString("o");
     }
 }

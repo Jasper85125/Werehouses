@@ -3,43 +3,44 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class ItemGroup
+public class ItemGroupCS
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    public string Description { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
 
-public class ItemGroups : Base
+public class ItemGroupsCS : BaseCS
 {
     private string dataPath;
-    private List<ItemGroup> data;
+    private List<ItemGroupCS> data;
 
-    public ItemGroups(string rootPath, bool isDebug = false)
+    public ItemGroupsCS(string rootPath, bool isDebug = false)
     {
         dataPath = Path.Combine(rootPath, "item_lines.json");
-        Load(isDebug);
+        LoadCS(isDebug);
     }
 
-    public List<ItemGroup> GetItemGroups()
+    public List<ItemGroupCS> GetItemGroupsCS()
     {
         return data;
     }
 
-    public ItemGroup GetItemGroup(int itemGroupId)
+    public ItemGroupCS GetItemGroupCS(int itemGroupId)
     {
         return data.Find(x => x.Id == itemGroupId);
     }
 
-    public void AddItemGroup(ItemGroup itemGroup)
+    public void AddItemGroupCS(ItemGroupCS itemGroup)
     {
         itemGroup.CreatedAt = GetTimestamp();
         itemGroup.UpdatedAt = GetTimestamp();
         data.Add(itemGroup);
     }
 
-    public void UpdateItemGroup(int itemGroupId, ItemGroup itemGroup)
+    public void UpdateItemGroupCS(int itemGroupId, ItemGroupCS itemGroup)
     {
         itemGroup.UpdatedAt = GetTimestamp();
         var index = data.FindIndex(x => x.Id == itemGroupId);
@@ -49,23 +50,23 @@ public class ItemGroups : Base
         }
     }
 
-    public void RemoveItemGroup(int itemGroupId)
+    public void RemoveItemGroupCS(int itemGroupId)
     {
         data.RemoveAll(x => x.Id == itemGroupId);
     }
 
-    private void Load(bool isDebug)
+    private void LoadCS(bool isDebug)
     {
         if (isDebug)
         {
-            data = new List<ItemGroup>();
+            data = new List<ItemGroupCS>();
         }
         else
         {
             using (StreamReader r = new StreamReader(dataPath))
             {
                 string json = r.ReadToEnd();
-                data = JsonConvert.DeserializeObject<List<ItemGroup>>(json);
+                data = JsonConvert.DeserializeObject<List<ItemGroupCS>>(json);
             }
         }
     }
