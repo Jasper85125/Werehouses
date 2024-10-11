@@ -3,23 +3,32 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class ItemTypes : BaseCS
+public class ItemTypeCS
+{
+    public int Id { get; set;}
+    public string Name { get; set; }
+    public string Description { get; set;}
+    public string CreatedAt { get; set; }
+    public string UpdatedAt { get; set; }
+}
+
+public class ItemTypesCS : BaseCS
 {
     private string dataPath;
     private List<Dictionary<string, object>> data;
 
-    public ItemTypes(string rootPath, bool isDebug = false)
+    public ItemTypesCS(string rootPath, bool isDebug = false)
     {
         dataPath = Path.Combine(rootPath, "item_types.json");
-        Load(isDebug);
+        LoadCS(isDebug);
     }
 
-    public List<Dictionary<string, object>> GetItemTypes()
+    public List<Dictionary<string, object>> GetItemTypesCS()
     {
         return data;
     }
 
-    public Dictionary<string, object> GetItemType(string itemTypeId)
+    public Dictionary<string, object> GetItemTypeCS(string itemTypeId)
     {
         foreach (var item in data)
         {
@@ -31,16 +40,16 @@ public class ItemTypes : BaseCS
         return null;
     }
 
-    public void AddItemType(Dictionary<string, object> itemType)
+    public void AddItemTypeCS(Dictionary<string, object> itemType)
     {
-        itemType["created_at"] = GetTimestamp();
-        itemType["updated_at"] = GetTimestamp();
+        itemType["created_at"] = GetTimestampCS();
+        itemType["updated_at"] = GetTimestampCS();
         data.Add(itemType);
     }
 
-    public void UpdateItemType(string itemTypeId, Dictionary<string, object> itemType)
+    public void UpdateItemTypeCS(string itemTypeId, Dictionary<string, object> itemType)
     {
-        itemType["updated_at"] = GetTimestamp();
+        itemType["updated_at"] = GetTimestampCS();
         for (int i = 0; i < data.Count; i++)
         {
             if (data[i]["id"].ToString() == itemTypeId)
@@ -51,12 +60,12 @@ public class ItemTypes : BaseCS
         }
     }
 
-    public void RemoveItemType(string itemTypeId)
+    public void RemoveItemTypeCS(string itemTypeId)
     {
         data.RemoveAll(item => item["id"].ToString() == itemTypeId);
     }
 
-    private void Load(bool isDebug)
+    private void LoadCS(bool isDebug)
     {
         if (isDebug)
         {
@@ -72,17 +81,12 @@ public class ItemTypes : BaseCS
         }
     }
 
-    public void Save()
+    public void SaveCS()
     {
         using (StreamWriter w = new StreamWriter(dataPath))
         {
             string json = JsonConvert.SerializeObject(data, Formatting.Indented);
             w.Write(json);
         }
-    }
-
-    private string GetTimestamp()
-    {
-        return DateTime.UtcNow.ToString("o");
     }
 }

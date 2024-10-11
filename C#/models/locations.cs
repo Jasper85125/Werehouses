@@ -3,51 +3,52 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class Location
+public class LocationCS
 {
     public int Id { get; set; }
     public int WarehouseId { get; set; }
+    public string Code { get; set; }
+    public string Name { get; set; }
     public string CreatedAt { get; set; }
     public string UpdatedAt { get; set; }
-    // Add other properties as needed
 }
 
-public class Locations : BaseCS
+public class LocationsCS : BaseCS
 {
     private string dataPath;
-    private List<Location> data;
+    private List<LocationCS> data;
 
-    public Locations(string rootPath, bool isDebug = false)
+    public LocationsCS(string rootPath, bool isDebug = false)
     {
         dataPath = Path.Combine(rootPath, "locations.json");
-        Load(isDebug);
+        LoadCS(isDebug);
     }
 
-    public List<Location> GetLocations()
+    public List<LocationCS> GetLocationsCS()
     {
         return data;
     }
 
-    public Location GetLocation(int locationId)
+    public LocationCS GetLocationCS(int locationId)
     {
         return data.Find(x => x.Id == locationId);
     }
 
-    public List<Location> GetLocationsInWarehouse(int warehouseId)
+    public List<LocationCS> GetLocationsInWarehouseCS(int warehouseId)
     {
         return data.FindAll(x => x.WarehouseId == warehouseId);
     }
 
-    public void AddLocation(Location location)
+    public void AddLocationCS(LocationCS location)
     {
-        location.CreatedAt = GetTimestamp();
-        location.UpdatedAt = GetTimestamp();
+        location.CreatedAt = GetTimestampCS();
+        location.UpdatedAt = GetTimestampCS();
         data.Add(location);
     }
 
-    public void UpdateLocation(int locationId, Location location)
+    public void UpdateLocationCS(int locationId, LocationCS location)
     {
-        location.UpdatedAt = GetTimestamp();
+        location.UpdatedAt = GetTimestampCS();
         int index = data.FindIndex(x => x.Id == locationId);
         if (index != -1)
         {
@@ -55,38 +56,33 @@ public class Locations : BaseCS
         }
     }
 
-    public void RemoveLocation(int locationId)
+    public void RemoveLocationCS(int locationId)
     {
         data.RemoveAll(x => x.Id == locationId);
     }
 
-    private void Load(bool isDebug)
+    private void LoadCS(bool isDebug)
     {
         if (isDebug)
         {
-            data = new List<Location>(); // Initialize with empty list or mock data
+            data = new List<LocationCS>(); // Initialize with empty list or mock data
         }
         else
         {
             using (StreamReader r = new StreamReader(dataPath))
             {
                 string json = r.ReadToEnd();
-                data = JsonConvert.DeserializeObject<List<Location>>(json);
+                data = JsonConvert.DeserializeObject<List<LocationCS>>(json);
             }
         }
     }
 
-    public void Save()
+    public void SaveCS()
     {
         using (StreamWriter w = new StreamWriter(dataPath))
         {
             string json = JsonConvert.SerializeObject(data, Formatting.Indented);
             w.Write(json);
         }
-    }
-
-    private string GetTimestamp()
-    {
-        return DateTime.UtcNow.ToString("o"); // ISO 8601 format
     }
 }

@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class Inventory
+public class InventoryCS
 {
     public int Id { get; set; }
     public int ItemId { get; set; }
+    public string Description { get; set; }
+    public string ItemReference { get; set; }
+    public List<int> Locations {get; set;}
+    public int TotalOnHand { get; set; }
     public int TotalExpected { get; set; }
     public int TotalOrdered { get; set; }
     public int TotalAllocated { get; set; }
@@ -15,33 +19,33 @@ public class Inventory
     public DateTime UpdatedAt { get; set; }
 }
 
-public class Inventories
+public class InventoriesCS
 {
     private string dataPath;
-    private List<Inventory> data;
+    private List<InventoryCS> data;
 
-    public Inventories(string rootPath, bool isDebug = false)
+    public InventoriesCS(string rootPath, bool isDebug = false)
     {
         dataPath = Path.Combine(rootPath, "inventories.json");
-        Load(isDebug);
+        LoadCS(isDebug);
     }
 
-    public List<Inventory> GetInventories()
+    public List<InventoryCS> GetInventoriesCS()
     {
         return data;
     }
 
-    public Inventory GetInventory(int inventoryId)
+    public InventoryCS GetInventoryCS(int inventoryId)
     {
         return data.Find(x => x.Id == inventoryId);
     }
 
-    public List<Inventory> GetInventoriesForItem(int itemId)
+    public List<InventoryCS> GetInventoriesForItemCS(int itemId)
     {
         return data.FindAll(x => x.ItemId == itemId);
     }
 
-    public Dictionary<string, int> GetInventoryTotalsForItem(int itemId)
+    public Dictionary<string, int> GetInventoryTotalsForItemCS(int itemId)
     {
         var result = new Dictionary<string, int>
         {
@@ -65,14 +69,14 @@ public class Inventories
         return result;
     }
 
-    public void AddInventory(Inventory inventory)
+    public void AddInventoryCS(InventoryCS inventory)
     {
         inventory.CreatedAt = DateTime.Now;
         inventory.UpdatedAt = DateTime.Now;
         data.Add(inventory);
     }
 
-    public void UpdateInventory(int inventoryId, Inventory inventory)
+    public void UpdateInventoryCS(int inventoryId, InventoryCS inventory)
     {
         inventory.UpdatedAt = DateTime.Now;
         var index = data.FindIndex(x => x.Id == inventoryId);
@@ -82,32 +86,32 @@ public class Inventories
         }
     }
 
-    public void RemoveInventory(int inventoryId)
+    public void RemoveInventoryCS(int inventoryId)
     {
         data.RemoveAll(x => x.Id == inventoryId);
     }
 
-    private void Load(bool isDebug)
+    private void LoadCS(bool isDebug)
     {
         if (isDebug)
         {
-            data = new List<Inventory>();
+            data = new List<InventoryCS>();
         }
         else
         {
             if (File.Exists(dataPath))
             {
                 var jsonData = File.ReadAllText(dataPath);
-                data = JsonConvert.DeserializeObject<List<Inventory>>(jsonData);
+                data = JsonConvert.DeserializeObject<List<InventoryCS>>(jsonData);
             }
             else
             {
-                data = new List<Inventory>();
+                data = new List<InventoryCS>();
             }
         }
     }
 
-    public void Save()
+    public void SaveCS()
     {
         var jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
         File.WriteAllText(dataPath, jsonData);

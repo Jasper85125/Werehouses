@@ -3,49 +3,64 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class Shipment
+public class ShipmentCS
 {
     public int Id { get; set; }
+    public int OrderId { get; set; }
+    public int SourceId { get; set; }
+    public DateTime OrderDate { get; set; }
+    public DateTime RequestDate { get; set; }
+    public DateTime ShipmentDate { get; set; }
+    public string ShipmentType { get; set; }
+    public string ShipmentStatus { get; set; }
+    public string Notes { get; set; }
+    public string CarrierCode { get; set; }
+    public string CarrierDescription { get; set; }
+    public string ServiceCode { get; set; }
+    public string PaymentType { get; set; }
+    public string TransferMode { get; set; }
+    public int TotalPackageCount { get; set; }
+    public double TotalPackageWeight { get; set; }
     public List<Item> Items { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
 
-public class Shipments : BaseCS
+public class ShipmentsCS : BaseCS
 {
     private string dataPath;
-    private List<Shipment> data;
+    private List<ShipmentCS> data;
 
-    public Shipments(string rootPath, bool isDebug = false)
+    public ShipmentsCS(string rootPath, bool isDebug = false)
     {
         dataPath = Path.Combine(rootPath, "shipments.json");
-        Load(isDebug);
+        LoadCS(isDebug);
     }
 
-    public List<Shipment> GetShipments()
+    public List<ShipmentCS> GetShipmentsCS()
     {
         return data;
     }
 
-    public Shipment GetShipment(int shipmentId)
+    public ShipmentCS GetShipmentCS(int shipmentId)
     {
         return data.Find(x => x.Id == shipmentId);
     }
 
-    public List<Item> GetItemsInShipment(int shipmentId)
+    public List<Item> GetItemsInShipmentCS(int shipmentId)
     {
-        var shipment = GetShipment(shipmentId);
+        var shipment = GetShipmentCS(shipmentId);
         return shipment?.Items;
     }
 
-    public void AddShipment(Shipment shipment)
+    public void AddShipmentCS(ShipmentCS shipment)
     {
         shipment.CreatedAt = DateTime.Now;
         shipment.UpdatedAt = DateTime.Now;
         data.Add(shipment);
     }
 
-    public void UpdateShipment(int shipmentId, Shipment shipment)
+    public void UpdateShipmentCS(int shipmentId, ShipmentCS shipment)
     {
         shipment.UpdatedAt = DateTime.Now;
         var index = data.FindIndex(x => x.Id == shipmentId);
@@ -55,9 +70,9 @@ public class Shipments : BaseCS
         }
     }
 
-    public void UpdateItemsInShipment(int shipmentId, List<Item> items)
+    public void UpdateItemsInShipmentCS(int shipmentId, List<Item> items)
     {
-        var shipment = GetShipment(shipmentId);
+        var shipment = GetShipmentCS(shipmentId);
         if (shipment == null) return;
 
         var currentItems = shipment.Items;
@@ -96,19 +111,19 @@ public class Shipments : BaseCS
         }
 
         shipment.Items = items;
-        UpdateShipment(shipmentId, shipment);
+        UpdateShipmentCS(shipmentId, shipment);
     }
 
-    public void RemoveShipment(int shipmentId)
+    public void RemoveShipmenCSt(int shipmentId)
     {
-        var shipment = GetShipment(shipmentId);
+        var shipment = GetShipmentCS(shipmentId);
         if (shipment != null)
         {
             data.Remove(shipment);
         }
     }
 
-    private void Load(bool isDebug)
+    private void LoadCS(bool isDebug)
     {
         if (isDebug)
         {
@@ -121,7 +136,7 @@ public class Shipments : BaseCS
         }
     }
 
-    public void Save()
+    public void SaveCS()
     {
         var jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
         File.WriteAllText(dataPath, jsonData);

@@ -1,12 +1,12 @@
 using System;
 
-public class Base
+public class BaseCS
 {
-    public Base()
+    public BaseCS()
     {
     }
 
-    public string GetTimestamp()
+    public static string GetTimestampCS()
     {
         return DateTime.UtcNow.ToString("o");
     }

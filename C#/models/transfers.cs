@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class Transfers : Base
+public class TransfersCS : BaseCS
 {
     private string dataPath;
     private List<Dictionary<string, object>> data;
 
-    public Transfers(string rootPath, bool isDebug = false)
+    public TransfersCS(string rootPath, bool isDebug = false)
     {
         dataPath = Path.Combine(rootPath, "transfers.json");
-        Load(isDebug);
+        LoadCS(isDebug);
     }
 
-    public List<Dictionary<string, object>> GetTransfers()
+    public List<Dictionary<string, object>> GetTransfersCS()
     {
         return data;
     }
 
-    public Dictionary<string, object> GetTransfer(string transferId)
+    public Dictionary<string, object> GetTransferCS(string transferId)
     {
         foreach (var transfer in data)
         {
@@ -31,7 +31,7 @@ public class Transfers : Base
         return null;
     }
 
-    public List<object> GetItemsInTransfer(string transferId)
+    public List<object> GetItemsInTransferCS(string transferId)
     {
         foreach (var transfer in data)
         {
@@ -43,17 +43,17 @@ public class Transfers : Base
         return null;
     }
 
-    public void AddTransfer(Dictionary<string, object> transfer)
+    public void AddTransferCS(Dictionary<string, object> transfer)
     {
         transfer["transfer_status"] = "Scheduled";
-        transfer["created_at"] = GetTimestamp();
-        transfer["updated_at"] = GetTimestamp();
+        transfer["created_at"] = GetTimestampCS();
+        transfer["updated_at"] = GetTimestampCS();
         data.Add(transfer);
     }
 
-    public void UpdateTransfer(string transferId, Dictionary<string, object> transfer)
+    public void UpdateTransferCS(string transferId, Dictionary<string, object> transfer)
     {
-        transfer["updated_at"] = GetTimestamp();
+        transfer["updated_at"] = GetTimestampCS();
         for (int i = 0; i < data.Count; i++)
         {
             if (data[i]["id"].ToString() == transferId)
@@ -64,12 +64,12 @@ public class Transfers : Base
         }
     }
 
-    public void RemoveTransfer(string transferId)
+    public void RemoveTransferCS(string transferId)
     {
         data.RemoveAll(x => x["id"].ToString() == transferId);
     }
 
-    private void Load(bool isDebug)
+    private void LoadCS(bool isDebug)
     {
         if (isDebug)
         {

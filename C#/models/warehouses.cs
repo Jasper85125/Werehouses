@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class Warehouse
+public class WarehouseCS
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -11,35 +11,35 @@ public class Warehouse
     public DateTime UpdatedAt { get; set; }
 }
 
-public class Warehouses : Base
+public class WarehousesCS : BaseCS
 {
     private string dataPath;
-    private List<Warehouse> data;
+    private List<WarehouseCS> data;
 
-    public Warehouses(string rootPath, bool isDebug = false)
+    public WarehousesCS(string rootPath, bool isDebug = false)
     {
         dataPath = Path.Combine(rootPath, "warehouses.json");
-        Load(isDebug);
+        LoadCS(isDebug);
     }
 
-    public List<Warehouse> GetWarehouses()
+    public List<WarehouseCS> GetWarehousesCS()
     {
         return data;
     }
 
-    public Warehouse GetWarehouse(int warehouseId)
+    public WarehouseCS GetWarehouseCS(int warehouseId)
     {
         return data.Find(x => x.Id == warehouseId);
     }
 
-    public void AddWarehouse(Warehouse warehouse)
+    public void AddWarehouseCS(WarehouseCS warehouse)
     {
         warehouse.CreatedAt = GetTimestamp();
         warehouse.UpdatedAt = GetTimestamp();
         data.Add(warehouse);
     }
 
-    public void UpdateWarehouse(int warehouseId, Warehouse warehouse)
+    public void UpdateWarehouseCS(int warehouseId, WarehouseCS warehouse)
     {
         warehouse.UpdatedAt = GetTimestamp();
         int index = data.FindIndex(x => x.Id == warehouseId);
@@ -49,32 +49,32 @@ public class Warehouses : Base
         }
     }
 
-    public void RemoveWarehouse(int warehouseId)
+    public void RemoveWarehouseCS(int warehouseId)
     {
         data.RemoveAll(x => x.Id == warehouseId);
     }
 
-    private void Load(bool isDebug)
+    private void LoadCS(bool isDebug)
     {
         if (isDebug)
         {
-            data = new List<Warehouse>();
+            data = new List<WarehouseCS>();
         }
         else
         {
             if (File.Exists(dataPath))
             {
                 string json = File.ReadAllText(dataPath);
-                data = JsonConvert.DeserializeObject<List<Warehouse>>(json);
+                data = JsonConvert.DeserializeObject<List<WarehouseCS>>(json);
             }
             else
             {
-                data = new List<Warehouse>();
+                data = new List<WarehouseCS>();
             }
         }
     }
 
-    public void Save()
+    public void SaveCS()
     {
         string json = JsonConvert.SerializeObject(data, Formatting.Indented);
         File.WriteAllText(dataPath, json);

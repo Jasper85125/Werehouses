@@ -3,34 +3,58 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-public class Orders : BaseCS
+public class Order
+{
+    public int Id { get; set; }
+    public int SourceId { get; set; }
+    public string OrderDate { get; set; }
+    public string RequestDate { get; set; }
+    public string Reference { get; set; }
+    public string ReferenceExtra { get; set;}
+    public string OrderStatus { get; set; }
+    public string Notes { get; set;}
+    public string ShippingNotes { get; set; }
+    public string PickingNotes { get; set; }
+    public string WarehouseId { get; set; }
+    public int ShipTo { get; set; }
+    public int BillTo { get; set; }
+    public int ShipmentId { get; set; }
+    public double TotalAmount { get; set; }
+    public double TotalDiscount { get; set; }
+    public double TotalTax { get; set; }
+    public double TotalSurcharge { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public List<ItemCS> Items { get; set; }
+}
+public class OrdersCS : BaseCS
 {
     private string dataPath;
     private List<Order> data;
 
-    public Orders(string rootPath, bool isDebug = false)
+    public OrdersCS(string rootPath, bool isDebug = false)
     {
         dataPath = Path.Combine(rootPath, "orders.json");
-        Load(isDebug);
+        LoadCS(isDebug);
     }
 
-    public List<Order> GetOrders()
+    public List<Order> GetOrdersCS()
     {
         return data;
     }
 
-    public Order GetOrder(int orderId)
+    public Order GetOrderCS(int orderId)
     {
         return data.Find(x => x.Id == orderId);
     }
 
-    public List<Item> GetItemsInOrder(int orderId)
+    public List<ItemCS> GetItemsInOrderCS(int orderId)
     {
-        var order = GetOrder(orderId);
+        var order = GetOrderCS(orderId);
         return order?.Items;
     }
 
-    public List<int> GetOrdersInShipment(int shipmentId)
+    public List<int> GetOrdersInShipmentCS(int shipmentId)
     {
         var result = new List<int>();
         foreach (var order in data)
@@ -43,7 +67,7 @@ public class Orders : BaseCS
         return result;
     }
 
-    public List<Order> GetOrdersForClient(int clientId)
+    public List<Order> GetOrdersForClientCS(int clientId)
     {
         var result = new List<Order>();
         foreach (var order in data)
@@ -56,14 +80,14 @@ public class Orders : BaseCS
         return result;
     }
 
-    public void AddOrder(Order order)
+    public void AddOrderCS(Order order)
     {
         order.CreatedAt = GetTimestamp();
         order.UpdatedAt = GetTimestamp();
         data.Add(order);
     }
 
-    public void UpdateOrder(int orderId, Order order)
+    public void UpdateOrderCS(int orderId, Order order)
     {
         order.UpdatedAt = GetTimestamp();
         var index = data.FindIndex(x => x.Id == orderId);
@@ -73,14 +97,14 @@ public class Orders : BaseCS
         }
     }
 
-    public void UpdateItemsInOrder(int orderId, List<Item> items)
+    public void UpdateItemsInOrderCS(int orderId, List<ItemCS> items)
     {
-        var order = GetOrder(orderId);
+        var order = GetOrderCS(orderId);
         var current = order.Items;
 
         foreach (var x in current)
         {
-            bool found = items.Exists(y => y.ItemId == x.ItemId);
+            bool found = items.Exists(y => y.Uid == x.Uid);
             if (!found)
             {
                 var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(x.ItemId);
@@ -95,7 +119,7 @@ public class Orders : BaseCS
         {
             foreach (var y in items)
             {
-                if (x.ItemId == y.ItemId)
+                if (x.Uid == y.Uid)
                 {
                     var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(x.ItemId);
                     var minInventory = inventories.OrderBy(z => z.TotalAllocated).First();
@@ -107,42 +131,42 @@ public class Orders : BaseCS
         }
 
         order.Items = items;
-        UpdateOrder(orderId, order);
+        UpdateOrderCS(orderId, order);
     }
 
-    public void UpdateOrdersInShipment(int shipmentId, List<int> orders)
+    public void UpdateOrdersInShipmentCS(int shipmentId, List<int> orders)
     {
         var packedOrders = GetOrdersInShipment(shipmentId);
         foreach (var x in packedOrders)
         {
             if (!orders.Contains(x))
             {
-                var order = GetOrder(x);
+                var order = GetOrderCS(x);
                 order.ShipmentId = -1;
                 order.OrderStatus = "Scheduled";
-                UpdateOrder(x, order);
+                UpdateOrderCS(x, order);
             }
         }
 
         foreach (var x in orders)
         {
-            var order = GetOrder(x);
+            var order = GetOrderCS(x);
             order.ShipmentId = shipmentId;
             order.OrderStatus = "Packed";
-            UpdateOrder(x, order);
+            UpdateOrderCS(x, order);
         }
     }
 
-    public void RemoveOrder(int orderId)
+    public void RemoveOrderCS(int orderId)
     {
-        var order = GetOrder(orderId);
+        var order = GetOrderCS(orderId);
         if (order != null)
         {
             data.Remove(order);
         }
     }
 
-    private void Load(bool isDebug)
+    private void LoadCS(bool isDebug)
     {
         if (isDebug)
         {
@@ -158,7 +182,7 @@ public class Orders : BaseCS
         }
     }
 
-    public void Save()
+    public void SaveCS()
     {
         using (var writer = new StreamWriter(dataPath))
         {
@@ -168,24 +192,12 @@ public class Orders : BaseCS
     }
 }
 
-public class Order
+public class Item
 {
-    public int Id { get; set; }
-    public int ShipmentId { get; set; }
-    public int ShipTo { get; set; }
-    public int BillTo { get; set; }
-    public string OrderStatus { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public List<Item> Items { get; set; }
-}
-
-public class BaseCS
-{
-    protected DateTime GetTimestamp()
-    {
-        return DateTime.UtcNow;
-    }
+    public int ItemId { get; set; }
+    public int Amount { get; set; }
+    public int TotalOnHand { get; set; }
+    public int TotalOrdered { get; set; }
 }
 
 public static class DataProvider
@@ -198,12 +210,12 @@ public static class DataProvider
 
 public class InventoryPool
 {
-    public List<Inventory> GetInventoriesForItem(int itemId)
+    public List<InventoryCS> GetInventoriesForItem(int itemId)
     {
-        return new List<Inventory>(); // Replace with actual implementation
+        return new List<InventoryCS>(); // Replace with actual implementation
     }
 
-    public void UpdateInventory(int id, Inventory inventory)
+    public void UpdateInventory(int id, InventoryCS inventory)
     {
         // Replace with actual implementation
     }
