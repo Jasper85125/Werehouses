@@ -25,7 +25,7 @@ public class Order
     public double TotalSurcharge { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public List<ItemCS>? Items { get; set; }
+    public List<ItemOrder>? Items { get; set; }
 }
 
 public class OrdersCS : BaseCS
@@ -49,7 +49,7 @@ public class OrdersCS : BaseCS
         return data.Find(x => x.Id == orderId)!;
     }
 
-    public List<ItemCS> GetItemsInOrderCS(int orderId)
+    public List<ItemOrder> GetItemsInOrderCS(int orderId)
     {
         var order = GetOrderCS(orderId);
         return order?.Items;
@@ -87,11 +87,6 @@ public class OrdersCS : BaseCS
         order.UpdatedAt = GetTimestampCS();
         data.Add(order);
     }
-    
-    private DateTime GetTimestamp()
-    {
-        return DateTime.Now;
-    }
 
     public void UpdateOrderCS(int orderId, Order order)
     {
@@ -103,14 +98,14 @@ public class OrdersCS : BaseCS
         }
     }
 
-    public void UpdateItemsInOrderCS(int orderId, List<ItemCS> items)
+    public void UpdateItemsInOrderCS(int orderId, List<ItemOrder> items)
     {
         var order = GetOrderCS(orderId);
         var current = order.Items;
 
         foreach (var x in current)
         {
-            bool found = items.Exists(y => y.Uid == x.Uid);
+            bool found = items.Exists(y => y.ItemId == x.ItemId);
             if (!found)
             {
                 var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(x.ItemId);
@@ -125,7 +120,7 @@ public class OrdersCS : BaseCS
         {
             foreach (var y in items)
             {
-                if (x.Uid == y.Uid)
+                if (x.ItemId == y.ItemId)
                 {
                     var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(x.ItemId);
                     var minInventory = inventories.OrderBy(z => z.TotalAllocated).First();
@@ -198,7 +193,7 @@ public class OrdersCS : BaseCS
     }
 }
 
-public class ItemCS
+public class ItemOrder
 {
     public int ItemId { get; set; }
     public int Amount { get; set; }

@@ -47,7 +47,7 @@ public class ShipmentsCS : BaseCS
         return data.Find(x => x.Id == shipmentId);
     }
 
-    public List<Item> GetItemsInShipmentCS(int shipmentId)
+    public List<ItemCS> GetItemsInShipmentCS(int shipmentId)
     {
         var shipment = GetShipmentCS(shipmentId);
         return shipment?.Items;
@@ -70,7 +70,7 @@ public class ShipmentsCS : BaseCS
         }
     }
 
-    public void UpdateItemsInShipmentCS(int shipmentId, List<Item> items)
+    public void UpdateItemsInShipmentCS(int shipmentId, List<ItemCS> items)
     {
         var shipment = GetShipmentCS(shipmentId);
         if (shipment == null) return;
@@ -78,10 +78,10 @@ public class ShipmentsCS : BaseCS
         var currentItems = shipment.Items;
         foreach (var currentItem in currentItems)
         {
-            var found = items.Exists(x => x.ItemId == currentItem.ItemId);
+            var found = items.Exists(x => x.Uid == currentItem.Uid);
             if (!found)
             {
-                var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(currentItem.ItemId);
+                var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(currentItem.Uid);
                 var maxInventory = inventories.OrderByDescending(x => x.TotalOrdered).FirstOrDefault();
                 if (maxInventory != null)
                 {
@@ -96,9 +96,9 @@ public class ShipmentsCS : BaseCS
         {
             foreach (var newItem in items)
             {
-                if (currentItem.ItemId == newItem.ItemId)
+                if (currentItem.Uid == newItem.Uid)
                 {
-                    var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(currentItem.ItemId);
+                    var inventories = DataProvider.FetchInventoryPool().GetInventoriesForItem(currentItem.Uid);
                     var maxInventory = inventories.OrderByDescending(x => x.TotalOrdered).FirstOrDefault();
                     if (maxInventory != null)
                     {
