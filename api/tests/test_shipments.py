@@ -10,8 +10,7 @@ class TestShipments(unittest.TestCase):
 
         self.test_data_path = "./test_data/"
         os.makedirs(self.test_data_path, exist_ok=True)
-        self.shipments_file = os.path.join(self.test_data_path,
-                                           "shipments.json")
+        self.shipments_file = os.path.join(self.test_data_path, "shipments.json")
 
         self.sample_data = [
             {"id": 1, "source_id": 1, "order_id": 1, "items": [{
