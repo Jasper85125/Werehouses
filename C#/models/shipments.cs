@@ -21,7 +21,7 @@ public class ShipmentCS
     public string TransferMode { get; set; }
     public int TotalPackageCount { get; set; }
     public double TotalPackageWeight { get; set; }
-    public List<Item> Items { get; set; }
+    public List<ItemCS> Items { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -47,7 +47,7 @@ public class ShipmentsCS : BaseCS
         return data.Find(x => x.Id == shipmentId);
     }
 
-    public List<Item> GetItemsInShipmentCS(int shipmentId)
+    public List<ItemCS> GetItemsInShipmentCS(int shipmentId)
     {
         var shipment = GetShipmentCS(shipmentId);
         return shipment?.Items;
@@ -70,7 +70,7 @@ public class ShipmentsCS : BaseCS
         }
     }
 
-    public void UpdateItemsInShipmentCS(int shipmentId, List<Item> items)
+    public void UpdateItemsInShipmentCS(int shipmentId, List<ItemCS> items)
     {
         var shipment = GetShipmentCS(shipmentId);
         if (shipment == null) return;
@@ -127,12 +127,12 @@ public class ShipmentsCS : BaseCS
     {
         if (isDebug)
         {
-            data = new List<Shipment>(); // Assuming SHIPMENTS is an empty list
+            data = new List<ShipmentCS>();
         }
         else
         {
             var jsonData = File.ReadAllText(dataPath);
-            data = JsonConvert.DeserializeObject<List<Shipment>>(jsonData);
+            data = JsonConvert.DeserializeObject<List<ShipmentCS>>(jsonData);
         }
     }
 
