@@ -43,19 +43,19 @@ namespace WarehouseApi
     {
         public class WarehousePool
         {
-            public object GetWarehouses() 
+            public object GetWarehouses()
             {
                 // Logic to get warehouses
                 return new object();
             }
 
-            public object GetWarehouse(int warehouseId) 
+            public object GetWarehouse(int warehouseId)
             {
                 // Logic to get a specific warehouse
                 return new object();
             }
         }
-    
+
         public static void Init()
         {
             // Initialization logic for DataProvider
@@ -182,9 +182,10 @@ namespace WarehouseApi
 
         private void HandleItemsGet(HttpListenerContext context, string[] path)
         {
-            // Implement the logic for handling items GET request
-            context.Response.StatusCode = (int)HttpStatusCode.OK;
-            context.Response.Close();
+            Console.WriteLine("HandleItemsGet called with path: " + string.Join("/", path));
+            var itemsCS = new ItemsCS("models");
+            var items = itemsCS.GetItemsCS();
+            SendResponse(context, items);
         }
 
         private void HandleItemLinesGet(HttpListenerContext context, string[] path)
