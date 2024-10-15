@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace item.Controllers
 {
-    [Route("api/items")]
+    [Route("items")]
     [ApiController]
     public class ItemController : ControllerBase
     {
@@ -16,17 +16,22 @@ namespace item.Controllers
 
         // GET: api/item
         [HttpGet()]
-        public ActionResult<IEnumerable<ItemCS>> Get()
+        public ActionResult<IEnumerable<ItemCS>> GetAllItems()
         {
             var items = _itemService.GetAllItems();
             return Ok(items);
         }
 
         // GET: api/item/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [HttpGet("{uid}")]
+        public ActionResult<ItemCS> GetByUid(string uid)
         {
-            return "item" + id;
+            var item = _itemService.GetItemById(uid);
+            if (item == null)
+            {
+            return NotFound();
+            }
+            return Ok(item);
         }
 
         // POST: api/item

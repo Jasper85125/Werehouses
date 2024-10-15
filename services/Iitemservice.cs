@@ -1,7 +1,7 @@
 public interface IItemService
 {
     List<ItemCS> GetAllItems();
-    // ItemCS GetItem(int id);
+    ItemCS GetItemById(string uid);
     // void CreateItem();
     // void UpdateItem();
     // void DeleteItem();

@@ -12,9 +12,9 @@ public class ItemCS
     public string? UpcCode { get; set; }
     public string? ModelNumber { get; set; }
     public string? CommodityCode { get; set; }
-    public string? ItemLine { get; set; }
-    public string? ItemGroup { get; set; }
-    public string? ItemType { get; set; }
+    public int? ItemLine { get; set; }
+    public int? ItemGroup { get; set; }
+    public int? ItemType { get; set; }
     public int UnitPurchaseQuantity {get; set;}
     public int UnitOrderQuantity {get; set;}
     public int PackOrderQuantity {get; set;}
@@ -52,17 +52,17 @@ public class ItemsCS : BaseCS
 
     public List<ItemCS> GetItemsForItemLineCS(string itemLineId)
     {
-        return data.FindAll(x => x.ItemLine == itemLineId);
+        return data.FindAll(x => x.ItemLine == int.Parse(itemLineId));
     }
 
     public List<ItemCS> GetItemsForItemGroupCS(string itemGroupId)
     {
-        return data.FindAll(x => x.ItemGroup == itemGroupId);
+        return data.FindAll(x => x.ItemGroup == int.Parse(itemGroupId));
     }
 
     public List<ItemCS> GetItemsForItemTypeCS(string itemTypeId)
     {
-        return data.FindAll(x => x.ItemType == itemTypeId);
+        return data.FindAll(x => x.ItemType == int.Parse(itemTypeId));
     }
 
     public List<ItemCS> GetItemsForSupplierCS(int supplierId)
