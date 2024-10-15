@@ -5,7 +5,7 @@ namespace clients.Services{
         public ClientService(){}
         public List<ClientCS> GetAllClients()
         {
-            var dataPath = "../data/clients.json";
+            var dataPath = "data/clients.json";
             if(!File.Exists(dataPath))
             {
                 return new List<ClientCS>();
