@@ -15,7 +15,7 @@ namespace item.Services
         // Method to get all items
         public List<ItemCS> GetAllItems()
         {
-            var Path = "../data/items.json";
+            var Path = "data/items.json";
             if (!File.Exists(Path))
             {
                 return new List<ItemCS>();
@@ -27,20 +27,21 @@ namespace item.Services
         }
 
         // Method to get an item by ID
-        public Item GetItemById(int id)
+        public ItemCS GetItemById(string uid)
         {
-            // Implementation code here
-            return new Item();
+            var items = GetAllItems();
+            var item = items.FirstOrDefault(i => i.Uid == uid);
+            return item;
         }
 
         // Method to add a new item
-        public void AddItem(Item item)
+        public void AddItem(ItemCS item)
         {
             // Implementation code here
         }
 
         // Method to update an existing item
-        public void UpdateItem(Item item)
+        public void UpdateItem(ItemCS item)
         {
             // Implementation code here
         }
@@ -50,13 +51,5 @@ namespace item.Services
         {
             // Implementation code here
         }
-    }
-
-    // Example Item class
-    public class Item
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int Quantity { get; set; }
     }
 }
