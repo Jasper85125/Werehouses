@@ -1,17 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace YourNamespace.Controllers
+namespace item.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/items")]
     [ApiController]
     public class ItemController : ControllerBase
     {
-        // GET: api/item
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        private readonly IItemService _itemService;
+
+        public ItemController(IItemService itemService)
         {
-            return new string[] { "item1", "item2" };
+            _itemService = itemService;
+        }
+
+        // GET: api/item
+        [HttpGet()]
+        public ActionResult<IEnumerable<ItemCS>> Get()
+        {
+            var items = _itemService.GetAllItems();
+            return Ok(items);
         }
 
         // GET: api/item/5

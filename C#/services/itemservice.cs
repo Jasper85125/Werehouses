@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace Warehouse.Services
+namespace item.Services
 {
-    public class ItemService
+    public class ItemService : IItemService
     {
         // Constructor
         public ItemService()
@@ -12,10 +13,17 @@ namespace Warehouse.Services
         }
 
         // Method to get all items
-        public IEnumerable<Item> GetAllItems()
+        public List<ItemCS> GetAllItems()
         {
-            // Implementation code here
-            return new List<Item>();
+            var Path = "../data/items.json";
+            if (!File.Exists(Path))
+            {
+                return new List<ItemCS>();
+            }
+
+            var jsonData = File.ReadAllText(Path);
+            var items = JsonConvert.DeserializeObject<List<ItemCS>>(jsonData);
+            return items ?? new List<ItemCS>();
         }
 
         // Method to get an item by ID
