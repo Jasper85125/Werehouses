@@ -15,7 +15,7 @@ namespace item.Services
         // Method to get all items
         public List<ItemCS> GetAllItems()
         {
-            var Path = "../data/items.json";
+            var Path = "data/items.json";
             if (!File.Exists(Path))
             {
                 return new List<ItemCS>();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace item.Controllers
 {
-    [Route("api/items")]
+    [Route("items")]
     [ApiController]
     public class ItemController : ControllerBase
     {
