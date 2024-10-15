@@ -4,17 +4,24 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:63007",
-      "sslPort": 44385
+      "applicationUrl": "http://localhost:31978",
+      "sslPort": 44329
     }
   },
   "profiles": {
+    "CargoHub":{
+      "commandName": "Project",
+      "environmentVariables": {
+        "PYTHONHOME": "C:/Users/jaeli/AppData/Local/Programs/Python",
+        "PYTHONPATH": "${WEREHOUSES}/api"
+      }
+    },
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5174",
+      "applicationUrl": "http://localhost:5021",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -24,7 +31,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7090;http://localhost:5174",
+      "applicationUrl": "https://localhost:7172;http://localhost:5021",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
