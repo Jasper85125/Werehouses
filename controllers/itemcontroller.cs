@@ -9,12 +9,14 @@ namespace item.Controllers
     {
         private readonly IItemService _itemService;
 
+        // Constructor to initialize the ItemController with an IItemService instance
         public ItemController(IItemService itemService)
         {
             _itemService = itemService;
         }
 
         // GET: api/item
+        // Retrieves all items
         [HttpGet()]
         public ActionResult<IEnumerable<ItemCS>> GetAllItems()
         {
@@ -23,30 +25,34 @@ namespace item.Controllers
         }
 
         // GET: api/item/5
+        // Retrieves an item by its unique identifier (uid)
         [HttpGet("{uid}")]
         public ActionResult<ItemCS> GetByUid(string uid)
         {
             var item = _itemService.GetItemById(uid);
             if (item == null)
             {
-            return NotFound();
+                return NotFound();
             }
             return Ok(item);
         }
 
         // POST: api/item
+        // Creates a new item (implementation needed)
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
         // PUT: api/item/5
+        // Updates an existing item by its id (implementation needed)
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
         // DELETE: api/item/5
+        // Deletes an item by its id (implementation needed)
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
