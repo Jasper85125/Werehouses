@@ -1,6 +1,6 @@
 import json
 
-from models import Base
+from models.base import Base
 
 CLIENTS = []
 
