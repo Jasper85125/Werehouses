@@ -1,26 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
-
+// Purpose: This file contains the model for the items table in the database. This model is used to create the items table in the database and to interact with the items table in the database.
 public class ItemCS
 {
-    public required string Uid { get; set; }
-    public string Code { get; set; }
-    public string Description { get; set; }
-    public string ShortDescription { get; set; }
-    public string UpcCode { get; set; }
-    public string ModelNumber { get; set; }
-    public string CommodityCode { get; set; }
-    public int ItemLine { get; set; }
-    public int ItemGroup { get; set; }
-    public int ItemType { get; set; }
-    public int UnitPurchaseQuantity {get; set;}
-    public int UnitOrderQuantity {get; set;}
-    public int PackOrderQuantity {get; set;}
-    public int SupplierId { get; set; }
-    public string? SupplierCode { get; set; }
-    public string? SupplierPartNumber { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public required string uid { get; set; }
+    public string code { get; set; }
+    public string description { get; set; }
+    public string short_description { get; set; }
+    public string upc_code { get; set; }
+    public string model_number { get; set; }
+    public string commodity_code { get; set; }
+    public int item_line { get; set; }
+    public int item_group { get; set; }
+    public int item_type { get; set; }
+    public int unit_purchase_quantity {get; set;}
+    public int unit_order_quantity {get; set;}
+    public int pack_order_quantity {get; set;}
+    public int supplier_id { get; set; }
+    public string? supplier_code { get; set; }
+    public string? supplier_part_number { get; set; }
+    public DateTime created_at { get; set; }
+    public DateTime updated_at { get; set; }
 }

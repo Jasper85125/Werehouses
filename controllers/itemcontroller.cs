@@ -15,7 +15,7 @@ namespace item.Controllers
             _itemService = itemService;
         }
 
-        // GET: api/item
+        // GET: api/items
         // Retrieves all items
         [HttpGet()]
         public ActionResult<IEnumerable<ItemCS>> GetAllItems()
@@ -24,7 +24,7 @@ namespace item.Controllers
             return Ok(items);
         }
 
-        // GET: api/item/5
+        // GET: api/items/5
         // Retrieves an item by its unique identifier (uid)
         [HttpGet("{uid}")]
         public ActionResult<ItemCS> GetByUid(string uid)
@@ -37,21 +37,21 @@ namespace item.Controllers
             return Ok(item);
         }
 
-        // POST: api/item
+        // POST: api/items
         // Creates a new item (implementation needed)
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT: api/item/5
+        // PUT: api/items/5
         // Updates an existing item by its id (implementation needed)
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE: api/item/5
+        // DELETE: api/items/5
         // Deletes an item by its id (implementation needed)
         [HttpDelete("{id}")]
         public void Delete(int id)

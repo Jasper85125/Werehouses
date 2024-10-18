@@ -30,7 +30,7 @@ namespace item.Services
         public ItemCS GetItemById(string uid)
         {
             var items = GetAllItems();
-            var item = items.FirstOrDefault(i => i.Uid == uid);
+            var item = items.FirstOrDefault(i => i.uid == uid);
             return item;
         }
 
