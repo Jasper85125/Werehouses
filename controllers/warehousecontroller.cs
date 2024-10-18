@@ -14,6 +14,7 @@ namespace warehouses.Controllers
             _warehouseService = warehouseService;
         }
 
+        // GET: /warehouses
         [HttpGet()]
         public ActionResult<IEnumerable<WarehouseCS>> Get()
         {
@@ -21,9 +22,9 @@ namespace warehouses.Controllers
             return Ok(warehouses);
         }
 
-        // GET: api/warehouse/5
+        // GET: /warehouses/{id}
         [HttpGet("{id}")]
-        public async Task<WarehouseCS> GetWarehouseById(int id)
+        public async Task<WarehouseCS> GetWarehouseById([FromRoute]int id)
         {
             var path = $"data/warehouses.json";
             if(!System.IO.File.Exists(path)) return null;
@@ -33,7 +34,7 @@ namespace warehouses.Controllers
             return employee;
         }
 
-        // POST: api/warehouse
+        // POST: /warehouses
         [HttpPost]
         public async Task Post([FromBody] WarehouseCS warehouse)
         {

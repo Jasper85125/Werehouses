@@ -30,11 +30,6 @@ public class WarehouseCS
 //         LoadCS(isDebug);
 //     }
 
-//     public List<WarehouseCS> GetWarehousesCS()
-//     {
-//         return data;
-//     }
-
 //     public WarehouseCS GetWarehouseCS(int warehouseId)
 //     {
 //         return data.Find(x => x.Id == warehouseId);
