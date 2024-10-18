@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Werehouses.csproj" />
+    <ProjectReference Include="..\Cargohub\Werehouses.csproj" />
   </ItemGroup>
 
 </Project>
