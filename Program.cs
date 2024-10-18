@@ -1,4 +1,5 @@
 using item.Services;
+using warehouse.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 
 builder.Services.AddTransient<IItemService,ItemService>();
+builder.Services.AddTransient<IWarehouseService, WarehouseService>();
 
 var app = builder.Build();
 
