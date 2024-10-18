@@ -15,13 +15,13 @@ namespace item.Services
         // Method to get all items
         public List<ItemCS> GetAllItems()
         {
-            var Path = "data/items.json";
-            if (!File.Exists(Path))
+            var path = "data/items.json";
+            if (!File.Exists(path))
             {
                 return new List<ItemCS>();
             }
 
-            var jsonData = File.ReadAllText(Path);
+            var jsonData = File.ReadAllText(path);
             var items = JsonConvert.DeserializeObject<List<ItemCS>>(jsonData);
             return items ?? new List<ItemCS>();
         }
