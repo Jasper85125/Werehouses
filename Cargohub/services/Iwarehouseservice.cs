@@ -1,7 +1,7 @@
 public interface IWarehouseService
 {
     List<WarehouseCS> GetAllWarehouses();
-    // WarehouseCS GetWarehouse(int id);
+    WarehouseCS GetWarehouseById(int id);
     // void CreateWarehouse();
     // void UpdateWarehouse();
     // void DeleteWarehouse();
