@@ -27,6 +27,10 @@ namespace inventories.Controllers
         public ActionResult<InventoryCS> GetInventoryById([FromRoute]int id)
         {
             var inventory = _inventoryService.GetInventoryById(id);
+            if (inventory is null)
+            {
+                return NotFound();
+            }
             return Ok(inventory);
         }
 

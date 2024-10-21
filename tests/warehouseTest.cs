@@ -63,24 +63,17 @@ namespace Tests
             Assert.AreEqual(warehouses[0].Address, returnedItems.Address);
         }
 
+        [TestMethod]
         public void GetWarehouseByIdTest_WrongId()
         {
             //arrange
-            var warehouses = new List<WarehouseCS>
-            {
-                new WarehouseCS { Id = 1, Address = "Straat 1" },
-                new WarehouseCS { Id = 2, Address = "Warenhuislaan 280" }
-            };
-            _mockWarehouseService.Setup(service => service.GetWarehouseById(3)).Returns((WarehouseCS)null);
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns((WarehouseCS)null);
             
             //Act
-            var value = _warehouseController.GetWarehouseById(3);
+            var value = _warehouseController.GetWarehouseById(1);
             
             //Assert
-            var okResult = value.Result as NotFoundObjectResult;
-            var returnedItems = okResult.Value as WarehouseCS;
-            Assert.IsNotNull(okResult);
-            Assert.IsNull(okResult.Value);
+            Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
     }
 }

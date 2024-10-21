@@ -63,24 +63,17 @@ namespace Tests
             Assert.AreEqual(inventories[0].item_id, returnedItems.item_id);
         }
 
+        [TestMethod]
         public void GetInventoryByIdTest_WrongId()
         {
             //arrange
-            var inventories = new List<InventoryCS>
-            {
-                new InventoryCS { Id = 1, item_id = "P01", description = "Big blocks", item_reference = "LBJ" },
-                new InventoryCS { Id = 2, item_id = "P01", description = "Bricks", item_reference = "LBJ jr" }
-            };
-            _mockInventoryService.Setup(service => service.GetInventoryById(3)).Returns((InventoryCS)null);
+            _mockInventoryService.Setup(service => service.GetInventoryById(1)).Returns((InventoryCS)null);
             
             //Act
-            var value = _inventoryController.GetInventoryById(3);
+            var value = _inventoryController.GetInventoryById(1);
             
             //Assert
-            var okResult = value.Result as NotFoundObjectResult;
-            var returnedItems = okResult.Value as InventoryCS;
-            Assert.IsNotNull(okResult);
-            Assert.IsNull(okResult.Value);
+            Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
     }
 }
