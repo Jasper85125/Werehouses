@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Inventory.Services;
+using inventory.Services;
 using Moq;
 
 namespace Tests
