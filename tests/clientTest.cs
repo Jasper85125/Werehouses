@@ -44,7 +44,7 @@ namespace clients.Test
         [TestMethod]
         public void GetClientById_Test_returns_true(){
             //arrange
-            var client = new ClientCS(){Id=1, Address="", City="", ConactPhone="", ContactEmail="", ContactName="", Country="", CreatedAt=default, UpdatedAt=default, Name="", Province="", ZipCode=""};
+            var client = new ClientCS(){Id=1, Address="", City="", contact_phone="", contact_email="", contact_name="", Country="", created_at=default, updated_at=default, Name="", Province="", zip_code=""};
             _clientservice.Setup(_ => _.GetClientById(client.Id)).Returns(client);
 
             //act

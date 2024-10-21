@@ -74,5 +74,26 @@ namespace item.Tests
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+        public void CreateItem_ReturnsCreatedResult_WithNewItem()
+        {
+            // Arrange
+            var newItem = new ItemCS { uid = "P000001", code = "NewItem" };
+            var createdItem = new ItemCS { uid = "P000002", code = "NewItem" };
+            _mockItemService.Setup(service => service.CreateItem(newItem)).Returns(createdItem);
+
+            // Act
+            var result = _itemController.CreateItem(newItem);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
+            var createdResult = result.Result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(ItemCS));
+            var returnedItem = createdResult.Value as ItemCS;
+            Assert.AreEqual("P000002", returnedItem.uid);
+            Assert.AreEqual("NewItem", returnedItem.code);
+        }
     }
 }
