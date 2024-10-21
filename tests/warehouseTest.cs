@@ -24,24 +24,26 @@ namespace Tests
         public void GetWarehousesTest()
         {
             //arrange
-            List<WarehouseCS> warehouses = new List<WarehouseCS>
-            {
-                new WarehouseCS {Id = 1, Address = "Straat 1"},
-                new WarehouseCS {Id = 2, Address = "Warenhuisstraat 201"}
-            };
-            _mockWarehouseService.Setup(service => service.GetAllWarehouses()).Returns(warehouses);
-
-            //act
-            var value = _warehouseController.GetAllWarehouses();
-
-            //assert
+            IWarehouseService warehouseService = new WarehouseService();
+            
+            //Act
+            var value = warehouseService.GetAllWarehouses();
+            
+            //Assert
             Assert.IsNotNull(value);
         }
 
         [TestMethod]
-        public void GetWarehouseByIdTest()
+        public void GetWarehouseById()
         {
-            var value = _warehouseController.GetWarehouseById(1);
+            //arrange
+            int id = 1;
+            IWarehouseService warehouseService = new WarehouseService();
+            
+            //Act
+            var value = warehouseService.GetWarehouseById(id);
+            
+            //Assert
             Assert.IsNotNull(value);
         }
     }

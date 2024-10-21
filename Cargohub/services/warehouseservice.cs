@@ -24,16 +24,11 @@ namespace warehouse.Services
             return warehouses ?? new List<WarehouseCS>();
         }
 
-        public List<WarehouseCS> GetWarehouseById()
+        public WarehouseCS GetWarehouseById(int id)
         {
-            var Path = "data/warehouses.json";
-            if (!File.Exists(Path))
-            {
-                return new List<WarehouseCS>();
-            }
-            var jsonData = File.ReadAllText(Path);
-            List<WarehouseCS> warehouses = JsonConvert.DeserializeObject<List<WarehouseCS>>(jsonData);
-            return warehouses ?? new List<WarehouseCS>();
+            List<WarehouseCS> warehouses = GetAllWarehouses();
+            WarehouseCS warehouse = warehouses.FirstOrDefault(ware => ware.Id == id);
+            return warehouse;
         }
     }
 }

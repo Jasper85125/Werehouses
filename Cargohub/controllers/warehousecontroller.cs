@@ -24,14 +24,10 @@ namespace warehouses.Controllers
 
         // GET: /warehouses/{id}
         [HttpGet("{id}")]
-        public async Task<WarehouseCS> GetWarehouseById([FromRoute]int id)
+        public ActionResult<WarehouseCS> GetWarehouseById([FromRoute]int id)
         {
-            var path = $"data/warehouses.json";
-            if(!System.IO.File.Exists(path)) return null;
-            string jsonString = await System.IO.File.ReadAllTextAsync(path);
-            var employeeList = JsonSerializer.Deserialize<List<WarehouseCS>>(jsonString);
-            var employee = employeeList.FirstOrDefault(e => e.Id == id);
-            return employee;
+            var warehouse = _warehouseService.GetWarehouseById(id);
+            return Ok(warehouse);
         }
 
         // POST: /warehouses
