@@ -14,7 +14,7 @@ public class SupplierService : ISupplierService
 
     public List<SupplierCS> GetAllSuppliers()
     {
-        var Path = "data/supplier.json";
+        var Path = "data/suppliers.json";
         if (!File.Exists(Path))
         {
             return new List<SupplierCS>();
