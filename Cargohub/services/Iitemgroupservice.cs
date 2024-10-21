@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace itemgroup.Services
 {
-    public interface IitemgroupService
+    public interface IitemGroupService
     {
         List<ItemGroupCS> GetAllItemGroups();
         ItemGroupCS GetItemById(int id);

@@ -7,12 +7,11 @@ namespace itemgroup.Controllers
 {
     [Route("itemgroups")]
     [ApiController]
-    public class ItemgroupController : ControllerBase
+    public class ItemGroupController : ControllerBase
     {
-        private readonly IitemgroupService _itemgroupService;
+        private readonly IitemGroupService _itemgroupService;
 
-        // Constructor to initialize the ItemController with an IItemService instance
-        public ItemgroupController(IitemgroupService itemgroupService)
+        public ItemGroupController(IitemGroupService itemgroupService)
         {
             _itemgroupService = itemgroupService;
         }
@@ -37,7 +36,7 @@ namespace itemgroup.Controllers
             }
             return Ok(itemtype);
         }
-        
+
         // POST: api/itemtype
         [HttpPost]
         public async Task<ActionResult<string>> PostItemGroup([FromBody] string itemType)

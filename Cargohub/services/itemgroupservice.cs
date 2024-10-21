@@ -5,10 +5,10 @@ using Newtonsoft.Json;
 
 namespace itemgroup.Services
 {
-    public class ItemgroupService : IitemgroupService
+    public class ItemGroupService : IitemGroupService
     {
         // Constructor
-        public ItemgroupService()
+        public ItemGroupService()
         {
             // Initialization code here
         }

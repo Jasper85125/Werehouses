@@ -12,13 +12,13 @@ namespace itemgroup.Tests
     [TestClass]
     public class ItemGroupTests
     {
-        private Mock<IitemgroupService> _mockItemGroupService;
+        private Mock<IitemGroupService> _mockItemGroupService;
         private ItemGroupController _itemGroupController;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockItemGroupService = new Mock<IitemgroupService>();
+            _mockItemGroupService = new Mock<IitemGroupService>();
             _itemGroupController = new ItemGroupController(_mockItemGroupService.Object);
         }
 
@@ -51,7 +51,7 @@ namespace itemgroup.Tests
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(itemGroup);
 
             // Act
-            var result = _itemGroupController.GetItemGroupById(1);
+            var result = _itemGroupController.GetItemById(1);
 
             // Assert
             var okResult = result.Result as OkObjectResult;
@@ -68,7 +68,7 @@ namespace itemgroup.Tests
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns((ItemGroupCS)null);
 
             // Act
-            var result = _itemGroupController.GetItemGroupById(1);
+            var result = _itemGroupController.GetItemById(1);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
