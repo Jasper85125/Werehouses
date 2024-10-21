@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\tests.csproj": {}
+    "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj": {}
   },
   "projects": {
     "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj": {
@@ -99,14 +99,14 @@
         }
       }
     },
-    "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\tests.csproj": {
+    "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\tests.csproj",
+        "projectUniqueName": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj",
         "projectName": "tests",
-        "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\tests.csproj",
+        "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj",
         "packagesPath": "C:\\Users\\dauvi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\obj\\",
+        "outputPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\dauvi\\AppData\\Roaming\\NuGet\\NuGet.Config"
