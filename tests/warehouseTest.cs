@@ -6,6 +6,7 @@ namespace WarehouseTest
     [TestClass]
     public class WarehouseTest
     {
+        
         [TestMethod]
         public void GetWarehousesTest()
         {
