@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using warehouse.Services;
 
 namespace WarehouseTest
 {
@@ -8,9 +9,28 @@ namespace WarehouseTest
         [TestMethod]
         public void GetWarehousesTest()
         {
-            int one = 1;
-            int uno = 1;
-            Assert.AreEqual(one, uno);
+            //arrange
+            IWarehouseService warehouseService = new WarehouseService();
+            
+            //Act
+            var value = warehouseService.GetAllWarehouses();
+            
+            //Assert
+            Assert.IsNotNull(value);
+        }
+
+        [TestMethod]
+        public void GetWarehouseById()
+        {
+            //arrange
+            int id = 1;
+            IWarehouseService warehouseService = new WarehouseService();
+            
+            //Act
+            var value = warehouseService.GetWarehouseById(id);
+            
+            //Assert
+            Assert.IsNotNull(value);
         }
     }
 }

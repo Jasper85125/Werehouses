@@ -1,6 +1,0 @@
-@Werehouses_HostAddress = http://localhost:5125
-
-GET {{Werehouses_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
