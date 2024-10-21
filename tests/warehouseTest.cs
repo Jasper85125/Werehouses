@@ -3,6 +3,7 @@ using warehouse.Services;
 using Moq;
 using warehouses.Controllers;
 using System.Data.Common;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tests
 {
@@ -11,7 +12,6 @@ namespace Tests
     {
         private Mock<IWarehouseService> _mockWarehouseService;
         private WarehouseController _warehouseController;
-        private IWarehouseService _warehouseService;
 
         [TestInitialize]
         public void Setup()
@@ -21,30 +21,66 @@ namespace Tests
         }
 
         [TestMethod]
-        public void GetWarehousesTest()
+        public void GetWarehousesTest_Exists()
         {
             //arrange
-            IWarehouseService warehouseService = new WarehouseService();
+            var warehouses = new List<WarehouseCS>
+            {
+                new WarehouseCS { Id = 1, Address = "Straat 1" },
+                new WarehouseCS { Id = 2, Address = "Warenhuislaan 280" }
+            };
+            _mockWarehouseService.Setup(service => service.GetAllWarehouses()).Returns(warehouses);
             
             //Act
-            var value = warehouseService.GetAllWarehouses();
+            var value = _warehouseController.GetAllWarehouses();
             
             //Assert
-            Assert.IsNotNull(value);
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<WarehouseCS>;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Count());
         }
 
         [TestMethod]
-        public void GetWarehouseById()
+        public void GetWarehouseByIdTest_Exists()
         {
             //arrange
-            int id = 1;
-            IWarehouseService warehouseService = new WarehouseService();
+            var warehouses = new List<WarehouseCS>
+            {
+                new WarehouseCS { Id = 1, Address = "Straat 1" },
+                new WarehouseCS { Id = 2, Address = "Warenhuislaan 280" }
+            };
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouses[0]);
             
             //Act
-            var value = warehouseService.GetWarehouseById(id);
+            var value = _warehouseController.GetWarehouseById(1);
             
             //Assert
-            Assert.IsNotNull(value);
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as WarehouseCS;
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Value);
+            Assert.AreEqual(warehouses[0].Address, returnedItems.Address);
+        }
+
+        public void GetWarehouseByIdTest_WrongId()
+        {
+            //arrange
+            var warehouses = new List<WarehouseCS>
+            {
+                new WarehouseCS { Id = 1, Address = "Straat 1" },
+                new WarehouseCS { Id = 2, Address = "Warenhuislaan 280" }
+            };
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(3)).Returns((WarehouseCS)null);
+            
+            //Act
+            var value = _warehouseController.GetWarehouseById(3);
+            
+            //Assert
+            var okResult = value.Result as NotFoundObjectResult;
+            var returnedItems = okResult.Value as WarehouseCS;
+            Assert.IsNotNull(okResult);
+            Assert.IsNull(okResult.Value);
         }
     }
 }

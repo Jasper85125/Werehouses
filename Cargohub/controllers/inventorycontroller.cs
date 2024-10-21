@@ -16,7 +16,7 @@ namespace inventories.Controllers
 
         // GET: /inventories
         [HttpGet()]
-        public ActionResult<IEnumerable<InventoryCS>> Get()
+        public ActionResult<IEnumerable<InventoryCS>> GetAllInventories()
         {
             var inventories = _inventoryService.GetAllInventories();
             return Ok(inventories);

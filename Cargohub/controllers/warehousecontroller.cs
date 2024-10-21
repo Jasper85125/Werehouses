@@ -19,6 +19,10 @@ namespace warehouses.Controllers
         public ActionResult<IEnumerable<WarehouseCS>> GetAllWarehouses()
         {
             var warehouses = _warehouseService.GetAllWarehouses();
+            if (warehouses is null)
+            {
+                return NotFound();
+            }
             return Ok(warehouses);
         }
 
@@ -27,6 +31,10 @@ namespace warehouses.Controllers
         public ActionResult<WarehouseCS> GetWarehouseById([FromRoute]int id)
         {
             var warehouse = _warehouseService.GetWarehouseById(id);
+            if (warehouse is null)
+            {
+                return NotFound();
+            }
             return Ok(warehouse);
         }
 
