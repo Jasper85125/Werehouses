@@ -16,9 +16,9 @@ public class OrderCS
     public string? shipping_notes { get; set; }
     public string? picking_notes { get; set; }
     public string? warehouse_id { get; set; }
-    public int ship_to { get; set; }
-    public int bill_to { get; set; }
-    public int shipment_id { get; set; }
+    public int? ship_to { get; set; }
+    public int? bill_to { get; set; }
+    public int? shipment_id { get; set; }
     public double total_amount { get; set; }
     public double total_discount { get; set; }
     public double total_tax { get; set; }
