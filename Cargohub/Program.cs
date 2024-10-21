@@ -1,4 +1,3 @@
-
 using Services;
 
 
@@ -14,8 +13,12 @@ builder.Services.AddTransient<IWarehouseService, WarehouseService>();
 builder.Services.AddTransient<IItemtypeService, ItemTypeService>();
 builder.Services.AddTransient<IInventoryService, InventoryService>();
 builder.Services.AddTransient<IitemGroupService, ItemGroupService>(); 
+builder.Services.AddTransient<IItemLineService, ItemLineService>(); 
 builder.Services.AddTransient<ILocationService, LocationService>();
 builder.Services.AddTransient<IClientService, ClientService>();
+builder.Services.AddTransient<IShipmentService, ShipmentService>();
+builder.Services.AddTransient<ISupplierService, SupplierService>();
+builder.Services.AddTransient<ITransferService, TransferService>();
 
 var app = builder.Build();
 

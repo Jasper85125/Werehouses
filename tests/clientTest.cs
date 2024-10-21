@@ -26,8 +26,8 @@ namespace clients.Test
             //arrange
             var listofclients = new List<ClientCS>()
             {
-                new ClientCS{ Address="street", City="city", ConactPhone="number", ContactEmail="email", ContactName="name", Country="Japan", CreatedAt=default, Id=1, Name="name", Province="province", UpdatedAt=default, ZipCode="zip"},
-                new ClientCS{ Address="street2", City="city2", ConactPhone="number2", ContactEmail="email2", ContactName="name2", Country="Japan2", CreatedAt=default, Id=2, Name="name2", Province="province2", UpdatedAt=default, ZipCode="zip2"},
+                new ClientCS{ Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"},
+                new ClientCS{ Address="street2", City="city2", contact_phone="number2", contact_email="email2", contact_name="name2", Country="Japan2", created_at=default, Id=2, Name="name2", Province="province2", updated_at=default, zip_code="zip2"},
             };
             _clientservice.Setup(_ => _.GetAllClients()).Returns(listofclients);
 

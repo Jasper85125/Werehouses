@@ -12,6 +12,10 @@ public class ClientService : IClientService
     
     public List<ClientCS> GetAllClients()
     {
+<<<<<<< HEAD
+=======
+        var dataPath = "data/clients.json";
+>>>>>>> 0a8a03408e21efadb36b3423117cba5c7dc44373
         if (!File.Exists(dataPath))
         {
             return new List<ClientCS>();
