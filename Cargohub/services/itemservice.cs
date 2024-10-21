@@ -35,20 +35,40 @@ public class ItemService : IItemService
     }
 
     // Method to add a new item
-    public void AddItem(ItemCS item)
+    public ItemCS CreateItem(ItemCS item)
     {
-        // Implementation code here
-    }
+        var path = "data/items.json";
+        List<ItemCS> items;
 
-    // Method to update an existing item
-    public void UpdateItem(ItemCS item)
-    {
-        // Implementation code here
-    }
+        if (File.Exists(path))
+        {
+            var jsonData = File.ReadAllText(path);
+            items = JsonConvert.DeserializeObject<List<ItemCS>>(jsonData) ?? new List<ItemCS>();
+        }
+        else
+        {
+            items = new List<ItemCS>();
+        }
 
-    // Method to delete an item
-    public void DeleteItem(int id)
-    {
-        // Implementation code here
+        // Generate a new unique UID
+        string newUid;
+        if (items.Count > 0)
+        {
+            var maxUid = items.Max(i => i.uid);
+            var numericPart = int.Parse(maxUid.Substring(1)); // Extract numeric part
+            newUid = "P" + (numericPart + 1).ToString("D6"); // Increment and format back
+        }
+        else
+        {
+            newUid = "P000001"; // Starting UID
+        }
+        item.uid = newUid;
+
+        items.Add(item);
+
+        var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllText(path, updatedJsonData);
+
+        return item;
     }
 }
