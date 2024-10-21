@@ -197,3 +197,14 @@ C:\Users\Jasper van der Laan\OneDrive - De Haagse Hogeschool\Bureaublad\school\J
 C:\Users\Jasper van der Laan\OneDrive - De Haagse Hogeschool\Bureaublad\school\Jaar 2\Q1\Werehouses\tests\obj\Debug\net8.0\tests.pdb
 C:\Users\Jasper van der Laan\OneDrive - De Haagse Hogeschool\Bureaublad\school\Jaar 2\Q1\Werehouses\tests\obj\Debug\net8.0\tests.genruntimeconfig.cache
 C:\Users\Jasper van der Laan\OneDrive - De Haagse Hogeschool\Bureaublad\school\Jaar 2\Q1\Werehouses\tests\obj\Debug\net8.0\ref\tests.dll
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\bin\Debug\net8.0\.msCoverageSourceRootsMapping_tests
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\bin\Debug\net8.0\CoverletSourceRootsMapping_tests
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\obj\Debug\net8.0\tests.csproj.AssemblyReference.cache
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\obj\Debug\net8.0\tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\obj\Debug\net8.0\tests.AssemblyInfoInputs.cache
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\obj\Debug\net8.0\tests.AssemblyInfo.cs
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\obj\Debug\net8.0\tests.csproj.CoreCompileInputs.cache
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\obj\Debug\net8.0\tests.sourcelink.json
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\obj\Debug\net8.0\tests.dll
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\obj\Debug\net8.0\refint\tests.dll
+C:\Users\jaeli\OneDrive\Bureaublad\SoftWareConstruction\Werehouses\tests\obj\Debug\net8.0\tests.pdb
