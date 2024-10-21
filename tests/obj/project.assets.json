@@ -5685,19 +5685,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Jasper van der Laan\\.nuget\\packages\\": {}
+    "C:\\Users\\dauvi\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\tests.csproj",
+      "projectUniqueName": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj",
       "projectName": "tests",
-      "projectPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\tests.csproj",
-      "packagesPath": "C:\\Users\\Jasper van der Laan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\obj\\",
+      "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj",
+      "packagesPath": "C:\\Users\\dauvi\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Jasper van der Laan\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\dauvi\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -5709,8 +5709,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\Werehouses.csproj": {
-              "projectPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\Werehouses.csproj"
+            "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj": {
+              "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj"
             }
           }
         }
