@@ -4,6 +4,7 @@ namespace Services;
 
 public class ClientService : IClientService
 {
+    private string dataPath = "/data/clients.json";
     public ClientService()
     { 
 
@@ -11,7 +12,6 @@ public class ClientService : IClientService
     
     public List<ClientCS> GetAllClients()
     {
-        var dataPath = "data/clients.json";
         if (!File.Exists(dataPath))
         {
             return new List<ClientCS>();
@@ -20,5 +20,24 @@ public class ClientService : IClientService
         var clientsdata = JsonConvert.DeserializeObject<List<ClientCS>>(json);
         return clientsdata ?? new List<ClientCS>();
     }
+    public ClientCS GetClientById(int id){
+        var clients = GetAllClients();
+        var result = clients.FirstOrDefault(_ => _.Id == id);
+        return result;
+        // if (!File.Exists(dataPath))
+        // {
+        //     return null;
+        // }
+        // var json = File.ReadAllText(dataPath);
+        // var clientsdata = JsonConvert.DeserializeObject<List<ClientCS>>(json);
+        // foreach(var client in clientsdata){
+        //     if(client.Id == id)
+        //     {
+        //         return client;
+        //     }
+        // }
+        // return null;
+    }
+
 }
 

@@ -40,6 +40,22 @@ namespace clients.Test
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
+
+        [TestMethod]
+        public void GetClientById_Test_returns_true(){
+            //arrange
+            var client = new ClientCS(){Id=1, Address="", City="", ConactPhone="", ContactEmail="", ContactName="", Country="", CreatedAt=default, UpdatedAt=default, Name="", Province="", ZipCode=""};
+            _clientservice.Setup(_ => _.GetClientById(client.Id)).Returns(client);
+
+            //act
+            // var result = _clientservice.Setup(_ => _.GetClientById(client.Id)).Returns(client);
+            var result = _clientcontroller.GetClientById(1);
+
+            //assert
+            var resultok = result.Result as OkObjectResult;
+            Assert.IsNotNull(resultok);
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        }
     }
 
 }
