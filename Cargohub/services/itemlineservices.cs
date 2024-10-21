@@ -12,7 +12,7 @@ public class ItemLineService : IItemLineService
     }
 
     // Method to get all items
-    public List<ItemLineCS> GetAllItemline()
+    public List<ItemLineCS> GetAllItemlines()
     {
         var path = "data/item_lines.json";
         if (!File.Exists(path))
@@ -28,7 +28,7 @@ public class ItemLineService : IItemLineService
     // Method to get an item by ID
     public ItemLineCS GetItemLineById(int id)
     {
-        var items = GetAllItemline();
+        var items = GetAllItemlines();
         var item = items.FirstOrDefault(i => i.Id == id);
         return item;
     }
