@@ -15,7 +15,7 @@ builder.Services.AddTransient<IItemService,ItemService>();
 builder.Services.AddTransient<IWarehouseService, WarehouseService>();
 builder.Services.AddTransient<IItemtypeService, ItemTypeService>();
 builder.Services.AddTransient<IInventoryService, InventoryService>();
-builder.Services.AddTransient<IitemgroupService, ItemgroupService>(); 
+builder.Services.AddTransient<IitemGroupService, ItemGroupService>(); 
 
 
 var app = builder.Build();
