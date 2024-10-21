@@ -17,6 +17,7 @@ builder.Services.AddTransient<IItemLineService, ItemLineService>();
 builder.Services.AddTransient<ILocationService, LocationService>();
 builder.Services.AddTransient<IClientService, ClientService>();
 builder.Services.AddTransient<IShipmentService, ShipmentService>();
+builder.Services.AddTransient<ISupplierService, SupplierService>();
 
 var app = builder.Build();
 
