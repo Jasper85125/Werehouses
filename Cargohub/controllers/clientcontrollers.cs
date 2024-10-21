@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-namespace client.Controllers
+namespace clients.Controllers
 {
     [Route("clients")]
     [ApiController]
