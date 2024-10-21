@@ -28,23 +28,22 @@ namespace itemtype.Controllers
 
         // GET: api/itemtype/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<string>> GetItemType(int id)
+        public ActionResult<ItemTypeCS> GetItemById(int id)
         {
-            // Replace with actual logic to retrieve a single item type by id
-            var itemType = "Type" + id;
-            if (itemType == null)
+            var itemtype = _itemtypeService.GetItemById(id);
+            if (itemtype == null)
             {
                 return NotFound();
             }
-            return Ok(itemType);
+            return Ok(itemtype);
         }
-
+        
         // POST: api/itemtype
         [HttpPost]
         public async Task<ActionResult<string>> PostItemType([FromBody] string itemType)
         {
             // Replace with actual logic to create a new item type
-            return CreatedAtAction(nameof(GetItemType), new { id = 1 }, itemType);
+            return CreatedAtAction(nameof(GetItemById), new { id = 1 }, itemType);
         }
 
         // PUT: api/itemtype/5
