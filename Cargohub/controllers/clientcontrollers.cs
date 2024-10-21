@@ -13,5 +13,9 @@ namespace client.Controllers
             var clients = _clientservice.GetAllClients();
             return Ok(clients);
         }
+        public IActionResult GetClientById(int id){
+            var client = _clientservice.GetClientById(id);
+            return Ok(client);
+        }
     }
 }
