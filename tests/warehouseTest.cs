@@ -10,17 +10,11 @@ namespace Tests
     [TestClass]
     public class WarehouseTest
     {
-<<<<<<< HEAD
-        
-        [TestMethod]
-        public void GetWarehousesTest()
-=======
         private Mock<IWarehouseService> _mockWarehouseService;
         private WarehouseController _warehouseController;
 
         [TestInitialize]
         public void Setup()
->>>>>>> c83730f4c475e48a05089c788e5df93f8c9ea5b9
         {
             _mockWarehouseService = new Mock<IWarehouseService>();
             _warehouseController = new WarehouseController(_mockWarehouseService.Object);

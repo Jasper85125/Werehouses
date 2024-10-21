@@ -5686,21 +5686,11 @@
     ]
   },
   "packageFolders": {
-<<<<<<< HEAD
-<<<<<<< HEAD
     "C:\\Users\\jaeli\\.nuget\\packages\\": {}
-=======
-    "C:\\Users\\dauvi\\.nuget\\packages\\": {}
->>>>>>> c83730f4c475e48a05089c788e5df93f8c9ea5b9
-=======
-    "C:\\Users\\Jasper van der Laan\\.nuget\\packages\\": {}
->>>>>>> 5aeda5fe05e43c0ff5ce14f8032c38272a02642b
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-<<<<<<< HEAD
-<<<<<<< HEAD
       "projectUniqueName": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\tests.csproj",
       "projectName": "tests",
       "projectPath": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\tests.csproj",
@@ -5710,23 +5700,6 @@
       "configFilePaths": [
         "C:\\Users\\jaeli\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-=======
-      "projectUniqueName": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj",
-=======
-      "projectUniqueName": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\tests.csproj",
->>>>>>> 5aeda5fe05e43c0ff5ce14f8032c38272a02642b
-      "projectName": "tests",
-      "projectPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\tests.csproj",
-      "packagesPath": "C:\\Users\\Jasper van der Laan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\obj\\",
-      "projectStyle": "PackageReference",
-      "configFilePaths": [
-<<<<<<< HEAD
-        "C:\\Users\\dauvi\\AppData\\Roaming\\NuGet\\NuGet.Config"
->>>>>>> c83730f4c475e48a05089c788e5df93f8c9ea5b9
-=======
-        "C:\\Users\\Jasper van der Laan\\AppData\\Roaming\\NuGet\\NuGet.Config"
->>>>>>> 5aeda5fe05e43c0ff5ce14f8032c38272a02642b
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -5739,18 +5712,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-<<<<<<< HEAD
-<<<<<<< HEAD
             "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\Werehouses.csproj": {
               "projectPath": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\Werehouses.csproj"
-=======
-            "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj": {
-              "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj"
->>>>>>> c83730f4c475e48a05089c788e5df93f8c9ea5b9
-=======
-            "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\Werehouses.csproj": {
-              "projectPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\Werehouses.csproj"
->>>>>>> 5aeda5fe05e43c0ff5ce14f8032c38272a02642b
             }
           }
         }
@@ -5810,5 +5773,13 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }
