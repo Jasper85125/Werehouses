@@ -2,6 +2,7 @@
   "format": 1,
   "restore": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\tests.csproj": {}
   },
   "projects": {
@@ -19,20 +20,27 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
 =======
     "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\tests.csproj": {}
+=======
+    "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\tests.csproj": {}
+>>>>>>> 5aeda5fe05e43c0ff5ce14f8032c38272a02642b
   },
   "projects": {
-    "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj": {
+    "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\Werehouses.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj",
+        "projectUniqueName": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\Werehouses.csproj",
         "projectName": "Werehouses",
-        "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj",
-        "packagesPath": "C:\\Users\\dauvi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\obj\\",
+        "projectPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\Werehouses.csproj",
+        "packagesPath": "C:\\Users\\Jasper van der Laan\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
+<<<<<<< HEAD
           "C:\\Users\\dauvi\\AppData\\Roaming\\NuGet\\NuGet.Config"
 >>>>>>> c83730f4c475e48a05089c788e5df93f8c9ea5b9
+=======
+          "C:\\Users\\Jasper van der Laan\\AppData\\Roaming\\NuGet\\NuGet.Config"
+>>>>>>> 5aeda5fe05e43c0ff5ce14f8032c38272a02642b
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -119,6 +127,7 @@
       }
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\tests.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -133,17 +142,24 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
 =======
     "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\tests.csproj": {
+=======
+    "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\tests.csproj": {
+>>>>>>> 5aeda5fe05e43c0ff5ce14f8032c38272a02642b
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\tests.csproj",
+        "projectUniqueName": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\tests.csproj",
         "projectName": "tests",
-        "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\tests.csproj",
-        "packagesPath": "C:\\Users\\dauvi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\tests\\obj\\",
+        "projectPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\tests.csproj",
+        "packagesPath": "C:\\Users\\Jasper van der Laan\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
+<<<<<<< HEAD
           "C:\\Users\\dauvi\\AppData\\Roaming\\NuGet\\NuGet.Config"
 >>>>>>> c83730f4c475e48a05089c788e5df93f8c9ea5b9
+=======
+          "C:\\Users\\Jasper van der Laan\\AppData\\Roaming\\NuGet\\NuGet.Config"
+>>>>>>> 5aeda5fe05e43c0ff5ce14f8032c38272a02642b
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -157,12 +173,17 @@
             "targetAlias": "net8.0",
             "projectReferences": {
 <<<<<<< HEAD
+<<<<<<< HEAD
               "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\Werehouses.csproj": {
                 "projectPath": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\Werehouses.csproj"
 =======
               "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj": {
                 "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj"
 >>>>>>> c83730f4c475e48a05089c788e5df93f8c9ea5b9
+=======
+              "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\Werehouses.csproj": {
+                "projectPath": "C:\\Users\\Jasper van der Laan\\OneDrive - De Haagse Hogeschool\\Bureaublad\\school\\Jaar 2\\Q1\\Werehouses\\Cargohub\\Werehouses.csproj"
+>>>>>>> 5aeda5fe05e43c0ff5ce14f8032c38272a02642b
               }
             }
           }
@@ -193,6 +214,10 @@
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
               "version": "[17.11.1, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
             },
             "coverlet.collector": {
               "target": "Package",
