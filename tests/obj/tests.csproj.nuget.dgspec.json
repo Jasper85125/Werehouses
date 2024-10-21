@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj": {}
+    "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj": {
+    "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\Werehouses.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj",
+        "projectUniqueName": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\Werehouses.csproj",
         "projectName": "Werehouses",
-        "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj",
-        "packagesPath": "C:\\Users\\dauvi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\obj\\",
+        "projectPath": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\Werehouses.csproj",
+        "packagesPath": "C:\\Users\\jaeli\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\dauvi\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\jaeli\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -95,34 +97,36 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj": {
+    "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj",
+        "projectUniqueName": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\tests.csproj",
         "projectName": "tests",
-        "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\tests.csproj",
-        "packagesPath": "C:\\Users\\dauvi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Tests\\obj\\",
+        "projectPath": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\tests.csproj",
+        "packagesPath": "C:\\Users\\jaeli\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\dauvi\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\jaeli\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj": {
-                "projectPath": "C:\\Users\\dauvi\\Documents\\Werehouses\\Cargohub\\Werehouses.csproj"
+              "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\Werehouses.csproj": {
+                "projectPath": "C:\\Users\\jaeli\\OneDrive\\Bureaublad\\SoftWareConstruction\\Werehouses\\Cargohub\\Werehouses.csproj"
               }
             }
           }
@@ -179,7 +183,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

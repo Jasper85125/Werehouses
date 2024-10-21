@@ -3,9 +3,5 @@ namespace Services;
 public interface IClientService
 {
     public List<ClientCS> GetAllClients();
-<<<<<<< HEAD
-    public ClientCS GetClientById(int id);
+    public ClientCS GetClientById(int clientId);
 }
-=======
-}
->>>>>>> fdefea12b06a68d4eb09b653045d919bc6884c83
