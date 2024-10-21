@@ -23,9 +23,11 @@ namespace itemtype.Services
         }
 
         // Method to get an item type by ID
-        public async Task<ItemTypeCS> GetItemTypeByIdAsync(int id)
+        public ItemTypeCS GetItemById(int id)
         {
-            return null;
+            var items = GetAllItemtypes();
+            var item = items.FirstOrDefault(i => i.Id == id);
+            return item;
         }
 
         // Method to create a new item type

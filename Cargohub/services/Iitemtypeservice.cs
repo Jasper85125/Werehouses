@@ -6,7 +6,7 @@ namespace itemtype.Services
     public interface IItemtypeService
     {
         List<ItemTypeCS> GetAllItemtypes();
-        Task<ItemTypeCS> GetItemTypeByIdAsync(int id);
+        ItemTypeCS GetItemById(int id);
         Task<ItemTypeCS> CreateItemTypeAsync(ItemTypeCS newItemType);
         Task<ItemTypeCS> UpdateItemTypeAsync(ItemTypeCS updatedItemType);
         Task<bool> DeleteItemTypeAsync(int id);
