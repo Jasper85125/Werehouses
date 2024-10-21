@@ -7,12 +7,12 @@ namespace itemgroup.Controllers
 {
     [Route("itemgroups")]
     [ApiController]
-    public class itemgroupController : ControllerBase
+    public class ItemgroupController : ControllerBase
     {
         private readonly IitemgroupService _itemgroupService;
 
         // Constructor to initialize the ItemController with an IItemService instance
-        public itemgroupController(IitemgroupService itemgroupService)
+        public ItemgroupController(IitemgroupService itemgroupService)
         {
             _itemgroupService = itemgroupService;
         }
