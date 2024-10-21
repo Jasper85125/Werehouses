@@ -16,7 +16,7 @@ public class ItemController : ControllerBase
         _itemService = itemService;
     }
 
-    // GET: api/items
+    // GET: items
     // Retrieves all items
     [HttpGet()]
     public ActionResult<IEnumerable<ItemCS>> GetAllItems()
@@ -25,7 +25,7 @@ public class ItemController : ControllerBase
         return Ok(items);
     }
 
-    // GET: api/items/5
+    // GET: items/5
     // Retrieves an item by its unique identifier (uid)
     [HttpGet("{uid}")]
     public ActionResult<ItemCS> GetByUid(string uid)
@@ -38,24 +38,17 @@ public class ItemController : ControllerBase
         return Ok(item);
     }
 
-    // POST: api/items
-    // Creates a new item (implementation needed)
-    [HttpPost]
-    public void Post([FromBody] string value)
+    // POST: items
+    // Creates a new item
+    [HttpPost()]
+    public ActionResult<ItemCS> Post([FromBody] ItemCS newItem)
     {
-    }
+        if (newItem == null)
+        {
+            return BadRequest("Item is null.");
+        }
 
-    // PUT: api/items/5
-    // Updates an existing item by its id (implementation needed)
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
-    {
-    }
-
-    // DELETE: api/items/5
-    // Deletes an item by its id (implementation needed)
-    [HttpDelete("{id}")]
-    public void Delete(int id)
-    {
+        var createdItem = _itemService.CreateItem(newItem);
+        return CreatedAtAction(nameof(GetByUid), new { uid = createdItem.uid }, createdItem);
     }
 }
