@@ -21,13 +21,13 @@ public class ItemLineController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<ItemCS>> GetAllItemLines()
     {
-        var itemLine = _itemLineService.GetAllItemline();
+        var itemLine = _itemLineService.GetAllItemlines();
         return Ok(itemLine);
     }
 
     // GET: api/itemLine/5
     [HttpGet("{id}")]
-    public ActionResult<ItemLineCS> GetItemById(int id)
+    public ActionResult<ItemLineCS> GetItemLineById(int id)
     {
         var itemLine = _itemLineService.GetItemLineById(id);
         if (itemLine == null)
@@ -42,7 +42,7 @@ public class ItemLineController : ControllerBase
     public async Task<ActionResult<string>> PostItemLine([FromBody] string itemLine)
     {
         // Replace with actual logic to create a new item Line
-        return CreatedAtAction(nameof(GetItemById), new { id = 1 }, itemLine);
+        return CreatedAtAction(nameof(GetItemLineById), new { id = 1 }, itemLine);
     }
 
     // PUT: api/itemLine/5
