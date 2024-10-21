@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace itemgroup.Services
+namespace Services;
+
+public interface IitemGroupService
 {
-    public interface IitemgroupService
-    {
-        List<ItemGroupCS> GetAllItemGroups();
-        ItemGroupCS GetItemById(int id);
-        Task<ItemGroupCS> CreateItemGroup(ItemGroupCS newItemType);
-        Task<ItemGroupCS> UpdateItemGroup(ItemGroupCS updatedItemType);
-        Task<bool> DeleteItemGroup(int id);
-    }
+    List<ItemGroupCS> GetAllItemGroups();
+    ItemGroupCS GetItemById(int id);
+    Task<ItemGroupCS> CreateItemGroup(ItemGroupCS newItemType);
+    Task<ItemGroupCS> UpdateItemGroup(ItemGroupCS updatedItemType);
+    Task<bool> DeleteItemGroup(int id);
 }

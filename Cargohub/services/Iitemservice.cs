@@ -1,3 +1,4 @@
+namespace Services;
 public interface IItemService
 {
     List<ItemCS> GetAllItems();
