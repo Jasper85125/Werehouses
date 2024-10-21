@@ -1,3 +1,5 @@
+namespace Services;
+
 public interface IWarehouseService
 {
     List<WarehouseCS> GetAllWarehouses();
