@@ -396,3 +396,23 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+tests/bin/Debug/net8.0/tests.dll
+tests/bin/Debug/net8.0/tests.pdb
+tests/bin/Debug/net8.0/Werehouses.dll
+tests/bin/Debug/net8.0/Werehouses.exe
+tests/bin/Debug/net8.0/Werehouses.pdb
+tests/obj/project.assets.json
+tests/obj/project.nuget.cache
+tests/obj/tests.csproj.nuget.dgspec.json
+tests/obj/tests.csproj.nuget.g.props
+tests/obj/Debug/net8.0/tests.AssemblyInfo.cs
+tests/obj/Debug/net8.0/tests.AssemblyInfoInputs.cache
+tests/obj/Debug/net8.0/tests.csproj.AssemblyReference.cache
+tests/obj/Debug/net8.0/tests.csproj.CoreCompileInputs.cache
+tests/obj/Debug/net8.0/tests.dll
+tests/obj/Debug/net8.0/tests.GeneratedMSBuildEditorConfig.editorconfig
+tests/obj/Debug/net8.0/tests.genruntimeconfig.cache
+tests/obj/Debug/net8.0/tests.pdb
+tests/obj/Debug/net8.0/tests.sourcelink.json
+tests/obj/Debug/net8.0/ref/tests.dll
+tests/obj/Debug/net8.0/refint/tests.dll
