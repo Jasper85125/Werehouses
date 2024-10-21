@@ -1,3 +1,5 @@
+namespace Services;
+
 public interface IInventoryService
 {
     List<InventoryCS> GetAllInventories();

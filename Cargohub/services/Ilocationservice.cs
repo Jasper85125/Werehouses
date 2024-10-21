@@ -1,3 +1,5 @@
+namespace Services;
+
 public interface ILocationService
 {
     List<LocationCS> GetAllLocations();
