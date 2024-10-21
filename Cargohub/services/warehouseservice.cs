@@ -30,5 +30,22 @@ namespace warehouse.Services
             WarehouseCS warehouse = warehouses.FirstOrDefault(ware => ware.Id == id);
             return warehouse;
         }
+
+         public void CreateWarehouse(WarehouseCS newWarehouse)
+        {
+             var Path = "data/warehouses.json";
+
+            List<WarehouseCS> warehouses = GetAllWarehouses();
+
+            // Add the new warehouse record to the list
+            newWarehouse.Id = warehouses.Count > 0 ? warehouses.Max(w => w.Id) + 1 : 1;
+            warehouses.Add(newWarehouse);
+
+            // Serialize the updated list back to the JSON file
+            var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
+            File.WriteAllText(Path, jsonData);
+        }
+
+
     }
 }
