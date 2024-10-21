@@ -16,7 +16,7 @@ namespace warehouses.Controllers
 
         // GET: /warehouses
         [HttpGet()]
-        public ActionResult<IEnumerable<WarehouseCS>> Get()
+        public ActionResult<IEnumerable<WarehouseCS>> GetAllWarehouses()
         {
             var warehouses = _warehouseService.GetAllWarehouses();
             return Ok(warehouses);

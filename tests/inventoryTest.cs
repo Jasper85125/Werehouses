@@ -1,7 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using inventory.Services;
+using Inventory.Services;
+using Moq;
 
-namespace InventoryTest
+namespace Tests
 {
     [TestClass]
     public class InventoryTest
@@ -18,7 +19,7 @@ namespace InventoryTest
         public void GetInventoryByIdTest()
         {
             IInventoryService inventoryService = new InventoryService();
-            var value = inventoryService.GetInventoryById();
+            var value = inventoryService.GetInventoryById(1);
             Assert.IsNotNull(value);
         }
     }
