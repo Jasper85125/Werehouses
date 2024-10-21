@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Services;
 
-namespace itemlines.Services
+public interface IItemLineService
 {
-    public interface IItemLineService
-    {
-        List<ItemLineCS> GetAllItemline();
-        ItemLineCS GetItemLineById(int id);
-        Task<ItemLineCS> AddItemLine(ItemLineCS newItemType);
-        Task<ItemLineCS> UpdateItemLine(ItemLineCS updatedItemType);
-        Task<bool> DeleteItemLine(int id);
-    }
+    List<ItemLineCS> GetAllItemline();
+    ItemLineCS GetItemLineById(int id);
+    Task<ItemLineCS> AddItemLine(ItemLineCS newItemType);
+    Task<ItemLineCS> UpdateItemLine(ItemLineCS updatedItemType);
+    Task<bool> DeleteItemLine(int id);
 }
