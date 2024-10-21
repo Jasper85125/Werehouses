@@ -41,7 +41,7 @@ public class ItemController : ControllerBase
     // POST: items
     // Creates a new item
     [HttpPost()]
-    public ActionResult<ItemCS> Post([FromBody] ItemCS newItem)
+    public ActionResult<ItemCS> CreateItem([FromBody] ItemCS newItem)
     {
         if (newItem == null)
         {
