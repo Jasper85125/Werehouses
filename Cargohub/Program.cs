@@ -4,6 +4,7 @@ using warehouse.Services;
 using inventory.Services;
 using Services;
 using itemgroup.Services;
+using itemlines.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ builder.Services.AddTransient<IWarehouseService, WarehouseService>();
 builder.Services.AddTransient<IItemtypeService, ItemTypeService>();
 builder.Services.AddTransient<IInventoryService, InventoryService>();
 builder.Services.AddTransient<IitemGroupService, ItemGroupService>(); 
-
+builder.Services.AddTransient<IItemLineService, ItemLineService>(); 
 builder.Services.AddTransient<ILocationService, LocationService>();
 
 var app = builder.Build();
