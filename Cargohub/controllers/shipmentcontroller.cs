@@ -7,10 +7,10 @@ namespace Controllers;
 
 [ApiController]
 [Route("/shipments")]
-public class ShipmentsController : ControllerBase
+public class ShipmentController : ControllerBase
 {
     private readonly IShipmentService _shipmentService;
-    public ShipmentsController(IShipmentService shipmentService)
+    public ShipmentController(IShipmentService shipmentService)
     {
         _shipmentService = shipmentService;
     }
