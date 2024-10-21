@@ -3,7 +3,7 @@ using Moq;
 using Moq.Protected;
 using Microsoft.AspNetCore.Mvc;
 using clients.Services;
-using client.Controllers;
+using clients.Controllers;
 
 namespace clients.Test{
     [TestClass]
@@ -15,6 +15,8 @@ namespace clients.Test{
             _clientservice = new Mock<ClientService>();
             _clientcontroller = new ClientController(_clientservice.Object);
         }
+        
+        [TestMethod]
         public void GetAllClients_Test_returns_true(){
             var listofclients = new List<ClientCS>(){
                 new ClientCS{ Address="", City="", ConactPhone="", ContactEmail="", ContactName="", Country="", CreatedAt=new DateTime(), Id=new int(), Name="", Province="", UpdatedAt=new DateTime(), ZipCode=""},
