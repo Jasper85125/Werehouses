@@ -1,7 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using warehouse.Services;
+using Services;
 using Moq;
-using inventories.Controllers;
+using Controllers;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 

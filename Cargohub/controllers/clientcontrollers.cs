@@ -1,17 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
-namespace clients.Controllers
+using Services;
+
+namespace Controllers;
+
+[Route("clients")]
+[ApiController]
+public class ClientController : ControllerBase
 {
-    [Route("clients")]
-    [ApiController]
-    public class ClientController : ControllerBase{
-        private readonly Iclientservice _clientservice;
-        public ClientController(Iclientservice clientservice){
-            _clientservice = clientservice;
-        }
-        public IActionResult GetAllClients()
-        {
-            var clients = _clientservice.GetAllClients();
-            return Ok(clients);
-        }
+    private readonly IClientService _clientservice;
+    public ClientController(IClientService clientservice)
+    {
+        _clientservice = clientservice;
+    }
+    public ActionResult<IEnumerable<ClientCS>> GetAllClients()
+    {
+        var clients = _clientservice.GetAllClients();
+        return Ok(clients);
     }
 }
