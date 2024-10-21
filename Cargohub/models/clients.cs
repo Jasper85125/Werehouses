@@ -9,12 +9,12 @@ public class ClientCS
     public string? Name { get; set; }
     public string? Address { get; set; }
     public string? City { get; set; }
-    public string? ZipCode { get; set; }
+    public string? zip_code { get; set; }
     public string? Province { get; set; }
     public string? Country { get; set; }
-    public string? ContactName { get; set; }
-    public string? ConactPhone { get; set; }
-    public string? ContactEmail { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public string? contact_name { get; set; }
+    public string? contact_phone { get; set; }
+    public string? contact_email { get; set; }
+    public DateTime created_at { get; set; }
+    public DateTime updated_at { get; set; }
 }
