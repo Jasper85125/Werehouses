@@ -72,4 +72,32 @@ public class ItemLineTests
         // Assert
         Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
     }
+
+    [TestMethod]
+    public async Task AddItemLineTest_ValidItem()
+    {
+        // Arrange
+        var newItemLine = new ItemLineCS { Id = 1, Description = "New Item" };
+        _mockItemLineService.Setup(service => service.AddItemLine(newItemLine)).ReturnsAsync(newItemLine);
+
+        // Act
+        var value = await _itemLineController.AddItemLine(newItemLine);
+
+        // Assert
+        var createdResult = value.Result as CreatedAtActionResult;
+        var returnedItem = createdResult.Value as ItemLineCS;
+        Assert.IsNotNull(createdResult);
+        Assert.AreEqual(newItemLine.Description, returnedItem.Description);
+    }
+
+    [TestMethod]
+    public async Task AddItemLineTest_NullItem()
+    {
+        // Act
+        var value = await _itemLineController.AddItemLine(null);
+
+        // Assert
+        Assert.IsInstanceOfType(value.Result, typeof(BadRequestObjectResult));
+    }
+
 }
