@@ -20,3 +20,9 @@ public class ItemCS
     public DateTime created_at { get; set; }
     public DateTime updated_at { get; set; }
 }
+
+public class ItemIdAndAmount
+{
+    public string item_id { get; set; }
+    public int amount { get; set; }
+}

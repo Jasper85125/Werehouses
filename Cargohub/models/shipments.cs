@@ -21,13 +21,7 @@ public class ShipmentCS
     public string? transfer_mode { get; set; }
     public int total_package_count { get; set; }
     public double total_package_weight { get; set; }
-    public List<ItemInShipment> Items { get; set; }
+    public List<ItemIdAndAmount> Items { get; set; }
     public DateTime created_at { get; set; }
     public DateTime updated_at { get; set; }
-}
-
-public class ItemInShipment
-{
-    public string item_id { get; set; }
-    public int amount { get; set; }
 }
