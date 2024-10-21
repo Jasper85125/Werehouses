@@ -59,4 +59,17 @@ public class WarehouseController : ControllerBase
     {
         // Replace with your logic
     }
+    // POST: warehouses
+        // Creates a new warehouse
+        [HttpPost("warehouse")]
+        public ActionResult CreateWarehouse([FromBody] WarehouseCS newWarehouse)
+        {
+            if (newWarehouse == null)
+            {
+                return BadRequest("Warehouse data is null");
+            }
+
+            _warehouseService.CreateWarehouse(newWarehouse);
+            return Ok("warehouse created");
+        }
 }
