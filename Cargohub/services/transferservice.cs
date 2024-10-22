@@ -30,4 +30,19 @@ public class TransferService : ITransferService
         TransferCS transfer = transfers.FirstOrDefault(trans => trans.Id == id);
         return transfer;
     }
+    public TransferCS CreateTransfer(TransferCS newTransfer)
+    {
+        var Path = "data/transfers.json";
+
+        List<TransferCS> transfers = GetAllTransfers();
+
+        // Add the new transfer record to the list
+        newTransfer.Id = transfers.Count > 0 ? transfers.Max(t => t.Id) + 1 : 1;
+        transfers.Add(newTransfer);
+
+        // Serialize the updated list back to the JSON file
+        var jsonData = JsonConvert.SerializeObject(transfers, Formatting.Indented);
+        File.WriteAllText(Path, jsonData);
+        return newTransfer;
+    }
 }
