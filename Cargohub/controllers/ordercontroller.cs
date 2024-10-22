@@ -56,10 +56,18 @@ namespace Controllers
             // Replace with your logic
         }
         [HttpPost("orders")]
-        public async Task<IActionResult> CreateOrder([FromBody] OrderCS order)
+        public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
         {
-            _orderService.CreateOrder(order);
-            return Ok();
+            if (order == null)
+            {
+                return BadRequest("Order is null.");
+            }
+
+            var createdOrder = _orderService.CreateOrder(order);
+
+            // Return the CreatedAtAction result, which includes the route to the GetOrderById action for the newly created order.
+            return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
         }
+
     }
 }
