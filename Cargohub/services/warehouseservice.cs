@@ -30,21 +30,11 @@ public class WarehouseService : IWarehouseService
         WarehouseCS warehouse = warehouses.FirstOrDefault(ware => ware.Id == id);
         return warehouse;
     }
-    public WarehouseCS GetWarehouseById(int id)
-    {
-        List<WarehouseCS> warehouses = GetAllWarehouses();
-        WarehouseCS warehouse = warehouses.FirstOrDefault(ware => ware.Id == id);
-        return warehouse;
-    }
 
     public void CreateWarehouse(WarehouseCS newWarehouse)
     {
         var Path = "data/warehouses.json";
-    public void CreateWarehouse(WarehouseCS newWarehouse)
-    {
-        var Path = "data/warehouses.json";
 
-        List<WarehouseCS> warehouses = GetAllWarehouses();
         List<WarehouseCS> warehouses = GetAllWarehouses();
 
         // Add the new warehouse record to the list

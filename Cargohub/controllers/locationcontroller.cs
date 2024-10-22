@@ -37,7 +37,7 @@ namespace Controllers
 
         // POST: /locations
         [HttpPost]
-        public async Task Post([FromBody] InventoryCS location)
+        public async Task CreateLocation([FromBody] InventoryCS location)
         {
             
         }
