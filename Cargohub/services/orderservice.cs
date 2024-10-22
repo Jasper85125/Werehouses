@@ -30,7 +30,7 @@ public class OrderService : IOrderService
         OrderCS order = orders.FirstOrDefault(order => order.Id == id);
         return order;
     }
-    public void CreateOrder(OrderCS newOrder)
+    public OrderCS CreateOrder(OrderCS newOrder)
     {
         var Path = "data/orders.json";
 
@@ -43,5 +43,6 @@ public class OrderService : IOrderService
         // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
         File.WriteAllText(Path, jsonData);
+        return newOrder;
     }
 }

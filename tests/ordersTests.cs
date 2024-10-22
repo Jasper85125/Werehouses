@@ -75,6 +75,31 @@ namespace Tests
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
+        [TestMethod]
+        public void CreateOrder_ReturnsCreatedResult_WithNewOrder()
+        {
+            // Arrange
+            var newOrder = new OrderCS { Id = 1, source_id = 24, order_status = "Pending" };
+            var createdOrder = new OrderCS { Id = 2, source_id = 24, order_status = "Pending" };
+            
+            // Set up the mock service to return the created order
+            _mockOrderService.Setup(service => service.CreateOrder(newOrder)).Returns(createdOrder);
+
+            // Act
+            var result = _orderController.CreateOrder(newOrder);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
+            var createdResult = result.Result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(OrderCS));
+            var returnedOrder = createdResult.Value as OrderCS;
+            Assert.AreEqual(2, returnedOrder.Id);
+            Assert.AreEqual(24, returnedOrder.source_id);
+            Assert.AreEqual("Pending", returnedOrder.order_status);
+        }
+
+
     }
 }
 
