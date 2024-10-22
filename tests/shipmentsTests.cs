@@ -75,6 +75,26 @@ namespace Tests
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+        public void CreateShipment_ReturnsCreatedResult_WithNewShipment()
+        {
+            // Arrange
+            var shipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24 };
+            _mockShipmentService.Setup(service => service.CreateShipment(shipment)).Returns(shipment);
+            
+            // Act
+            var value = _shipmentController.CreateShipment(shipment);
+            
+            // Assert
+            var createdResult = value.Result as CreatedAtActionResult;  // Use CreatedAtActionResult
+            Assert.IsNotNull(createdResult);
+            
+            var returnedItems = createdResult.Value as ShipmentCS;
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(shipment.source_id, returnedItems.source_id);
+        }
+
     }
 }
 
