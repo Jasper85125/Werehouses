@@ -36,11 +36,18 @@ public class SupplierController : ControllerBase
     }
 
     // POST: /suppliers
-    [HttpPost]
-    public async Task Post([FromBody] SupplierCS supplier)
-    {
-        
-    }
+    [HttpPost()]
+        public ActionResult<SupplierCS> CreateLocation([FromBody] SupplierCS supplier)
+        {
+            if (supplier == null)
+            {
+                return BadRequest("Supplier is null.");
+            }
+
+            var createdSupplier = _supplierService.CreateSupplier(supplier);
+
+            return CreatedAtAction(nameof(GetSupplierById), new { id = createdSupplier.Id }, createdSupplier);
+        }
 
     // PUT: api/warehouse/5
     [HttpPut("{id}")]
