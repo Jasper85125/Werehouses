@@ -37,9 +37,14 @@ public class TransferController : ControllerBase
 
     // POST: /transfers
     [HttpPost]
-    public async Task Post([FromBody] TransferCS inventory)
+    public ActionResult<TransferCS> Post([FromBody] TransferCS transfer)
     {
-        
+        if (transfer is null)
+        {
+            return BadRequest("transfer data is null");
+        }
+        var newTransfer = _transferService.CreateTransfer(transfer);
+        return CreatedAtAction(nameof(GetTransferById), new { id = newTransfer.Id }, newTransfer);
     }
 
     // PUT: api/warehouse/5
