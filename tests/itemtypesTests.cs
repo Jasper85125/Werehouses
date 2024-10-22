@@ -49,5 +49,22 @@ namespace itemtype.Tests
             // Assert
             Assert.AreEqual(itemType, result);
         }
+
+        [TestMethod]
+        public async Task CreateItemType_ShouldReturnCreatedItemType()
+        {
+            // Arrange
+            var newItemType = new ItemTypeCS { Id = 3, Name = "Type3", description = "Description3" };
+            _mockItemTypeService.Setup(service => service.CreateItemType(newItemType)).ReturnsAsync(newItemType);
+
+            // Act
+            var result = await _mockItemTypeService.Object.CreateItemType(newItemType);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(newItemType.Id, result.Id);
+            Assert.AreEqual(newItemType.Name, result.Name);
+            Assert.AreEqual(newItemType.description, result.description);
+        }
     }
 }
