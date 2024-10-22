@@ -41,18 +41,4 @@ public class ItemGroupService : IitemGroupService
         // Implementation code here
         return Task.FromResult(Itemgroup);
     }
-
-    // Method to update an existing Itemgroup
-    public Task<ItemGroupCS> UpdateItemGroup(ItemGroupCS Itemgroup)
-    {
-        // Implementation code here
-        return Task.FromResult(Itemgroup);
-    }
-
-    // Method to delete an Itemgroup
-    public Task<bool> DeleteItemGroup(int id)
-    {
-        // Implementation code here
-        return null;
-    }
 }
