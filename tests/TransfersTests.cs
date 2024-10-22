@@ -75,6 +75,24 @@ namespace Tests
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+        public void CreateTransfer_ReturnsCreatedAtActionResult_WithNewTransfer()
+        {
+            // Arrange
+            var transfer = new TransferCS { Id = 1, transfer_from = 1, transfer_to = 2 };
+            _mockTransferService.Setup(service => service.CreateTransfer(transfer)).Returns(transfer);
+
+            // Act
+            var result = _transferController.Post(transfer);
+
+            // Assert
+            var createdAtActionResult = result.Result as CreatedAtActionResult;
+            var returnedTransfer = createdAtActionResult.Value as TransferCS;
+            Assert.IsNotNull(createdAtActionResult);
+            Assert.IsNotNull(returnedTransfer);
+            Assert.AreEqual(1, returnedTransfer.Id);
+        }
     }
 }
 
