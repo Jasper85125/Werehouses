@@ -15,7 +15,7 @@ public class OrderCS
     public string? Notes { get; set;}
     public string? shipping_notes { get; set; }
     public string? picking_notes { get; set; }
-    public string? warehouse_id { get; set; }
+    public int? warehouse_id { get; set; }
     public int? ship_to { get; set; }
     public int? bill_to { get; set; }
     public int? shipment_id { get; set; }
