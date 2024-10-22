@@ -55,5 +55,19 @@ namespace Controllers
         {
             // Replace with your logic
         }
+        [HttpPost("orders")]
+        public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
+        {
+            if (order == null)
+            {
+                return BadRequest("Order is null.");
+            }
+
+            var createdOrder = _orderService.CreateOrder(order);
+
+            // Return the CreatedAtAction result, which includes the route to the GetOrderById action for the newly created order.
+            return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
+        }
+
     }
 }

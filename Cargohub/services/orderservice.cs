@@ -30,4 +30,19 @@ public class OrderService : IOrderService
         OrderCS order = orders.FirstOrDefault(order => order.Id == id);
         return order;
     }
+    public OrderCS CreateOrder(OrderCS newOrder)
+    {
+        var Path = "data/orders.json";
+
+        List<OrderCS> orders = GetAllOrders();
+
+        // Add the new order record to the list
+        newOrder.Id = orders.Count > 0 ? orders.Max(o => o.Id) + 1 : 1;
+        orders.Add(newOrder);
+
+        // Serialize the updated list back to the JSON file
+        var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
+        File.WriteAllText(Path, jsonData);
+        return newOrder;
+    }
 }

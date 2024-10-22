@@ -34,23 +34,25 @@ public class ItemLineService : IItemLineService
     }
 
     // Method to add a new item
-    public async Task<ItemLineCS> AddItemLine(ItemLineCS item)
+    public async Task<ItemLineCS> AddItemLine(ItemLineCS newItemLine)
     {
-        // Implementation code here
-        return await Task.FromResult(item);
-    }
+        List<ItemLineCS> items = GetAllItemlines();
 
-    // Method to update an existing item
-    public async Task<ItemLineCS> UpdateItemLine(ItemLineCS item)
-    {
-        // Implementation code here
-        return await Task.FromResult(item);
-    }
+        // Auto-increment ID
+        if (items.Any())
+        {
+            newItemLine.Id = items.Max(i => i.Id) + 1;
+        }
+        else
+        {
+            newItemLine.Id = 1;
+        }
 
-    // Method to delete an item
-    public async Task<bool> DeleteItemLine(int id)
-    {
-        // Implementation code here
-        return await Task.FromResult(true);
+        items.Add(newItemLine);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+
+        return newItemLine;
     }
 }

@@ -39,33 +39,14 @@ public class ItemLineController : ControllerBase
 
     // POST: api/itemLine
     [HttpPost]
-    public async Task<ActionResult<string>> PostItemLine([FromBody] string itemLine)
+    public async Task<ActionResult<ItemLineCS>> AddItemLine([FromBody] ItemLineCS newItemLine)
     {
-        // Replace with actual logic to create a new item Line
-        return CreatedAtAction(nameof(GetItemLineById), new { id = 1 }, itemLine);
-    }
-
-    // PUT: api/itemLine/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutItemLine(int id, [FromBody] string itemLine)
-    {
-        // Replace with actual logic to update an existing item Line
-        if (id != 1)
+        if (newItemLine == null)
         {
-            return BadRequest();
+            return BadRequest("ItemLine is null.");
         }
-        return NoContent();
-    }
 
-    // DELETE: api/itemLine/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteItemLine(int id)
-    {
-        // Replace with actual logic to delete an item Line
-        if (id != 1)
-        {
-            return NotFound();
-        }
-        return NoContent();
+        var createdItemLine = await _itemLineService.AddItemLine(newItemLine);
+        return CreatedAtAction(nameof(GetItemLineById), new { id = createdItemLine.Id }, createdItemLine);
     }
 }
