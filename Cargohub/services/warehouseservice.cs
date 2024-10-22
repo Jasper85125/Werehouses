@@ -31,7 +31,7 @@ public class WarehouseService : IWarehouseService
         return warehouse;
     }
 
-    public void CreateWarehouse(WarehouseCS newWarehouse)
+    public WarehouseCS CreateWarehouse(WarehouseCS newWarehouse)
     {
         var Path = "data/warehouses.json";
 
@@ -47,5 +47,6 @@ public class WarehouseService : IWarehouseService
         // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
         File.WriteAllText(Path, jsonData);
+        return newWarehouse;
     }
 }
