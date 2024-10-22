@@ -73,5 +73,23 @@ namespace itemgroup.Tests
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+        public void CreateItemGroupTest_Success()
+        {
+            // Arrange
+            var newItemGroup = new ItemGroupCS { Id = 3, Name = "Group 3" };
+            _mockItemGroupService.Setup(service => service.CreateItemGroup(It.IsAny<ItemGroupCS>())).Returns(Task.FromResult(newItemGroup));
+
+            // Act
+            var result = _itemGroupController.CreateItemGroup(newItemGroup);
+
+            // Assert
+            var createdResult = result.Result as CreatedAtActionResult;
+            var returnedItem = createdResult.Value as ItemGroupCS;
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(newItemGroup.Name, returnedItem.Name);
+        }
+
     }
 }
