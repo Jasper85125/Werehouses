@@ -55,5 +55,11 @@ namespace Controllers
         {
             // Replace with your logic
         }
+        [HttpPost("orders")]
+        public async Task<IActionResult> CreateOrder([FromBody] OrderCS order)
+        {
+            _orderService.CreateOrder(order);
+            return Ok();
+        }
     }
 }
