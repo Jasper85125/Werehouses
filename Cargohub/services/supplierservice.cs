@@ -30,4 +30,20 @@ public class SupplierService : ISupplierService
         SupplierCS supplier = suppliers.FirstOrDefault(supp => supp.Id == id);
         return supplier;
     }
+
+    public SupplierCS CreateSupplier(SupplierCS newSupplier)
+    {
+        var Path = "data/suppliers.json";
+
+        List<SupplierCS> suppliers = GetAllSuppliers();
+
+        newSupplier.Id = suppliers.Count > 0 ? suppliers.Max(o => o.Id) + 1 : 1;
+        suppliers.Add(newSupplier);
+
+        var jsonData = JsonConvert.SerializeObject(suppliers, Formatting.Indented);
+        File.WriteAllText(Path, jsonData);
+        return newSupplier;
+    }
+
+    
 }

@@ -41,7 +41,7 @@ namespace Controllers
         {
             if (location == null)
             {
-                return BadRequest("Order is null.");
+                return BadRequest("Location is null.");
             }
 
             var createdLocation = _locationService.CreateLocation(location);
