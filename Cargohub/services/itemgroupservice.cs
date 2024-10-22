@@ -36,23 +36,25 @@ public class ItemGroupService : IitemGroupService
     }
 
     // Method to add a new Itemgroup
-    public Task<ItemGroupCS> CreateItemGroup(ItemGroupCS Itemgroup)
+    public async Task<ItemGroupCS> CreateItemGroup(ItemGroupCS newItemType)
     {
-        // Implementation code here
-        return Task.FromResult(Itemgroup);
-    }
+        List<ItemGroupCS> items = GetAllItemGroups();
 
-    // Method to update an existing Itemgroup
-    public Task<ItemGroupCS> UpdateItemGroup(ItemGroupCS Itemgroup)
-    {
-        // Implementation code here
-        return Task.FromResult(Itemgroup);
-    }
+        // Auto-increment ID
+        if (items.Any())
+        {
+            newItemType.Id = items.Max(i => i.Id) + 1;
+        }
+        else
+        {
+            newItemType.Id = 1;
+        }
 
-    // Method to delete an Itemgroup
-    public Task<bool> DeleteItemGroup(int id)
-    {
-        // Implementation code here
-        return null;
+        items.Add(newItemType);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        await File.WriteAllTextAsync("data/item_groups.json", jsonData);
+
+        return newItemType;
     }
 }
