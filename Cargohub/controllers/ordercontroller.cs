@@ -35,13 +35,6 @@ namespace Controllers
             return Ok(orders);
         }
 
-        // POST: /orders
-        [HttpPost]
-        public async Task Post([FromBody] OrderCS orders)
-        {
-            
-        }
-
         // PUT: api/warehouse/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
@@ -55,6 +48,7 @@ namespace Controllers
         {
             // Replace with your logic
         }
+        
         [HttpPost("orders")]
         public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
         {
