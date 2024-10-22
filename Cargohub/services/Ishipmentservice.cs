@@ -4,7 +4,7 @@ public interface IShipmentService
 {
     List<ShipmentCS> GetAllShipments();
     ShipmentCS GetShipmentById(int id);
-    // void CreateWarehouse();
+    ShipmentCS CreateShipment(ShipmentCS newShipment);
     // void UpdateWarehouse();
     // void DeleteWarehouse();
 }
