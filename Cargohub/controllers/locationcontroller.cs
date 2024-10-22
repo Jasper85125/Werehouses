@@ -36,10 +36,17 @@ namespace Controllers
         }
 
         // POST: /locations
-        [HttpPost]
-        public async Task Post([FromBody] InventoryCS location)
+        [HttpPost()]
+        public ActionResult<LocationCS> CreateLocation([FromBody] LocationCS location)
         {
-            
+            if (location == null)
+            {
+                return BadRequest("Order is null.");
+            }
+
+            var createdLocation = _locationService.CreateLocation(location);
+
+            return CreatedAtAction(nameof(GetLocationById), new { id = createdLocation.Id }, createdLocation);
         }
 
         // PUT: api/warehouse/5

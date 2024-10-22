@@ -75,6 +75,29 @@ namespace Tests
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+        public void CreateLocationTest_Success()
+        {
+            // Arrange
+            var newLocation = new LocationCS { Id = 1, warehouse_id = 1, code = "B.2.1" };
+            var createdLocation = new LocationCS { Id = 2, warehouse_id = 5, code = "C.3.2" };
+            
+            // Set up the mock service to return the created order
+            _mockLocationService.Setup(service => service.CreateLocation(newLocation)).Returns(createdLocation);
+
+            // Act
+            var result = _locationController.CreateLocation(newLocation);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
+            var createdResult = result.Result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(LocationCS));
+            var returnedLocation = createdResult.Value as LocationCS;
+            Assert.AreEqual("C.3.2", returnedLocation.code);
+            Assert.AreEqual(5, returnedLocation.warehouse_id);
+        }
     }
 }
 

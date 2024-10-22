@@ -37,10 +37,16 @@ public class ShipmentController : ControllerBase
 
     // POST: /shipments
     [HttpPost]
-    public async Task Post([FromBody] ShipmentCS shipment)
+    public ActionResult<ShipmentCS> CreateShipment([FromBody] ShipmentCS newShipment)
     {
-        
+        if (newShipment is null)
+        {
+            return BadRequest("shipment data is null");
+        }
+        var shipment = _shipmentService.CreateShipment(newShipment);
+        return CreatedAtAction(nameof(GetShipmentById), new { id = shipment.Id }, shipment);
     }
+  
 
     // PUT: api/warehouse/5
     [HttpPut("{id}")]

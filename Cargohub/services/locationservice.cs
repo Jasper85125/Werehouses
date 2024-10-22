@@ -30,4 +30,18 @@ public class LocationService : ILocationService
         LocationCS location = locations.FirstOrDefault(loc => loc.Id == id);
         return location;
     }
+
+    public LocationCS CreateLocation(LocationCS newLocation)
+    {
+        var Path = "data/locations.json";
+
+        List<LocationCS> locations = GetAllLocations();
+
+        newLocation.Id = locations.Count > 0 ? locations.Max(o => o.Id) + 1 : 1;
+        locations.Add(newLocation);
+
+        var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
+        File.WriteAllText(Path, jsonData);
+        return newLocation;
+    }
 }
