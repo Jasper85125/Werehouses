@@ -75,6 +75,30 @@ namespace Tests
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+    public void CreateSupplierTest_Success()
+    {
+        // Arrange
+        var newSupplier = new SupplierCS { Id = 1, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404"};
+        var createdSupplier = new SupplierCS { Id = 2, Code = "H1M12", Name = "Joseph", Address = "Lissabon 402"};
+
+        // Set up the mock service to return the created order
+        _mockSupplierService.Setup(service => service.CreateSupplier(newSupplier)).Returns(createdSupplier);
+
+        // Act
+        var result = _supplierController.CreateSupplier(newSupplier);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
+        var createdResult = result.Result as CreatedAtActionResult;
+        Assert.IsNotNull(createdResult);
+        Assert.IsInstanceOfType(createdResult.Value, typeof(SupplierCS));
+        var returnedSupplier = createdResult.Value as SupplierCS;
+        Assert.AreEqual("H1M12", returnedSupplier.Code);
+        Assert.AreEqual("Joseph", returnedSupplier.Name);
+        Assert.AreEqual("Lissabon 402", returnedSupplier.Address);
+    }
     }
 }
 
