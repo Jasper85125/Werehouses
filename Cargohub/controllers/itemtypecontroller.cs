@@ -17,7 +17,7 @@ public class ItemTypeController : ControllerBase
         _itemtypeService = itemtypeService;
     }
 
-    // GET: api/items
+    // GET: items
     // Retrieves all items
     [HttpGet()]
     public ActionResult<IEnumerable<ItemCS>> GetAllItemtypes()
@@ -26,7 +26,7 @@ public class ItemTypeController : ControllerBase
         return Ok(itemtype);
     }
 
-    // GET: api/itemtype/5
+    // GET: itemtype/5
     [HttpGet("{id}")]
     public ActionResult<ItemTypeCS> GetItemById(int id)
     {
@@ -38,35 +38,17 @@ public class ItemTypeController : ControllerBase
         return Ok(itemtype);
     }
     
-    // POST: api/itemtype
-    [HttpPost]
-    public async Task<ActionResult<string>> PostItemType([FromBody] string itemType)
+    // POST: itemtype
+    [HttpPost()]
+    public async Task<IActionResult> CreateItemType([FromBody] ItemTypeCS itemtype)
     {
-        // Replace with actual logic to create a new item type
-        return CreatedAtAction(nameof(GetItemById), new { id = 1 }, itemType);
+        if (itemtype == null)
+        {
+            return BadRequest("ItemGroup cannot be null");
+        }
+
+        var createditemtype = await _itemtypeService.CreateItemType(itemtype);
+        return CreatedAtAction(nameof(GetItemById), new { id = createditemtype.Id }, createditemtype);
     }
 
-    // PUT: api/itemtype/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutItemType(int id, [FromBody] string itemType)
-    {
-        // Replace with actual logic to update an existing item type
-        if (id != 1)
-        {
-            return BadRequest();
-        }
-        return NoContent();
-    }
-
-    // DELETE: api/itemtype/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteItemType(int id)
-    {
-        // Replace with actual logic to delete an item type
-        if (id != 1)
-        {
-            return NotFound();
-        }
-        return NoContent();
-    }
 }
