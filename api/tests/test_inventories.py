@@ -1,48 +1,76 @@
-from models.inventories import Inventories
+# import httpx
 import unittest
+import requests
+
+# class TestWarehouses(unittest.TestCase):
+#     def setUp(self) -> None:
+#         self.warehouses = Warehouses("../data/")
+
+#     def test_loaded(self):
+#         self.assertGreater(len(self.warehouses.get_warehouses()), 0)
 
 
-class TestInventories(unittest.TestCase):
-    def setUp(self) -> None:
-        self.inventories = Inventories("../data/")
-
-    def test_loaded(self):
-        self.assertGreater(len(self.inventories.get_inventories()), 0)
+class TestClass(unittest.TestCase):
+    def setUp(self):
+        self.url = "http://localhost:3000/api/v1"
+        self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_inventories(self):
-        NotEmptyList = self.inventories.get_inventories()
-        self.assertGreater(len(NotEmptyList), 0)
 
-    def test_get_inventory(self):
-        exists = self.inventories.get_inventory(1)
-        self.assertIsNotNone(exists)
+        response = requests.get(
+            url=(self.url + "/inventories"), headers=self.headers)
+        self.assertEqual(response.status_code, 200)
 
-    def test_get_inventories_for_item(self):
-        in_inventories = self.inventories.get_inventories_for_item("P000001")
-        self.assertIsNotNone(in_inventories)
+    def test_get_inventory_id(self):
+        response = requests.get(
+            url=(self.url + "/inventories/1"), headers=self.headers)
 
-    def test_get_inventory_totals_for_item(self):
-        item_totals = self.inventories.get_inventory_totals_for_item("P000001")
-        self.assertGreater(item_totals, 0)
+        self.assertEqual(response.status_code, 200)
 
-    def test_add_inventory(self):
-        get_curr_inventories = self.inventories.get_inventories()
-        new_inventory = self.inventories.__new__(Inventories())
-        inventories_count = len(get_curr_inventories)
-        self.inventories.add_inventory(new_inventory)
-        self.assertGreater(get_curr_inventories, inventories_count)
+    def test_post_inventory(self):
+        data = {
+            "id": 99999,
+            "item_id": None,
+            "description": None,
+            "item_reference": None,
+            "locations": None,
+            "total_on_hand": None,
+            "total_expected": None,
+            "total_ordered": None,
+            "total_allocated": None,
+            "total_available": None,
+            "created_at": None,
+            "updated_at": None
+        }
 
-    def test_update_inventory(self):
-        get_inventory_1 = self.inventories.get_inventory(1)
-        updated_inventory = get_inventory_1
-        updated_inventory["description"] = "Noooooo"
-        self.inventories.update_inventory(1, updated_inventory)
-        self.assertEqual(get_inventory_1["description"], "Noooooo")
+        response = requests.post(
+            url=(self.url + "/inventories"), headers=self.headers, json=data)
 
-    def test_remove_inventory(self):
-        self.inventories.remove_inventory(1)
-        self.assertIsNone(self.inventories.get_inventory(1))
+        self.assertEqual(response.status_code, 201)
 
+    def test_put_inventory_id(self):
+        data = {
+            "id": 99999,
+            "item_id": None,
+            "description": None,
+            "item_reference": None,
+            "locations": None,
+            "total_on_hand": None,
+            "total_expected": None,
+            "total_ordered": None,
+            "total_allocated": None,
+            "total_available": None,
+            "created_at": None,
+            "updated_at": None
+        }
 
-if __name__ == "__main__":
-    unittest.main()
+        response = requests.put(
+            url=(self.url + "/inventories/99999"), headers=self.headers, json=data)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_delete_inventory_id(self):
+        response = requests.delete(
+            url=(self.url + "/inventories/99999"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 200)
