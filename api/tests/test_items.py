@@ -105,7 +105,7 @@ class TestClass(unittest.TestCase):
     def test_02_get_item_id(self):
         # Send the request
         response = self.client.get(
-            url=(self.url + "/items/P000001"), headers=self.headers
+            url=(self.url + "/items/P000006"), headers=self.headers
         )
         # Check the status code
         self.assertEqual(response.status_code, 200)
@@ -167,17 +167,16 @@ class TestClass(unittest.TestCase):
     # Overwrites an item based on the given item-id
     def test_05_put_item_id(self):
         data = {
-            "uid": "P000001",
+            "uid": "P000003",
             "item_line": 1,
             "item_group": 1,
             "item_type": 1,
-            "supplier_id": 1,
-            "updated_at": "new_timestamp"
+            "supplier_id": 1
         }
 
         # Send the request
         response = self.client.put(
-            url=(self.url + "/items/P000001"),
+            url=(self.url + "/items/P000003"),
             headers=self.headers,
             json=data
         )
