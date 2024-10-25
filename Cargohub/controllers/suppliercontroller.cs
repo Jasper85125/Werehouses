@@ -25,7 +25,7 @@ public class SupplierController : ControllerBase
 
     // GET: /suppliers/{id}
     [HttpGet("{id}")]
-    public ActionResult<SupplierCS> GetSupplierById([FromRoute]int id)
+    public ActionResult<SupplierCS> GetSupplierById([FromRoute] int id)
     {
         var supplier = _supplierService.GetSupplierById(id);
         if (supplier is null)
@@ -36,10 +36,17 @@ public class SupplierController : ControllerBase
     }
 
     // POST: /suppliers
-    [HttpPost]
-    public async Task Post([FromBody] SupplierCS supplier)
+    [HttpPost()]
+    public ActionResult<SupplierCS> CreateSupplier([FromBody] SupplierCS supplier)
     {
-        
+        if (supplier == null)
+        {
+            return BadRequest("Supplier is null.");
+        }
+
+        var createdSupplier = _supplierService.CreateSupplier(supplier);
+
+        return CreatedAtAction(nameof(GetSupplierById), new { id = createdSupplier.Id }, createdSupplier);
     }
 
     // PUT: api/warehouse/5
