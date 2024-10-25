@@ -16,7 +16,7 @@ class TestClass(unittest.TestCase):
         self.headers = { 'API_KEY': 'a1b2c3d4e5' }
 
     def test_get_warehouses(self):
-        response = self.client.get(url=(self.url + "/warehouses"), headers=self.headers)
+        response = requests.get(url=(self.url + "/warehouses"), headers=self.headers)
         
         self.assertEqual(response.status_code, 200)
 
