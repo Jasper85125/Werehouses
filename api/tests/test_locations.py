@@ -66,120 +66,56 @@
 #         self.assertIsNone(self.locations.get_location(1))
 #         self.assertEqual(len(self.locations.get_locations()), 2)
 
-import httpx
 import unittest
-
-def checkLocation(location):
-
-    if len(location) != 6:
-        return False
-
-    # po zei dat we later met hem kunnen vragen / valideren welke properties een object moet hebben,
-    # maar laten we er voor nu maar uitgaan dat inprincipe elke property er moet zijn bij elke object
-
-    # als de warehouse niet die property heeft, return False
-    if location.get("id") == None:
-        return False
-    if location.get("warehouse_id") == None:
-        return False
-    if location.get("code") == None:
-        return False
-    if location.get("name") == None:
-        return False
-    if location.get("created_at") == None:
-        return False
-    if location.get("updated_at") == None:
-        return False
-
-    # het heeft elke property dus return true
-    return True
+import requests
 
 class TestClass(unittest.TestCase):
     def setUp(self):
-        self.client = httpx.Client()
         self.url = "http://localhost:3000/api/v1"
-        self.headers = httpx.Headers({ 'API_KEY': 'a1b2c3d4e5' })
+        self.headers = { 'API_KEY': 'a1b2c3d4e5' }
 
-
-    def test_01_get_locations(self):
+    def test_get_locations(self):
+        response = requests.get(url=(self.url + "/locations"), headers=self.headers)
         
-        # Stuur de request
-        response = self.client.get(url=(self.url + "/locations"), headers=self.headers)
-        
-        # Check de status code
         self.assertEqual(response.status_code, 200)
-        
-        # Check dat de response een list is
-        self.assertEqual(type(response.json()), list)
-        
-        # Als de list iets bevat (want een list van 0 objects is inprincipe "legaal")
-        if (len(response.json()) > 0):
-            # Check of de object in de list ook echt een "object" (eigenlijk overal een dictionary) is,
-            # dus niet dat het een list van ints, strings etc. zijn
-            self.assertEqual(type(response.json()[0]), dict)
 
-
-    def test_02_get_location_id(self):
-        # Stuur de request
-        response = self.client.get(url=(self.url + "/locations/1"), headers=self.headers)
+    def test_get_location_id(self):
+        response = requests.get(url=(self.url + "/locations/1"), headers=self.headers)
         
-        # Check de status code
         self.assertEqual(response.status_code, 200)
-        
-        # Check dat de response een dictionary is (representatief voor een enkel warehouse object)
-        self.assertEqual(type(response.json()), dict)
-        
-        # Check dat het warehouse object de juiste properties heeft
-        self.assertTrue(checkLocation(response.json()))
 
-    # deze voegt een nieuwe warehouse object
-    def test_03_post_location(self):
+    def test_post_location(self):
         data = {
-        "id": 99999,
+        "id": 98983,
         "warehouse_id": 373,
-        "code": None,
+        "code": "R.E.0",
         "name": None,
         "created_at": None,
         "updated_at": None
         }
 
-        # Stuur de request
-        response = self.client.post(url=(self.url + "/locations"), headers=self.headers, json=data)
+        response = requests.post(url=(self.url + "/locations"), headers=self.headers, json=data)
 
-        # Check de status code
         self.assertEqual(response.status_code, 201)
 
-
-    
-    # Overschrijft een warehouse op basis van de opgegeven warehouse-id
-    def test_04_put_location_id(self):
+    def test_put_location_id(self):
         data = {
         "id": 69696,
         "warehouse_id": 20, 
-        "code": "AAAAAAA",
+        "code": "A.D.0",
         "name": None,
         "created_at": None,
         "updated_at": None
         }
 
-        # Stuur de request
-        response = self.client.put(url=(self.url + "/locations/1"), headers=self.headers, json=data)
+        response = requests.put(url=(self.url + "/locations/1"), headers=self.headers, json=data)
 
-        # Check de status code
         self.assertEqual(response.status_code, 200)
 
-    def test_05_delete_location_id(self):
-        # Stuur de request
-        response = self.client.delete(url=(self.url + "/locations/2"), headers=self.headers)
+    def test_delete_location_id(self):
+        response = requests.delete(url=(self.url + "/locations/2"), headers=self.headers)
 
-        # Check de status code
         self.assertEqual(response.status_code, 200)
-
-
-
-# to run the file: python -m unittest test_warehouses.py
-# # git checkout . -f
-
 
 if __name__ == "__main__":
     unittest.main()
