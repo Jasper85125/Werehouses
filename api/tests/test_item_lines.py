@@ -53,7 +53,8 @@ import httpx
 #     unittest.main()
 
 def checkItemLine(item_line):
-    required_properties = ["id", "name", "description", "created_at", "updated_at"]
+    required_properties = ["id", "name", "description",
+                           "created_at", "updated_at"]
     for prop in required_properties:
         if item_line.get(prop) is None:
             return False
