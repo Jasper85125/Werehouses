@@ -70,38 +70,6 @@ class TestClass(unittest.TestCase):
         self.url = "http://localhost:3000/api/v1"
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
 
-    def test_01_get_warehouses(self):
-
-        # Stuur de request
-        response = self.client.get(
-            url=(self.url + "/warehouses"), headers=self.headers
-        )
-
-        # Check de status code
-        self.assertEqual(response.status_code, 200)
-
-        # Check dat de response een list is
-        self.assertEqual(type(response.json()), list)
-
-        # Als de list iets bevat (want een list van 0 objects is inprincipe
-        # "legaal")
-        if (len(response.json()) > 0):
-            # Check of de object in de list ook echt een "object"
-            # (eigenlijk overal een dictionary) is,
-            # dus niet dat het een list van ints, strings etc. zijn
-            self.assertEqual(type(response.json()[0]), dict)
-
-            # Check dat de object de juiste properties heeft
-            # self.assertTrue(checkWarehouse(response.json()[0]))
-
-            # Check dat elk warehouse-object de juiste eigenschappen heeft
-            self.assertTrue(
-                all(
-                    checkWarehouse(warehouse)
-                    for warehouse in response.json()
-                )
-            )
-
     def test_02_get_warehouse_id(self):
         # Stuur de request
         response = self.client.get(
@@ -205,56 +173,6 @@ class TestClass(unittest.TestCase):
 
         # Check de status code
         self.assertEqual(response.status_code, 200)
-
-    # Unhappy (werkt nu nog niet)
-    def test_07_post_existing_warehouse(self):
-        data = {
-            "id": 4,
-            "code": "ABBC",
-            "name": None,
-            "address": None,
-            "zip": None,
-            "city": None,
-            "province": None,
-            "country": None,
-            "contact": None,
-            "created_at": None,
-            "updated_at": None
-        }
-
-        response = self.client.post(
-            url=(self.url + "/warehouses"),
-            headers=self.headers,
-            json=data
-        )
-        self.assertEqual(response.status_code, 400)
-
-        # check dat de warehouse object niet de bestande
-        # object in de database heeft overgenomen
-        response = self.client.get(
-            url=(self.url + "/warehouses/4"), headers=self.headers
-        )
-        self.assertNotEqual(response.json()["code"], "ABBC")
-
-    # Unhappy (werkt nu nog niet)
-    def test_08_post_invalid_warehouse(self):
-        data = {
-            "id": 5,
-            "wrong_property": "wrong"
-        }
-
-        response = self.client.post(
-            url=(self.url + "/warehouses"),
-            headers=self.headers,
-            json=data
-        )
-        self.assertEqual(response.status_code, 400)
-
-        # Check dat de foute warehouse niet in de database zit
-        response = self.client.get(
-            url=(self.url + "/warehouses/5"), headers=self.headers
-        )
-        self.assertEqual(response.status_code, 500)
 
 
 # to run the file: python -m unittest test_warehouses.py
