@@ -51,4 +51,24 @@ public class ItemController : ControllerBase
         var createdItem = _itemService.CreateItem(newItem);
         return CreatedAtAction(nameof(GetByUid), new { uid = createdItem.uid }, createdItem);
     }
+
+    // PUT: items/5
+    // Updates an existing item
+    [HttpPut("{uid}")]
+    public ActionResult<ItemCS> UpdateItem(string uid, [FromBody] ItemCS updatedItem)
+    {
+        if (updatedItem == null)
+        {
+            return BadRequest("Item is null.");
+        }
+
+        var existingItem = _itemService.GetItemById(uid);
+        if (existingItem == null)
+        {
+            return NotFound();
+        }
+
+        var updatedItemResult = _itemService.UpdateItem(uid, updatedItem);
+        return Ok(updatedItemResult);
+    }
 }
