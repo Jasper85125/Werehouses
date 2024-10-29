@@ -30,4 +30,21 @@ public class InventoryService : IInventoryService
         InventoryCS inventory = inventories.FirstOrDefault(inv => inv.Id == id);
         return inventory;
     }
+    public InventoryCS CreateInventory(InventoryCS newInventory)
+    {
+        var path = "data/inventories.json";
+
+        List<InventoryCS> inventories = GetAllInventories();
+
+
+        newInventory.Id = inventories.Count > 0 ? inventories.Max(i => i.Id) + 1 : 1;
+        inventories.Add(newInventory);
+
+
+        var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+        File.WriteAllText(path, jsonData);
+        return newInventory;
+        
+    }
+    
 }
