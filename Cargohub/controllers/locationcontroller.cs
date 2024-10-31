@@ -39,7 +39,7 @@ namespace Controllers
         [HttpPost()]
         public ActionResult<LocationCS> CreateLocation([FromBody] LocationCS location)
         {
-            if (location == null)
+            if (location is null)
             {
                 return BadRequest("Location is null.");
             }
@@ -51,9 +51,18 @@ namespace Controllers
 
         // PUT: api/warehouse/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public ActionResult<LocationCS> UpdateLocation([FromRoute]int id, [FromBody] LocationCS newLocation)
         {
-            // Replace with your logic
+            if (newLocation is null)
+            {
+                return BadRequest("Location is null.");
+            }
+            var updatedLocation = _locationService.UpdateLocation(newLocation, id);
+            if (updatedLocation is null)
+            {
+                return BadRequest("No location found with that id");
+            }
+            return Ok(updatedLocation);
         }
 
         // DELETE: api/warehouse/5
