@@ -51,7 +51,7 @@ namespace Controllers
 
         // PUT: api/warehouse/5
         [HttpPut("{id}")]
-        public ActionResult<LocationCS> Put([FromRoute]int id, [FromBody] LocationCS newLocation)
+        public ActionResult<LocationCS> UpdateLocation([FromRoute]int id, [FromBody] LocationCS newLocation)
         {
             if (newLocation is null)
             {

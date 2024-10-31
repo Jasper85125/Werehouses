@@ -23,7 +23,7 @@ namespace Tests
         [TestMethod]
         public void GetLocationsTest_Exists()
         {
-            //arrange
+            // Arrange
             var locations = new List<LocationCS>
             {
                 new LocationCS { Id = 1, warehouse_id = 1, code = "B.2.1" },
@@ -31,10 +31,10 @@ namespace Tests
             };
             _mockLocationService.Setup(service => service.GetAllLocations()).Returns(locations);
             
-            //Act
+            // Act
             var value = _locationController.GetAllLocations();
             
-            //Assert
+            // Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<LocationCS>;
             Assert.IsNotNull(okResult);
@@ -44,7 +44,7 @@ namespace Tests
         [TestMethod]
         public void GetLocationByIdTest_Exists()
         {
-            //arrange
+            // Arrange
             var locations = new List<LocationCS>
             {
                 new LocationCS { Id = 1, warehouse_id = 1, code = "B.2.1" },
@@ -52,10 +52,10 @@ namespace Tests
             };
             _mockLocationService.Setup(service => service.GetLocationById(1)).Returns(locations[0]);
             
-            //Act
+            // Act
             var value = _locationController.GetLocationById(1);
             
-            //Assert
+            // Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as LocationCS;
             Assert.IsNotNull(okResult);
@@ -66,13 +66,13 @@ namespace Tests
         [TestMethod]
         public void GetLocationByIdTest_WrongId()
         {
-            //arrange
+            // Arrange
             _mockLocationService.Setup(service => service.GetLocationById(1)).Returns((LocationCS)null);
             
-            //Act
+            // Act
             var value = _locationController.GetLocationById(1);
             
-            //Assert
+            // Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
 
@@ -80,18 +80,39 @@ namespace Tests
         public void CreateLocationTest_Success()
         {
             // Arrange
-            var newLocation = new LocationCS { Id = 1, warehouse_id = 1, code = "B.2.1" };
             var createdLocation = new LocationCS { Id = 2, warehouse_id = 5, code = "C.3.2" };
             
             // Set up the mock service to return the created order
-            _mockLocationService.Setup(service => service.CreateLocation(newLocation)).Returns(createdLocation);
+            _mockLocationService.Setup(service => service.CreateLocation(createdLocation)).Returns(createdLocation);
 
             // Act
-            var result = _locationController.CreateLocation(newLocation);
+            var result = _locationController.CreateLocation(createdLocation);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
             var createdResult = result.Result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(LocationCS));
+            var returnedLocation = createdResult.Value as LocationCS;
+            Assert.AreEqual("C.3.2", returnedLocation.code);
+            Assert.AreEqual(5, returnedLocation.warehouse_id);
+        }
+
+        [TestMethod]
+        public void UpdatedLocationTest_Success()
+        {
+            // Arrange
+            var updatedLocation = new LocationCS { Id = 1, warehouse_id = 5, code = "C.3.2"};
+
+            // Set up the mock service to return the created order
+            _mockLocationService.Setup(service => service.UpdateLocation(updatedLocation, 1)).Returns(updatedLocation);
+
+            // Act
+            var result = _locationController.UpdateLocation(1, updatedLocation);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var createdResult = result.Result as OkObjectResult;
             Assert.IsNotNull(createdResult);
             Assert.IsInstanceOfType(createdResult.Value, typeof(LocationCS));
             var returnedLocation = createdResult.Value as LocationCS;
