@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
 namespace Services;
 
 public class LocationService : ILocationService
 {
+    private string _path = "data/locations.json";
     // Constructor
     public LocationService()
     {
@@ -14,12 +16,11 @@ public class LocationService : ILocationService
 
     public List<LocationCS> GetAllLocations()
     {
-        var Path = "data/locations.json";
-        if (!File.Exists(Path))
+        if (!File.Exists(_path))
         {
             return new List<LocationCS>();
         }
-        var jsonData = File.ReadAllText(Path);
+        var jsonData = File.ReadAllText(_path);
         List<LocationCS> locations = JsonConvert.DeserializeObject<List<LocationCS>>(jsonData);
         return locations ?? new List<LocationCS>();
     }
@@ -33,15 +34,34 @@ public class LocationService : ILocationService
 
     public LocationCS CreateLocation(LocationCS newLocation)
     {
-        var Path = "data/locations.json";
-
         List<LocationCS> locations = GetAllLocations();
 
         newLocation.Id = locations.Count > 0 ? locations.Max(o => o.Id) + 1 : 1;
         locations.Add(newLocation);
 
         var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
-        File.WriteAllText(Path, jsonData);
+        File.WriteAllText(_path, jsonData);
         return newLocation;
+    }
+
+    public LocationCS UpdateLocation(LocationCS updatedLocation, int locationId)
+    {
+        var allLocations = GetAllLocations();
+        var locationToUpdate = allLocations.Single(location => location.Id == locationId);
+
+        if (locationToUpdate is not null)
+        {
+            locationToUpdate.warehouse_id = updatedLocation.warehouse_id;
+            locationToUpdate.code = updatedLocation.code;
+            locationToUpdate.name = updatedLocation.name;
+            locationToUpdate.updated_at = DateTime.UtcNow;
+
+            var jsonData = JsonConvert.SerializeObject(allLocations, Formatting.Indented);
+            File.WriteAllText(_path, jsonData);
+            return locationToUpdate;
+        }
+        return null;
+
+
     }
 }
