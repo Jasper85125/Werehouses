@@ -119,6 +119,25 @@ namespace Tests
             Assert.AreEqual("C.3.2", returnedLocation.code);
             Assert.AreEqual(5, returnedLocation.warehouse_id);
         }
+
+        [TestMethod]
+        public void UpdatedLocationTest_Failed()
+        {
+            // Arrange
+            var updatedLocation = new LocationCS { Id = 1, warehouse_id = 5, code = "C.3.2"};
+
+            // Set up the mock service to return the created order
+            _mockLocationService.Setup(service => service.UpdateLocation(updatedLocation, 0)).Returns((LocationCS)null);
+
+            // Act
+            var result = _locationController.UpdateLocation(0, updatedLocation);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+            var createdResult = result.Result as BadRequestObjectResult;
+            var returnedLocation = createdResult.Value as LocationCS;
+            Assert.IsNull(returnedLocation);
+        }
     }
 }
 
