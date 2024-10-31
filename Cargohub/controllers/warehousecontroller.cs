@@ -29,7 +29,7 @@ public class WarehouseController : ControllerBase
 
     // GET: /warehouses/{id}
     [HttpGet("{id}")]
-    public ActionResult<WarehouseCS> GetWarehouseById([FromRoute]int id)
+    public ActionResult<WarehouseCS> GetWarehouseById([FromRoute] int id)
     {
         var warehouse = _warehouseService.GetWarehouseById(id);
         if (warehouse is null)
@@ -40,17 +40,33 @@ public class WarehouseController : ControllerBase
     }
 
     // POST: /warehouses
-    [HttpPost]
-    public async Task Post([FromBody] WarehouseCS warehouse)
+    [HttpPost()]
+    public ActionResult<WarehouseCS> CreateWarehouse([FromBody] WarehouseCS newWarehouse)
     {
-        
+        if (newWarehouse is null)
+        {
+            return BadRequest("Warehouse data is null");
+        }
+
+        var createdWarehouse = _warehouseService.CreateWarehouse(newWarehouse);
+        return CreatedAtAction(nameof(GetWarehouseById), new { id = createdWarehouse.Id }, createdWarehouse);
     }
 
-    // PUT: api/warehouse/5
+    // PUT: /warehouses/{id}
     [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    public ActionResult<WarehouseCS> UpdateWarehouse([FromRoute]int id, [FromBody] WarehouseCS newWarehouse)
     {
-        // Replace with your logic
+        if (newWarehouse is null)
+        {
+            return BadRequest("Warehouse is null.");
+        }
+
+        var updatedWarehouse = _warehouseService.UpdateWarehouse(id, newWarehouse);
+        if (updatedWarehouse is null)
+        {
+            return BadRequest("No warehouse found with the given id.");
+        }
+        return Ok(updatedWarehouse);
     }
 
     // DELETE: api/warehouse/5
@@ -59,17 +75,4 @@ public class WarehouseController : ControllerBase
     {
         // Replace with your logic
     }
-    // POST: warehouses
-        // Creates a new warehouse
-        [HttpPost("warehouse")]
-        public ActionResult<WarehouseCS> CreateWarehouse([FromBody] WarehouseCS newWarehouse)
-        {
-            if (newWarehouse == null)
-            {
-                return BadRequest("Warehouse data is null");
-            }
-
-            var createdWarehouse = _warehouseService.CreateWarehouse(newWarehouse);
-            return CreatedAtAction(nameof(GetWarehouseById), new { id = createdWarehouse.Id }, createdWarehouse);
-        }
 }

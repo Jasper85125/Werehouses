@@ -6,6 +6,7 @@ namespace Services;
 
 public class WarehouseService : IWarehouseService
 {
+    private string _path = "data/warehouses.json";
     // Constructor
     public WarehouseService()
     {
@@ -14,12 +15,11 @@ public class WarehouseService : IWarehouseService
 
     public List<WarehouseCS> GetAllWarehouses()
     {
-        var Path = "data/warehouses.json";
-        if (!File.Exists(Path))
+        if (!File.Exists(_path))
         {
             return new List<WarehouseCS>();
         }
-        var jsonData = File.ReadAllText(Path);
+        var jsonData = File.ReadAllText(_path);
         List<WarehouseCS> warehouses = JsonConvert.DeserializeObject<List<WarehouseCS>>(jsonData);
         return warehouses ?? new List<WarehouseCS>();
     }
@@ -33,8 +33,6 @@ public class WarehouseService : IWarehouseService
 
     public WarehouseCS CreateWarehouse(WarehouseCS newWarehouse)
     {
-        var Path = "data/warehouses.json";
-
         List<WarehouseCS> warehouses = GetAllWarehouses();
 
         // Add the new warehouse record to the list
@@ -46,7 +44,31 @@ public class WarehouseService : IWarehouseService
 
         // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
-        File.WriteAllText(Path, jsonData);
+        File.WriteAllText(_path, jsonData);
         return newWarehouse;
+    }
+
+    public WarehouseCS UpdateWarehouse(int id, WarehouseCS updateWarehouse)
+    {
+        var allWarehouses = GetAllWarehouses();
+        var warehouseToUpdate = allWarehouses.Single(warehouse => warehouse.Id == id);
+
+        if (warehouseToUpdate is not null)
+        {
+            warehouseToUpdate.Code = updateWarehouse.Code;
+            warehouseToUpdate.Name = updateWarehouse.Name;
+            warehouseToUpdate.Address = updateWarehouse.Address;
+            warehouseToUpdate.Zip = updateWarehouse.Zip;
+            warehouseToUpdate.City = updateWarehouse.City;
+            warehouseToUpdate.Province = updateWarehouse.Province;
+            warehouseToUpdate.Country = updateWarehouse.Country;
+            warehouseToUpdate.Contact = updateWarehouse.Contact;
+            warehouseToUpdate.updated_at = DateTime.UtcNow;
+
+            var jsonData = JsonConvert.SerializeObject(allWarehouses, Formatting.Indented);
+            File.WriteAllText(_path, jsonData);
+            return warehouseToUpdate;
+        }
+        return null;
     }
 }

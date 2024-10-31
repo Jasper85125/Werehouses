@@ -5,8 +5,6 @@ public interface IWarehouseService
     List<WarehouseCS> GetAllWarehouses();
     WarehouseCS GetWarehouseById(int id);
     WarehouseCS CreateWarehouse(WarehouseCS newWarehouse);
-    // void UpdateWarehouse();
+    WarehouseCS UpdateWarehouse(int id, WarehouseCS warehouse);
     // void DeleteWarehouse();
-    // void AttendWarehouse();
-    // void ModifyWarehouse();
 }
