@@ -61,6 +61,10 @@ class TestClass(unittest.TestCase):
                 )
             )
     
+    def test_get_orders_for_client(self):
+        response = self.client.get(f"{self.url}/items/1/inventory", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+    
     def test_get_wrong_path(self):
         response = self.client.get(url=(self.url + "/items/1/error"), headers=self.headers)
 
