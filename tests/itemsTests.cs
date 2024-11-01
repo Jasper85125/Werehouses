@@ -95,5 +95,42 @@ namespace item.Tests
             Assert.AreEqual("P000002", returnedItem.uid);
             Assert.AreEqual("NewItem", returnedItem.code);
         }
+
+        [TestMethod]
+        public void UpdateItem_ReturnsOkResult_WithUpdatedItem()
+        {
+            // Arrange
+            var existingItem = new ItemCS { uid = "P000001", code = "ExistingItem" };
+            var updatedItem = new ItemCS { uid = "P000001", code = "UpdatedItem" };
+            _mockItemService.Setup(service => service.GetItemById("P000001")).Returns(existingItem);
+            _mockItemService.Setup(service => service.UpdateItem("P000001", updatedItem)).Returns(updatedItem);
+
+            // Act
+            var result = _itemController.UpdateItem("P000001", updatedItem);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(ItemCS));
+            var returnedItem = okResult.Value as ItemCS;
+            Assert.AreEqual("P000001", returnedItem.uid);
+            Assert.AreEqual("UpdatedItem", returnedItem.code);
+        }
+
+        [TestMethod]
+        public void UpdateItem_ReturnsNotFound_WhenItemDoesNotExist()
+        {
+            // Arrange
+            var updatedItem = new ItemCS { uid = "P000001", code = "UpdatedItem" };
+            _mockItemService.Setup(service => service.GetItemById("P000001")).Returns((ItemCS)null);
+
+            // Act
+            var result = _itemController.UpdateItem("P000001", updatedItem);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
     }
 }

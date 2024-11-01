@@ -71,4 +71,39 @@ public class ItemService : IItemService
 
         return item;
     }
+
+    // Method to update an existing item
+    public ItemCS UpdateItem(string uid, ItemCS item)
+    {
+        var items = GetAllItems();
+        var existingItem = items.FirstOrDefault(i => i.uid == uid);
+        if (existingItem == null)
+        {
+            return null;
+        }
+
+        // Update the properties of the existing item
+        existingItem.code = item.code;
+        existingItem.description = item.description;
+        existingItem.short_description = item.short_description;
+        existingItem.upc_code = item.upc_code;
+        existingItem.model_number = item.model_number;
+        existingItem.commodity_code = item.commodity_code;
+        existingItem.item_line = item.item_line;
+        existingItem.item_group = item.item_group;
+        existingItem.item_type = item.item_type;
+        existingItem.unit_purchase_quantity = item.unit_purchase_quantity;
+        existingItem.unit_order_quantity = item.unit_order_quantity;
+        existingItem.pack_order_quantity = item.pack_order_quantity;
+        existingItem.supplier_id = item.supplier_id;
+        existingItem.supplier_code = item.supplier_code;
+        existingItem.supplier_part_number = item.supplier_part_number;
+        existingItem.updated_at = DateTime.UtcNow;
+
+        var path = "data/items.json";
+        var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllText(path, updatedJsonData);
+
+        return existingItem;
+    }
 }
