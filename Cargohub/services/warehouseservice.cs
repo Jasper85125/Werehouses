@@ -38,9 +38,6 @@ public class WarehouseService : IWarehouseService
         // Add the new warehouse record to the list
         newWarehouse.Id = warehouses.Count > 0 ? warehouses.Max(w => w.Id) + 1 : 1;
         warehouses.Add(newWarehouse);
-        // Add the new warehouse record to the list
-        newWarehouse.Id = warehouses.Count > 0 ? warehouses.Max(w => w.Id) + 1 : 1;
-        warehouses.Add(newWarehouse);
 
         // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);

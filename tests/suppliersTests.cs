@@ -77,28 +77,71 @@ namespace Tests
         }
 
         [TestMethod]
-    public void CreateSupplierTest_Success()
-    {
-        // Arrange
-        var newSupplier = new SupplierCS { Id = 1, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404"};
-        var createdSupplier = new SupplierCS { Id = 2, Code = "H1M12", Name = "Joseph", Address = "Lissabon 402"};
+        public void CreateSupplierTest_Success()
+        {
+            // Arrange
+            var newSupplier = new SupplierCS { Id = 1, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404"};
+            var createdSupplier = new SupplierCS { Id = 2, Code = "H1M12", Name = "Joseph", Address = "Lissabon 402"};
 
-        // Set up the mock service to return the created order
-        _mockSupplierService.Setup(service => service.CreateSupplier(newSupplier)).Returns(createdSupplier);
+            // Set up the mock service to return the created order
+            _mockSupplierService.Setup(service => service.CreateSupplier(newSupplier)).Returns(createdSupplier);
 
-        // Act
-        var result = _supplierController.CreateSupplier(newSupplier);
+            // Act
+            var result = _supplierController.CreateSupplier(newSupplier);
 
-        // Assert
-        Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
-        var createdResult = result.Result as CreatedAtActionResult;
-        Assert.IsNotNull(createdResult);
-        Assert.IsInstanceOfType(createdResult.Value, typeof(SupplierCS));
-        var returnedSupplier = createdResult.Value as SupplierCS;
-        Assert.AreEqual("H1M12", returnedSupplier.Code);
-        Assert.AreEqual("Joseph", returnedSupplier.Name);
-        Assert.AreEqual("Lissabon 402", returnedSupplier.Address);
-    }
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
+            var createdResult = result.Result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(SupplierCS));
+            var returnedSupplier = createdResult.Value as SupplierCS;
+            Assert.AreEqual("H1M12", returnedSupplier.Code);
+            Assert.AreEqual("Joseph", returnedSupplier.Name);
+            Assert.AreEqual("Lissabon 402", returnedSupplier.Address);
+        }
+
+        [TestMethod]
+        public void UpdatedSupplierTest_Success()
+        {
+            // Arrange
+             var updatedSupplier = new SupplierCS { Id= 1, Code= "SUP0373", Name= "Supp & liers", Address= "Wall Street 181", address_extra = "Apt. 6996", City= "Houston", zip_code = "4002 AZ",  Province= "Texas",
+                                                    Country= "USA", contact_name = "Fem Keijzer", PhoneNumber = "(078) 0013363", Reference = "LPaJ-SUP0001"};
+
+             _mockSupplierService.Setup(service => service.UpdateSupplier(1, updatedSupplier)).Returns(updatedSupplier);
+
+            // Act
+            var result = _supplierController.UpdateSupplier(1, updatedSupplier);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var createdResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(SupplierCS));
+            var returnedSupplier = createdResult.Value as SupplierCS;
+            Assert.AreEqual(updatedSupplier.Code, returnedSupplier.Code);
+            Assert.AreEqual(updatedSupplier.Address, returnedSupplier.Address);
+            Assert.AreEqual(updatedSupplier.contact_name, returnedSupplier.contact_name);
+            Assert.AreEqual(updatedSupplier.PhoneNumber, returnedSupplier.PhoneNumber);
+        }
+
+        [TestMethod]
+        public void UpdatedSupplierTest_Failed()
+        {
+            // Arrange
+            var updatedSupplier = new SupplierCS { Id= 1, Code= "SUP0373", Name= "Supp & liers", Address= "Wall Street 181", address_extra = "Apt. 6996", City= "Houston", zip_code = "4002 AZ",  Province= "Texas",
+                                                    Country= "USA", contact_name = "Fem Keijzer", PhoneNumber = "(078) 0013363", Reference = "LPaJ-SUP0001"};
+
+             _mockSupplierService.Setup(service => service.UpdateSupplier(0, updatedSupplier)).Returns((SupplierCS)null);
+
+            // Act
+            var result = _supplierController.UpdateSupplier(0, updatedSupplier);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+            var createdResult = result.Result as BadRequestObjectResult;
+            var returnedSupplier = createdResult.Value as SupplierCS;
+            Assert.IsNull(returnedSupplier);
+        }
     }
 }
 
