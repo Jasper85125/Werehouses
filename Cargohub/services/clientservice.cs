@@ -4,7 +4,7 @@ namespace Services;
 
 public class ClientService : IClientService
 {
-    private string _path = "/data/clients.json";
+    private string _path = "data/clients.json";
     public ClientService()
     {
 
@@ -24,7 +24,7 @@ public class ClientService : IClientService
     public ClientCS GetClientById(int id)
     {
         List<ClientCS> clients = GetAllClients();
-        ClientCS client = clients.FirstOrDefault(_ => _.Id == id);
+        ClientCS client = clients.FirstOrDefault(cli => cli.Id == id);
         return client;
     }
 
