@@ -49,11 +49,21 @@ public class SupplierController : ControllerBase
         return CreatedAtAction(nameof(GetSupplierById), new { id = createdSupplier.Id }, createdSupplier);
     }
 
-    // PUT: api/warehouse/5
+    // PUT: /suppliers/{id}
     [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    public ActionResult<SupplierCS> UpdateSupplier([FromRoute]int id, [FromBody] SupplierCS newSupplier)
     {
-        // Replace with your logic
+        if (newSupplier is null)
+        {
+            return BadRequest("Supplier is null.");
+        }
+
+        var updatedSupplier = _supplierService.UpdateSupplier(id, newSupplier);
+        if (updatedSupplier is null)
+        {
+            return BadRequest("No supplier found with the given id.");
+        }
+        return Ok(updatedSupplier);
     }
 
     // DELETE: api/warehouse/5
