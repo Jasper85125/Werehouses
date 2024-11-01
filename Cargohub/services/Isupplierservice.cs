@@ -4,7 +4,7 @@ public interface ISupplierService
 {
     List<SupplierCS> GetAllSuppliers();
     SupplierCS GetSupplierById(int id);
-    // void CreateWarehouse();
-    // void UpdateWarehouse();
+    SupplierCS CreateSupplier(SupplierCS supplier);
+    SupplierCS UpdateSupplier(int id, SupplierCS supplier);
     // void DeleteWarehouse();
 }

@@ -23,7 +23,7 @@ namespace Tests
         [TestMethod]
         public void GetWarehousesTest_Exists()
         {
-            //arrange
+            // Arrange
             var warehouses = new List<WarehouseCS>
             {
                 new WarehouseCS { Id = 1, Address = "Straat 1" },
@@ -31,11 +31,11 @@ namespace Tests
             };
             _mockWarehouseService.Setup(service => service.GetAllWarehouses()).Returns(warehouses);
             
-            //Act
-            var value = _warehouseController.GetAllWarehouses();
+            // Act
+            var result = _warehouseController.GetAllWarehouses();
             
-            //Assert
-            var okResult = value.Result as OkObjectResult;
+            // Assert
+            var okResult = result.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<WarehouseCS>;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
@@ -44,7 +44,7 @@ namespace Tests
         [TestMethod]
         public void GetWarehouseByIdTest_Exists()
         {
-            //arrange
+            // Arrange
             var warehouses = new List<WarehouseCS>
             {
                 new WarehouseCS { Id = 1, Address = "Straat 1" },
@@ -52,11 +52,11 @@ namespace Tests
             };
             _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouses[0]);
             
-            //Act
-            var value = _warehouseController.GetWarehouseById(1);
+            // Act
+            var result = _warehouseController.GetWarehouseById(1);
             
-            //Assert
-            var okResult = value.Result as OkObjectResult;
+            // Assert
+            var okResult = result.Result as OkObjectResult;
             var returnedItems = okResult.Value as WarehouseCS;
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
@@ -66,14 +66,14 @@ namespace Tests
         [TestMethod]
         public void GetWarehouseByIdTest_WrongId()
         {
-            //arrange
+            // Arrange
             _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns((WarehouseCS)null);
             
-            //Act
-            var value = _warehouseController.GetWarehouseById(1);
+            // Act
+            var result = _warehouseController.GetWarehouseById(1);
             
-            //Assert
-            Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
 
         [TestMethod]
@@ -81,18 +81,62 @@ namespace Tests
         {
             // Arrange
             var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+    
             _mockWarehouseService.Setup(service => service.CreateWarehouse(warehouse)).Returns(warehouse);
             
             // Act
-            var value = _warehouseController.CreateWarehouse(warehouse);
+            var result = _warehouseController.CreateWarehouse(warehouse);
             
             // Assert
-            var createdResult = value.Result as CreatedAtActionResult;  // Use CreatedAtActionResult here
+            var createdResult = result.Result as CreatedAtActionResult;  // Use CreatedAtActionResult here
             Assert.IsNotNull(createdResult);
             
             var returnedItems = createdResult.Value as WarehouseCS;
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(warehouse.Address, returnedItems.Address);
+        }
+
+        [TestMethod]
+        public void UpdatedWarehouseTest_Success()
+        {
+            // Arrange
+            var updatedWarehouse = new WarehouseCS { Id= 1, Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
+                                                    Country= "GER", Contact= new Dictionary<string, string>{ {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}
+                                                   };
+
+             _mockWarehouseService.Setup(service => service.UpdateWarehouse(1, updatedWarehouse)).Returns(updatedWarehouse);
+
+            // Act
+            var result = _warehouseController.UpdateWarehouse(1, updatedWarehouse);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var createdResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(WarehouseCS));
+            var returnedWarehouse = createdResult.Value as WarehouseCS;
+            Assert.AreEqual(updatedWarehouse.Code, returnedWarehouse.Code);
+            Assert.AreEqual(updatedWarehouse.Address, returnedWarehouse.Address);
+        }
+
+        [TestMethod]
+        public void UpdatedWarehouseTest_Failed()
+        {
+            // Arrange
+            var updatedWarehouse = new WarehouseCS { Id= 1, Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
+                                                    Country= "GER", Contact= new Dictionary<string, string>{ {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}
+                                                   };
+
+             _mockWarehouseService.Setup(service => service.UpdateWarehouse(0, updatedWarehouse)).Returns((WarehouseCS)null);
+
+            // Act
+            var result = _warehouseController.UpdateWarehouse(0, updatedWarehouse);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+            var createdResult = result.Result as BadRequestObjectResult;
+            var returnedWarehouse = createdResult.Value as WarehouseCS;
+            Assert.IsNull(returnedWarehouse);
         }
     }
 }
