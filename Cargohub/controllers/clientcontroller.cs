@@ -3,8 +3,8 @@ using Services;
 
 namespace Controllers;
 
-[Route("clients")]
 [ApiController]
+[Route("/clients")]
 public class ClientController : ControllerBase
 {
     private readonly IClientService _clientservice;
@@ -27,9 +27,9 @@ public class ClientController : ControllerBase
 
     // GET: /clients/{id}
     [HttpGet("{id}")]
-    public ActionResult<ClientCS> GetClientById([FromRoute]int clientId)
+    public ActionResult<ClientCS> GetClientById([FromRoute]int Id)
     {
-        var client = _clientservice.GetClientById(clientId);
+        var client = _clientservice.GetClientById(Id);
         if (client is null)
         {
             return NotFound();
