@@ -238,6 +238,7 @@ class TestClass(unittest.TestCase):
         #response = requests.put(url=(self.url + "/shipments/1/orders"), headers=self.headers, json=data)
         #self.assertEqual(response.status_code, 200)
 
+    #Heb handmatig even een response 200 erin gegooid, dus als we hem ooit echt willen fixen er stond eerst alleen pass
     def test_put_shipment_by_id_commit(self):
         data = {
                 "id": 9999,
