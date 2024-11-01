@@ -61,31 +61,30 @@ namespace clients.Test
         public void CreateClient_ReturnsCreatedResult_WithNewClient()
         {
             // Arrange
-            var client = new ClientCS { Id = 1, Address = "Straat 1" };
+            var client = new ClientCS {Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"};
     
-            _mockClientService.Setup(service => service.CreateWarehouse(client)).Returns(client);
+            _clientservice.Setup(service => service.CreateClient(client)).Returns(client);
             
             // Act
-            var result = _clientController.CreateClient(client);
+            var result = _clientcontroller.CreateClient(client);
             
             // Assert
             var createdResult = result.Result as CreatedAtActionResult;  // Use CreatedAtActionResult here
             Assert.IsNotNull(createdResult);
             
-            var returnedItems = createdResult.Value as clientCS;
-            Assert.IsNotNull(returnedItems);
-            Assert.AreEqual(client.Address, returnedItems.Address);
+            var returnedClients = createdResult.Value as ClientCS;
+            Assert.IsNotNull(returnedClients);
+            Assert.AreEqual(client.Address, returnedClients.Address);
+            Assert.AreEqual(client.City, returnedClients.City);
         }
 
         [TestMethod]
         public void UpdatedClientTest_Success()
         {
             // Arrange
-            var updatedClient = new ClientCS { Id= 1, Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
-                                                    Country= "GER", Contact= new Dictionary<string, string>{ {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}
-                                                   };
+            var updatedClient = new ClientCS {Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"};
 
-             _mockClientService.Setup(service => service.UpdateClient(1, updatedClient)).Returns(updatedClient);
+             _clientservice.Setup(service => service.UpdateClient(1, updatedClient)).Returns(updatedClient);
 
             // Act
             var result = _clientcontroller.UpdateClient(1, updatedClient);
@@ -96,7 +95,7 @@ namespace clients.Test
             Assert.IsNotNull(createdResult);
             Assert.IsInstanceOfType(createdResult.Value, typeof(ClientCS));
             var returnedClient = createdResult.Value as ClientCS;
-            Assert.AreEqual(updatedClient.Code, returnedClient.Code);
+            Assert.AreEqual(updatedClient.City, returnedClient.City);
             Assert.AreEqual(updatedClient.Address, returnedClient.Address);
         }
 
@@ -104,11 +103,9 @@ namespace clients.Test
         public void UpdatedClientTest_Failed()
         {
             // Arrange
-            var updatedClient = new ClientCS { Id= 1, Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
-                                                    Country= "GER", Contact= new Dictionary<string, string>{ {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}
-                                                   };
+            var updatedClient = new ClientCS {Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"};
 
-             _mockClientService.Setup(service => service.UpdateClient(0, updatedClient)).Returns((ClientCS)null);
+             _clientservice.Setup(service => service.UpdateClient(0, updatedClient)).Returns((ClientCS)null);
 
             // Act
             var result = _clientcontroller.UpdateClient(0, updatedClient);
