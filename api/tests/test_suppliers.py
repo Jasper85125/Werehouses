@@ -29,6 +29,11 @@ class TestClass(unittest.TestCase):
         response = requests.get(url=(self.url + "/suppliers/1/items"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+    
+    def test_get_wrong_path(self):
+        response = requests.get(url=(self.url + "/suppliers/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
     def test_post_supplier(self):
         data = {
