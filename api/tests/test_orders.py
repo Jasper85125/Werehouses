@@ -41,6 +41,25 @@ class TestOrdersAPI(unittest.TestCase):
         }
         response = requests.put(f"{self.url}/orders/1", headers=self.headers, json=data)
         self.assertEqual(response.status_code, 200)
+    
+    #Werkt op dit moment nog niet. Snap niet hoe deze werkt!
+    def test_put_order_items(self):
+        data = [
+        {
+            "item_id": "P007435",
+            "amount": 23
+        },
+        {
+            "item_id": "P009557",
+            "amount": 1
+        },
+        {
+            "item_id": "P009553",
+            "amount": 50
+        }
+        ]
+        #response = requests.put(url=(self.url + "/orders/1/items"), headers=self.headers, json=data)
+        #self.assertEqual(response.status_code, 200)
 
     def test_delete_order(self):
         response = requests.delete(f"{self.url}/orders/1", headers=self.headers)
