@@ -59,6 +59,11 @@ class TestItemTypesAPI(unittest.TestCase):
                 )
             )
     
+    def test_get_items_by_item_type_id(self):
+        response = self.client.get(url=(self.url + "/item_types/1/items"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 200)
+    
     def test_get_wrong_path(self):
         response = self.client.get(url=(self.url + "/item_types/1/error"), headers=self.headers)
 
