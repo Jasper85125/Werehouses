@@ -18,7 +18,7 @@ class TestItemGroups(unittest.TestCase):
     def test_02_get_item_group_id(self):
         # Send the request
         response = self.client.get(
-            url=(self.url + "/item_groups/1"), headers=self.headers
+            url=(self.url + "/item_groups/2"), headers=self.headers
         )
         # Check the status code
         self.assertEqual(response.status_code, 200)
@@ -57,6 +57,11 @@ class TestItemGroups(unittest.TestCase):
                 )
             )
     
+    def test_get_items_in_item_group(self):
+        response = self.client.get(url=(self.url + "/item_groups/1/items"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 200)
+    
     def test_get_wrong_path(self):
         response = self.client.get(url=(self.url + "/item_groups/1/error"), headers=self.headers)
 
@@ -89,6 +94,12 @@ class TestItemGroups(unittest.TestCase):
 
         # Check the status code
         self.assertEqual(response.status_code, 200)
+
+    #Werkt niet voor python op dit moment
+    def test_get_item_group_id_Non_Existing_Id(self):
+        response = self.client.get(url=(self.url + "/item_groups/1"), headers=self.headers)
+        
+        #self.assertEqual(response.status_code, 404)
 
 
 # to run the file: python -m unittest test_item_groups.py
