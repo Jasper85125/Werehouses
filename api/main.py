@@ -699,8 +699,8 @@ class ApiRequestHandler(http.server.BaseHTTPRequestHandler):
                 path = self.path.split("/")
                 if len(path) > 3 and path[1] == "api" and path[2] == "v1":
                     self.handle_put_version_1(path[3:], user)
-            except Exception:
-                print(Exception.__annotations__)
+            except Exception as e:
+                print(e)
                 self.send_response(500)
                 self.end_headers()
 

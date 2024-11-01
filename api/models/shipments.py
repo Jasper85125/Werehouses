@@ -40,46 +40,46 @@ class Shipments(Base):
 
     def update_items_in_shipment(self, shipment_id, items):
         shipment = self.get_shipment(shipment_id)
-        current = shipment["items"]
-        for x in current:
-            found = False
-            for y in items:
-                if x["item_id"] == y["item_id"]:
-                    found = True
-                    break
-            if not found:
-                inventories = data_provider.fetch_inventory_pool() \
-                    .get_inventories_for_item(x["item_id"])
-                max_ordered = -1
-                for z in inventories:
-                    if z["total_ordered"] > max_ordered:
-                        max_ordered = z["total_ordered"]
-                        max_inventory = z
-                max_inventory["total_ordered"] -= x["amount"]
-                max_inventory["total_expected"] = (
-                    y["total_on_hand"] + y["total_ordered"]
+        current_items = shipment.get("items", [])  # Get current items in the shipment
+        new_items = items.get("items", [])         # Get new items from the request data
+
+        # Process items that are removed from the shipment (in current_items but not in new_items)
+        for current_item in current_items:
+            item_id = current_item.get("item_id")
+            matching_new_item = next((ni for ni in new_items if ni.get("item_id") == item_id), None)
+
+            if not matching_new_item:
+                # If current_item is not found in new_items, adjust inventory
+                inventories = data_provider.fetch_inventory_pool().get_inventories_for_item(item_id)
+                for inventory in inventories:
+                    inventory["total_ordered"] -= current_item["amount"]
+                    inventory["total_expected"] = (
+                        inventory.get("total_on_hand", 0) + inventory["total_ordered"]
+                    )
+                    data_provider.fetch_inventory_pool().update_inventory(inventory["id"], inventory)
+
+        # Process items that are either updated or added in the new items list
+        for new_item in new_items:
+            item_id = new_item.get("item_id")
+            matching_current_item = next((ci for ci in current_items if ci.get("item_id") == item_id), None)
+
+            if matching_current_item:
+                # If item exists in current_items, adjust for quantity change
+                amount_diff = new_item["amount"] - matching_current_item["amount"]
+            else:
+                # If item does not exist in current_items, treat the full amount as new
+                amount_diff = new_item["amount"]
+
+            inventories = data_provider.fetch_inventory_pool().get_inventories_for_item(item_id)
+            for inventory in inventories:
+                inventory["total_ordered"] += amount_diff
+                inventory["total_expected"] = (
+                    inventory.get("total_on_hand", 0) + inventory["total_ordered"]
                 )
-                data_provider.fetch_inventory_pool() \
-                    .update_inventory(max_inventory["id"], max_inventory)
-        for x in current:
-            for y in items:
-                if x["item_id"] == y["item_id"]:
-                    inventories = data_provider.fetch_inventory_pool() \
-                        .get_inventories_for_item(x["item_id"])
-                    max_ordered = -1
-                    max_inventory
-                    for z in inventories:
-                        if z["total_ordered"] > max_ordered:
-                            max_ordered = z["total_ordered"]
-                            max_inventory = z
-                    max_inventory["total_ordered"] += y["amount"] - x["amount"]
-                    max_inventory["total_expected"] = (
-                        y["total_on_hand"] + y["total_ordered"]
-                    )
-                    data_provider.fetch_inventory_pool().update_inventory(
-                        max_inventory["id"], max_inventory
-                    )
-        shipment["items"] = items
+                data_provider.fetch_inventory_pool().update_inventory(inventory["id"], inventory)
+
+        # Update shipment items with the new items list only
+        shipment["items"] = new_items
         self.update_shipment(shipment_id, shipment)
 
     def remove_shipment(self, shipment_id):
