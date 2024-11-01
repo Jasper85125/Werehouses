@@ -2,13 +2,6 @@ import httpx
 import unittest
 import requests
 
-# class TestWarehouses(unittest.TestCase):
-#     def setUp(self) -> None:
-#         self.warehouses = Warehouses("../data/")
-
-#     def test_loaded(self):
-#         self.assertGreater(len(self.warehouses.get_warehouses()), 0)
-
 
 class TestClass(unittest.TestCase):
     def setUp(self):
