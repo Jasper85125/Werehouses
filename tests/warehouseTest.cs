@@ -133,8 +133,8 @@ namespace Tests
             var result = _warehouseController.UpdateWarehouse(0, updatedWarehouse);
 
             // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
-            var createdResult = result.Result as BadRequestObjectResult;
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+            var createdResult = result.Result as NotFoundObjectResult;
             var returnedWarehouse = createdResult.Value as WarehouseCS;
             Assert.IsNull(returnedWarehouse);
         }

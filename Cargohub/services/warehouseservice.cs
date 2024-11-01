@@ -7,7 +7,6 @@ namespace Services;
 public class WarehouseService : IWarehouseService
 {
     private string _path = "data/warehouses.json";
-    // Constructor
     public WarehouseService()
     {
         // Initialization code here

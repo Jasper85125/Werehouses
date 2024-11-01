@@ -56,6 +56,69 @@ namespace clients.Test
             Assert.IsNotNull(resultok);
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
         }
+
+        [TestMethod]
+        public void CreateClient_ReturnsCreatedResult_WithNewClient()
+        {
+            // Arrange
+            var client = new ClientCS { Id = 1, Address = "Straat 1" };
+    
+            _mockClientService.Setup(service => service.CreateWarehouse(client)).Returns(client);
+            
+            // Act
+            var result = _clientController.CreateClient(client);
+            
+            // Assert
+            var createdResult = result.Result as CreatedAtActionResult;  // Use CreatedAtActionResult here
+            Assert.IsNotNull(createdResult);
+            
+            var returnedItems = createdResult.Value as clientCS;
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(client.Address, returnedItems.Address);
+        }
+
+        [TestMethod]
+        public void UpdatedClientTest_Success()
+        {
+            // Arrange
+            var updatedClient = new ClientCS { Id= 1, Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
+                                                    Country= "GER", Contact= new Dictionary<string, string>{ {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}
+                                                   };
+
+             _mockClientService.Setup(service => service.UpdateClient(1, updatedClient)).Returns(updatedClient);
+
+            // Act
+            var result = _clientcontroller.UpdateClient(1, updatedClient);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var createdResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(ClientCS));
+            var returnedClient = createdResult.Value as ClientCS;
+            Assert.AreEqual(updatedClient.Code, returnedClient.Code);
+            Assert.AreEqual(updatedClient.Address, returnedClient.Address);
+        }
+
+        [TestMethod]
+        public void UpdatedClientTest_Failed()
+        {
+            // Arrange
+            var updatedClient = new ClientCS { Id= 1, Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
+                                                    Country= "GER", Contact= new Dictionary<string, string>{ {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}
+                                                   };
+
+             _mockClientService.Setup(service => service.UpdateClient(0, updatedClient)).Returns((ClientCS)null);
+
+            // Act
+            var result = _clientcontroller.UpdateClient(0, updatedClient);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+            var createdResult = result.Result as NotFoundObjectResult;
+            var returnedClient = createdResult.Value as ClientCS;
+            Assert.IsNull(returnedClient);
+        }
     }
 
 }
