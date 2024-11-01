@@ -98,7 +98,7 @@ public class ItemService : IItemService
         existingItem.supplier_id = item.supplier_id;
         existingItem.supplier_code = item.supplier_code;
         existingItem.supplier_part_number = item.supplier_part_number;
-        existingItem.updated_at = item.updated_at;
+        existingItem.updated_at = DateTime.UtcNow;
 
         var path = "data/items.json";
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
