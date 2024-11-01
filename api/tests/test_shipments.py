@@ -121,6 +121,11 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/shipments/1/orders"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+    
+    def test_get_wrong_path(self):
+        response = requests.get(url=(self.url + "/shipments/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
     def test_post_shipment(self):
         data = {

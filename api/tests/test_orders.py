@@ -13,6 +13,11 @@ class TestOrdersAPI(unittest.TestCase):
     def test_get_order_by_id(self):
         response = requests.get(f"{self.url}/orders/1", headers=self.headers)
         self.assertEqual(response.status_code, 200)
+    
+    def test_get_wrong_path(self):
+        response = requests.get(url=(self.url + "/orders/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
     def test_post_order(self):
         data = {

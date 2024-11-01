@@ -58,6 +58,11 @@ class TestItemTypesAPI(unittest.TestCase):
                     for item_type in response.json()
                 )
             )
+    
+    def test_get_wrong_path(self):
+        response = self.client.get(url=(self.url + "/item_types/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
 
     # Updates an item type based on the given item type id

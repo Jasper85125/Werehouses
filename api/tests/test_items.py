@@ -60,6 +60,11 @@ class TestClass(unittest.TestCase):
                     for item in response.json()
                 )
             )
+    
+    def test_get_wrong_path(self):
+        response = self.client.get(url=(self.url + "/items/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
     # This adds a new item object
     def test_04_post_item(self):

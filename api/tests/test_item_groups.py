@@ -56,6 +56,11 @@ class TestItemGroups(unittest.TestCase):
                     for item_group in response.json()
                 )
             )
+    
+    def test_get_wrong_path(self):
+        response = self.client.get(url=(self.url + "/item_groups/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
     # Overwrites an item group based on the given item group-id
     def test_05_put_item_group_id(self):

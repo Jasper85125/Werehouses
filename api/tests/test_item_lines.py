@@ -57,6 +57,11 @@ class TestItemLines(unittest.TestCase):
                     for item_line in response.json()
                 )
             )
+    
+    def test_get_wrong_path(self):
+        response = self.client.get(url=(self.url + "/item_lines/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
     # Overwrites an item line based on the given item line id
     def test_put_item_line_id(self):
