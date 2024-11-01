@@ -57,6 +57,11 @@ class TestItemLines(unittest.TestCase):
                     for item_line in response.json()
                 )
             )
+
+    def test_get_items_in_item_lines(self):
+        response = self.client.get(url=(self.url + "/item_lines/1/items"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 200)
     
     def test_get_wrong_path(self):
         response = self.client.get(url=(self.url + "/item_lines/1/error"), headers=self.headers)
