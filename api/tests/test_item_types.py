@@ -32,13 +32,14 @@ class TestItemTypesAPI(unittest.TestCase):
         # Check that the item type object has the correct properties
         self.assertTrue(checkItemType(response.json()))
     
+    #c# fix
     def test_get_item_type_non_existing_id(self):
         # Send the request
         response = self.client.get(
             url=(self.url + "/item_types/800000000"), headers=self.headers
         )
         # Check the status code
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_item_types(self):
         # Send the request
@@ -98,6 +99,7 @@ class TestItemTypesAPI(unittest.TestCase):
         self.assertTrue(checkItemType(data))
         self.assertEqual(response.status_code, 200)
     
+    #C# fix
     def test_put_item_type_id_wrong_info(self):
         data = {
             "id": 4,
@@ -116,7 +118,7 @@ class TestItemTypesAPI(unittest.TestCase):
 
         # Check the status code
         self.assertFalse(checkItemType(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     # This deletes an item type based on an id
     def test_delete_item_type_id(self):

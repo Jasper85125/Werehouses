@@ -30,13 +30,14 @@ class TestItemGroups(unittest.TestCase):
         # Check that the item group object has the correct properties
         self.assertTrue(checkItemGroup(response.json()))
     
+    # c# fix
     def test_get_item_group_non_existing_id(self):
         # Send the request
         response = self.client.get(
             url=(self.url + "/item_groups/2000000000"), headers=self.headers
         )
         # Check the status code
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_item_groups(self):
         # Send the request
@@ -94,6 +95,7 @@ class TestItemGroups(unittest.TestCase):
         self.assertTrue(checkItemGroup(data))
         self.assertEqual(response.status_code, 200)
     
+    #c# fix
     def test_put_item_group_id_wrong_info(self):
         data = {
             "id": 1,
@@ -110,7 +112,7 @@ class TestItemGroups(unittest.TestCase):
 
         # Check the status code
         self.assertFalse(checkItemGroup(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     # This deletes an item group based on an id
     def test_delete_item_group_id(self):
@@ -123,10 +125,11 @@ class TestItemGroups(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     #Werkt niet voor python op dit moment
+    #c# fix
     def test_get_item_group_id_Non_Existing_Id(self):
         response = self.client.get(url=(self.url + "/item_groups/1"), headers=self.headers)
         
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
 
 # to run the file: python -m unittest test_item_groups.py

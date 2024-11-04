@@ -24,10 +24,11 @@ class TestClass(unittest.TestCase):
         
         self.assertEqual(response.status_code, 200)
     
-    def test_get_supplier_id(self):
+    #C# fix
+    def test_get_supplier_id_non_existing_id(self):
         response = requests.get(url=(self.url + "/suppliers/10000000"), headers=self.headers)
         
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_items_from_supplier(self):
         response = requests.get(url=(self.url + "/suppliers/1/items"), headers=self.headers)
@@ -62,6 +63,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkSupplier(data))
         self.assertEqual(response.status_code, 201)
     
+    #C# fix
     def test_post_supplier_wrong_info(self):
         data = {
         "id": 678098,
@@ -83,7 +85,7 @@ class TestClass(unittest.TestCase):
         response = requests.post(url=(self.url + "/suppliers"), headers=self.headers, json=data)
 
         self.assertFalse(checkSupplier(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_put_supplier_id(self):
         data = {
@@ -108,6 +110,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkSupplier(data))
         self.assertEqual(response.status_code, 200)
     
+    #C# fix
     def test_put_supplier_id_wrong_info(self):
         data = {
         "id": 2,
@@ -129,7 +132,7 @@ class TestClass(unittest.TestCase):
         response = requests.put(url=(self.url + "/suppliers/2"), headers=self.headers, json=data)
 
         self.assertFalse(checkSupplier(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_delete_supplier_id(self):
         response = requests.delete(url=(self.url + "/suppliers/3"), headers=self.headers)

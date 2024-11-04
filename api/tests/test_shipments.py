@@ -29,11 +29,12 @@ class TestClass(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
     
+    #C# fix  
     def test_get_shipments_by_non_existing_id(self):
         response = requests.get(
             url=(self.url + "/shipments/10000000000"), headers=self.headers)
 
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_shipments_by_id_items(self):
         response = requests.get(
@@ -94,7 +95,8 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkShipment(data))
         self.assertEqual(response.status_code, 201)
     
-    def test_post_shipment(self):
+    #C# fix
+    def test_post_shipment_wrong_info(self):
         data = {
             "id": 9999,
             "order_id": None,
@@ -134,7 +136,7 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/shipments"), headers=self.headers, json=data)
 
         self.assertFalse(checkShipment(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_put_shipment_by_id(self):
         data = {
@@ -178,7 +180,8 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkShipment(data))
         self.assertEqual(response.status_code, 200)
     
-    def test_put_shipment_by_id(self):
+    #C# fix
+    def test_put_shipment_by_id_wrong_info(self):
         data = {
             "id": 9999,
             "order_id": 9999,
@@ -218,7 +221,7 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/shipments/9999"), headers=self.headers, json=data)
         
         self.assertFalse(checkShipment(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_put_shipment_by_id_items(self):
         data = {
