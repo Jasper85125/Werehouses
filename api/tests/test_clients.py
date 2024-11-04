@@ -123,7 +123,7 @@ class TestClass(unittest.TestCase):
 
         # Check de status code
         self.assertFalse(checkClient(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     # Overschrijft een warehouse op basis van de opgegeven warehouse-id
 
@@ -173,7 +173,7 @@ class TestClass(unittest.TestCase):
 
         self.assertFalse(checkClient(data))
         # Check de status code
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_delete_client_id(self):
         # Stuur de request

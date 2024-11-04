@@ -154,7 +154,7 @@ class TestOrdersAPI(unittest.TestCase):
         "notes": None,
         "shipping_notes": None,
         "picking_notes": None,
-        "warehouse_id": 18,
+        "warehouse_id": None,
         "ship_to": None,
         "bill_to": None,
         "shipment_id": 1,
@@ -176,7 +176,7 @@ class TestOrdersAPI(unittest.TestCase):
         response = requests.put(f"{self.url}/orders/1", headers=self.headers, json=data)
         
         self.assertFalse(checkOrder(data))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
     
     #Werkt op dit moment nog niet. Snap niet hoe deze werkt!
     def test_put_items_in_order(self):
