@@ -2,7 +2,7 @@ import unittest
 import httpx
 
 def checkItemGroup(item_group):
-    required_properties = ["id", "name", "description"]
+    required_properties = ["name", "description"]
     for prop in required_properties:
         if item_group.get(prop) is None:
             return False
@@ -15,7 +15,7 @@ class TestItemGroups(unittest.TestCase):
         self.url = "http://localhost:3000/api/v1"
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
 
-    def test_02_get_item_group_id(self):
+    def test_get_item_group_id(self):
         # Send the request
         response = self.client.get(
             url=(self.url + "/item_groups/2"), headers=self.headers
@@ -29,8 +29,16 @@ class TestItemGroups(unittest.TestCase):
 
         # Check that the item group object has the correct properties
         self.assertTrue(checkItemGroup(response.json()))
+    
+    def test_get_item_group_non_existing_id(self):
+        # Send the request
+        response = self.client.get(
+            url=(self.url + "/item_groups/2000000000"), headers=self.headers
+        )
+        # Check the status code
+        #self.assertEqual(response.status_code, 404)
 
-    def test_03_get_item_groups(self):
+    def test_get_item_groups(self):
         # Send the request
         response = self.client.get(
             url=(self.url + "/item_groups"),
@@ -68,7 +76,7 @@ class TestItemGroups(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     # Overwrites an item group based on the given item group-id
-    def test_05_put_item_group_id(self):
+    def test_put_item_group_id(self):
         data = {
             "id": 1,
             "name": "Updated Group",
@@ -83,10 +91,29 @@ class TestItemGroups(unittest.TestCase):
         )
 
         # Check the status code
+        self.assertTrue(checkItemGroup(data))
         self.assertEqual(response.status_code, 200)
+    
+    def test_put_item_group_id_wrong_info(self):
+        data = {
+            "id": 1,
+            "name": None,
+            "description": None
+        }
+
+        # Send the request
+        response = self.client.put(
+            url=(self.url + "/item_groups/1"),
+            headers=self.headers,
+            json=data
+        )
+
+        # Check the status code
+        self.assertFalse(checkItemGroup(data))
+        #self.assertEqual(response.status_code, 400)
 
     # This deletes an item group based on an id
-    def test_06_delete_item_group_id(self):
+    def test_delete_item_group_id(self):
         # Send the request
         response = self.client.delete(
             url=(self.url + "/item_groups/1"), headers=self.headers

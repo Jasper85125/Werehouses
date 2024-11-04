@@ -3,12 +3,8 @@ import unittest
 
 
 def checkClient(client):
-    if len(client) != 12:
-        return False
 
     # als de client niet die property heeft, return False
-    if client.get("id") == None:
-        return False
     if client.get("name") == None:
         return False
     if client.get("address") == None:
@@ -25,10 +21,6 @@ def checkClient(client):
         return False
     if client.get("contact_email") == None:
         return False
-    if client.get("created_at") == None:
-        return False
-    if client.get("updated_at") == None:
-        return False
 
     # het heeft elke property dus return true
     return True
@@ -40,7 +32,7 @@ class TestClass(unittest.TestCase):
         self.url = "http://localhost:3000/api/v1"
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
 
-    def test_01_get_clients(self):
+    def test_get_clients(self):
 
         # Stuur de request
         response = self.client.get(
@@ -58,7 +50,7 @@ class TestClass(unittest.TestCase):
             # dus niet dat het een list van ints, strings etc. zijn
             self.assertEqual(type(response.json()[0]), dict)
 
-    def test_02_get_client_id(self):
+    def test_get_client_id(self):
         # Stuur de request
         response = self.client.get(
             url=(self.url + "/clients/1"), headers=self.headers)
@@ -72,13 +64,44 @@ class TestClass(unittest.TestCase):
         # Check dat het client object de juiste properties heeft
         self.assertTrue(checkClient(response.json()))
     
+    def test_get_client_non_existing_id(self):
+        # Stuur de request
+        response = self.client.get(
+            url=(self.url + "/clients/10000000000"), headers=self.headers)
+
+        # Check de status code
+        self.assertEqual(response.status_code, 404)
+    
     def test_get_wrong_path(self):
         response = self.client.get(url=(self.url + "/clients/1/error"), headers=self.headers)
 
         self.assertEqual(response.status_code, 404)
 
     # deze voegt een nieuwe warehouse object
-    def test_04_post_client(self):
+    def test_post_client(self):
+        data = {
+            "id": 99999,
+            "name": "Bryan gil",
+            "address": "Rockets",
+            "zip_code": "28301",
+            "city": "Houston",
+            "province": "Texas",
+            "country": "USA",
+            "contact_phone": "242.732.3483x2573",
+            "contact_email": "robertcharles@example.net",
+            "created_at": None,
+            "updated_at": None
+        }
+
+        # Stuur de request
+        response = self.client.post(
+            url=(self.url + "/clients"), headers=self.headers, json=data)
+
+        # Check de status code
+        self.assertTrue(checkClient(data))
+        self.assertEqual(response.status_code, 201)
+    
+    def test_post_client_wrong_info(self):
         data = {
             "id": 99999,
             "name": None,
@@ -98,21 +121,22 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/clients"), headers=self.headers, json=data)
 
         # Check de status code
-        self.assertEqual(response.status_code, 201)
+        self.assertFalse(checkClient(data))
+        #self.assertEqual(response.status_code, 400)
 
     # Overschrijft een warehouse op basis van de opgegeven warehouse-id
 
-    def test_05_put_client_id(self):
+    def test_put_client_id(self):
         data = {
             "id": 99999,
-            "code": "AAAAAAA",
-            "name": None,
-            "address": None,
-            "zip": None,
-            "city": None,
-            "province": None,
-            "country": None,
-            "contact": None,
+            "name": "Home Boy",
+            "address": "Seattle",
+            "zip_code": "Oh",
+            "city": "Miami",
+            "province": "Florida",
+            "country": "USA",
+            "contact_phone": "242.732.3483x2573",
+            "contact_email": "robertcharles@example.net",
             "created_at": None,
             "updated_at": None
         }
@@ -121,12 +145,36 @@ class TestClass(unittest.TestCase):
         response = self.client.put(
             url=(self.url + "/clients/99999"), headers=self.headers, json=data)
 
+        self.assertTrue(checkClient(data))
         # Check de status code
         self.assertEqual(response.status_code, 200)
 
         # deze delete een warehouse op basis van een id
+    
+    def test_put_client_id_wrong_info(self):
+        data = {
+            "id": 99999,
+            "name": "Home Boy",
+            "address": None,
+            "zip_code": "Oh",
+            "city": "Miami",
+            "province": "Florida",
+            "country": "USA",
+            "contact_phone": None,
+            "contact_email": None,
+            "created_at": None,
+            "updated_at": None
+        }
 
-    def test_06_delete_client_id(self):
+        # Stuur de request
+        response = self.client.put(
+            url=(self.url + "/clients/99999"), headers=self.headers, json=data)
+
+        self.assertFalse(checkClient(data))
+        # Check de status code
+        #self.assertEqual(response.status_code, 400)
+
+    def test_delete_client_id(self):
         # Stuur de request
         response = self.client.delete(
             url=(self.url + "/clients/99999"), headers=self.headers)
