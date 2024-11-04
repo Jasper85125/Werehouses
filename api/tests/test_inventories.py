@@ -31,7 +31,7 @@ class TestClass(unittest.TestCase):
         response = requests.get(
             url=(self.url + "/inventories/10000000000"), headers=self.headers)
 
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_post_inventory(self):
         data = {
@@ -75,7 +75,7 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/inventories"), headers=self.headers, json=data)
 
         self.assertFalse(checkInventory(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
 
     def test_put_inventory_id(self):
@@ -120,7 +120,7 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/inventories/99999"), headers=self.headers, json=data)
         
         self.assertFalse(checkInventory(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_delete_inventory_id(self):
         response = requests.delete(

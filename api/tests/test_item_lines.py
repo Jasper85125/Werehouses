@@ -36,7 +36,7 @@ class TestItemLines(unittest.TestCase):
             url=(self.url + "/item_lines/1000000000"), headers=self.headers
         )
         
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_item_lines(self):
         # Send the request
@@ -114,7 +114,7 @@ class TestItemLines(unittest.TestCase):
 
         self.assertFalse(checkItemLine(data))
         # Check the status code
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     # This deletes an item line based on an id
     def test_delete_item_line_id(self):

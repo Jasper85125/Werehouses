@@ -33,7 +33,7 @@ class TestClass(unittest.TestCase):
         response = requests.get(
             url=(self.url + "/shipments/10000000000"), headers=self.headers)
 
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_shipments_by_id_items(self):
         response = requests.get(
@@ -134,7 +134,7 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/shipments"), headers=self.headers, json=data)
 
         self.assertFalse(checkShipment(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_put_shipment_by_id(self):
         data = {
@@ -218,7 +218,7 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/shipments/9999"), headers=self.headers, json=data)
         
         self.assertFalse(checkShipment(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_put_shipment_by_id_items(self):
         data = {

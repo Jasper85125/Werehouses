@@ -38,7 +38,7 @@ class TestItemTypesAPI(unittest.TestCase):
             url=(self.url + "/item_types/800000000"), headers=self.headers
         )
         # Check the status code
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_item_types(self):
         # Send the request
@@ -116,7 +116,7 @@ class TestItemTypesAPI(unittest.TestCase):
 
         # Check the status code
         self.assertFalse(checkItemType(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     # This deletes an item type based on an id
     def test_delete_item_type_id(self):

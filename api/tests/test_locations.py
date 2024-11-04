@@ -26,7 +26,7 @@ class TestClass(unittest.TestCase):
     def test_get_location_non_existing_id(self):
         response = requests.get(url=(self.url + "/locations/10000000"), headers=self.headers)
         
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_post_location(self):
         data = {
@@ -56,7 +56,7 @@ class TestClass(unittest.TestCase):
         response = requests.post(url=(self.url + "/locations"), headers=self.headers, json=data)
 
         self.assertFalse(checkLocation(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_put_location_id(self):
         data = {
@@ -86,7 +86,7 @@ class TestClass(unittest.TestCase):
         response = requests.put(url=(self.url + "/locations/1"), headers=self.headers, json=data)
 
         self.assertFalse(checkLocation(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_delete_location_id(self):
         response = requests.delete(url=(self.url + "/locations/2"), headers=self.headers)

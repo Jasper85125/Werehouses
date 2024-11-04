@@ -24,7 +24,7 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/items/0"), headers=self.headers
         )
         
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_item_id(self):
         # Send the request
@@ -120,7 +120,7 @@ class TestClass(unittest.TestCase):
         )
 
         self.assertFalse(checkItem(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     # Overwrites an item based on the given item-id
     def test_put_item_id(self):
@@ -163,7 +163,7 @@ class TestClass(unittest.TestCase):
         self.assertFalse(checkItem(data))
 
         # Check the status code
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     # This deletes an item based on an id
     def test_delete_item_id(self):

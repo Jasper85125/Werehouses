@@ -25,7 +25,7 @@ class TestOrdersAPI(unittest.TestCase):
         
     def test_get_order_by_non_existing_id(self):
         response = requests.get(f"{self.url}/orders/10000000", headers=self.headers)
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_wrong_path(self):
         response = requests.get(url=(self.url + "/orders/1/error"), headers=self.headers)
@@ -102,7 +102,7 @@ class TestOrdersAPI(unittest.TestCase):
         response = requests.post(f"{self.url}/orders", headers=self.headers, json=data)
 
         self.assertFalse(checkOrder(data))
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_put_order(self):
         data = {
@@ -174,7 +174,7 @@ class TestOrdersAPI(unittest.TestCase):
         response = requests.put(f"{self.url}/orders/1", headers=self.headers, json=data)
         
         self.assertFalse(checkOrder(data))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
     
     #Werkt op dit moment nog niet. Snap niet hoe deze werkt!
     def test_put_order_items(self):
