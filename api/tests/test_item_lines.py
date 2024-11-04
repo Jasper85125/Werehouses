@@ -30,13 +30,14 @@ class TestItemLines(unittest.TestCase):
         # Check that the item line object has the correct properties
         self.assertTrue(checkItemLine(response.json()))
     
+    #c# fix
     def test_get_item_line_non_existing_id(self):
         # Send the request
         response = self.client.get(
             url=(self.url + "/item_lines/1000000000"), headers=self.headers
         )
         
-        #self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_item_lines(self):
         # Send the request
@@ -95,7 +96,7 @@ class TestItemLines(unittest.TestCase):
         self.assertTrue(checkItemLine(data))
         # Check the status code
         self.assertEqual(response.status_code, 200)
-
+    #c# fix
     def test_put_item_line_id_wrong_info(self):
         data = {
             "id": 0,
@@ -114,7 +115,7 @@ class TestItemLines(unittest.TestCase):
 
         self.assertFalse(checkItemLine(data))
         # Check the status code
-        #self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     # This deletes an item line based on an id
     def test_delete_item_line_id(self):
