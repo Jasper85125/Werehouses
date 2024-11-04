@@ -32,6 +32,7 @@ class TestItemTypesAPI(unittest.TestCase):
         # Check that the item type object has the correct properties
         self.assertTrue(checkItemType(response.json()))
     
+    #c# fix
     def test_get_item_type_non_existing_id(self):
         # Send the request
         response = self.client.get(
@@ -98,6 +99,7 @@ class TestItemTypesAPI(unittest.TestCase):
         self.assertTrue(checkItemType(data))
         self.assertEqual(response.status_code, 200)
     
+    #C# fix
     def test_put_item_type_id_wrong_info(self):
         data = {
             "id": 4,

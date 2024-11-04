@@ -23,6 +23,7 @@ class TestClass(unittest.TestCase):
         
         self.assertEqual(response.status_code, 200)
     
+    #c# fix
     def test_get_location_non_existing_id(self):
         response = requests.get(url=(self.url + "/locations/10000000"), headers=self.headers)
         
@@ -42,7 +43,7 @@ class TestClass(unittest.TestCase):
 
         self.assertTrue(checkLocation(data))
         self.assertEqual(response.status_code, 201)
-    
+    #C# fix
     def test_post_location_wrong_info(self):
         data = {
         "id": 98983,
@@ -72,7 +73,7 @@ class TestClass(unittest.TestCase):
 
         self.assertTrue(checkLocation(data))
         self.assertEqual(response.status_code, 200)
-    
+    #C# fix
     def test_put_location_id_wrong_info(self):
         data = {
         "id": 69696,

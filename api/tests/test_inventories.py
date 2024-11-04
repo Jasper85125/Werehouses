@@ -27,6 +27,7 @@ class TestClass(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    # c# fix
     def test_get_inventory_non_existing_id(self):
         response = requests.get(
             url=(self.url + "/inventories/10000000000"), headers=self.headers)
@@ -55,6 +56,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkInventory(data))
         self.assertEqual(response.status_code, 201)
 
+    # c# fix
     def test_post_inventory_wrong_info(self):
         data = {
             "id": 99999,
@@ -100,6 +102,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkInventory(data))
         self.assertEqual(response.status_code, 200)
     
+    #c# fix
     def test_put_inventory_id_wrong_info(self):
         data = {
             "id": 99999,

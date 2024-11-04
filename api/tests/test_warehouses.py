@@ -24,6 +24,7 @@ class TestClass(unittest.TestCase):
         
         self.assertEqual(response.status_code, 200)
     
+    #C# fix
     def test_get_warehouse_non_existing_id(self):
         response = requests.get(url=(self.url + "/warehouses/-1"), headers=self.headers)
         
@@ -63,6 +64,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkWarehouse(data))
         self.assertEqual(response.status_code, 201)
     
+    #C# fix
     def test_post_warehouse_wrong_info(self):
         data = {
         "id": None,
@@ -111,6 +113,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkWarehouse(data))
         self.assertEqual(response.status_code, 200)
 
+    #C# fix
     def test_put_warehouse_id_wrong_info(self):
         data = {
         "id": 99999,

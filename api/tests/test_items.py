@@ -19,6 +19,7 @@ class TestClass(unittest.TestCase):
         self.url = "http://localhost:3000/api/v1"
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
     
+    #c# fix
     def test_get_item_non_existing_id(self):
         response = self.client.get(
             url=(self.url + "/items/0"), headers=self.headers
@@ -104,6 +105,7 @@ class TestClass(unittest.TestCase):
         # Check the status code
         self.assertEqual(response.status_code, 201)
     
+    #C# fix
     def test_post_item_wrong_info(self):
         data = {
             "uid": "P000001",
@@ -143,7 +145,7 @@ class TestClass(unittest.TestCase):
 
         # Check the status code
         self.assertEqual(response.status_code, 200)
-    
+    #c# fix
     def test_put_item_id_wrong_info(self):
         data = {
             "uid": "P000003",

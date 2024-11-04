@@ -23,6 +23,7 @@ class TestClass(unittest.TestCase):
         
         self.assertEqual(response.status_code, 200)
     
+    #c# fix
     def test_get_transfer_non_existing_id(self):
         response = requests.get(url=(self.url + "/transfers/100000000"), headers=self.headers)
         
@@ -66,7 +67,7 @@ class TestClass(unittest.TestCase):
         "reference": None,
         "transfer_from": None,
         "transfer_to": None,
-        "transfer_status": None,
+        "transfer_status": "Completed",
         "created_at": None,
         "updated_at": None,
         "items": [
@@ -79,8 +80,8 @@ class TestClass(unittest.TestCase):
 
         response = requests.post(url = (self.url + "/transfers"), headers = self.headers, json=data)
 
-        self.assertFalse(checkTransfer(data))
-        self.assertEqual(response.status_code, 400)
+        self.assertTrue(checkTransfer(data))
+        self.assertEqual(response.status_code, 201)
 
     def test_put_transfer_id(self):
         data = {

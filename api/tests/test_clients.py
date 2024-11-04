@@ -64,6 +64,7 @@ class TestClass(unittest.TestCase):
         # Check dat het client object de juiste properties heeft
         self.assertTrue(checkClient(response.json()))
     
+    #c# fix
     def test_get_client_non_existing_id(self):
         # Stuur de request
         response = self.client.get(

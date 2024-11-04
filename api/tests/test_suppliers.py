@@ -24,7 +24,8 @@ class TestClass(unittest.TestCase):
         
         self.assertEqual(response.status_code, 200)
     
-    def test_get_supplier_non_existing_id(self):
+    #C# fix
+    def test_get_supplier_id_non_existing_id(self):
         response = requests.get(url=(self.url + "/suppliers/10000000"), headers=self.headers)
         
         self.assertEqual(response.status_code, 404)
@@ -62,6 +63,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkSupplier(data))
         self.assertEqual(response.status_code, 201)
     
+    #C# fix
     def test_post_supplier_wrong_info(self):
         data = {
         "id": 678098,
@@ -108,6 +110,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkSupplier(data))
         self.assertEqual(response.status_code, 200)
     
+    #C# fix
     def test_put_supplier_id_wrong_info(self):
         data = {
         "id": 2,

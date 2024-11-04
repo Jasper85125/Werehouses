@@ -22,7 +22,8 @@ class TestOrdersAPI(unittest.TestCase):
     def test_get_order_by_id(self):
         response = requests.get(f"{self.url}/orders/1", headers=self.headers)
         self.assertEqual(response.status_code, 200)
-        
+    
+    #c# fix
     def test_get_order_by_non_existing_id(self):
         response = requests.get(f"{self.url}/orders/10000000", headers=self.headers)
         self.assertEqual(response.status_code, 404)
@@ -68,6 +69,7 @@ class TestOrdersAPI(unittest.TestCase):
         self.assertTrue(checkOrder(data))
         self.assertEqual(response.status_code, 201)
     
+    #C# fix
     def test_post_order_wrong_info(self):
         data = {
         "id": 1,
@@ -139,7 +141,7 @@ class TestOrdersAPI(unittest.TestCase):
         
         self.assertTrue(checkOrder(data))
         self.assertEqual(response.status_code, 200)
-    
+    #C# fix
     def test_put_order_wrong_info(self):
         data = {
         "id": 1,
@@ -177,24 +179,16 @@ class TestOrdersAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
     
     #Werkt op dit moment nog niet. Snap niet hoe deze werkt!
-    def test_put_order_items(self):
-        data = [
-        {
-            "item_id": "P007435",
-            "amount": 23
-        },
-        {
-            "item_id": "P009557",
-            "amount": 1
-        },
-        {
-            "item_id": "P009553",
-            "amount": 50
+    def test_put_items_in_order(self):
+        data = {
+            "items": [
+                {"item_id": "P003790", "amount": 12},
+                {"item_id": "P007369", "amount": 18}
+            ]
         }
-        ]
-        #response = requests.put(url=(self.url + "/orders/1/items"), headers=self.headers, json=data)
-        #self.assertEqual(response.status_code, 200)
-
+        response = requests.put(f"{self.url}/orders/1/items", headers=self.headers, json=data)
+        self.assertEqual(response.status_code, 200)
+             
     def test_delete_order(self):
         response = requests.delete(f"{self.url}/orders/1", headers=self.headers)
         self.assertEqual(response.status_code, 200)

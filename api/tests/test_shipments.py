@@ -29,6 +29,7 @@ class TestClass(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
     
+    #C# fix  
     def test_get_shipments_by_non_existing_id(self):
         response = requests.get(
             url=(self.url + "/shipments/10000000000"), headers=self.headers)
@@ -94,6 +95,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkShipment(data))
         self.assertEqual(response.status_code, 201)
     
+    #C# fix
     def test_post_shipment_wrong_info(self):
         data = {
             "id": 9999,
@@ -178,6 +180,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkShipment(data))
         self.assertEqual(response.status_code, 200)
     
+    #C# fix
     def test_put_shipment_by_id_wrong_info(self):
         data = {
             "id": 9999,
