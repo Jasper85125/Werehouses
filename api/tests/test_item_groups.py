@@ -94,7 +94,7 @@ class TestItemGroups(unittest.TestCase):
         self.assertTrue(checkItemGroup(data))
         self.assertEqual(response.status_code, 200)
     
-    def test_put_item_group_id(self):
+    def test_put_item_group_id_wrong_info(self):
         data = {
             "id": 1,
             "name": None,
