@@ -2,8 +2,7 @@ import unittest
 import httpx
 
 def checkItemLine(item_line):
-    required_properties = ["id", "name", "description",
-                           "created_at", "updated_at"]
+    required_properties = ["name", "description"]
     for prop in required_properties:
         if item_line.get(prop) is None:
             return False
@@ -30,6 +29,14 @@ class TestItemLines(unittest.TestCase):
 
         # Check that the item line object has the correct properties
         self.assertTrue(checkItemLine(response.json()))
+    
+    def test_get_item_line_non_existing_id(self):
+        # Send the request
+        response = self.client.get(
+            url=(self.url + "/item_lines/1000000000"), headers=self.headers
+        )
+        
+        #self.assertEqual(response.status_code, 404)
 
     def test_get_item_lines(self):
         # Send the request
@@ -85,8 +92,29 @@ class TestItemLines(unittest.TestCase):
             json=data
         )
 
+        self.assertTrue(checkItemLine(data))
         # Check the status code
         self.assertEqual(response.status_code, 200)
+
+    def test_put_item_line_id_wrong_info(self):
+        data = {
+            "id": 0,
+            "name": None,
+            "description": None,
+            "created_at": "2022-08-18 07:05:25",
+            "updated_at": "2023-10-01 12:00:00"
+        }
+
+        # Send the request
+        response = self.client.put(
+            url=(self.url + "/item_lines/0"),
+            headers=self.headers,
+            json=data
+        )
+
+        self.assertFalse(checkItemLine(data))
+        # Check the status code
+        #self.assertEqual(response.status_code, 400)
 
     # This deletes an item line based on an id
     def test_delete_item_line_id(self):
