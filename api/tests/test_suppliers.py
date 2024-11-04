@@ -2,7 +2,7 @@ import unittest
 import requests
 
 def checkSupplier(supplier):
-    required_properties = ["code", "address", "zip",
+    required_properties = ["code", "address", "zip_code",
                            "contact_name", "phonenumber"]
     for prop in required_properties:
         if supplier.get(prop) is None:
@@ -42,7 +42,7 @@ class TestClass(unittest.TestCase):
         "address": "SUNNY",
         "address_extra": None,
         "city": None,
-        "zip_code": None,
+        "zip_code": 12342,
         "province": "East Blue",
         "country": "Water Seven",
         "contact_name": "Iceberg",
@@ -88,7 +88,7 @@ class TestClass(unittest.TestCase):
         "address": "SUNNY",
         "address_extra": None,
         "city": None,
-        "zip_code": None,
+        "zip_code": 12312,
         "province": "East Blue",
         "country": "Water Severn",
         "contact_name": "Iceberg",
