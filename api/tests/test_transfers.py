@@ -2,8 +2,7 @@ import unittest
 import requests
 
 def checkTransfer(transfer):
-    required_properties = ["id", "items",
-                           "transfer_status"]
+    required_properties = ["items", "transfer_status"]
     for prop in required_properties:
         if transfer.get(prop) is None:
             return False

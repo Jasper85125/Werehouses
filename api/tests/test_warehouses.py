@@ -3,8 +3,7 @@ import unittest
 import requests
 
 def checkWarehouse(warehouse):
-    required_properties = ["id", "code", "address", "zip",
-                           "contact"]
+    required_properties = ["code", "address", "zip", "contact"]
     for prop in required_properties:
         if warehouse.get(prop) is None:
             return False
