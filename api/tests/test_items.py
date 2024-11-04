@@ -69,7 +69,7 @@ class TestClass(unittest.TestCase):
                 )
             )
     
-    def test_get_orders_for_client(self):
+    def test_get_inventory_for_items(self):
         response = self.client.get(f"{self.url}/items/1/inventory", headers=self.headers)
         self.assertEqual(response.status_code, 200)
 

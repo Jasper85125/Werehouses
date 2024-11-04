@@ -154,7 +154,7 @@ class TestOrdersAPI(unittest.TestCase):
         "notes": None,
         "shipping_notes": None,
         "picking_notes": None,
-        "warehouse_id": 18,
+        "warehouse_id": None,
         "ship_to": None,
         "bill_to": None,
         "shipment_id": 1,
