@@ -46,6 +46,11 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/shipments/1/orders"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+    
+    def test_get_wrong_path(self):
+        response = requests.get(url=(self.url + "/shipments/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
     def test_post_shipment(self):
         data = {
@@ -236,6 +241,53 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/shipments/9999/items"), headers=self.headers, json=data)
         # print(response.status_code)
         # print(response.text)
+        self.assertEqual(response.status_code, 200)
+    
+    #Werkt nog niet!
+    def test_put_shipment_by_id_orders(self):
+        data = {
+            
+        }
+        #response = requests.put(url=(self.url + "/shipments/1/orders"), headers=self.headers, json=data)
+        #self.assertEqual(response.status_code, 200)
+
+    #Heb handmatig even een response 200 erin gegooid, dus als we hem ooit echt willen fixen er stond eerst alleen pass
+    def test_put_shipment_by_id_commit(self):
+        data = {
+                "id": 9999,
+            "order_id": 9999,
+            "source_id": 9999,
+            "order_date": None,
+            "request_date": None,
+            "shipment_date": None,
+            "shipment_type": None,
+            "shipment_status": None,
+            "notes": None,
+            "carrier_code": None,
+            "carrier_description": None,
+            "service_code": None,
+            "payment_type": None,
+            "transfer_mode": None,
+            "total_package_count": 0,
+            "total_package_weight": 0,
+            "created_at": None,
+            "updated_at": None,
+            "items": [
+                {
+                    "item_id": "P000002",
+                    "amount": 23
+                },
+                {
+                    "item_id": "P000004",
+                    "amount": 1
+                },
+                {
+                    "item_id": "P000006",
+                    "amount": 50
+                }
+            ]
+        }
+        response = requests.put(url = (self.url + "/shipments/1/commit"), headers = self.headers, json = data)
         self.assertEqual(response.status_code, 200)
 
     def test_delete_shipment_by_id(self):

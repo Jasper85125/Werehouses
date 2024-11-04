@@ -71,6 +71,11 @@ class TestClass(unittest.TestCase):
 
         # Check dat het client object de juiste properties heeft
         self.assertTrue(checkClient(response.json()))
+    
+    def test_get_wrong_path(self):
+        response = self.client.get(url=(self.url + "/clients/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
     # deze voegt een nieuwe warehouse object
     def test_04_post_client(self):

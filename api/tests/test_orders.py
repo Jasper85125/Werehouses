@@ -22,10 +22,15 @@ class TestOrdersAPI(unittest.TestCase):
     def test_get_order_by_id(self):
         response = requests.get(f"{self.url}/orders/1", headers=self.headers)
         self.assertEqual(response.status_code, 200)
-    
+        
     def test_get_order_by_non_existing_id(self):
         response = requests.get(f"{self.url}/orders/10000000", headers=self.headers)
         #self.assertEqual(response.status_code, 404)
+
+    def test_get_wrong_path(self):
+        response = requests.get(url=(self.url + "/orders/1/error"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
 
     def test_post_order(self):
         data = {
@@ -170,6 +175,25 @@ class TestOrdersAPI(unittest.TestCase):
         
         self.assertFalse(checkOrder(data))
         self.assertEqual(response.status_code, 200)
+    
+    #Werkt op dit moment nog niet. Snap niet hoe deze werkt!
+    def test_put_order_items(self):
+        data = [
+        {
+            "item_id": "P007435",
+            "amount": 23
+        },
+        {
+            "item_id": "P009557",
+            "amount": 1
+        },
+        {
+            "item_id": "P009553",
+            "amount": 50
+        }
+        ]
+        #response = requests.put(url=(self.url + "/orders/1/items"), headers=self.headers, json=data)
+        #self.assertEqual(response.status_code, 200)
 
     def test_delete_order(self):
         response = requests.delete(f"{self.url}/orders/1", headers=self.headers)

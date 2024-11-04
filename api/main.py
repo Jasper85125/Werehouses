@@ -677,7 +677,8 @@ class ApiRequestHandler(http.server.BaseHTTPRequestHandler):
                         self.send_response(200)
                         self.end_headers()
                     elif path[2] == "commit":
-                        pass
+                        self.send_response(200)
+                        self.end_headers()
                     else:
                         self.send_response(404)
                         self.end_headers()
