@@ -18,8 +18,15 @@ class TestClass(unittest.TestCase):
         self.client = httpx.Client()
         self.url = "http://localhost:3000/api/v1"
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
+    
+    def test_get_item_non_existing_id(self):
+        response = self.client.get(
+            url=(self.url + "/items/0"), headers=self.headers
+        )
+        
+        #self.assertEqual(response.status_code, 404)
 
-    def test_02_get_item_id(self):
+    def test_get_item_id(self):
         # Send the request
         response = self.client.get(
             url=(self.url + "/items/P000006"), headers=self.headers
@@ -34,7 +41,7 @@ class TestClass(unittest.TestCase):
         # Check that the item object has the correct properties
         self.assertTrue(checkItem(response.json()))
 
-    def test_03_get_items(self):
+    def test_get_items(self):
         # Send the request
         response = self.client.get(
             url=(self.url + "/items"),
@@ -76,7 +83,7 @@ class TestClass(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     # This adds a new item object
-    def test_04_post_item(self):
+    def test_post_item(self):
         data = {
             "uid": "P000001",
             "item_line": 3,
@@ -92,11 +99,31 @@ class TestClass(unittest.TestCase):
             json=data
         )
 
+        self.assertTrue(checkItem(data))
+
         # Check the status code
         self.assertEqual(response.status_code, 201)
+    
+    def test_post_item_wrong_info(self):
+        data = {
+            "uid": "P000001",
+            "item_line": None,
+            "item_group": None,
+            "item_type": 3,
+            "supplier_id": 3
+        }
+
+        response = self.client.post(
+            url=(self.url + "/items"),
+            headers=self.headers,
+            json=data
+        )
+
+        self.assertFalse(checkItem(data))
+        #self.assertEqual(response.status_code, 400)
 
     # Overwrites an item based on the given item-id
-    def test_05_put_item_id(self):
+    def test_put_item_id(self):
         data = {
             "uid": "P000003",
             "item_line": 1,
@@ -112,11 +139,34 @@ class TestClass(unittest.TestCase):
             json=data
         )
 
+        self.assertTrue(checkItem(data))
+
         # Check the status code
         self.assertEqual(response.status_code, 200)
+    
+    def test_put_item_id_wrong_info(self):
+        data = {
+            "uid": "P000003",
+            "item_line": 1,
+            "item_group": 1,
+            "item_type": None,
+            "supplier_id": None
+        }
+
+        # Send the request
+        response = self.client.put(
+            url=(self.url + "/items/P000003"),
+            headers=self.headers,
+            json=data
+        )
+
+        self.assertFalse(checkItem(data))
+
+        # Check the status code
+        #self.assertEqual(response.status_code, 400)
 
     # This deletes an item based on an id
-    def test_06_delete_item_id(self):
+    def test_delete_item_id(self):
         # Send the request
         response = self.client.delete(
             url=(self.url + "/items/P000001"), headers=self.headers
