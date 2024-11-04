@@ -66,7 +66,7 @@ class TestClass(unittest.TestCase):
         "reference": None,
         "transfer_from": None,
         "transfer_to": None,
-        "transfer_status": "Completed",
+        "transfer_status": None,
         "created_at": None,
         "updated_at": None,
         "items": [

@@ -24,7 +24,7 @@ class TestClass(unittest.TestCase):
         
         self.assertEqual(response.status_code, 200)
     
-    def test_get_supplier_id(self):
+    def test_get_supplier_non_existing_id(self):
         response = requests.get(url=(self.url + "/suppliers/10000000"), headers=self.headers)
         
         self.assertEqual(response.status_code, 404)

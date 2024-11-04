@@ -94,7 +94,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkShipment(data))
         self.assertEqual(response.status_code, 201)
     
-    def test_post_shipment(self):
+    def test_post_shipment_wrong_info(self):
         data = {
             "id": 9999,
             "order_id": None,
@@ -178,7 +178,7 @@ class TestClass(unittest.TestCase):
         self.assertTrue(checkShipment(data))
         self.assertEqual(response.status_code, 200)
     
-    def test_put_shipment_by_id(self):
+    def test_put_shipment_by_id_wrong_info(self):
         data = {
             "id": 9999,
             "order_id": 9999,

@@ -90,14 +90,14 @@ class TestClass(unittest.TestCase):
     def test_put_warehouse_id(self):
         data = {
         "id": 99999,
-        "code": "AAAAAAA",
+        "code": "AAAAAAA", #Required
         "name": None,
-        "address": "Ohara 123",
-        "zip": "1234OH",
+        "address": "Ohara 123", #Required
+        "zip": "1234OH", #Required
         "city": None,
         "province": None,
         "country": None,
-        "contact": {
+        "contact": {        #Required
             "name": "Femboy Keizer",
             "phone": "(078) 0013363",
             "email": "blahahaha@example.net"
@@ -114,14 +114,14 @@ class TestClass(unittest.TestCase):
     def test_put_warehouse_id_wrong_info(self):
         data = {
         "id": 99999,
-        "code": None,
+        "code": None,           #Required
         "name": None,
-        "address": "Ohara 123",
-        "zip": None,
+        "address": "Ohara 123", #Required
+        "zip": None,            #Required
         "city": None,
         "province": None,
         "country": None,
-        "contact": {
+        "contact": {            #Required
             "name": "Femboy Keizer",
             "phone": "(078) 0013363",
             "email": "blahahaha@example.net"
