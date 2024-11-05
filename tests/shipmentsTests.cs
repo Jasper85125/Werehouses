@@ -140,6 +140,17 @@ namespace Tests
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+        [TestMethod]
+        public void DeleteShipmentItemTest_Success()
+        {
+            //arrange
+            var shipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24, Items=new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P01", amount = 23 }}};
+            _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipment);
+            //act
+            var result = _shipmentController.DeleteItemFromShipment(1, "P01");
+            //assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 }
 

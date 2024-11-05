@@ -79,4 +79,16 @@ public class ShipmentController : ControllerBase
         _shipmentService.DeleteShipment(id);
         return Ok();
     }
+    // DELETE /shipments/{id}/items/{itemid}
+    [HttpDelete("{id}/items/{itemid}")]
+    public ActionResult DeleteItemFromShipment(int id, string itemid)
+    {
+        var shipment = _shipmentService.GetShipmentById(id);
+        if (shipment is null)
+        {
+            return NotFound();
+        }
+        _shipmentService.DeleteItemFromShipment(id, itemid);
+        return Ok();
+    }
 }

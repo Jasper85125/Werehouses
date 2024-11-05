@@ -7,4 +7,5 @@ public interface IShipmentService
     ShipmentCS CreateShipment(ShipmentCS newShipment);
     Task<ShipmentCS> UpdateShipment(int id, ShipmentCS updateShipment);
     void DeleteShipment(int id);
+    void DeleteItemFromShipment(int shipmentId, string itemId);
 }
