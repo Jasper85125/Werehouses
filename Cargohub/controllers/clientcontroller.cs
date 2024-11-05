@@ -67,4 +67,15 @@ public class ClientController : ControllerBase
         return Ok(updatedClient);
 
     }
+    [HttpDelete("{id}")]
+    public ActionResult DeleteClient([FromRoute]int id)
+    {
+        var existingClient = _clientservice.GetClientById(id);
+        if (existingClient is null)
+        {
+            return NotFound();
+        }
+        _clientservice.DeleteClient(id);
+        return Ok();
+    }
 }
