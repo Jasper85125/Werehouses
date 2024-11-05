@@ -138,6 +138,7 @@ namespace Tests
             var returnedWarehouse = createdResult.Value as WarehouseCS;
             Assert.IsNull(returnedWarehouse);
         }
+        
         [TestMethod]
         public void DeleteWarehouseTest_Success()
         {

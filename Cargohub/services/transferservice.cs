@@ -6,7 +6,8 @@ namespace Services;
 
 public class TransferService : ITransferService
 {
-    // Constructor
+    private string _path = "data/transfers.json";
+
     public TransferService()
     {
         // Initialization code here
@@ -14,12 +15,11 @@ public class TransferService : ITransferService
 
     public List<TransferCS> GetAllTransfers()
     {
-        var Path = "data/transfers.json";
-        if (!File.Exists(Path))
+        if (!File.Exists(_path))
         {
             return new List<TransferCS>();
         }
-        var jsonData = File.ReadAllText(Path);
+        var jsonData = File.ReadAllText(_path);
         List<TransferCS> transfers = JsonConvert.DeserializeObject<List<TransferCS>>(jsonData);
         return transfers ?? new List<TransferCS>();
     }
@@ -32,8 +32,6 @@ public class TransferService : ITransferService
     }
     public TransferCS CreateTransfer(TransferCS newTransfer)
     {
-        var Path = "data/transfers.json";
-
         List<TransferCS> transfers = GetAllTransfers();
 
         // Add the new transfer record to the list
@@ -42,8 +40,36 @@ public class TransferService : ITransferService
 
         // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(transfers, Formatting.Indented);
-        File.WriteAllText(Path, jsonData);
+        File.WriteAllText(_path, jsonData);
         return newTransfer;
+    }
+
+    public TransferCS UpdateTransfer(int id, TransferCS updateTransfer)
+    {
+        var allTransfers = GetAllTransfers();
+        var transferToUpdate = allTransfers.Single(transfer => transfer.Id == id);
+
+        if (transferToUpdate is not null)
+        {
+            // Get the current date and time
+            var currentDateTime = DateTime.Now;
+
+            // Format the date and time to the desired format
+            var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+            transferToUpdate.Reference = updateTransfer.Reference;
+            transferToUpdate.transfer_from = updateTransfer.transfer_from;
+            transferToUpdate.transfer_to = updateTransfer.transfer_to;
+            transferToUpdate.transfer_status = updateTransfer.transfer_status;
+            transferToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+            transferToUpdate.Items = updateTransfer.Items;
+
+
+            var jsonData = JsonConvert.SerializeObject(allTransfers, Formatting.Indented);
+            File.WriteAllText(_path, jsonData);
+            return transferToUpdate;
+        }
+        return null;
     }
     public void DeleteTransfer(int id)
     {

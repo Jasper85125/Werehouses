@@ -95,6 +95,46 @@ namespace Tests
         }
 
         [TestMethod]
+        public void UpdatedTransferTest_Success()
+        {
+            // Arrange
+            var updatedTransfer = new TransferCS { Id= 1, Reference= "X", transfer_from= 5050, transfer_to= 9292, transfer_status= "Completed",
+                                                    Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 }}};
+
+             _mockTransferService.Setup(service => service.UpdateTransfer(1, updatedTransfer)).Returns(updatedTransfer);
+
+            // Act
+            var result = _transferController.UpdateTransfer(1, updatedTransfer);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var createdResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(TransferCS));
+            var returnedTransfer = createdResult.Value as TransferCS;
+            Assert.AreEqual(updatedTransfer.Reference, returnedTransfer.Reference);
+            Assert.AreEqual(updatedTransfer.transfer_status, returnedTransfer.transfer_status);
+        }
+
+        [TestMethod]
+        public void UpdatedTransferTest_Failed()
+        {
+            // Arrange
+            var updatedTransfer = new TransferCS { Id= 1, Reference= "X", transfer_from= 5050, transfer_to= 9292, transfer_status= "Completed"};
+
+             _mockTransferService.Setup(service => service.UpdateTransfer(0, updatedTransfer)).Returns((TransferCS)null);
+
+            // Act
+            var result = _transferController.UpdateTransfer(0, updatedTransfer);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+            var createdResult = result.Result as NotFoundObjectResult;
+            var returnedTransfer = createdResult.Value as TransferCS;
+            Assert.IsNull(returnedTransfer);
+        }
+
+        [TestMethod]
         public void DeleteTransferTest_Exist(){
             /*
 public void DeleteWarehouseTest_Success()
