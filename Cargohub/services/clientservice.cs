@@ -65,5 +65,18 @@ public class ClientService : IClientService
         return null;
     }
 
+    public void DeleteClient(int id)
+    {
+        var clients = GetAllClients();
+        var client = clients.FirstOrDefault(c => c.Id == id);
+        if (client == null)
+        {
+            return;
+        }
+        clients.Remove(client);
+        var jsonData = JsonConvert.SerializeObject(clients, Formatting.Indented);
+        File.WriteAllText(_path, jsonData);
+        
+    }
 }
 

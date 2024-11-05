@@ -116,6 +116,19 @@ namespace clients.Test
             var returnedClient = createdResult.Value as ClientCS;
             Assert.IsNull(returnedClient);
         }
+
+        [TestMethod]
+        public void DeleteClientTest_Success()
+        {
+            
+            // Arrange
+            var existingClient = new ClientCS {Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"};
+            _clientservice.Setup(service => service.GetClientById(1)).Returns(existingClient);
+            // Act
+            var result = _clientcontroller.DeleteClient(1);
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 
 }
