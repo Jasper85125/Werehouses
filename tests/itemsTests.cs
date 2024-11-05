@@ -131,6 +131,18 @@ namespace item.Tests
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+        [TestMethod]
+        public void DeleteItem_ReturnsOkResult_WhenItemIsDeleted()
+        {
+            // Arrange
+            var existingItem = new ItemCS { uid = "P000001", code = "ExistingItem" };
+            _mockItemService.Setup(service => service.GetItemById("P000001")).Returns(existingItem);
 
+            // Act
+            var result = _itemController.DeleteItem("P000001");
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 }

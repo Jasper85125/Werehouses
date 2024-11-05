@@ -106,4 +106,21 @@ public class ItemService : IItemService
 
         return existingItem;
     }
+
+    // Method to delete an item
+    public void DeleteItem(string uid)
+    {
+        var items = GetAllItems();
+        var item = items.FirstOrDefault(i => i.uid == uid);
+        if (item == null)
+        {
+            return;
+        }
+
+        items.Remove(item);
+
+        var path = "data/items.json";
+        var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllText(path, updatedJsonData);
+    }
 }

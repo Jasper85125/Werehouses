@@ -5,5 +5,6 @@ public interface IItemService
     ItemCS GetItemById(string uid);
     ItemCS CreateItem(ItemCS item);
     ItemCS UpdateItem(string uid, ItemCS item);
+    void DeleteItem(string uid);
 
 }
