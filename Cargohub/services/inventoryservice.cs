@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
 namespace Services;
@@ -32,18 +33,25 @@ public class InventoryService : IInventoryService
     }
 
     public InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory){
-        InventoryCS inventoryToUpdate = GetInventoryById(id);
+        var inventories = GetAllInventories();
+        var inventoryToUpdate = inventories.Find(_ => _.Id == id);
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         if(inventoryToUpdate is null){
             return null;
         }
         inventoryToUpdate.description = updatedinventory.description;
-        inventoryToUpdate.updated_at = DateTime.Now;
-        inventoryToUpdate.item_id = updatedinventory.item_id;
+        inventoryToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         inventoryToUpdate.item_reference = updatedinventory.item_reference;
         inventoryToUpdate.Locations = updatedinventory.Locations;
-        // inventoryToUpdate. = updatedinventory;
-        // inventoryToUpdate = updatedinventory;
-        // inventoryToUpdate = updatedinventory;
+        inventoryToUpdate.total_on_hand = updatedinventory.total_on_hand;
+        inventoryToUpdate.total_expected = updatedinventory.total_expected;
+        inventoryToUpdate.total_ordered = updatedinventory.total_ordered;
+        inventoryToUpdate.total_allocated = updatedinventory.total_allocated;
+        inventoryToUpdate.total_available = updatedinventory.total_available;
+        var path = "data/inventories.json";
+        var json = JsonConvert.SerializeObject(inventoryToUpdate, Formatting.Indented);
+        File.WriteAllText(path, json);
         return inventoryToUpdate;
     }
 }
