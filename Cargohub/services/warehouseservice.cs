@@ -74,4 +74,14 @@ public class WarehouseService : IWarehouseService
         }
         return null;
     }
+    public void DeleteWarehouse(int id){
+        var allWarehouses = GetAllWarehouses();
+        var warehouseToDelete = allWarehouses.FirstOrDefault(warehouse => warehouse.Id == id);
+        if(warehouseToDelete == null){
+            return;
+        }
+        allWarehouses.Remove(warehouseToDelete);
+        var jsonData = JsonConvert.SerializeObject(allWarehouses, Formatting.Indented);
+        File.WriteAllText(_path, jsonData);
+    }
 }
