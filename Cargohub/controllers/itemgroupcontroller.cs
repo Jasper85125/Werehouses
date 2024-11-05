@@ -79,7 +79,7 @@ public class ItemGroupController : ControllerBase
         }
 
         _itemgroupService.DeleteItemGroup(id);
-        return Ok(itemGroup);
+        return Ok();
     }
 
 }

@@ -6,5 +6,5 @@ public interface ILocationService
     LocationCS GetLocationById(int id);
     LocationCS CreateLocation(LocationCS location);
     LocationCS UpdateLocation(LocationCS location, int id);
-    // void DeleteWarehouse();
+    void DeleteLocation(int id);
 }

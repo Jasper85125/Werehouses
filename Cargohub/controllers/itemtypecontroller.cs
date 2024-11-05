@@ -68,5 +68,17 @@ public class ItemTypeController : ControllerBase
         var updatedItemLine = await _itemtypeService.UpdateItemType(id, itemType);
         return Ok(updatedItemLine);
     }
+    
+    [HttpDelete("{id}")]
+    public ActionResult DeleteItemType(int id)
+    {
+        var itemtype = _itemtypeService.GetItemById(id);
+        if (itemtype == null)
+        {
+            return NotFound();
+        }
+        _itemtypeService.DeleteItemType(id);
+        return Ok();
+    }
 
 }

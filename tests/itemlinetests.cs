@@ -145,5 +145,19 @@ public class ItemLineTests
         // Assert
         Assert.IsInstanceOfType(value.Result, typeof(BadRequestResult));
     }
+    
+    [TestMethod]
+    public void DeleteItemLineTest_Exists()
+    {
+        // Arrange
+        var itemLine = new ItemLineCS { Id = 1, Description = "Item 1" };
+        _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(itemLine);
+
+        // Act
+        var value = _itemLineController.DeleteItemLine(1);
+
+        // Assert
+        Assert.IsInstanceOfType(value, typeof(OkResult));
+    }
 
 }

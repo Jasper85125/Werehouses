@@ -68,8 +68,14 @@ public class SupplierController : ControllerBase
 
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public ActionResult DeleteSupplier(int id)
     {
-        // Replace with your logic
+        var supplier = _supplierService.GetSupplierById(id);
+        if (supplier is null)
+        {
+            return NotFound();
+        }
+        _supplierService.DeleteSupplier(id);
+        return Ok();
     }
 }

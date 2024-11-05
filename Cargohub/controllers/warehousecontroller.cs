@@ -71,8 +71,15 @@ public class WarehouseController : ControllerBase
 
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public ActionResult DeleteWarehouse([FromRoute] int id)
     {
-        // Replace with your logic
+        var warehouse = _warehouseService.GetWarehouseById(id);
+        if (warehouse is null)
+        {
+            return NotFound();
+        }
+        _warehouseService.DeleteWarehouse(id);
+        
+        return Ok();
     }
 }

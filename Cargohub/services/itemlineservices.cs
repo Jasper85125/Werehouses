@@ -81,4 +81,19 @@ public class ItemLineService : IItemLineService
 
         return existingItem;
     }
+    public void DeleteItemLine(int id)
+    {
+        var _path  = "data/item_lines.json";
+        List<ItemLineCS> items = GetAllItemlines();
+        var item = items.FirstOrDefault(i => i.Id == id);
+        if (item == null)
+        {
+            return;
+        }
+
+        items.Remove(item);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllText(_path, jsonData);
+    }
 }
