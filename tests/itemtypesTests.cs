@@ -66,5 +66,50 @@ namespace itemtype.Tests
             Assert.AreEqual(newItemType.Name, result.Name);
             Assert.AreEqual(newItemType.description, result.description);
         }
+
+        [TestMethod]
+        public async Task UpdateItemType_ValidItem_ShouldReturnUpdatedItemType()
+        {
+            // Arrange
+            var existingItemType = new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" };
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(existingItemType);
+            _mockItemTypeService.Setup(service => service.UpdateItemType(1, updatedItemType)).ReturnsAsync(updatedItemType);
+
+            // Act
+            var result = await _mockItemTypeService.Object.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(updatedItemType.Name, result.Name);
+            Assert.AreEqual(updatedItemType.description, result.description);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemType_WrongId_ShouldReturnNotFound()
+        {
+            // Arrange
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            // Act
+            var result = await _mockItemTypeService.Object.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemType_IdMismatch_ShouldReturnBadRequest()
+        {
+            // Arrange
+            var updatedItemType = new ItemTypeCS { Id = 2, Name = "UpdatedType", description = "UpdatedDescription" };
+
+            // Act
+            var result = await _mockItemTypeService.Object.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            Assert.IsNull(result);
+        }
     }
 }

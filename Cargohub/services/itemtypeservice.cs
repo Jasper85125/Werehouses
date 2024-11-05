@@ -53,4 +53,30 @@ public class ItemTypeService : IItemtypeService
         return newItemType;
     }
 
+    // Method to update an item type
+    public async Task<ItemTypeCS> UpdateItemType(int id, ItemTypeCS itemType)
+    {
+        List<ItemTypeCS> items = GetAllItemtypes();
+        var existingItem = items.FirstOrDefault(i => i.Id == id);
+        if (existingItem == null)
+        {
+            return null;
+        }
+
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        existingItem.Name = itemType.Name;
+        existingItem.description = itemType.description;
+        existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+
+        return existingItem;
+    }
+
 }
