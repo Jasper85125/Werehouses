@@ -4,6 +4,7 @@ using Moq;
 using Controllers;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Tests
 {
@@ -93,6 +94,25 @@ namespace Tests
             Assert.AreEqual(1, returnedInventory.Id);  // Verify that the returned object has the expected ID
             Assert.AreEqual("ITEM123", returnedInventory.item_id);  // Verify that the returned object has the expected ItemId
             Assert.AreEqual(50, returnedInventory.total_on_hand);  // Verify that the returned object has the expected Quantity
+        }
+        [TestMethod]
+        public void UpdateInventoryByIdTest_Succes(){
+            //arrange
+            var inventory = new InventoryCS(){ Id = 1, item_id="ITEM321", total_on_hand= 100};
+            _mockInventoryService.Setup(service => service.UpdateInventoryById(1, inventory)).Returns(inventory);
+
+            //Act
+            var result = _inventoryController.UpdateInventoryById(1, inventory);
+            var resultOk = result.Result as OkObjectResult;
+            var patchedinventory = resultOk.Value as InventoryCS;
+
+            //Assert
+            Assert.AreEqual(resultOk.StatusCode, 200);
+            Assert.IsNotNull(resultOk);
+            Assert.IsNotNull(patchedinventory);
+            Assert.AreEqual(patchedinventory.Id, inventory.Id);
+            Assert.AreEqual(patchedinventory.item_id, inventory.item_id);
+            Assert.AreEqual(patchedinventory.total_on_hand, inventory.total_on_hand);
         }
         
         [TestMethod]
