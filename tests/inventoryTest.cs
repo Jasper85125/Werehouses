@@ -94,6 +94,21 @@ namespace Tests
             Assert.AreEqual("ITEM123", returnedInventory.item_id);  // Verify that the returned object has the expected ItemId
             Assert.AreEqual(50, returnedInventory.total_on_hand);  // Verify that the returned object has the expected Quantity
         }
+        
+        [TestMethod]
+        public void DeleteInventoryTest_Exists()
+        {
+            //arrange
+            var inventory = new InventoryCS { Id = 1, item_id = "ITEM123", total_on_hand = 50 };
+            _mockInventoryService.Setup(service => service.GetInventoryById(1)).Returns(inventory);
+            
+            //Act
+            var result = _inventoryController.DeleteInventory(1);
+            
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
+        
     }
 }
 
