@@ -45,4 +45,22 @@ public class OrderService : IOrderService
         File.WriteAllText(Path, jsonData);
         return newOrder;
     }
+
+    public void DeleteOrder(int id)
+    {
+        var Path = "data/orders.json";
+
+        List<OrderCS> orders = GetAllOrders();
+
+        // Remove the order record from the list
+        OrderCS order = orders.FirstOrDefault(order => order.Id == id);
+        if (order != null)
+        {
+            orders.Remove(order);
+
+            // Serialize the updated list back to the JSON file
+            var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
+            File.WriteAllText(Path, jsonData);
+        }
+    }
 }
