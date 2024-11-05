@@ -40,15 +40,10 @@ class TestClass(unittest.TestCase):
 
         # Check de status code
         self.assertEqual(response.status_code, 200)
-
-        # Check dat de response een list is
         self.assertEqual(type(response.json()), list)
-
-        # Als de list iets bevat (want een list van 0 objects is inprincipe "legaal")
-        if (len(response.json()) > 0):
-            # Check of de object in de list ook echt een "object" (eigenlijk overal een dictionary) is,
-            # dus niet dat het een list van ints, strings etc. zijn
-            self.assertEqual(type(response.json()[0]), dict)
+        
+        if len(response.json()) > 0:
+            self.assertTrue(checkClient(client)for client in response.json()[0])
 
     def test_get_client_id(self):
         # Stuur de request

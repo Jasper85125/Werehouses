@@ -22,12 +22,20 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/shipments"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
+        
+        if len(response.json()) > 0:
+            self.assertTrue(checkShipment(shipment)for shipment in response.json()[0])
 
     def test_get_shipments_by_id(self):
         response = requests.get(
             url=(self.url + "/shipments/1"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+        
+        if len(response.json()) == 1:
+            self.assertTrue(checkShipment(shipment)for shipment in response.json())
     
     #C# fix  
     def test_get_shipments_by_non_existing_id(self):
@@ -35,18 +43,21 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/shipments/10000000000"), headers=self.headers)
 
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(type(response.json()), type(None))
 
     def test_get_shipments_by_id_items(self):
         response = requests.get(
             url=(self.url + "/shipments/1/items"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
 
     def test_get_shipments_by_id_orders(self):
         response = requests.get(
             url=(self.url + "/shipments/1/orders"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
     
     def test_get_wrong_path(self):
         response = requests.get(url=(self.url + "/shipments/1/error"), headers=self.headers)

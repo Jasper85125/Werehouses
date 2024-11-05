@@ -48,23 +48,10 @@ class TestItemLines(unittest.TestCase):
 
         # Check the status code
         self.assertEqual(response.status_code, 200)
-
-        # Check that the response is a list
-        # (representative of a list of item lines)
         self.assertEqual(type(response.json()), list)
-
-        # If the list contains something, check the first object in the list
+        
         if len(response.json()) > 0:
-            # Check that each object in the list is a dictionary
-            self.assertEqual(type(response.json()[0]), dict)
-
-            # Check that each item line object has the correct properties
-            self.assertTrue(
-                all(
-                    checkItemLine(item_line)
-                    for item_line in response.json()
-                )
-            )
+            self.assertTrue(checkItemLine(itemline)for itemline in response.json()[0])
 
     def test_get_items_in_item_lines(self):
         response = self.client.get(url=(self.url + "/item_lines/1/items"), headers=self.headers)

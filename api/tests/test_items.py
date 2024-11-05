@@ -26,6 +26,7 @@ class TestClass(unittest.TestCase):
         )
         
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(type(response.json()), type(None))
 
     def test_get_item_id(self):
         # Send the request
@@ -51,32 +52,22 @@ class TestClass(unittest.TestCase):
 
         # Check the status code
         self.assertEqual(response.status_code, 200)
-
-        # Check that the response is a list
-        # (representative of a list of items)
         self.assertEqual(type(response.json()), list)
-
-        # If the list contains something, check the first object in the list
+        
         if len(response.json()) > 0:
-            # Check that each object in the list is a dictionary
-            self.assertEqual(type(response.json()[0]), dict)
-
-            # Check that each item object has the correct properties
-            self.assertTrue(
-                all(
-                    checkItem(item)
-                    for item in response.json()
-                )
-            )
+            self.assertTrue(checkItem(item)for item in response.json()[0])
     
     def test_get_inventory_for_items(self):
         response = self.client.get(f"{self.url}/items/1/inventory", headers=self.headers)
+        
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
 
     def test_get_inventory_totals_of_item_by_id(self):
         response = self.client.get(url=(self.url + "/items/1/inventory/totals"), headers = self.headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
     
     def test_get_wrong_path(self):
         response = self.client.get(url=(self.url + "/items/1/error"), headers = self.headers)

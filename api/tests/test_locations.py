@@ -17,17 +17,26 @@ class TestClass(unittest.TestCase):
         response = requests.get(url=(self.url + "/locations"), headers=self.headers)
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
+        
+        if len(response.json()) > 0:
+            self.assertTrue(checkLocation(location)for location in response.json()[0])
 
     def test_get_location_id(self):
         response = requests.get(url=(self.url + "/locations/1"), headers=self.headers)
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+
+        if len(response.json()) == 1:
+            self.assertTrue(checkLocation(location)for location in response.json())
     
     #c# fix
     def test_get_location_non_existing_id(self):
         response = requests.get(url=(self.url + "/locations/10000000"), headers=self.headers)
         
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(type(response.json()), type(None))
 
     def test_post_location(self):
         data = {
@@ -43,6 +52,7 @@ class TestClass(unittest.TestCase):
 
         self.assertTrue(checkLocation(data))
         self.assertEqual(response.status_code, 201)
+    
     #C# fix
     def test_post_location_wrong_info(self):
         data = {
@@ -73,6 +83,7 @@ class TestClass(unittest.TestCase):
 
         self.assertTrue(checkLocation(data))
         self.assertEqual(response.status_code, 200)
+    
     #C# fix
     def test_put_location_id_wrong_info(self):
         data = {
