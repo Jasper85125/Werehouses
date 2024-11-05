@@ -30,4 +30,20 @@ public class InventoryService : IInventoryService
         InventoryCS inventory = inventories.FirstOrDefault(inv => inv.Id == id);
         return inventory;
     }
+
+    public InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory){
+        InventoryCS inventoryToUpdate = GetInventoryById(id);
+        if(inventoryToUpdate is null){
+            return null;
+        }
+        inventoryToUpdate.description = updatedinventory.description;
+        inventoryToUpdate.updated_at = DateTime.Now;
+        inventoryToUpdate.item_id = updatedinventory.item_id;
+        inventoryToUpdate.item_reference = updatedinventory.item_reference;
+        inventoryToUpdate.Locations = updatedinventory.Locations;
+        // inventoryToUpdate. = updatedinventory;
+        // inventoryToUpdate = updatedinventory;
+        // inventoryToUpdate = updatedinventory;
+        return inventoryToUpdate;
+    }
 }
