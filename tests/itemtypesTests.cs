@@ -1,21 +1,23 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
+using Moq;
+using Controllers;
+using System.Data.Common;
+using Microsoft.AspNetCore.Mvc;
 namespace itemtype.Tests
 {
     [TestClass]
     public class ItemTypeServiceTests
     {
         private Mock<IItemtypeService> _mockItemTypeService;
+        private ItemTypeController _itemTypeController;
         private List<ItemTypeCS> _itemTypes;
 
         [TestInitialize]
         public void Setup()
         {
             _mockItemTypeService = new Mock<IItemtypeService>();
+            _itemTypeController = new ItemTypeController(_mockItemTypeService.Object);
             _itemTypes = new List<ItemTypeCS>
             {
                 new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" },
@@ -111,5 +113,19 @@ namespace itemtype.Tests
             // Assert
             Assert.IsNull(result);
         }
+        [TestMethod]
+        public void DeleteItemTypeTest_Exists()
+        {
+            // Arrange
+            var itemType = new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" };
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(itemType);
+
+            // Act
+            var result = _itemTypeController.DeleteItemType(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
+            
     }
 }

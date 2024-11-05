@@ -79,4 +79,20 @@ public class ItemTypeService : IItemtypeService
         return existingItem;
     }
 
+    public void DeleteItemType(int id)
+    {
+        var path = "data/item_types.json";
+        List<ItemTypeCS> items = GetAllItemtypes();
+        var item = items.FirstOrDefault(i => i.Id == id);
+        if (item == null)
+        {
+            return;
+        }
+
+        items.Remove(item);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllText(path, jsonData);
+    }
+
 }
