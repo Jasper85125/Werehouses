@@ -64,7 +64,7 @@ public class WarehouseController : ControllerBase
         var updatedWarehouse = _warehouseService.UpdateWarehouse(id, newWarehouse);
         if (updatedWarehouse is null)
         {
-            return BadRequest("No warehouse found with the given id.");
+            return NotFound("No warehouse found with the given id.");
         }
         return Ok(updatedWarehouse);
     }

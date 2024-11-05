@@ -71,4 +71,16 @@ public class ItemController : ControllerBase
         var updatedItemResult = _itemService.UpdateItem(uid, updatedItem);
         return Ok(updatedItemResult);
     }
+    [HttpDelete("{uid}")]
+    public ActionResult DeleteItem(string uid)
+    {
+        var existingItem = _itemService.GetItemById(uid);
+        if (existingItem == null)
+        {
+            return NotFound();
+        }
+
+        _itemService.DeleteItem(uid);
+        return Ok();
+    }
 }
