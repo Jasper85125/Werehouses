@@ -6,5 +6,5 @@ public interface ISupplierService
     SupplierCS GetSupplierById(int id);
     SupplierCS CreateSupplier(SupplierCS supplier);
     SupplierCS UpdateSupplier(int id, SupplierCS supplier);
-    // void DeleteWarehouse();
+    void DeleteSupplier(int id);
 }

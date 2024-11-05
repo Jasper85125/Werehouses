@@ -146,7 +146,7 @@ namespace itemgroup.Tests
             // Act
             var result = _itemGroupController.DeleteItemGroup(1);
             //assert
-            var okResult = result as OkObjectResult;
+            Assert.IsInstanceOfType(result, typeof(OkResult));
             
         }
     }

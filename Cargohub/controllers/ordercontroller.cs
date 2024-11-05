@@ -44,9 +44,15 @@ namespace Controllers
 
         // DELETE: api/warehouse/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult DeleteOrder(int id)
         {
-            // Replace with your logic
+            var order = _orderService.GetOrderById(id);
+            if (order is null)
+            {
+                return NotFound();
+            }
+            _orderService.DeleteOrder(id);
+            return Ok();
         }
         
         [HttpPost("orders")]

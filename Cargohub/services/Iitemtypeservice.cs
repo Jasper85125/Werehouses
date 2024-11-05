@@ -9,4 +9,5 @@ public interface IItemtypeService
     ItemTypeCS GetItemById(int id);
     Task<ItemTypeCS> CreateItemType(ItemTypeCS newItemType);
     Task<ItemTypeCS> UpdateItemType(int id, ItemTypeCS itemType);
+    void DeleteItemType(int id);
 }
