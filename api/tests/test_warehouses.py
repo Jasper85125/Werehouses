@@ -9,6 +9,13 @@ def checkWarehouse(warehouse):
             return False
     return True
 
+def checkLocation(location):
+    required_properties = ["warehouse_id", "code", "name"]
+    for prop in required_properties:
+        if location.get(prop) is None:
+            return False
+    return True
+
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.url = "http://localhost:3000/api/v1"
@@ -18,22 +25,34 @@ class TestClass(unittest.TestCase):
         response = requests.get(url=(self.url + "/warehouses"), headers=self.headers)
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
+        
+        if len(response.json()) > 0:
+            self.assertTrue(checkWarehouse(warehouse)for warehouse in response.json()[0])
 
     def test_get_warehouse_id(self):
         response = requests.get(url=(self.url + "/warehouses/1"), headers=self.headers)
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+
+        if len(response.json()) == 1:
+            self.assertTrue(checkWarehouse(warehouse)for warehouse in response.json())
     
     #C# fix
     def test_get_warehouse_non_existing_id(self):
         response = requests.get(url=(self.url + "/warehouses/-1"), headers=self.headers)
         
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(type(response.json()), type(None))
 
     def test_get_warehouse_id_locations(self):
         response = requests.get(url=(self.url + "/warehouses/1/locations"), headers=self.headers)
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
+        if len(response.json()) > 0:
+            self.assertTrue(checkLocation(location)for location in response.json()[0])
     
     def test_get_wrong_path(self):
         response = requests.get(url=(self.url + "/warehouses/1/error"), headers=self.headers)
@@ -71,7 +90,7 @@ class TestClass(unittest.TestCase):
         "code": "WAREHOUSE123",
         "name": None,
         "address": "Warestreet 123",
-        "zip": "8007ST",
+        "zip": None,
         "city": None,
         "province": None,
         "country": None,

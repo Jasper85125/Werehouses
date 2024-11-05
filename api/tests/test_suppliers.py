@@ -18,22 +18,32 @@ class TestClass(unittest.TestCase):
         response = requests.get(url=(self.url + "/suppliers"), headers=self.headers)
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
+        
+        if len(response.json()) > 0:
+            self.assertTrue(checkSupplier(supplier)for supplier in response.json()[0])
 
     def test_get_supplier_id(self):
         response = requests.get(url=(self.url + "/suppliers/1"), headers=self.headers)
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+        
+        if len(response.json()) == 1:
+            self.assertTrue(checkSupplier(supplier)for supplier in response.json())
     
     #C# fix
     def test_get_supplier_id_non_existing_id(self):
         response = requests.get(url=(self.url + "/suppliers/10000000"), headers=self.headers)
         
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(type(response.json()), type(None))
 
     def test_get_items_from_supplier(self):
         response = requests.get(url=(self.url + "/suppliers/1/items"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
     
     def test_get_wrong_path(self):
         response = requests.get(url=(self.url + "/suppliers/1/error"), headers=self.headers)

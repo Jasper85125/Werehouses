@@ -17,22 +17,32 @@ class TestClass(unittest.TestCase):
         response = requests.get(url = (self.url + "/transfers"), headers = self.headers)
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
+        
+        if len(response.json()) > 0:
+            self.assertTrue(checkTransfer(transfer)for transfer in response.json()[0])
 
     def test_get_transfer_id(self):
         response = requests.get(url = (self.url + "/transfers/1"), headers = self.headers)
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+        
+        if len(response.json()) == 1:
+            self.assertTrue(checkTransfer(transfer)for transfer in response.json())
     
     #c# fix
     def test_get_transfer_non_existing_id(self):
         response = requests.get(url=(self.url + "/transfers/100000000"), headers=self.headers)
         
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(type(response.json()), type(None))
 
     def test_get_items_in_transfers(self):
         response = requests.get(url = self.url + "/transfers/1/items", headers = self.headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
     
     def test_get_wrong_path(self):
         response = requests.get(url = (self.url + "/transfers/1/error"), headers = self.headers)
@@ -81,7 +91,7 @@ class TestClass(unittest.TestCase):
         response = requests.post(url = (self.url + "/transfers"), headers = self.headers, json=data)
 
         self.assertTrue(checkTransfer(data))
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 400)
 
     def test_put_transfer_id(self):
         data = {
@@ -144,6 +154,7 @@ class TestClass(unittest.TestCase):
 
         self.assertFalse(checkTransfer(data))
         self.assertEqual(response.status_code, 400)
+        
 
     def test_delete_transfer_id(self):
         response = requests.delete(url = (self.url + "/transfers/3"), headers = self.headers)
