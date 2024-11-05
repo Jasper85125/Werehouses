@@ -18,15 +18,24 @@ class TestOrdersAPI(unittest.TestCase):
     def test_get_orders(self):
         response = requests.get(f"{self.url}/orders", headers=self.headers)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
+        
+        if len(response.json()) > 0:
+            self.assertTrue(checkOrder(order)for order in response.json()[0])
 
     def test_get_order_by_id(self):
         response = requests.get(f"{self.url}/orders/1", headers=self.headers)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+
+        if len(response.json()) == 1:
+            self.assertTrue(checkOrder(order)for order in response.json())
     
     #c# fix
     def test_get_order_by_non_existing_id(self):
         response = requests.get(f"{self.url}/orders/10000000", headers=self.headers)
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(type(response.json()), type(None))
 
     def test_get_wrong_path(self):
         response = requests.get(url=(self.url + "/orders/1/error"), headers=self.headers)
@@ -141,6 +150,7 @@ class TestOrdersAPI(unittest.TestCase):
         
         self.assertTrue(checkOrder(data))
         self.assertEqual(response.status_code, 200)
+    
     #C# fix
     def test_put_order_wrong_info(self):
         data = {

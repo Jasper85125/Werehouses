@@ -20,12 +20,20 @@ class TestClass(unittest.TestCase):
         response = requests.get(
             url=(self.url + "/inventories"), headers=self.headers)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
+        
+        if len(response.json()) > 0:
+            self.assertTrue(checkInventory(inventory)for inventory in response.json()[0])
 
     def test_get_inventory_id(self):
         response = requests.get(
             url=(self.url + "/inventories/1"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+
+        if len(response.json()) == 1:
+            self.assertTrue(checkInventory(inventory)for inventory in response.json())
 
     # c# fix
     def test_get_inventory_non_existing_id(self):

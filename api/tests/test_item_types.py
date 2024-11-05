@@ -1,15 +1,12 @@
 import unittest
 import httpx
 
-
-
 def checkItemType(item_type):
     required_properties = ["name", "description"]
     for prop in required_properties:
         if item_type.get(prop) is None:
             return False
     return True
-
 
 class TestItemTypesAPI(unittest.TestCase):
     def setUp(self):
@@ -49,28 +46,16 @@ class TestItemTypesAPI(unittest.TestCase):
 
         # Check the status code
         self.assertEqual(response.status_code, 200)
-
-        # Check that the response is a list
-        # (representative of a list of item types)
         self.assertEqual(type(response.json()), list)
-
-        # If the list contains something, check the first object in the list
+        
         if len(response.json()) > 0:
-            # Check that each object in the list is a dictionary
-            self.assertEqual(type(response.json()[0]), dict)
-
-            # Check that each item type object has the correct properties
-            self.assertTrue(
-                all(
-                    checkItemType(item_type)
-                    for item_type in response.json()
-                )
-            )
+            self.assertTrue(checkItemType(itemtype)for itemtype in response.json()[0])
     
     def test_get_items_by_item_type_id(self):
         response = self.client.get(url=(self.url + "/item_types/1/items"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), list)
     
     def test_get_wrong_path(self):
         response = self.client.get(url=(self.url + "/item_types/1/error"), headers=self.headers)

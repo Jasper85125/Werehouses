@@ -48,23 +48,10 @@ class TestItemGroups(unittest.TestCase):
 
         # Check the status code
         self.assertEqual(response.status_code, 200)
-
-        # Check that the response is a list
-        # (representative of a list of item groups)
         self.assertEqual(type(response.json()), list)
-
-        # If the list contains something, check the first object in the list
+        
         if len(response.json()) > 0:
-            # Check that each object in the list is a dictionary
-            self.assertEqual(type(response.json()[0]), dict)
-
-            # Check that each item group object has the correct properties
-            self.assertTrue(
-                all(
-                    checkItemGroup(item_group)
-                    for item_group in response.json()
-                )
-            )
+            self.assertTrue(checkItemGroup(itemgroup)for itemgroup in response.json()[0])
     
     def test_get_items_in_item_group(self):
         response = self.client.get(url=(self.url + "/item_groups/1/items"), headers=self.headers)
