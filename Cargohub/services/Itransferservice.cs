@@ -5,4 +5,5 @@ public interface ITransferService
     List<TransferCS> GetAllTransfers();
     TransferCS GetTransferById(int id);
     TransferCS CreateTransfer(TransferCS transfer);
+    void DeleteTransfer(int id);
 }
