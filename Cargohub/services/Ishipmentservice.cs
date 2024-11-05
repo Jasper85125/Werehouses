@@ -6,5 +6,5 @@ public interface IShipmentService
     ShipmentCS GetShipmentById(int id);
     ShipmentCS CreateShipment(ShipmentCS newShipment);
     Task<ShipmentCS> UpdateShipment(int id, ShipmentCS updateShipment);
-    // void DeleteWarehouse();
+    void DeleteShipment(int id);
 }

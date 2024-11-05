@@ -69,8 +69,14 @@ public class ShipmentController : ControllerBase
 
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public ActionResult DeleteShipment(int id)
     {
-        // Replace with your logic
+        var shipment = _shipmentService.GetShipmentById(id);
+        if (shipment is null)
+        {
+            return NotFound();
+        }
+        _shipmentService.DeleteShipment(id);
+        return Ok();
     }
 }

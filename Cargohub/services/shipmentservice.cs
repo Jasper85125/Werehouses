@@ -86,4 +86,16 @@ public class ShipmentService : IShipmentService
 
         return existingShipment;
     }
+    public void DeleteShipment(int id)
+    {
+        var path = "data/shipments.json";
+        List<ShipmentCS> shipments = GetAllShipments();
+        var shipment = shipments.FirstOrDefault(s => s.Id == id);
+        if (shipment != null)
+        {
+            shipments.Remove(shipment);
+            var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
+            File.WriteAllText(path, jsonData);
+        }
+    }
 }
