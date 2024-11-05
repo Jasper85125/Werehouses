@@ -51,4 +51,22 @@ public class ItemGroupController : ControllerBase
         return CreatedAtAction(nameof(GetItemById), new { id = createdItemGroup.Id }, createdItemGroup);
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ItemGroupCS>> UpdateItemGroup(int id, [FromBody] ItemGroupCS itemGroup)
+    {
+        if (id != itemGroup.Id)
+        {
+            return BadRequest();
+        }
+
+        var existingItemLine = _itemgroupService.GetItemById(id);
+        if (existingItemLine == null)
+        {
+            return NotFound();
+        }
+
+        var updatedItemLine = await _itemgroupService.UpdateItemGroup(id, itemGroup);
+        return Ok(updatedItemLine);
+    }
+
 }
