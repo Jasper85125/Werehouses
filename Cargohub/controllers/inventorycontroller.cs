@@ -49,7 +49,7 @@ public class InventoryController : ControllerBase
 
     // PUT: api/warehouse/5
     [HttpPut("{id}")]
-    public ActionResult Put(int id, [FromBody] InventoryCS value)
+    public ActionResult UpdateInventoryById(int id, [FromBody] InventoryCS value)
     {
         // Replace with your logic
         //make use of your update inventory by id service
