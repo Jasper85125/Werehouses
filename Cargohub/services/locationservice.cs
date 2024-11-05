@@ -70,4 +70,16 @@ public class LocationService : ILocationService
 
 
     }
+    public void DeleteLocation(int locationId)
+    {
+        var locations = GetAllLocations();
+        var location = locations.FirstOrDefault(l => l.Id == locationId);
+        if (location == null)
+        {
+            return;
+        }
+        locations.Remove(location);
+        var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
+        File.WriteAllText(_path, jsonData);
+    }
 }
