@@ -47,11 +47,21 @@ public class TransferController : ControllerBase
         return CreatedAtAction(nameof(GetTransferById), new { id = newTransfer.Id }, newTransfer);
     }
 
-    // PUT: api/warehouse/5
+    // PUT: api/transfer/1
     [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    public ActionResult<TransferCS> UpdateTransfer([FromRoute]int id, [FromBody] TransferCS newTransfer)
     {
-        // Replace with your logic
+        if (newTransfer is null)
+        {
+            return BadRequest("Warehouse is null.");
+        }
+
+        var updatedTransfer = _transferService.UpdateTransfer(id, newTransfer);
+        if (updatedTransfer is null)
+        {
+            return NotFound("No warehouse found with the given id.");
+        }
+        return Ok(updatedTransfer);
     }
 
     // DELETE: api/warehouse/5
