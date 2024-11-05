@@ -138,6 +138,19 @@ namespace Tests
             var returnedLocation = createdResult.Value as LocationCS;
             Assert.IsNull(returnedLocation);
         }
+        [TestMethod]
+        public void DeleteLocationTest_Exists()
+        {
+            // Arrange
+            var location = new LocationCS { Id = 1, warehouse_id = 1, code = "B.2.1" };
+            _mockLocationService.Setup(service => service.GetLocationById(1)).Returns(location);
+            
+            // Act
+            var result = _locationController.DeleteLocation(1);
+            
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 }
 
