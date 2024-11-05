@@ -142,6 +142,20 @@ namespace Tests
             var returnedSupplier = createdResult.Value as SupplierCS;
             Assert.IsNull(returnedSupplier);
         }
+
+        [TestMethod]
+        public void DeleteSupplierTest_Success()
+        {
+            // Arrange
+            var supplier = new SupplierCS { Id = 1, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404"};
+            _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(supplier);
+
+            // Act
+            var result = _supplierController.DeleteSupplier(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 }
 
