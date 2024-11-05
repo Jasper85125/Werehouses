@@ -49,9 +49,22 @@ public class InventoryController : ControllerBase
 
     // PUT: api/warehouse/5
     [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    public ActionResult<InventoryCS> UpdateInventoryById(int id, [FromBody] InventoryCS value)
     {
         // Replace with your logic
+        //make use of your update inventory by id service
+        //include a check if value is null
+        // if(value is null || value.created_at == default || value.updated_at == default 
+        // || string.IsNullOrWhiteSpace(value.description) || value.item_id is null || value.item_reference is null 
+        // || value.Locations is null){
+        //     return BadRequest("request is invalid/contains invalid values");
+        // }
+        if(value is null)
+        {
+            return BadRequest("request is invalid/contains invalid values");
+        }
+        var patchedinventory = _inventoryService.UpdateInventoryById(id, value);
+        return Ok(patchedinventory);
     }
 
     // DELETE: api/warehouse/5
