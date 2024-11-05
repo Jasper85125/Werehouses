@@ -55,4 +55,30 @@ public class ItemLineService : IItemLineService
 
         return newItemLine;
     }
+
+    // Method to update an item
+    public async Task<ItemLineCS> UpdateItemLine(int id, ItemLineCS itemLine)
+    {
+        List<ItemLineCS> items = GetAllItemlines();
+        var existingItem = items.FirstOrDefault(i => i.Id == id);
+        if (existingItem == null)
+        {
+            return null;
+        }
+
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        existingItem.Name = itemLine.Name;
+        existingItem.Description = itemLine.Description;
+        existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+
+        return existingItem;
+    }
 }

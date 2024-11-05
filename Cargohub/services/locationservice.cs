@@ -51,10 +51,16 @@ public class LocationService : ILocationService
 
         if (locationToUpdate is not null)
         {
+            // Get the current date and time
+            var currentDateTime = DateTime.Now;
+
+            // Format the date and time to the desired format
+            var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
             locationToUpdate.warehouse_id = updatedLocation.warehouse_id;
             locationToUpdate.code = updatedLocation.code;
             locationToUpdate.name = updatedLocation.name;
-            locationToUpdate.updated_at = DateTime.UtcNow;
+            locationToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
             var jsonData = JsonConvert.SerializeObject(allLocations, Formatting.Indented);
             File.WriteAllText(_path, jsonData);
