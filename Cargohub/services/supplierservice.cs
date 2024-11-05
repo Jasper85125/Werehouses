@@ -76,5 +76,20 @@ public class SupplierService : ISupplierService
         return null;
     }
 
+    public void DeleteSupplier(int id)
+    {
+        
+        var path = "data/suppliers.json";
+        List<SupplierCS> suppliers = GetAllSuppliers();
+        SupplierCS supplier = suppliers.FirstOrDefault(supplier => supplier.Id == id);
+        if (supplier != null)
+        {
+            suppliers.Remove(supplier);
+            var jsonData = JsonConvert.SerializeObject(suppliers, Formatting.Indented);
+            File.WriteAllText(path, jsonData);
+        }
+        
+    }
+
 
 }
