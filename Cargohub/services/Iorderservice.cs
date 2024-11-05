@@ -6,4 +6,5 @@ public interface IOrderService
     OrderCS GetOrderById(int id);
 
     OrderCS CreateOrder(OrderCS newOrder);
+    void DeleteOrder(int id);
 }

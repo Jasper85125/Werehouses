@@ -99,7 +99,19 @@ namespace Tests
             Assert.AreEqual("Pending", returnedOrder.order_status);
         }
 
+        [TestMethod]
+        
+        public void DeleteOrderTest_Exist(){
+            //arrange
+            var order = new OrderCS { Id = 1, source_id = 24, order_status = "Pending" };
+            _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(order);
 
+            //act
+            var result = _orderController.DeleteOrder(1);
+
+            //assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 }
 
