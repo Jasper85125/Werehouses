@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
 namespace Services;
@@ -31,27 +30,56 @@ public class InventoryService : IInventoryService
         InventoryCS inventory = inventories.FirstOrDefault(inv => inv.Id == id);
         return inventory;
     }
+    public InventoryCS CreateInventory(InventoryCS newInventory)
+    {
+        var path = "data/inventories.json";
 
+        List<InventoryCS> inventories = GetAllInventories();
+
+
+        newInventory.Id = inventories.Count > 0 ? inventories.Max(i => i.Id) + 1 : 1;
+        inventories.Add(newInventory);
+
+
+        var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+        File.WriteAllText(path, jsonData);
+        return newInventory;
+        
+    }
+    public void DeleteInventory(int id)
+    {
+        var path = "data/inventories.json";
+        List<InventoryCS> inventories = GetAllInventories();
+        InventoryCS inventory = inventories.FirstOrDefault(inv => inv.Id == id);
+        if (inventory == null)
+        {
+            return;
+        }
+        inventories.Remove(inventory);
+        var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+        File.WriteAllText(path, jsonData);
+    }
     public InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory){
-        var inventories = GetAllInventories();
-        var inventoryToUpdate = inventories.FirstOrDefault(_ => _.Id == id);
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-        if(inventoryToUpdate is null){
+        var inventories = GetAllInventories();
+        var toUpdate = inventories.Find(_ => _.Id == id);
+        if(toUpdate is null)
+        {
             return null;
         }
-        inventoryToUpdate.description = updatedinventory.description;
-        inventoryToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
-        inventoryToUpdate.item_reference = updatedinventory.item_reference;
-        inventoryToUpdate.Locations = updatedinventory.Locations;
-        inventoryToUpdate.total_allocated = updatedinventory.total_allocated;
-        inventoryToUpdate.total_available = updatedinventory.total_available;
-        inventoryToUpdate.total_expected = updatedinventory.total_expected;
-        inventoryToUpdate.total_on_hand = updatedinventory.total_on_hand;
-        inventoryToUpdate.total_ordered = updatedinventory.total_ordered;
-        var path = "data/inventories.cs";
-        var json = JsonConvert.SerializeObject(inventoryToUpdate, Formatting.Indented);
-        File.WriteAllText(pathz)
-        return inventoryToUpdate;
+        toUpdate.description = updatedinventory.description;
+        toUpdate.item_reference = updatedinventory.item_reference;
+        toUpdate.Locations = updatedinventory.Locations;
+        toUpdate.total_on_hand = updatedinventory.total_on_hand;
+        toUpdate.total_expected = updatedinventory.total_expected;
+        toUpdate.total_ordered = updatedinventory.total_ordered;
+        toUpdate.total_allocated = updatedinventory.total_allocated;
+        toUpdate.total_available = updatedinventory.total_available;
+        toUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        var path = "data/inventories.json";
+        var json = JsonConvert.SerializeObject(inventories);
+        File.WriteAllText(path, json);
+        return toUpdate;
     }
 }
