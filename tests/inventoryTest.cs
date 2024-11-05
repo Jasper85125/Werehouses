@@ -75,6 +75,23 @@ namespace Tests
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+        public void UpdateInventoryById_Test(){
+            //arrange
+            InventoryCS test_inventory = new InventoryCS(){};
+            _mockInventoryService.Setup(service => service.UpdateInventoryById(1, test_inventory));
+
+            //act
+            var value = _inventoryController.UpdateInventoryById(1, test_inventory);
+
+            //Assert
+            var okResult = value.Result as OkObjectResult;
+            var updatedinventory = okResult.Value as IEnumerable<IInventoryService>;
+            Assert.IsNotNull(okResult);
+            // Assert.Equals(updatedinventory, test_inventory);
+            Assert.AreEqual<IInventoryService>(value, test_inventory);
+        }
     }
 }
 
