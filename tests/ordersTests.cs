@@ -30,10 +30,10 @@ namespace Tests
                 new OrderCS { Id = 2, source_id = 10 },
             };
             _mockOrderService.Setup(service => service.GetAllOrders()).Returns(orders);
-            
+
             //Act
             var value = _orderController.GetAllOrders();
-            
+
             //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<OrderCS>;
@@ -51,10 +51,10 @@ namespace Tests
                 new OrderCS { Id = 2, source_id = 10 },
             };
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(orders[0]);
-            
+
             //Act
             var value = _orderController.GetOrderById(1);
-            
+
             //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as OrderCS;
@@ -68,10 +68,10 @@ namespace Tests
         {
             //arrange
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns((OrderCS)null);
-            
+
             //Act
             var value = _orderController.GetOrderById(1);
-            
+
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
@@ -81,7 +81,7 @@ namespace Tests
             // Arrange
             var newOrder = new OrderCS { Id = 1, source_id = 24, order_status = "Pending" };
             var createdOrder = new OrderCS { Id = 2, source_id = 24, order_status = "Pending" };
-            
+
             // Set up the mock service to return the created order
             _mockOrderService.Setup(service => service.CreateOrder(newOrder)).Returns(createdOrder);
 
@@ -100,8 +100,46 @@ namespace Tests
         }
 
         [TestMethod]
-        
-        public void DeleteOrderTest_Exist(){
+        public void UpdateOrderTest_Success()
+        {
+            // Arrange
+            var updatedOrder = new OrderCS { Id = 1, source_id = 24, order_status = "Shipped" };
+            _mockOrderService.Setup(service => service.UpdateOrder(1, updatedOrder)).Returns(Task.FromResult(updatedOrder));
+            _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(updatedOrder);
+
+            // Act
+            var result = _orderController.UpdateOrder(1, updatedOrder);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(ActionResult<OrderCS>));
+            var okResult = result.Result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(OrderCS));
+            var returnedOrder = okResult.Value as OrderCS;
+            Assert.AreEqual(updatedOrder.source_id, returnedOrder.source_id);
+            Assert.AreEqual(updatedOrder.order_status, returnedOrder.order_status);
+        }
+
+        [TestMethod]
+        public void UpdateOrderTest_Failed()
+        {
+            // Arrange
+            var updatedOrder = new OrderCS { Id = 1, source_id = 24, order_status = "Shipped" };
+            _mockOrderService.Setup(service => service.UpdateOrder(1, updatedOrder)).Returns(Task.FromResult((OrderCS)null));
+
+            // Act
+            var result = _orderController.UpdateOrder(1, updatedOrder);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(ActionResult<OrderCS>));
+            var notFoundResult = result.Result.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
+        }
+
+
+        [TestMethod]
+        public void DeleteOrderTest_Exist()
+        {
             //arrange
             var order = new OrderCS { Id = 1, source_id = 24, order_status = "Pending" };
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(order);
