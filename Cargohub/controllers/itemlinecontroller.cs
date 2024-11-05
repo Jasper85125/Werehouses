@@ -49,4 +49,23 @@ public class ItemLineController : ControllerBase
         var createdItemLine = await _itemLineService.AddItemLine(newItemLine);
         return CreatedAtAction(nameof(GetItemLineById), new { id = createdItemLine.Id }, createdItemLine);
     }
+
+    // PUT: api/itemLine/5
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ItemLineCS>> UpdateItemLine(int id, [FromBody] ItemLineCS itemLine)
+    {
+        if (id != itemLine.Id)
+        {
+            return BadRequest();
+        }
+
+        var existingItemLine = _itemLineService.GetItemLineById(id);
+        if (existingItemLine == null)
+        {
+            return NotFound();
+        }
+
+        var updatedItemLine = await _itemLineService.UpdateItemLine(id, itemLine);
+        return Ok(updatedItemLine);
+    }
 }

@@ -81,6 +81,11 @@ public class ItemService : IItemService
         {
             return null;
         }
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Update the properties of the existing item
         existingItem.code = item.code;
@@ -98,7 +103,7 @@ public class ItemService : IItemService
         existingItem.supplier_id = item.supplier_id;
         existingItem.supplier_code = item.supplier_code;
         existingItem.supplier_part_number = item.supplier_part_number;
-        existingItem.updated_at = DateTime.UtcNow;
+        existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var path = "data/items.json";
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
