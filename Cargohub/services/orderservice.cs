@@ -46,6 +46,48 @@ public class OrderService : IOrderService
         return newOrder;
     }
 
+    public Task<OrderCS> UpdateOrder(int id, OrderCS updateOrder)
+    {
+        List<OrderCS> orders = GetAllOrders();
+        var existingOrder = orders.FirstOrDefault(o => o.Id == id);
+        if (existingOrder == null)
+        {
+            return null;
+        }
+
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        // Update the existing order with new values
+        existingOrder.source_id = updateOrder.source_id;
+        existingOrder.order_date = updateOrder.order_date;
+        existingOrder.request_date = updateOrder.request_date;
+        existingOrder.Reference = updateOrder.Reference;
+        existingOrder.reference_extra = updateOrder.reference_extra;
+        existingOrder.order_status = updateOrder.order_status;
+        existingOrder.Notes = updateOrder.Notes;
+        existingOrder.shipping_notes = updateOrder.shipping_notes;
+        existingOrder.picking_notes = updateOrder.picking_notes;
+        existingOrder.warehouse_id = updateOrder.warehouse_id;
+        existingOrder.ship_to = updateOrder.ship_to;
+        existingOrder.bill_to = updateOrder.bill_to;
+        existingOrder.shipment_id = updateOrder.shipment_id;
+        existingOrder.total_amount = updateOrder.total_amount;
+        existingOrder.total_discount = updateOrder.total_discount;
+        existingOrder.total_tax = updateOrder.total_tax;
+        existingOrder.total_surcharge = updateOrder.total_surcharge;
+        existingOrder.items = updateOrder.items;
+        existingOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+        var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
+        File.WriteAllTextAsync("data/orders.json", jsonData);
+
+        return Task.FromResult(existingOrder);
+    }
+
     public void DeleteOrder(int id)
     {
         var Path = "data/orders.json";
