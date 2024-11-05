@@ -6,5 +6,5 @@ public interface IInventoryService
     InventoryCS GetInventoryById(int id);
     InventoryCS CreateInventory(InventoryCS inventory);    
     // void UpdateWarehouse();
-    // void DeleteWarehouse();
+    void DeleteInventory(int id);
 }
