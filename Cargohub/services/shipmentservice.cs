@@ -86,6 +86,19 @@ public class ShipmentService : IShipmentService
 
         return existingShipment;
     }
+    public ShipmentCS UpdateItemsInShipment(int shipmentId, List<ItemIdAndAmount> items){
+        var shipments = GetAllShipments();
+        var updatedShipment = shipments.Find(_ => _.Id == shipmentId);
+        if(updatedShipment is null)
+        {
+            return null;
+        }
+        updatedShipment.Items = items;
+        var path = "data/shipments.json";
+        var json = JsonConvert.SerializeObject(shipments, Formatting.Indented);
+        File.WriteAllText(path, json);
+        return updatedShipment;
+    }
     public void DeleteShipment(int id)
     {
         var path = "data/shipments.json";
