@@ -83,4 +83,21 @@ public class ItemGroupService : IitemGroupService
 
         return existingItem;
     }
+    
+    // Method to delete an Itemgroup
+    public void DeleteItemGroup(int id)
+    {
+        var path = "data/item_groups.json";
+        List<ItemGroupCS> items = GetAllItemGroups();
+        var item = items.FirstOrDefault(i => i.Id == id);
+        if (item == null)
+        {
+            return;
+        }
+
+        items.Remove(item);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllTextAsync(path, jsonData);
+    }
 }

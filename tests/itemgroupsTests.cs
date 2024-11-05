@@ -137,5 +137,17 @@ namespace itemgroup.Tests
             Assert.IsInstanceOfType(value.Result, typeof(BadRequestResult));
         }
 
+        [TestMethod]
+        public void DeleteItemGroupTest_Exists()
+        {
+            // Arrange
+            var itemGroup = new ItemGroupCS { Id = 1, Name = "Group 1" };
+            _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(itemGroup); 
+            // Act
+            var result = _itemGroupController.DeleteItemGroup(1);
+            //assert
+            var okResult = result as OkObjectResult;
+            
+        }
     }
 }
