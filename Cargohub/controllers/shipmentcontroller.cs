@@ -50,9 +50,21 @@ public class ShipmentController : ControllerBase
 
     // PUT: api/warehouse/5
     [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    public Task<ActionResult<ShipmentCS>> UpdateShipment(int id, [FromBody] ShipmentCS updateShipment)
     {
-        // Replace with your logic
+        if (id != updateShipment.Id)
+        {
+            return Task.FromResult<ActionResult<ShipmentCS>>(BadRequest());
+        }
+
+        var existingItemLine = _shipmentService.GetShipmentById(id);
+        if (existingItemLine == null)
+        {
+            return Task.FromResult<ActionResult<ShipmentCS>>(NotFound());
+        }
+
+        var updatedItemLine = _shipmentService.UpdateShipment(id, updateShipment);
+        return Task.FromResult<ActionResult<ShipmentCS>>(Ok(updatedItemLine));
     }
 
     // DELETE: api/warehouse/5

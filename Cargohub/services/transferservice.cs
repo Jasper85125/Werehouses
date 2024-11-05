@@ -71,4 +71,28 @@ public class TransferService : ITransferService
         }
         return null;
     }
+    public void DeleteTransfer(int id)
+    {
+        /*
+        var path = "data/suppliers.json";
+        List<SupplierCS> suppliers = GetAllSuppliers();
+        SupplierCS supplier = suppliers.FirstOrDefault(supplier => supplier.Id == id);
+        if (supplier != null)
+        {
+            suppliers.Remove(supplier);
+            var jsonData = JsonConvert.SerializeObject(suppliers, Formatting.Indented);
+            File.WriteAllText(path, jsonData);
+        }
+        */
+        var Path = "data/transfers.json";
+
+        List<TransferCS> transfers = GetAllTransfers();
+        TransferCS transfer = transfers.FirstOrDefault(transfer => transfer.Id == id);
+        if (transfer != null)
+        {
+            transfers.Remove(transfer);
+            var jsonData = JsonConvert.SerializeObject(transfers, Formatting.Indented);
+            File.WriteAllText(Path, jsonData);
+        }
+    }
 }

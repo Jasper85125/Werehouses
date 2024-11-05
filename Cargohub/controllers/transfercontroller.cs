@@ -66,8 +66,14 @@ public class TransferController : ControllerBase
 
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public ActionResult DeleteTransfer(int id)
     {
-        // Replace with your logic
+        var transfer = _transferService.GetTransferById(id);
+        if (transfer is null)
+        {
+            return NotFound();
+        }
+        _transferService.DeleteTransfer(id);
+        return Ok();
     }
 }

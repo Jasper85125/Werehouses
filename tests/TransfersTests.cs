@@ -133,6 +133,33 @@ namespace Tests
             var returnedTransfer = createdResult.Value as TransferCS;
             Assert.IsNull(returnedTransfer);
         }
+
+        [TestMethod]
+        public void DeleteTransferTest_Exist(){
+            /*
+public void DeleteWarehouseTest_Success()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
+            
+            // Act
+            var result = _warehouseController.DeleteWarehouse(1);
+            
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
+            */
+            //arrange
+            var transfers = new TransferCS { Id = 1, Reference = "JoJo", transfer_from = 9292, transfer_to = null, transfer_status = "completed", created_at = default, updated_at = default, Items = new List<ItemIdAndAmount> ()};
+            _mockTransferService.Setup(service => service.GetTransferById(1)).Returns(transfers);
+
+            // Act
+            var result = _transferController.DeleteTransfer(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 }
 

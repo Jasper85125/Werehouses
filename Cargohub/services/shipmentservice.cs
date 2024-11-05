@@ -46,4 +46,44 @@ public class ShipmentService : IShipmentService
         File.WriteAllText(Path, jsonData);
         return newShipment;
     }
+
+    public async Task<ShipmentCS> UpdateShipment(int id, ShipmentCS updateShipment)
+    {
+        List<ShipmentCS> shipments = GetAllShipments();
+        var existingShipment = shipments.FirstOrDefault(s => s.Id == id);
+        if (existingShipment == null)
+        {
+            return null;
+        }
+
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        // Update the existing shipment with new values
+        existingShipment.order_id = updateShipment.order_id;
+        existingShipment.source_id = updateShipment.source_id;
+        existingShipment.order_date = updateShipment.order_date;
+        existingShipment.request_date = updateShipment.request_date;
+        existingShipment.shipment_date = updateShipment.shipment_date;
+        existingShipment.shipment_type = updateShipment.shipment_type;
+        existingShipment.shipment_status = updateShipment.shipment_status;
+        existingShipment.Notes = updateShipment.Notes;
+        existingShipment.carrier_code = updateShipment.carrier_code;
+        existingShipment.carrier_description = updateShipment.carrier_description;
+        existingShipment.service_code = updateShipment.service_code;
+        existingShipment.payment_type = updateShipment.payment_type;
+        existingShipment.transfer_mode = updateShipment.transfer_mode;
+        existingShipment.total_package_count = updateShipment.total_package_count;
+        existingShipment.total_package_weight = updateShipment.total_package_weight;
+        existingShipment.Items = updateShipment.Items;
+        existingShipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+        var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
+        await File.WriteAllTextAsync("data/shipments.json", jsonData);
+
+        return existingShipment;
+    }
 }
