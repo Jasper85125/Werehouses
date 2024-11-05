@@ -51,6 +51,12 @@ public class WarehouseService : IWarehouseService
 
         if (warehouseToUpdate is not null)
         {
+            // Get the current date and time
+            var currentDateTime = DateTime.Now;
+
+            // Format the date and time to the desired format
+            var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
             warehouseToUpdate.Code = updateWarehouse.Code;
             warehouseToUpdate.Name = updateWarehouse.Name;
             warehouseToUpdate.Address = updateWarehouse.Address;
@@ -59,12 +65,23 @@ public class WarehouseService : IWarehouseService
             warehouseToUpdate.Province = updateWarehouse.Province;
             warehouseToUpdate.Country = updateWarehouse.Country;
             warehouseToUpdate.Contact = updateWarehouse.Contact;
-            warehouseToUpdate.updated_at = DateTime.UtcNow;
+            warehouseToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
 
             var jsonData = JsonConvert.SerializeObject(allWarehouses, Formatting.Indented);
             File.WriteAllText(_path, jsonData);
             return warehouseToUpdate;
         }
         return null;
+    }
+    public void DeleteWarehouse(int id){
+        var allWarehouses = GetAllWarehouses();
+        var warehouseToDelete = allWarehouses.FirstOrDefault(warehouse => warehouse.Id == id);
+        if(warehouseToDelete == null){
+            return;
+        }
+        allWarehouses.Remove(warehouseToDelete);
+        var jsonData = JsonConvert.SerializeObject(allWarehouses, Formatting.Indented);
+        File.WriteAllText(_path, jsonData);
     }
 }

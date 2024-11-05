@@ -67,9 +67,15 @@ namespace Controllers
 
         // DELETE: api/warehouse/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult DeleteLocation(int id)
         {
-            // Replace with your logic
+            var location = _locationService.GetLocationById(id);
+            if (location == null)
+            {
+                return NotFound();
+            }
+        _locationService.DeleteLocation(id);
+        return Ok();
         }
     }
 }

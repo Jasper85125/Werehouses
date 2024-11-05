@@ -34,7 +34,7 @@ public class InventoryService : IInventoryService
 
     public InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory){
         var inventories = GetAllInventories();
-        var inventoryToUpdate = inventories.Find(_ => _.Id == id);
+        var inventoryToUpdate = inventories.FirstOrDefault(_ => _.Id == id);
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         if(inventoryToUpdate is null){
@@ -44,14 +44,14 @@ public class InventoryService : IInventoryService
         inventoryToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         inventoryToUpdate.item_reference = updatedinventory.item_reference;
         inventoryToUpdate.Locations = updatedinventory.Locations;
-        inventoryToUpdate.total_on_hand = updatedinventory.total_on_hand;
-        inventoryToUpdate.total_expected = updatedinventory.total_expected;
-        inventoryToUpdate.total_ordered = updatedinventory.total_ordered;
         inventoryToUpdate.total_allocated = updatedinventory.total_allocated;
         inventoryToUpdate.total_available = updatedinventory.total_available;
-        var path = "data/inventories.json";
+        inventoryToUpdate.total_expected = updatedinventory.total_expected;
+        inventoryToUpdate.total_on_hand = updatedinventory.total_on_hand;
+        inventoryToUpdate.total_ordered = updatedinventory.total_ordered;
+        var path = "data/inventories.cs";
         var json = JsonConvert.SerializeObject(inventoryToUpdate, Formatting.Indented);
-        File.WriteAllText(path, json);
+        File.WriteAllText(pathz)
         return inventoryToUpdate;
     }
 }

@@ -50,6 +50,12 @@ public class SupplierService : ISupplierService
 
         if (supplierToUpdate is not null)
         {
+            // Get the current date and time
+            var currentDateTime = DateTime.Now;
+
+            // Format the date and time to the desired format
+            var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
             supplierToUpdate.Code = updateSupplier.Code;
             supplierToUpdate.Name = updateSupplier.Name;
             supplierToUpdate.Address = updateSupplier.Address;
@@ -61,7 +67,7 @@ public class SupplierService : ISupplierService
             supplierToUpdate.contact_name = updateSupplier.contact_name;
             supplierToUpdate.PhoneNumber = updateSupplier.PhoneNumber;
             supplierToUpdate.Reference = updateSupplier.Reference;
-            supplierToUpdate.updated_at = DateTime.UtcNow;
+            supplierToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
             var jsonData = JsonConvert.SerializeObject(allSuppliers, Formatting.Indented);
             File.WriteAllText(_path, jsonData);
@@ -70,5 +76,5 @@ public class SupplierService : ISupplierService
         return null;
     }
 
-    
+
 }

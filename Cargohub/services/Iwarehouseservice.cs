@@ -6,5 +6,5 @@ public interface IWarehouseService
     WarehouseCS GetWarehouseById(int id);
     WarehouseCS CreateWarehouse(WarehouseCS newWarehouse);
     WarehouseCS UpdateWarehouse(int id, WarehouseCS warehouse);
-    // void DeleteWarehouse();
+    void DeleteWarehouse(int id);
 }

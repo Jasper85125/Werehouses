@@ -138,6 +138,19 @@ namespace Tests
             var returnedWarehouse = createdResult.Value as WarehouseCS;
             Assert.IsNull(returnedWarehouse);
         }
+        [TestMethod]
+        public void DeleteWarehouseTest_Success()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
+            
+            // Act
+            var result = _warehouseController.DeleteWarehouse(1);
+            
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 }
 

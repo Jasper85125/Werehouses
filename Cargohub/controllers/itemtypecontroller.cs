@@ -37,7 +37,7 @@ public class ItemTypeController : ControllerBase
         }
         return Ok(itemtype);
     }
-    
+
     // POST: itemtype
     [HttpPost()]
     public async Task<IActionResult> CreateItemType([FromBody] ItemTypeCS itemtype)
@@ -49,6 +49,24 @@ public class ItemTypeController : ControllerBase
 
         var createditemtype = await _itemtypeService.CreateItemType(itemtype);
         return CreatedAtAction(nameof(GetItemById), new { id = createditemtype.Id }, createditemtype);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ItemTypeCS>> UpdateItemType(int id, [FromBody] ItemTypeCS itemType)
+    {
+        if (id != itemType.Id)
+        {
+            return BadRequest();
+        }
+
+        var existingItemLine = _itemtypeService.GetItemById(id);
+        if (existingItemLine == null)
+        {
+            return NotFound();
+        }
+
+        var updatedItemLine = await _itemtypeService.UpdateItemType(id, itemType);
+        return Ok(updatedItemLine);
     }
 
 }

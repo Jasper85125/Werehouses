@@ -37,9 +37,14 @@ public class InventoryController : ControllerBase
 
     // POST: /inventories
     [HttpPost]
-    public async Task Post([FromBody] InventoryCS inventory)
+    public ActionResult<InventoryCS> CreateInventory([FromBody] InventoryCS inventory)
     {
-        
+        if (inventory is null)
+        {
+            return BadRequest("Inventory is null");
+        }
+        var newInventory = _inventoryService.CreateInventory(inventory);
+        return CreatedAtAction(nameof(GetInventoryById), new { id = newInventory.Id }, newInventory);
     }
 
     // PUT: api/warehouse/5
@@ -64,8 +69,14 @@ public class InventoryController : ControllerBase
 
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public ActionResult DeleteInventory(int id)
     {
-        // Replace with your logic
+        var existingInventory = _inventoryService.GetInventoryById(id);
+        if (existingInventory is null)
+        {
+            return NotFound();
+        }
+        _inventoryService.DeleteInventory(id);
+        return Ok();
     }
 }

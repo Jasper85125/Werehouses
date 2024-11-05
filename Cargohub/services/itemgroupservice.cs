@@ -57,4 +57,47 @@ public class ItemGroupService : IitemGroupService
 
         return newItemType;
     }
+
+    // Method to update an existing Itemgroup
+    public async Task<ItemGroupCS> UpdateItemGroup(int id, ItemGroupCS itemLine)
+    {
+        List<ItemGroupCS> items = GetAllItemGroups();
+        var existingItem = items.FirstOrDefault(i => i.Id == id);
+        if (existingItem == null)
+        {
+            return null;
+        }
+
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        existingItem.Name = itemLine.Name;
+        existingItem.Description = itemLine.Description;
+        existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+
+        return existingItem;
+    }
+    
+    // Method to delete an Itemgroup
+    public void DeleteItemGroup(int id)
+    {
+        var path = "data/item_groups.json";
+        List<ItemGroupCS> items = GetAllItemGroups();
+        var item = items.FirstOrDefault(i => i.Id == id);
+        if (item == null)
+        {
+            return;
+        }
+
+        items.Remove(item);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllTextAsync(path, jsonData);
+    }
 }

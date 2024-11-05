@@ -91,5 +91,63 @@ namespace itemgroup.Tests
             Assert.AreEqual(newItemGroup.Name, returnedItem.Name);
         }
 
+        [TestMethod]
+        public async Task UpdateItemGroupTest_ValidItem()
+        {
+            // Arrange
+            var existingItemGroup = new ItemGroupCS { Id = 1, Description = "Existing Item" };
+            var updatedItemGroup = new ItemGroupCS { Id = 1, Description = "Updated Item" };
+            _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(existingItemGroup);
+            _mockItemGroupService.Setup(service => service.UpdateItemGroup(1, updatedItemGroup)).ReturnsAsync(updatedItemGroup);
+
+            // Act
+            var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+
+            // Assert
+            var okResult = value.Result as OkObjectResult;
+            var returnedItem = okResult.Value as ItemGroupCS;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(updatedItemGroup.Description, returnedItem.Description);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemGroupTest_WrongId()
+        {
+            // Arrange
+            var updatedItemGroup = new ItemGroupCS { Id = 1, Description = "Updated Item" };
+            _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns((ItemGroupCS)null);
+
+            // Act
+            var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+
+            // Assert
+            Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public async Task UpdateItemGroupTest_IdMismatch()
+        {
+            // Arrange
+            var updatedItemGroup = new ItemGroupCS { Id = 2, Description = "Updated Item" };
+
+            // Act
+            var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+
+            // Assert
+            Assert.IsInstanceOfType(value.Result, typeof(BadRequestResult));
+        }
+
+        [TestMethod]
+        public void DeleteItemGroupTest_Exists()
+        {
+            // Arrange
+            var itemGroup = new ItemGroupCS { Id = 1, Name = "Group 1" };
+            _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(itemGroup); 
+            // Act
+            var result = _itemGroupController.DeleteItemGroup(1);
+            //assert
+            var okResult = result as OkObjectResult;
+            
+        }
     }
 }
