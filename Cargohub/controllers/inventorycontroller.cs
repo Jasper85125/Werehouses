@@ -56,8 +56,14 @@ public class InventoryController : ControllerBase
 
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public ActionResult DeleteInventory(int id)
     {
-        // Replace with your logic
+        var existingInventory = _inventoryService.GetInventoryById(id);
+        if (existingInventory is null)
+        {
+            return NotFound();
+        }
+        _inventoryService.DeleteInventory(id);
+        return Ok();
     }
 }

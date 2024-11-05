@@ -46,5 +46,18 @@ public class InventoryService : IInventoryService
         return newInventory;
         
     }
+    public void DeleteInventory(int id)
+    {
+        var path = "data/inventories.json";
+        List<InventoryCS> inventories = GetAllInventories();
+        InventoryCS inventory = inventories.FirstOrDefault(inv => inv.Id == id);
+        if (inventory == null)
+        {
+            return;
+        }
+        inventories.Remove(inventory);
+        var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+        File.WriteAllText(path, jsonData);
+    }
     
 }
