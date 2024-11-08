@@ -30,6 +30,21 @@ public class InventoryService : IInventoryService
         InventoryCS inventory = inventories.FirstOrDefault(inv => inv.Id == id);
         return inventory;
     }
+
+    public InventoryCS GetInventoriesForItem(string itemId)
+    {
+        List<InventoryCS> inventories = GetAllInventories();
+        foreach (InventoryCS inventory in inventories)
+        {
+            if (inventory.item_id == itemId)
+            {
+                return inventory;
+            }
+        }
+        return null;
+
+    }
+
     public InventoryCS CreateInventory(InventoryCS newInventory)
     {
         var path = "data/inventories.json";
