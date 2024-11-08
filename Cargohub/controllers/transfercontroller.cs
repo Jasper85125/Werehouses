@@ -65,17 +65,12 @@ public class TransferController : ControllerBase
     }
 
     [HttpPut("{id}/commit")]
-    public ActionResult<TransferCS> CommitTransfer([FromHeader]int id, [FromBody] ItemIdAndAmount itemsAndAmounts)
+    public ActionResult<TransferCS> CommitTransfer([FromRoute] int id)
     {
-        if (itemsAndAmounts is null)
-        {
-            return BadRequest(" No values to update.");
-        }
-
-        var updatedAction = _transferService.CommitTransfer(id, itemsAndAmounts);
+        var updatedAction = _transferService.CommitTransfer(id);
         if (updatedAction is null)
         {
-            return NotFound("There is no transfer with the given id");
+            return NotFound("There is no transfer with the given id!!!!!");
         }
         return Ok(updatedAction);
     }
