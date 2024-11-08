@@ -106,6 +106,8 @@ public class OrderService : IOrderService
         }
     }
 
+    
+
     public Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> updatedItems)
     {
         List<OrderCS> orders = GetAllOrders();
@@ -114,18 +116,6 @@ public class OrderService : IOrderService
         {
             return null;
         }
-
-        // Update the items of the existing order
-        existingOrder.items = updatedItems;
-
-        // Get the current date and time
-        var currentDateTime = DateTime.Now;
-
-        // Format the date and time to the desired format
-        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-
-        // Update the updated_at field
-        existingOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
         File.WriteAllTextAsync("data/orders.json", jsonData);
