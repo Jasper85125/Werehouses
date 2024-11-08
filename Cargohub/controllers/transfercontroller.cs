@@ -47,7 +47,7 @@ public class TransferController : ControllerBase
         return CreatedAtAction(nameof(GetTransferById), new { id = newTransfer.Id }, newTransfer);
     }
 
-    // PUT: api/transfer/1
+    // PUT: transfers/1
     [HttpPut("{id}")]
     public ActionResult<TransferCS> UpdateTransfer([FromRoute]int id, [FromBody] TransferCS newTransfer)
     {
@@ -62,6 +62,22 @@ public class TransferController : ControllerBase
             return NotFound("No warehouse found with the given id.");
         }
         return Ok(updatedTransfer);
+    }
+
+    [HttpPut("{id}/commit")]
+    public ActionResult<TransferCS> CommitTransfer([FromHeader]int id, [FromBody] ItemIdAndAmount itemsAndAmounts)
+    {
+        if (itemsAndAmounts is null)
+        {
+            return BadRequest(" No values to update.");
+        }
+
+        var updatedAction = _transferService.CommitTransfer(id, itemsAndAmounts);
+        if (updatedAction is null)
+        {
+            return NotFound("There is no transfer with the given id");
+        }
+        return Ok(updatedAction);
     }
 
     // DELETE: api/warehouse/5

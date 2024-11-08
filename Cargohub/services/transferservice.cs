@@ -71,6 +71,13 @@ public class TransferService : ITransferService
         }
         return null;
     }
+
+    public TransferCS CommitTransfer(int id, ItemIdAndAmount items)
+    {
+        TransferCS transfer = GetTransferById(id);
+        
+    }
+
     public void DeleteTransfer(int id)
     {
         /*
