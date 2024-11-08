@@ -111,4 +111,20 @@ public class ShipmentService : IShipmentService
             File.WriteAllText(path, jsonData);
         }
     }
+    public void DeleteItemFromShipment(int shipmentId, string itemId)
+    {
+        var path = "data/shipments.json";
+        List<ShipmentCS> shipments = GetAllShipments();
+        var shipment = shipments.FirstOrDefault(s => s.Id == shipmentId);
+        if (shipment != null)
+        {
+            var item = shipment.Items.FirstOrDefault(i => i.item_id == itemId);
+            if (item != null)
+            {
+                shipment.Items.Remove(item);
+                var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
+                File.WriteAllText(path, jsonData);
+            }
+        }
+    }
 }
