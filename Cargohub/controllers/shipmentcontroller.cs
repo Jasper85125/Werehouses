@@ -73,6 +73,9 @@ public class ShipmentController : ControllerBase
             return BadRequest("invalid id's/ items");
         }
         ShipmentCS updated = _shipmentService.UpdateItemsInShipment(shipmentId, updateItems);
+        if(updated is null){
+            return BadRequest("invalid id's/ items");
+        }
         return Ok(updated);
     }
 
