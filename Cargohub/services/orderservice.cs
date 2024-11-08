@@ -105,4 +105,15 @@ public class OrderService : IOrderService
             File.WriteAllText(Path, jsonData);
         }
     }
+
+    public List<ItemIdAndAmount> GetItemsByOrderId(int orderId)
+    {
+        var order = GetOrderById(orderId);
+        if (order == null)
+        {
+            return null;
+        }
+
+        return order.items;
+    }
 }
