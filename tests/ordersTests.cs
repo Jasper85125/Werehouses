@@ -150,6 +150,89 @@ namespace Tests
             //assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+
+        [TestMethod]
+        public void GetItemsByOrderIdTest_Exists()
+        {
+            // Arrange
+            var items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "ITEM1", amount = 10 },
+                new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
+            };
+            _mockOrderService.Setup(service => service.GetItemsByOrderId(1)).Returns(items);
+
+            // Act
+            var result = _orderController.GetItemsByOrderId(1);
+
+            // Assert
+            var okResult = result.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<ItemIdAndAmount>;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Count());
+        }
+
+        [TestMethod]
+        public void GetItemsByOrderIdTest_WrongId()
+        {
+            // Arrange
+            _mockOrderService.Setup(service => service.GetItemsByOrderId(1)).Returns((List<ItemIdAndAmount>)null);
+
+            // Act
+            var result = _orderController.GetItemsByOrderId(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void UpdateOrderItemsTest_Success()
+        {
+            // Arrange
+            var items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "ITEM1", amount = 10 },
+                new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
+            };
+            var updatedOrder = new OrderCS { Id = 1, items = items };
+            _mockOrderService.Setup(service => service.UpdateOrderItems(1, items)).Returns(Task.FromResult(updatedOrder));
+
+            // Act
+            var result = _orderController.UpdateOrderItems(1, items);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(ActionResult<OrderCS>));
+            var okResult = result.Result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(OrderCS));
+            var returnedOrder = okResult.Value as OrderCS;
+            Assert.AreEqual(2, returnedOrder.items.Count);
+            Assert.AreEqual("ITEM1", returnedOrder.items[0].item_id);
+            Assert.AreEqual(10, returnedOrder.items[0].amount);
+            Assert.AreEqual("ITEM2", returnedOrder.items[1].item_id);
+            Assert.AreEqual(5, returnedOrder.items[1].amount);
+        }
+
+        [TestMethod]
+        public void UpdateOrderItemsTest_Failed()
+        {
+            // Arrange
+            var items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "ITEM1", amount = 10 },
+                new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
+            };
+            _mockOrderService.Setup(service => service.UpdateOrderItems(1, items)).Returns(Task.FromResult((OrderCS)null));
+
+            // Act
+            var result = _orderController.UpdateOrderItems(1, items);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(ActionResult<OrderCS>));
+            var notFoundResult = result.Result.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
+        }
+        
     }
 }
 

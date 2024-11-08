@@ -41,13 +41,13 @@ namespace Controllers
         {
             if (id != updateOrder.Id)
             {
-            return BadRequest();
+                return BadRequest();
             }
 
             var existingItemLine = _orderService.GetOrderById(id);
             if (existingItemLine == null)
             {
-            return NotFound();
+                return NotFound();
             }
 
             var updatedItemLine = await _orderService.UpdateOrder(id, updateOrder);
@@ -93,7 +93,7 @@ namespace Controllers
         }
 
         [HttpPut("{orderId}/items")]
-        public async Task<ActionResult<OrderCS>> UpdateOrderItems(int orderId, [FromBody] List<ItemIdAndAmount> updatedItems)
+        public async Task<ActionResult<OrderCS>> UpdateOrderItems(int orderId, [FromBody] List<ItemIdAndAmount> items)
         {
             var order = _orderService.GetOrderById(orderId);
             if (order == null)
@@ -101,7 +101,12 @@ namespace Controllers
                 return NotFound();
             }
 
-            var updatedOrder = await _orderService.UpdateOrderItems(orderId, updatedItems);
+            if (items == null)
+            {
+                return BadRequest("The item field is required.");
+            }
+
+            var updatedOrder = await _orderService.UpdateOrderItems(orderId, items);
             return Ok(updatedOrder);
         }
 

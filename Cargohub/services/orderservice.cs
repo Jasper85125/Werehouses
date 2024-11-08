@@ -117,7 +117,7 @@ public class OrderService : IOrderService
         return order.items;
     }
 
-    public Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> updatedItems)
+    public Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> items)
     {
         List<OrderCS> orders = GetAllOrders();
         var existingOrder = orders.FirstOrDefault(o => o.Id == orderId);
@@ -127,7 +127,7 @@ public class OrderService : IOrderService
         }
 
         // Update the items in the existing order
-        existingOrder.items = updatedItems;
+        existingOrder.items = items;
 
         // Get the current date and time
         var currentDateTime = DateTime.Now;
