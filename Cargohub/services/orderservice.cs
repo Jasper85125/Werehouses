@@ -106,20 +106,14 @@ public class OrderService : IOrderService
         }
     }
 
-    
-
-    public Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> updatedItems)
+    public List<ItemIdAndAmount> GetItemsByOrderId(int orderId)
     {
-        List<OrderCS> orders = GetAllOrders();
-        var existingOrder = orders.FirstOrDefault(o => o.Id == orderId);
-        if (existingOrder == null)
+        var order = GetOrderById(orderId);
+        if (order == null)
         {
             return null;
         }
 
-        var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
-        File.WriteAllTextAsync("data/orders.json", jsonData);
-
-        return Task.FromResult(existingOrder);
+        return order.items;
     }
 }

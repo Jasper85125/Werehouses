@@ -81,17 +81,15 @@ namespace Controllers
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
         }
 
-        [HttpPut("{id}/items")]
-        public async Task<ActionResult<OrderCS>> UpdateOrderItems(int id, [FromBody] List<ItemIdAndAmount> orderItems)
+        [HttpGet("{orderId}/items")]
+        public ActionResult<List<ItemIdAndAmount>> GetItemsByOrderId(int orderId)
         {
-            var existingOrder = _orderService.GetOrderById(id);
-            if (existingOrder == null)
+            var items = _orderService.GetItemsByOrderId(orderId);
+            if (items == null)
             {
                 return NotFound();
             }
-
-            var updatedOrder = await _orderService.UpdateOrderItems(id, orderItems);
-            return Ok(updatedOrder);
+            return Ok(items);
         }
 
     }
