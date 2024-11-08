@@ -36,7 +36,7 @@ public class InventoryController : ControllerBase
     }
 
     // POST: /inventories
-    [HttpPost]
+    [HttpPost()]
     public ActionResult<InventoryCS> CreateInventory([FromBody] InventoryCS inventory)
     {
         if (inventory is null)
