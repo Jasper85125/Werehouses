@@ -8,4 +8,5 @@ public interface IOrderService
     Task<OrderCS> UpdateOrder(int id, OrderCS updateOrder);
     void DeleteOrder(int id);
     List<ItemIdAndAmount> GetItemsByOrderId(int orderId);
+    Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> updatedItems);
 }

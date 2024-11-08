@@ -92,7 +92,18 @@ namespace Controllers
             return Ok(items);
         }
 
-        
+        [HttpPut("{orderId}/items")]
+        public async Task<ActionResult<OrderCS>> UpdateOrderItems(int orderId, [FromBody] List<ItemIdAndAmount> updatedItems)
+        {
+            var order = _orderService.GetOrderById(orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            var updatedOrder = await _orderService.UpdateOrderItems(orderId, updatedItems);
+            return Ok(updatedOrder);
+        }
 
     }
 }
