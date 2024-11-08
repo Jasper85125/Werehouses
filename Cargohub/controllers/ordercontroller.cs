@@ -81,5 +81,16 @@ namespace Controllers
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
         }
 
+        [HttpGet("{orderId}/items")]
+        public ActionResult<List<ItemIdAndAmount>> GetItemsByOrderId(int orderId)
+        {
+            var items = _orderService.GetItemsByOrderId(orderId);
+            if (items == null)
+            {
+                return NotFound();
+            }
+            return Ok(items);
+        }
+
     }
 }
