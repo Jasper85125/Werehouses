@@ -25,7 +25,7 @@ namespace Controllers
 
         // GET: /orders/{id}
         [HttpGet("{id}")]
-        public ActionResult<OrderCS> GetOrderById([FromRoute]int id)
+        public ActionResult<OrderCS> GetOrderById([FromRoute] int id)
         {
             var orders = _orderService.GetOrderById(id);
             if (orders is null)
@@ -37,9 +37,21 @@ namespace Controllers
 
         // PUT: api/warehouse/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult<OrderCS>> UpdateOrder(int id, [FromBody] OrderCS updateOrder)
         {
-            // Replace with your logic
+            if (id != updateOrder.Id)
+            {
+            return BadRequest();
+            }
+
+            var existingItemLine = _orderService.GetOrderById(id);
+            if (existingItemLine == null)
+            {
+            return NotFound();
+            }
+
+            var updatedItemLine = await _orderService.UpdateOrder(id, updateOrder);
+            return Ok(updatedItemLine);
         }
 
         // DELETE: api/warehouse/5
@@ -54,7 +66,7 @@ namespace Controllers
             _orderService.DeleteOrder(id);
             return Ok();
         }
-        
+
         [HttpPost("orders")]
         public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
         {
@@ -67,6 +79,17 @@ namespace Controllers
 
             // Return the CreatedAtAction result, which includes the route to the GetOrderById action for the newly created order.
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
+        }
+
+        [HttpGet("{orderId}/items")]
+        public ActionResult<List<ItemIdAndAmount>> GetItemsByOrderId(int orderId)
+        {
+            var items = _orderService.GetItemsByOrderId(orderId);
+            if (items == null)
+            {
+                return NotFound();
+            }
+            return Ok(items);
         }
 
     }

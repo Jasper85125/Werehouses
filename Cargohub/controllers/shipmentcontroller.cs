@@ -66,6 +66,19 @@ public class ShipmentController : ControllerBase
         var updatedItemLine = _shipmentService.UpdateShipment(id, updateShipment);
         return Task.FromResult<ActionResult<ShipmentCS>>(Ok(updatedItemLine));
     }
+    [HttpPut("{shipmentId}/items")]
+    public ActionResult<ShipmentCS> UpdateItemsinShipment(int shipmentId, [FromBody] List<ItemIdAndAmount> updateItems){
+        if(updateItems is null)
+        {
+            return BadRequest("invalid id's/ items");
+        }
+        ShipmentCS updated = _shipmentService.UpdateItemsInShipment(shipmentId, updateItems);
+        if(updated is null){
+            return BadRequest("invalid id's/ items");
+        }
+        return Ok(updated);
+    }
+
 
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
