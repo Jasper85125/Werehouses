@@ -9,11 +9,13 @@ namespace Controllers;
 public class ItemController : ControllerBase
 {
     private readonly IItemService _itemService;
+    private readonly IInventoryService _inventoryService;
 
     // Constructor to initialize the ItemController with an IItemService instance
-    public ItemController(IItemService itemService)
+    public ItemController(IItemService itemService, IInventoryService inventoryService)
     {
         _itemService = itemService;
+        _inventoryService = inventoryService;
     }
 
     // GET: items
@@ -38,8 +40,19 @@ public class ItemController : ControllerBase
         return Ok(item);
     }
 
+    // GET: /items/{item_id}/inventory
+    [HttpGet("{uid}/inventory")]
+    public ActionResult<InventoryCS> GetInventoriesForItem([FromRoute] string uid)
+    {
+        var inventory = _inventoryService.GetInventoriesForItem(uid);
+        if (inventory is null)
+        {
+            return NotFound("No inventory found for item with the given uid.");
+        }
+        return Ok(inventory);
+    }
+
     // POST: items
-    // Creates a new item
     [HttpPost()]
     public ActionResult<ItemCS> CreateItem([FromBody] ItemCS newItem)
     {
@@ -53,7 +66,6 @@ public class ItemController : ControllerBase
     }
 
     // PUT: items/5
-    // Updates an existing item
     [HttpPut("{uid}")]
     public ActionResult<ItemCS> UpdateItem(string uid, [FromBody] ItemCS updatedItem)
     {
