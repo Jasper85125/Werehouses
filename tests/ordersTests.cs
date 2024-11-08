@@ -196,6 +196,7 @@ namespace Tests
             };
             var updatedOrder = new OrderCS { Id = 1, items = items };
             _mockOrderService.Setup(service => service.UpdateOrderItems(1, items)).Returns(Task.FromResult(updatedOrder));
+            _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(updatedOrder);
 
             // Act
             var result = _orderController.UpdateOrderItems(1, items);
