@@ -10,13 +10,15 @@ namespace item.Tests
     public class ItemControllerTests
     {
         private Mock<IItemService> _mockItemService;
+        private Mock<IInventoryService> _mockInventoryService;
         private ItemController _itemController;
 
         [TestInitialize]
         public void Setup()
         {
             _mockItemService = new Mock<IItemService>();
-            _itemController = new ItemController(_mockItemService.Object);
+            _mockInventoryService = new Mock<IInventoryService>();
+            _itemController = new ItemController(_mockItemService.Object, _mockInventoryService.Object);
         }
 
         [TestMethod]
@@ -51,13 +53,13 @@ namespace item.Tests
 
             // Act
             var result = _itemController.GetByUid("1");
+            var okResult = result.Result as OkObjectResult;
+            var returnedItem = okResult.Value as ItemCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(ItemCS));
-            var returnedItem = okResult.Value as ItemCS;
             Assert.AreEqual("1", returnedItem.uid);
             Assert.AreEqual("Item1", returnedItem.code);
         }
@@ -73,6 +75,29 @@ namespace item.Tests
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void GetInventoryForItem_Success()
+        {
+            InventoryCS inventory = new InventoryCS { Id = 3, item_id = "P000003", description = "gamers", item_reference = "QVm03739H",
+                                                      Locations = new List<int> {5321, 21960}, total_on_hand = 24, total_expected = 0,
+                                                      total_ordered = 90, total_allocated = 68, total_available = -134};
+            // Arrange
+            _mockInventoryService.Setup(service => service.GetInventoriesForItem("P000003")).Returns(inventory);
+
+            // Act
+            var result = _itemController.GetInventoriesForItem("P000003");
+            var okResult = result.Result as OkObjectResult;
+            var returnedItem = okResult.Value as InventoryCS;
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(InventoryCS));
+            Assert.AreEqual("P000003", returnedItem.item_id);
+            Assert.AreEqual(24, returnedItem.total_on_hand);
+            Assert.AreEqual(68, returnedItem.total_allocated);
         }
 
         [TestMethod]

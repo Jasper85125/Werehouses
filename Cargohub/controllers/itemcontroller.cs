@@ -42,7 +42,7 @@ public class ItemController : ControllerBase
 
     // GET: /items/{item_id}/inventory
     [HttpGet("{uid}/inventory")]
-    public ActionResult<InventoryCS> GetInventoryForItem([FromHeader] string uid)
+    public ActionResult<InventoryCS> GetInventoriesForItem([FromRoute] string uid)
     {
         var inventory = _inventoryService.GetInventoriesForItem(uid);
         if (inventory is null)
