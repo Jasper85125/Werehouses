@@ -116,4 +116,31 @@ public class OrderService : IOrderService
 
         return order.items;
     }
+
+    public Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> updatedItems)
+    {
+        List<OrderCS> orders = GetAllOrders();
+        var existingOrder = orders.FirstOrDefault(o => o.Id == orderId);
+        if (existingOrder == null)
+        {
+            return null;
+        }
+
+        // Update the items in the existing order
+        existingOrder.items = updatedItems;
+
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        // Update the updated_at field
+        existingOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+        var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
+        File.WriteAllTextAsync("data/orders.json", jsonData);
+
+        return Task.FromResult(existingOrder);
+    }
 }
