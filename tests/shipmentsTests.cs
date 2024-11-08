@@ -112,6 +112,40 @@ namespace Tests
             var returnedShipment = okResult.Value as ShipmentCS;
             Assert.AreEqual(updatedShipment.source_id, returnedShipment.source_id);
         }
+        [TestMethod]
+        public void UpdateItemsInShipmentById_Succes()
+        {
+            //Arrange
+            List<ItemIdAndAmount> newItemsAndAmounts = new List<ItemIdAndAmount>()
+            {
+                new ItemIdAndAmount(){ item_id= "P007435", amount= 100},
+                new ItemIdAndAmount(){ item_id= "P009553", amount= 100},
+                new ItemIdAndAmount(){ item_id= "P002084", amount= 100}
+            };
+
+            ShipmentCS testshipment = new ShipmentCS() { Id = 1, order_id = 1, source_id = 33, order_date = DateTime.Parse("2000-03-09"), 
+            request_date = DateTime.Parse("2000-03-11"), shipment_date = DateTime.Parse("2000-03-13"), shipment_type="I", shipment_status="Pending",
+            Notes="Zee vertrouwen klas rots heet lachen oneven begrijpen.", carrier_code="DPD",
+            carrier_description="Dynamic Parcel Distribution", service_code="Fastest", payment_type="Manual",
+            transfer_mode="Ground", total_package_count=31, total_package_weight=594.42, created_at=DateTime.Parse("2000-03-10T11:11:14Z"),
+            updated_at=DateTime.Parse("2000-03-11T13:11:14Z"), Items=newItemsAndAmounts};
+
+            _mockShipmentService.Setup(service => service.UpdateItemsInShipment(1, newItemsAndAmounts)).Returns(testshipment);
+
+            //Act
+            var result = _shipmentController.UpdateItemsinShipment(1, newItemsAndAmounts);
+            var okResult = result.Result as OkObjectResult;
+            var value = okResult.Value as ShipmentCS;
+            
+            //Assert
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(okResult.StatusCode, 200);
+            Assert.IsNotNull(value);
+            Assert.AreEqual(newItemsAndAmounts.Count, value.Items.Count);
+            Assert.AreEqual(value.Items[0].amount, 100);
+            Assert.AreEqual(value.Items[1].amount, 100);
+            Assert.AreEqual(value.Items[2].amount, 100);
+        }
 
         [TestMethod]
         public async Task UpdateShipmentTest_Failed()
