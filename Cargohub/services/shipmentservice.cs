@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Services;
@@ -124,6 +126,25 @@ public class ShipmentService : IShipmentService
                 shipment.Items.Remove(item);
                 var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
                 File.WriteAllText(path, jsonData);
+            }
+        }
+    }
+    public void DeleteOrdersFromShipment(int id){
+        var path = "data/shipments.json";
+        var currentDate = DateTime.Now;
+        var formattedDateTime = currentDate.ToString("yyyy-MM-dd HH:mm:ss");
+        List<ShipmentCS> shipments = GetAllShipments();
+        if(shipments is not null){
+            var shipment = shipments.Find(_ => _.Id == id);
+            if(shipment is not null){
+                shipment.order_id = 0;
+                shipment.source_id = 0;
+                shipment.order_date = default;
+                shipment.request_date = default;
+                shipment.Notes = "";
+                shipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+                var json = JsonConvert.SerializeObject(shipments, Formatting.Indented);
+                File.WriteAllText(path, json);
             }
         }
     }
