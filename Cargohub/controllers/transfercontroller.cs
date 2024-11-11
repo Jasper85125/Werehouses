@@ -37,7 +37,7 @@ public class TransferController : ControllerBase
 
     // POST: /transfers
     [HttpPost]
-    public ActionResult<TransferCS> Post([FromBody] TransferCS transfer)
+    public ActionResult<TransferCS> CreateTransfer([FromBody] TransferCS transfer)
     {
         if (transfer is null)
         {
@@ -70,7 +70,7 @@ public class TransferController : ControllerBase
         var updatedAction = _transferService.CommitTransfer(id);
         if (updatedAction is null)
         {
-            return NotFound("There is no transfer with the given id!!!!!");
+            return NotFound("There is no transfer with the given id!!");
         }
         return Ok(updatedAction);
     }
