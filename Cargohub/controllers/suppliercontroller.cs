@@ -51,7 +51,7 @@ public class SupplierController : ControllerBase
 
     // PUT: /suppliers/{id}
     [HttpPut("{id}")]
-    public ActionResult<SupplierCS> UpdateSupplier([FromRoute]int id, [FromBody] SupplierCS newSupplier)
+    public ActionResult<SupplierCS> UpdateSupplier([FromRoute] int id, [FromBody] SupplierCS newSupplier)
     {
         if (newSupplier is null)
         {
@@ -77,5 +77,19 @@ public class SupplierController : ControllerBase
         }
         _supplierService.DeleteSupplier(id);
         return Ok();
+    }
+
+    // GET: /suppliers/{id}/items
+    [HttpGet("{id}/items")]
+    public ActionResult<IEnumerable<ItemCS>> GetItemsBySupplierId([FromRoute] int id)
+    {
+        var supplier = _supplierService.GetSupplierById(id);
+        if (supplier is null)
+        {
+            return NotFound();
+        }
+
+        var items = _supplierService.GetItemsBySupplierId(id);
+        return Ok(items);
     }
 }
