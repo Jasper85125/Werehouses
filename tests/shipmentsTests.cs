@@ -75,7 +75,27 @@ namespace Tests
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
+        //GetItemsInShipment test
+        [TestMethod]
+        public void GetItemsInShipmentTest_Exists()
+        {
+            //arrange
+            var items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "P01", amount = 23 },
+                new ItemIdAndAmount { item_id = "P02", amount = 12 },
+            };
+            _mockShipmentService.Setup(service => service.GetItemsInShipment(1)).Returns(items);
 
+            //Act
+            var value = _shipmentController.GetItemsInShipment(1);
+
+            //Assert
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<ItemIdAndAmount>;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Count());
+        }
         [TestMethod]
         public void CreateShipment_ReturnsCreatedResult_WithNewShipment()
         {

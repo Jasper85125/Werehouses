@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Testing.Platform.Extensions.Messages;
 using Newtonsoft.Json;
 
 namespace Services;
@@ -10,7 +11,7 @@ public class TransferService : ITransferService
 
     public TransferService()
     {
-        // Initialization code here
+
     }
 
     public List<TransferCS> GetAllTransfers()
@@ -29,6 +30,16 @@ public class TransferService : ITransferService
         List<TransferCS> transfers = GetAllTransfers();
         TransferCS transfer = transfers.FirstOrDefault(trans => trans.Id == id);
         return transfer;
+    }
+    public List<ItemIdAndAmount> GetItemsInTransfer(int transfer_id)
+    {
+        List<TransferCS> transfers = GetAllTransfers();
+        TransferCS transfer = transfers.FirstOrDefault(t => t.Id == transfer_id);
+        if (transfer != null)
+        {
+            return transfer.Items;
+        }
+        return null;
     }
     public TransferCS CreateTransfer(TransferCS newTransfer)
     {
@@ -71,6 +82,42 @@ public class TransferService : ITransferService
         }
         return null;
     }
+
+    public TransferCS CommitTransfer(int id)
+    {
+        InventoryService inventoryService = new InventoryService();
+        TransferCS transfer = GetTransferById(id);
+        if (transfer is null)
+        {
+            return null;
+        }
+        
+        foreach (ItemIdAndAmount items in transfer.Items)
+        {
+            InventoryCS inventory = inventoryService.GetInventoriesForItem(items.item_id);
+            foreach (int location in inventory.Locations)
+            {
+                if (location == transfer.transfer_from)
+                {
+                    inventory.total_on_hand -= items.amount;
+                    inventory.total_expected = inventory.total_on_hand + inventory.total_expected;
+                    inventory.total_available = inventory.total_on_hand - inventory.total_allocated;
+                    inventoryService.UpdateInventoryById(inventory.Id, inventory); 
+                }
+                else if(location == transfer.transfer_to)
+                {
+                    inventory.total_on_hand += items.amount;
+                    inventory.total_expected = inventory.total_on_hand + inventory.total_ordered;
+                    inventory.total_available = inventory.total_on_hand - inventory.total_allocated;
+                    inventoryService.UpdateInventoryById(inventory.Id, inventory); 
+                }
+            }
+        } 
+        transfer.transfer_status = "Processed";
+        TransferCS updatedTransfer = UpdateTransfer(transfer.Id, transfer);
+        return updatedTransfer;
+    }
+
     public void DeleteTransfer(int id)
     {
         /*
