@@ -51,7 +51,7 @@ public class SupplierController : ControllerBase
 
     // PUT: /suppliers/{id}
     [HttpPut("{id}")]
-    public ActionResult<SupplierCS> UpdateSupplier([FromRoute]int id, [FromBody] SupplierCS newSupplier)
+    public ActionResult<SupplierCS> UpdateSupplier([FromRoute] int id, [FromBody] SupplierCS newSupplier)
     {
         if (newSupplier is null)
         {

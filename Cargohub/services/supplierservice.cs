@@ -78,7 +78,7 @@ public class SupplierService : ISupplierService
 
     public void DeleteSupplier(int id)
     {
-        
+
         var path = "data/suppliers.json";
         List<SupplierCS> suppliers = GetAllSuppliers();
         SupplierCS supplier = suppliers.FirstOrDefault(supplier => supplier.Id == id);
@@ -88,18 +88,13 @@ public class SupplierService : ISupplierService
             var jsonData = JsonConvert.SerializeObject(suppliers, Formatting.Indented);
             File.WriteAllText(path, jsonData);
         }
-        
+
     }
+
 
     public List<ItemCS> GetItemsBySupplierId(int supplierId)
     {
-        var supplier = GetSupplierById(supplierId);
-        if (supplier == null)
-        {
-            return new List<ItemCS>();
-        }
-
-        var itemsPath = $"data/items.json";
+        var itemsPath = "data/items.json";
         if (!File.Exists(itemsPath))
         {
             return new List<ItemCS>();
@@ -107,6 +102,7 @@ public class SupplierService : ISupplierService
 
         var jsonData = File.ReadAllText(itemsPath);
         List<ItemCS> items = JsonConvert.DeserializeObject<List<ItemCS>>(jsonData);
-        return items ?? new List<ItemCS>();
+
+        return items?.Where(item => item.supplier_id == supplierId).ToList() ?? new List<ItemCS>();
     }
 }
