@@ -32,6 +32,13 @@ public class LocationService : ILocationService
         return location;
     }
 
+    public List<LocationCS> GetLocationsByWarehouseId(int warehouse_id)
+    {
+        List<LocationCS> locations = GetAllLocations();
+        List<LocationCS> locationsByWarehouseId = locations.FindAll(loc => loc.warehouse_id == warehouse_id);
+        return locationsByWarehouseId;
+    }
+
     public LocationCS CreateLocation(LocationCS newLocation)
     {
         List<LocationCS> locations = GetAllLocations();
