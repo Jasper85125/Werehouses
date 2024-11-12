@@ -35,6 +35,21 @@ public class InventoryController : ControllerBase
         return Ok(inventory);
     }
 
+    // GET: /inventories/total/{item_id}
+    // (GET) The system must allow users to fetch inventory totals for a specific item. the total is the total_on_hand + total_allocated it must return either a 200 or 404 status code and the sum of the total_on_hand and total_allocated for the item.
+    [HttpGet("total/{item_id}")]
+    public ActionResult<int> GetInventoryByItemId([FromRoute]string item_id)
+    {
+            // (GET) The system must allow users to fetch inventory totals for a specific item. the total is the total_on_hand + total_allocated it must return either a 200 or 404 status code and the sum of the total_on_hand and total_allocated for the item.
+            var inventory = _inventoryService.GetInventoriesForItem(item_id);
+            if (inventory is null)
+            {
+                return NotFound();
+            }
+            var inventory_total = inventory.total_on_hand + inventory.total_allocated;
+            return Ok(inventory_total);
+       
+    }
     // POST: /inventories
     [HttpPost()]
     public ActionResult<InventoryCS> CreateInventory([FromBody] InventoryCS inventory)
