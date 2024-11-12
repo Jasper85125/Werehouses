@@ -34,6 +34,16 @@ public class TransferController : ControllerBase
         }
         return Ok(inventory);
     }
+    [HttpGet("{transfer_id}/items")]
+    public ActionResult<IEnumerable<ItemIdAndAmount>> GetItemsInTransfer([FromRoute]int transfer_id)
+    {
+        var items = _transferService.GetItemsInTransfer(transfer_id);
+        if (items is null)
+        {
+            return NotFound();
+        }
+        return Ok(items);
+    }
 
     // POST: /transfers
     [HttpPost]
