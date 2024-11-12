@@ -91,5 +91,22 @@ public class SupplierService : ISupplierService
         
     }
 
+    public List<ItemCS> GetItemsBySupplierId(int supplierId)
+    {
+        var supplier = GetSupplierById(supplierId);
+        if (supplier == null)
+        {
+            return new List<ItemCS>();
+        }
 
+        var itemsPath = $"data/items.json";
+        if (!File.Exists(itemsPath))
+        {
+            return new List<ItemCS>();
+        }
+
+        var jsonData = File.ReadAllText(itemsPath);
+        List<ItemCS> items = JsonConvert.DeserializeObject<List<ItemCS>>(jsonData);
+        return items ?? new List<ItemCS>();
+    }
 }
