@@ -76,6 +76,26 @@ namespace Tests
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
         [TestMethod]
+        public void GetOrdersByClientTest_Exists()
+        {
+            //arrange
+            var orders = new List<OrderCS>
+            {
+                new OrderCS { Id = 1,  ship_to = 24 },
+                new OrderCS { Id = 2,  bill_to = 24 },
+            };
+            _mockOrderService.Setup(service => service.GetOrdersByClient(24)).Returns(orders);
+
+            //Act
+            var value = _orderController.GetOrdersByClient(24);
+
+            //Assert
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<OrderCS>;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Count());
+        }
+        [TestMethod]
         public void CreateOrder_ReturnsCreatedResult_WithNewOrder()
         {
             // Arrange
