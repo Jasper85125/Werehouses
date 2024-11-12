@@ -76,6 +76,48 @@ namespace Tests
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
 
+        /*
+[TestMethod]
+        public void GetItemsInShipmentTest_Exists()
+        {
+            //arrange
+            var items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "P01", amount = 23 },
+                new ItemIdAndAmount { item_id = "P02", amount = 12 },
+            };
+            _mockShipmentService.Setup(service => service.GetItemsInShipment(1)).Returns(items);
+
+            //Act
+            var value = _shipmentController.GetItemsInShipment(1);
+
+            //Assert
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<ItemIdAndAmount>;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Count());
+        }
+        */
+        [TestMethod]
+        public void GetItemsInTransferTest_Exists()
+        {
+            //arrange
+            var items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "P01", amount = 23 },
+                new ItemIdAndAmount { item_id = "P02", amount = 12 },
+            };
+            _mockTransferService.Setup(service => service.GetItemsInTransfer(1)).Returns(items);
+
+            //Act
+            var value = _transferController.GetItemsInTransfer(1);
+
+            //Assert
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<ItemIdAndAmount>;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Count());
+        }
         [TestMethod]
         public void CreateTransfer_ReturnsCreatedAtActionResult_WithNewTransfer()
         {

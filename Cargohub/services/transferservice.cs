@@ -31,6 +31,16 @@ public class TransferService : ITransferService
         TransferCS transfer = transfers.FirstOrDefault(trans => trans.Id == id);
         return transfer;
     }
+    public List<ItemIdAndAmount> GetItemsInTransfer(int transfer_id)
+    {
+        List<TransferCS> transfers = GetAllTransfers();
+        TransferCS transfer = transfers.FirstOrDefault(t => t.Id == transfer_id);
+        if (transfer != null)
+        {
+            return transfer.Items;
+        }
+        return null;
+    }
     public TransferCS CreateTransfer(TransferCS newTransfer)
     {
         List<TransferCS> transfers = GetAllTransfers();
