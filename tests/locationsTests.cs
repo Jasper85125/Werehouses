@@ -75,7 +75,28 @@ namespace Tests
             // Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
-
+        // GET: /locations/warehouse/{warehouse_id}
+        //GetLocationsByWarehouseId  
+        [TestMethod]
+        public void GetLocationsByWarehouseIdTest_Exists()
+        {
+            // Arrange
+            var locations = new List<LocationCS>
+            {
+                new LocationCS { Id = 1, warehouse_id = 1, code = "B.2.1" },
+                new LocationCS { Id = 2, warehouse_id = 1, code = "C.3.2" }
+            };
+            _mockLocationService.Setup(service => service.GetLocationsByWarehouseId(1)).Returns(locations);
+            
+            // Act
+            var value = _locationController.GetLocationsByWarehouseId(1);
+            
+            // Assert
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<LocationCS>;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Count());
+        }
         [TestMethod]
         public void CreateLocationTest_Success()
         {

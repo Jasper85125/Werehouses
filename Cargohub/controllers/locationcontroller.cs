@@ -34,6 +34,17 @@ namespace Controllers
             }
             return Ok(location);
         }
+        // GET: /locations/warehouse/{warehouse_id}
+        [HttpGet("warehouse/{warehouse_id}")]
+        public ActionResult<IEnumerable<LocationCS>> GetLocationsByWarehouseId([FromRoute]int warehouse_id)
+        {
+            var locations = _locationService.GetLocationsByWarehouseId(warehouse_id);
+            if (locations is null)
+            {
+                return NotFound();
+            }
+            return Ok(locations);
+        }
 
         // POST: /locations
         [HttpPost()]
