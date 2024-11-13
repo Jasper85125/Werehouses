@@ -10,6 +10,7 @@ namespace itemtype.Tests
     public class ItemTypeServiceTests
     {
         private Mock<IItemtypeService> _mockItemTypeService;
+        private Mock<IItemService> _mockItemService;
         private ItemTypeController _itemTypeController;
         private List<ItemTypeCS> _itemTypes;
 
@@ -17,7 +18,8 @@ namespace itemtype.Tests
         public void Setup()
         {
             _mockItemTypeService = new Mock<IItemtypeService>();
-            _itemTypeController = new ItemTypeController(_mockItemTypeService.Object);
+            _mockItemService = new Mock<IItemService>();
+            _itemTypeController = new ItemTypeController(_mockItemTypeService.Object, _mockItemService.Object);
             _itemTypes = new List<ItemTypeCS>
             {
                 new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" },

@@ -11,14 +11,18 @@ namespace item.Tests
     {
         private Mock<IItemService> _mockItemService;
         private Mock<IInventoryService> _mockInventoryService;
+        private Mock<IItemtypeService> _mockItemTypeService;
         private ItemController _itemController;
+        private ItemTypeController _itemTypeController;
 
         [TestInitialize]
         public void Setup()
         {
             _mockItemService = new Mock<IItemService>();
+            _mockItemTypeService = new Mock<IItemtypeService>();
             _mockInventoryService = new Mock<IInventoryService>();
             _itemController = new ItemController(_mockItemService.Object, _mockInventoryService.Object);
+            _itemTypeController = new ItemTypeController(_mockItemTypeService.Object, _mockItemService.Object);
         }
 
         [TestMethod]
@@ -98,6 +102,34 @@ namespace item.Tests
             Assert.AreEqual("P000003", returnedItem.item_id);
             Assert.AreEqual(24, returnedItem.total_on_hand);
             Assert.AreEqual(68, returnedItem.total_allocated);
+        }
+
+        [TestMethod]
+        public void GetItemsWithItemType_Success()
+        {
+            // Arrange
+            List<ItemCS> items = new List<ItemCS>
+            {
+                new ItemCS { uid = "P000123", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"},
+                new ItemCS { uid = "P100000", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"}
+            };
+
+            _mockItemService.Setup(service => service.GetAllItemsInItemType(1)).Returns(items);
+
+            // Act
+            var result = _itemTypeController.GetAllItemsInItemType(1);
+            var okResult = result.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<ItemCS>;
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(IEnumerable<ItemCS>));
+            Assert.AreEqual(2, returnedItems.Count());
         }
 
         [TestMethod]
