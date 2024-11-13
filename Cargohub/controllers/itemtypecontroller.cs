@@ -10,11 +10,13 @@ namespace Controllers;
 public class ItemTypeController : ControllerBase
 {
     private readonly IItemtypeService _itemtypeService;
+    private readonly IItemService _itemService;
 
     // Constructor to initialize the ItemController with an IItemService instance
-    public ItemTypeController(IItemtypeService itemtypeService)
+    public ItemTypeController(IItemtypeService itemtypeService, IItemService itemService)
     {
         _itemtypeService = itemtypeService;
+        _itemService = itemService;
     }
 
     // GET: items
@@ -24,6 +26,18 @@ public class ItemTypeController : ControllerBase
     {
         var itemtype = _itemtypeService.GetAllItemtypes();
         return Ok(itemtype);
+    }
+
+    //GET: /itemtypes/{itemtypeID}/items
+    [HttpGet("{id}/items")]
+    public ActionResult<IEnumerable<ItemCS>> GetAllItemsInItemType(int id)
+    {
+        var itemsInItemType = _itemService.GetAllItemsInItemType(id);
+        if (itemsInItemType is null)
+        {
+            return BadRequest("No items found with the given ItemType ID");
+        }
+        return Ok(itemsInItemType);
     }
 
     // GET: itemtype/5
