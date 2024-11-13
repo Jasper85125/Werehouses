@@ -46,6 +46,19 @@ public class OrderService : IOrderService
         return newOrder;
     }
 
+    public List<OrderCS> GetOrdersByClient(int client_id)
+    {
+        // the client_id is not a field in the Order class but there are two fields that could be used to identify the client the shipp_to and bill_to fields
+        List<OrderCS> orders = GetAllOrders();
+        List<OrderCS> clientOrders = orders.Where(order => order.ship_to == client_id || order.bill_to == client_id).ToList();
+        if (clientOrders == null)
+        {
+            return null;
+        }
+        return clientOrders;
+
+    }
+
     public Task<OrderCS> UpdateOrder(int id, OrderCS updateOrder)
     {
         List<OrderCS> orders = GetAllOrders();

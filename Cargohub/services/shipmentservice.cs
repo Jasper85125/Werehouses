@@ -31,6 +31,16 @@ public class ShipmentService : IShipmentService
         return shipment;
     }
 
+    public List<ItemIdAndAmount> GetItemsInShipment(int shipmentId)
+    {
+        List<ShipmentCS> shipments = GetAllShipments();
+        var shipment = shipments.FirstOrDefault(s => s.Id == shipmentId);
+        if (shipment != null)
+        {
+            return shipment.Items;
+        }
+        return null;
+    }
     public ShipmentCS CreateShipment(ShipmentCS newShipment)
     {
         var Path = "data/shipments.json";

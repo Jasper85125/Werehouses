@@ -76,6 +76,27 @@ namespace Tests
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
+        [TestMethod]
+        public void GetInventoryTotalByItemIdTest_Exists()
+        {
+            // Arrange: Mock returns a single InventoryCS item (assuming the service does not return a list)
+            var inventoryItem = new InventoryCS { Id = 1, item_id = "P01", total_on_hand = 50, total_allocated = 10 };
+            _mockInventoryService.Setup(service => service.GetInventoriesForItem("P01")).Returns(inventoryItem);
+
+            // Act: Call the controller method
+            var result = _inventoryController.GetInventoryByItemId("P01");
+
+            // Assert: Check if the result is as expected
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult, "Expected OkObjectResult, but got null.");
+
+            Assert.IsNotNull(okResult.Value, "Expected a single InventoryCS item to be returned.");
+            
+            // Verify the total_on_hand + total_allocated calculation
+            Assert.AreEqual(60, okResult.Value, "The total of total_on_hand and total_allocated did not match the expected value.");
+        }
+
+
         [TestMethod] 
         public void CreateInventory_ReturnsCreatedAtActionResult_WithNewInventory()
         {

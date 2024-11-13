@@ -34,6 +34,19 @@ namespace Controllers
             }
             return Ok(orders);
         }
+        
+        //get orders for clients using the shipp_to and bill_to fields
+        [HttpGet("clients/{client_id}")]
+        public ActionResult<IEnumerable<OrderCS>> GetOrdersByClient([FromRoute] int client_id)
+        {
+            var orders = _orderService.GetOrdersByClient(client_id);
+            if (orders is null)
+            {
+                return NotFound();
+            }
+            return Ok(orders);
+        }
+        
 
         // PUT: api/warehouse/5
         [HttpPut("{id}")]
