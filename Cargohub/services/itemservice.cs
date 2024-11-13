@@ -34,6 +34,20 @@ public class ItemService : IItemService
         return item;
     }
 
+    public IEnumerable<ItemCS> GetAllItemsInItemType(int itemTypeId)
+    {
+        List<ItemCS> itemTypeItems = new List<ItemCS> ();
+        var items = GetAllItems();
+        foreach (ItemCS item in items)
+        {
+            if (item.item_type == itemTypeId)
+            {
+                itemTypeItems.Add(item);
+            }
+        }
+        return itemTypeItems;
+    }
+
     // Method to add a new item
     public ItemCS CreateItem(ItemCS item)
     {
