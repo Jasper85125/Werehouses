@@ -160,4 +160,45 @@ public class ItemLineTests
         Assert.IsInstanceOfType(value, typeof(OkResult));
     }
 
+
+    [TestMethod]
+    public void GetItemsByItemLineId_ExistingId()
+    {
+        // Arrange: Mock the service responses to ensure the controller returns the expected items
+        var itemLine = new ItemLineCS { Id = 1 };  // Create a mock item line
+        _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(itemLine);
+
+        var items = new List<ItemCS>
+        {
+            new ItemCS { uid = "U001", code = "Item1", item_line = 1 },
+            new ItemCS { uid = "U002", code = "Item2", item_line = 1 }
+        };
+        _mockItemLineService.Setup(service => service.GetItemsByItemLineId(1)).Returns(items);
+
+        // Act: Call the controller method
+        var result = _itemLineController.GetItemsByItemLineId(1);
+
+        // Assert: Verify the result
+        Assert.IsNotNull(result);
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult, "Expected OkObjectResult, but got null.");
+
+        var returnedItems = okResult.Value as IEnumerable<ItemCS>;
+        Assert.IsNotNull(returnedItems, "Expected returnedItems to be non-null.");
+        Assert.AreEqual(2, returnedItems.Count(), "Expected returnedItems to contain 2 items.");
+    }
+
+
+    [TestMethod]
+    public void GetItemsByItemLineIdTest_WrongId()
+    {
+        // Arrange
+        _mockItemLineService.Setup(service => service.GetItemsByItemLineId(1)).Returns((List<ItemCS>)null);
+
+        // Act
+        var value = _itemLineController.GetItemsByItemLineId(1);
+
+        // Assert
+        Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
+    }
 }
