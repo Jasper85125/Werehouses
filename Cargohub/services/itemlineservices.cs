@@ -81,6 +81,7 @@ public class ItemLineService : IItemLineService
 
         return existingItem;
     }
+
     public void DeleteItemLine(int id)
     {
         var _path  = "data/item_lines.json";
@@ -95,5 +96,19 @@ public class ItemLineService : IItemLineService
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
+    }
+
+    public List<ItemCS> GetItemsByItemLineId(int itemlineId)
+    {
+        var itemsPath = "data/items.json";
+        if (!File.Exists(itemsPath))
+        {
+            return new List<ItemCS>();
+        }
+
+        var jsonData = File.ReadAllText(itemsPath);
+        List<ItemCS> items = JsonConvert.DeserializeObject<List<ItemCS>>(jsonData);
+
+        return items?.Where(item => item.item_line == itemlineId).ToList() ?? new List<ItemCS>();
     }
 }
