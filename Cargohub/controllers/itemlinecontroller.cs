@@ -81,4 +81,18 @@ public class ItemLineController : ControllerBase
         _itemLineService.DeleteItemLine(id);
         return Ok();
     }
+
+    // GET: /{id}/items
+    [HttpGet("{id}/items")]
+    public ActionResult<IEnumerable<ItemCS>> GetItemsByItemLineId([FromRoute] int id)
+    {
+        var Itemline = _itemLineService.GetItemLineById(id);
+        if (Itemline is null)
+        {
+            return NotFound();
+        }
+
+        var items = _itemLineService.GetItemsByItemLineId(id);
+        return Ok(items);
+    }
 }
