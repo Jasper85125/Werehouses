@@ -1,4 +1,4 @@
-name: Csharp & application
+name: CI
 
 on: [push, pull_request]
 
@@ -23,11 +23,11 @@ jobs:
 
     - name: Build .NET project
       if: matrix.language == 'csharp'
-      run: dotnet build --configuration Release
+      run: dotnet build --configuration Release Werehouses/Cargohub/Werehouses.csproj
 
     - name: Test .NET project
       if: matrix.language == 'csharp'
-      run: dotnet test --no-build --verbosity normal --configuration Release
+      run: dotnet test --no-build --verbosity normal --configuration Release Werehouses/Cargohub/Werehouses.csproj
 
     - name: Set up Python
       if: matrix.language == 'python'
