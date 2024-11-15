@@ -149,5 +149,29 @@ namespace itemgroup.Tests
             Assert.IsInstanceOfType(result, typeof(OkResult));
             
         }
+        [TestMethod]
+        public void ItemsFromItemGroupId_Succes(){
+            //Arrange
+            var testResult = new ItemCS(){ uid= "P000084", code= "xQk78654R",
+            description= "Open-architected tertiary contingency",
+            short_description= "throughout", upc_code= "6240362357099",
+            model_number= "81-buCQA7M", commodity_code= "hV-9935",
+            item_line= 67, item_group= 1, item_type= 17,unit_purchase_quantity= 18,
+            unit_order_quantity= 17, pack_order_quantity= 13, supplier_id= 27,
+            supplier_code= "SUP545", supplier_part_number= "f-768-s2A",
+            // created_at= "1995-09-07T07:15:07", updated_at= "1996-09-16T17:31:21"
+            };
+            _mockItemGroupService.Setup(service => service.ItemsFromItemGroupId(1)).Returns(new List<ItemCS>(){testResult});
+            //Act
+            var result = _itemGroupController.GetAllItemsFromItemGroupId(1);
+            var resultOK = result.Result as OkObjectResult;
+            var value = resultOK.Value as List<ItemCS>;
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultOK);
+            Assert.IsNotNull(value);
+            Assert.IsInstanceOfType(value, typeof(List<ItemCS>));
+            Assert.AreEqual(value[0].item_group, 1);
+        }
     }
 }

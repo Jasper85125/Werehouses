@@ -38,8 +38,9 @@ public class ItemGroupController : ControllerBase
     }
     //GET: all item in item groups
     [HttpGet("{id}/items")]
-    public ActionResult GetAllItemsFromItemGroupId(int id){
+    public ActionResult<List<ItemCS>> GetAllItemsFromItemGroupId(int id){
         var result = _itemgroupService.ItemsFromItemGroupId(id);
+        if (result is null) return NotFound();
         return Ok(result);
     }
 
