@@ -5,12 +5,14 @@ using Newtonsoft.Json;
 
 namespace Services;
 
-public class ItemGroupService : IitemGroupService
+public class ItemGroupService : ItemService, IitemGroupService
 {
     // Constructor
+    ItemService itemService;
     public ItemGroupService()
     {
         // Initialization code here
+        itemService = new ItemService();
     }
 
     // Method to get all Itemgroups
@@ -33,6 +35,14 @@ public class ItemGroupService : IitemGroupService
         var Itemgroups = GetAllItemGroups();
         var Itemgroup = Itemgroups.FirstOrDefault(i => i.Id == id);
         return Itemgroup;
+    }
+    public List<ItemCS> ItemsFromItemGroupId(int groupid){
+        var items = itemService.GetAllItems();
+        var find = items.FindAll(_ => _.item_group == groupid);
+        if(find is null){
+            return null;
+        }
+        return find;
     }
 
     // Method to add a new Itemgroup

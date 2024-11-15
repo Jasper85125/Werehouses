@@ -36,6 +36,12 @@ public class ItemGroupController : ControllerBase
         }
         return Ok(itemtype);
     }
+    //GET: all item in item groups
+    [HttpGet("{id}/items")]
+    public ActionResult GetAllItemsFromItemGroupId(int id){
+        var result = _itemgroupService.ItemsFromItemGroupId(id);
+        return Ok(result);
+    }
 
 
     // POST: itemgroups
