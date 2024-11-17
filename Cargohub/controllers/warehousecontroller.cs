@@ -52,6 +52,19 @@ public class WarehouseController : ControllerBase
         return CreatedAtAction(nameof(GetWarehouseById), new { id = createdWarehouse.Id }, createdWarehouse);
     }
 
+    // POST: /warehouses
+    [HttpPost("multiple")]
+    public ActionResult<WarehouseCS> CreateWarehouse([FromBody] List<WarehouseCS> newWarehouse)
+    {
+        if (newWarehouse is null)
+        {
+            return BadRequest("Warehouse data is null");
+        }
+
+        var createdWarehouses = _warehouseService.CreateMultipleWarehouse(newWarehouse);
+        return StatusCode(StatusCodes.Status201Created, createdWarehouses);
+    }
+
     // PUT: /warehouses/{id}
     [HttpPut("{id}")]
     public ActionResult<WarehouseCS> UpdateWarehouse([FromRoute]int id, [FromBody] WarehouseCS newWarehouse)
