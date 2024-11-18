@@ -89,4 +89,17 @@ public class LocationService : ILocationService
         var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
     }
+    public void DeleteLocations(List<int> ids)
+    {
+        var locations = GetAllLocations();
+        foreach(int id in ids){
+            var location = locations.Find(_ => _.Id == id);
+            if (location is not null)
+            {
+                locations.Remove(location);
+            }
+        }
+        var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
+        File.WriteAllText(_path, jsonData);
+    }
 }

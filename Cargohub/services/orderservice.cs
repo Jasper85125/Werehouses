@@ -156,4 +156,16 @@ public class OrderService : IOrderService
 
         return Task.FromResult(existingOrder);
     }
+    public void DeleteOrders(List<int> ids){
+        var orders = GetAllOrders();
+        foreach(int id in ids){
+            var order = orders.Find(_=>_.Id == id);
+            if(order is not null){
+                orders.Remove(order);
+            }
+        }
+        var path = "data/orders.json";
+        var json = JsonConvert.SerializeObject(orders, Formatting.Indented);
+        File.WriteAllText(path, json);
+    }
 }

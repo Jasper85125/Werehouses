@@ -205,6 +205,17 @@ namespace Tests
             //assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+        [TestMethod]
+        public void DeleteShipmentsTest_Succes(){
+            //Arrange
+            var idstodel = new List<int>(){1,2,3};
+            //Act
+            var result = _shipmentController.DeleteShipments(idstodel);
+            var resultok = result as OkObjectResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(resultok.StatusCode, 200);
+        }
     }
 }
 

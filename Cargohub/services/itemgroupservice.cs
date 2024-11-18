@@ -48,26 +48,40 @@ public class ItemGroupService : ItemService, IitemGroupService
     }
 
     // Method to add a new Itemgroup
-    public ItemGroupCS CreateItemGroup(ItemGroupCS newItemType)
+    public ItemGroupCS CreateItemGroup(ItemGroupCS newItemGroup)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Auto-increment ID
         if (items.Any())
         {
-            newItemType.Id = items.Max(i => i.Id) + 1;
+            newItemGroup.Id = items.Max(i => i.Id) + 1;
         }
         else
         {
-            newItemType.Id = 1;
+            newItemGroup.Id = 1;
         }
-
-        items.Add(newItemType);
+        newItemGroup.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newItemGroup.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        items.Add(newItemGroup);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText("data/item_groups.json", jsonData);
 
-        return newItemType;
+        return newItemGroup;
+    }
+
+    public List<ItemGroupCS> CreateMultipleItemGroups(List<ItemGroupCS>newItemGroup)
+    {
+        List<ItemGroupCS> addedItemGroups = new List<ItemGroupCS>();
+        foreach(ItemGroupCS itemGroup in newItemGroup)
+        {
+            ItemGroupCS addItemGroup = CreateItemGroup(itemGroup);
+            addedItemGroups.Add(addItemGroup);
+        }
+        return addedItemGroups;
     }
 
     // Method to update an existing Itemgroup

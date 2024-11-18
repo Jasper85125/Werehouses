@@ -298,6 +298,17 @@ namespace Tests
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+        [TestMethod]
+        public void DeleteSuppliersTest_Succes(){
+            //Arrange
+            var listidstodel = new List<int>(){1,2,3};
+            //Act
+            var result = _supplierController.DeleteSuppliers(listidstodel);
+            var resultok = result as OkObjectResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(resultok.StatusCode, 200);
+        }
     }
 }
 

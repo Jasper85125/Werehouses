@@ -115,4 +115,12 @@ public class ShipmentController : ControllerBase
         _shipmentService.DeleteItemFromShipment(id, itemid);
         return Ok();
     }
+    [HttpDelete("batch")]
+    public ActionResult DeleteShipments([FromBody]List<int> ids){
+        if(ids is null){
+            return NotFound();
+        }
+        _shipmentService.DeleteShipments(ids);
+        return Ok("deleted shipments");
+    }
 }

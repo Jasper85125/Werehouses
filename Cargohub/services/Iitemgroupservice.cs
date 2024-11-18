@@ -8,6 +8,7 @@ public interface IitemGroupService
     List<ItemGroupCS> GetAllItemGroups();
     ItemGroupCS GetItemById(int id);
     ItemGroupCS CreateItemGroup(ItemGroupCS newItemType);
+    List<ItemGroupCS> CreateMultipleItemGroups(List<ItemGroupCS>newItemGroup);
     ItemGroupCS UpdateItemGroup(int id, ItemGroupCS itemGroup);
     List<ItemCS> ItemsFromItemGroupId(int itemgroup_id);
     void DeleteItemGroup(int id);

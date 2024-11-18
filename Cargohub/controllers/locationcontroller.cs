@@ -88,5 +88,13 @@ namespace Controllers
         _locationService.DeleteLocation(id);
         return Ok();
         }
+        [HttpDelete("batch")]
+        public ActionResult DeleteLocations([FromBody]List<int> ids){
+            if(ids is null){
+                return NotFound();
+            }
+            _locationService.DeleteLocations(ids);
+            return Ok("Locations deleted");
+        }
     }
 }

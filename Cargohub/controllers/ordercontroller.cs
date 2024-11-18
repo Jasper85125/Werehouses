@@ -122,6 +122,13 @@ namespace Controllers
             var updatedOrder = await _orderService.UpdateOrderItems(orderId, items);
             return Ok(updatedOrder);
         }
-
+        [HttpDelete("batch")]
+        public ActionResult DeleteOrders([FromBody] List<int> ids){
+            if(ids is null){
+                return NotFound();
+            }
+            _orderService.DeleteOrders(ids);
+            return Ok("orders deleted");
+        }
     }
 }

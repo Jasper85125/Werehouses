@@ -227,6 +227,17 @@ public void DeleteWarehouseTest_Success()
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+        [TestMethod]
+        public void DeleteTransfersTest_Succes(){
+            //Arrange
+            var listidstodel = new List<int>(){1,2,3};
+            //Act
+            var result = _transferController.DeleteTransfers(listidstodel);
+            var resultok = result as OkObjectResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(resultok.StatusCode, 200);
+        }
     }
 }
 
