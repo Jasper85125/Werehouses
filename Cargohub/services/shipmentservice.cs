@@ -137,4 +137,16 @@ public class ShipmentService : IShipmentService
             }
         }
     }
+    public void DeleteShipments(List<int> ids){
+        var shipments = GetAllShipments();
+        foreach(int id in ids){
+            var shipment = shipments.Find(_=>_.Id == id);
+            if(shipment is not null){
+                shipments.Remove(shipment);
+            }
+        }
+        var path = "data/shipments.json";
+        var json = JsonConvert.SerializeObject(shipments, Formatting.Indented);
+        File.WriteAllText(path, json);
+    }
 }
