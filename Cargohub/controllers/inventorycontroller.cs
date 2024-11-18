@@ -96,12 +96,9 @@ public class InventoryController : ControllerBase
         return Ok();
     }
     [HttpDelete("batch")]
-    public ActionResult DeleteInventories([FromBody] List<int> ids){
-        foreach(int id in ids){
-            var existingInventory = _inventoryService.GetInventoryById(id);
-            if(existingInventory is null){
-                return NotFound();
-            }
+    public ActionResult DeleteInventories ([FromBody] List<int> ids){
+        if (ids is null){
+            return NotFound();
         }
         _inventoryService.DeleteInventories(ids);
         return Ok("inventories deleted");
