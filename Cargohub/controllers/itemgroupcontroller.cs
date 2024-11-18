@@ -97,20 +97,17 @@ public class ItemGroupController : ControllerBase
         return Ok("Item Groups deleted");
     }
 
-    [HttpPatch("{Id}")]
-    public ActionResult<ItemGroupCS> PatchItemGroup([FromRoute] int Id, [FromBody] ItemGroupCS itemGroup)
+    [HttpPatch("{id}")]
+    public ActionResult<ItemGroupCS> PatchItemGroup([FromRoute] int id, [FromBody] ItemGroupCS itemGroup)
     {
-        var existingItemGroup = _itemgroupService.GetItemById(Id);
+        var existingItemGroup = _itemgroupService.GetItemById(id);
         if (existingItemGroup == null)
         {
             return NotFound();
         }
 
-        if (itemGroup.Id != Id)
-        {
-            return BadRequest("id does not match");
-        }
-        var updatedItemGroup = _itemgroupService.UpdateItemGroup(Id, itemGroup);
+        itemGroup.Id = id;
+        var updatedItemGroup = _itemgroupService.PatchItemGroup(id, itemGroup);
 
         return Ok(updatedItemGroup);
     }

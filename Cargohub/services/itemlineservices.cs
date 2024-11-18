@@ -111,4 +111,16 @@ public class ItemLineService : IItemLineService
 
         return items?.Where(item => item.item_line == itemlineId).ToList() ?? new List<ItemCS>();
     }
+    public void DeleteItemLines(List<int> ids){
+        var item_lines = GetAllItemlines();
+        foreach(int id in ids){
+            var item_line = item_lines.Find(_=>_.Id == id);
+            if(item_line is not null){
+                item_lines.Remove(item_line);
+            }
+        }
+        var path = "data/item_lines.json";
+        var json = JsonConvert.SerializeObject(item_lines, Formatting.Indented);
+        File.WriteAllText(path, json);
+    }
 }
