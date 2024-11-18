@@ -253,7 +253,17 @@ namespace Tests
             var notFoundResult = result.Result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
         }
-        
+        [TestMethod]
+        public void DeleteOrdersTest_Succes(){
+            //Arrange
+            var listidstodel = new List<int>(){1,2,3};
+            //Act
+            var result = _orderController.DeleteOrders(listidstodel);
+            var resultok = result as OkObjectResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(resultok.StatusCode, 200);
+        }
     }
 }
 
