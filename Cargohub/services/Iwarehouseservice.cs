@@ -8,4 +8,5 @@ public interface IWarehouseService
     List<WarehouseCS> CreateMultipleWarehouse(List<WarehouseCS>newWarehouse);
     WarehouseCS UpdateWarehouse(int id, WarehouseCS warehouse);
     void DeleteWarehouse(int id);
+    void DeleteWarehouses(List<int> ids);
 }

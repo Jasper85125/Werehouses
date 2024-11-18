@@ -95,4 +95,15 @@ public class WarehouseService : IWarehouseService
         var jsonData = JsonConvert.SerializeObject(allWarehouses, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
     }
+    public void DeleteWarehouses(List<int> ids){
+        var warehouses = GetAllWarehouses();
+        foreach(int id in ids){
+            var warehouse = warehouses.Find(_=>_.Id == id);
+            if(warehouse is not null){
+                warehouses.Remove(warehouse);
+            }
+        }
+        var json = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
+        File.WriteAllText(_path, json);
+    }
 }
