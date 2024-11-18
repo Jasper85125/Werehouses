@@ -172,6 +172,17 @@ namespace Tests
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+        [TestMethod]
+        public void DeleteLocationsTest_Succes(){
+            //Arrange
+            var listofidstodel = new List<int>(){1,2,3};
+            //Act
+            var result = _locationController.DeleteLocations(listofidstodel);
+            var resultok = result as OkObjectResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(resultok.StatusCode, 200);
+        }
     }
 }
 
