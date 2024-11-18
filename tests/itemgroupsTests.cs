@@ -5,7 +5,6 @@ using Controllers;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace itemgroup.Tests
 {
@@ -79,29 +78,29 @@ namespace itemgroup.Tests
         {
             // Arrange
             var newItemGroup = new ItemGroupCS { Id = 3, Name = "Group 3" };
-            _mockItemGroupService.Setup(service => service.CreateItemGroup(It.IsAny<ItemGroupCS>())).Returns(Task.FromResult(newItemGroup));
+            _mockItemGroupService.Setup(service => service.CreateItemGroup(It.IsAny<ItemGroupCS>())).Returns(newItemGroup);
 
             // Act
             var result = _itemGroupController.CreateItemGroup(newItemGroup);
 
             // Assert
-            var createdResult = result.Result as CreatedAtActionResult;
+            var createdResult = result as CreatedAtActionResult;
             var returnedItem = createdResult.Value as ItemGroupCS;
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(newItemGroup.Name, returnedItem.Name);
         }
 
         [TestMethod]
-        public async Task UpdateItemGroupTest_ValidItem()
+        public void UpdateItemGroupTest_ValidItem()
         {
             // Arrange
             var existingItemGroup = new ItemGroupCS { Id = 1, Description = "Existing Item" };
             var updatedItemGroup = new ItemGroupCS { Id = 1, Description = "Updated Item" };
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(existingItemGroup);
-            _mockItemGroupService.Setup(service => service.UpdateItemGroup(1, updatedItemGroup)).ReturnsAsync(updatedItemGroup);
+            _mockItemGroupService.Setup(service => service.UpdateItemGroup(1, updatedItemGroup)).Returns(updatedItemGroup);
 
             // Act
-            var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+            var value = _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
 
             // Assert
             var okResult = value.Result as OkObjectResult;
@@ -111,27 +110,27 @@ namespace itemgroup.Tests
         }
 
         [TestMethod]
-        public async Task UpdateItemGroupTest_WrongId()
+        public void UpdateItemGroupTest_WrongId()
         {
             // Arrange
             var updatedItemGroup = new ItemGroupCS { Id = 1, Description = "Updated Item" };
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns((ItemGroupCS)null);
 
             // Act
-            var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+            var value = _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
 
             // Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
 
         [TestMethod]
-        public async Task UpdateItemGroupTest_IdMismatch()
+        public void UpdateItemGroupTest_IdMismatch()
         {
             // Arrange
             var updatedItemGroup = new ItemGroupCS { Id = 2, Description = "Updated Item" };
 
             // Act
-            var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+            var value = _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
 
             // Assert
             Assert.IsInstanceOfType(value.Result, typeof(BadRequestResult));
@@ -183,6 +182,44 @@ namespace itemgroup.Tests
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
+        }
+
+        [TestMethod]
+        public void PatchItemGroupTest_Success()
+        {
+            // Arrange
+            var existingItemGroup = new ItemGroupCS { Id = 1, Name = "Group 1", Description = "Existing Description" };
+            var patchItemGroup = new ItemGroupCS { Name = "Updated Group", Description = "Updated Description" };
+
+            _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(existingItemGroup);
+            _mockItemGroupService.Setup(service => service.PatchItemGroup(1, patchItemGroup)).Returns(patchItemGroup);
+
+            // Act
+            var result = _itemGroupController.PatchItemGroup(1, patchItemGroup);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(ItemGroupCS));
+            var returnedItemGroup = okResult.Value as ItemGroupCS;
+            Assert.AreEqual(patchItemGroup.Name, returnedItemGroup.Name);
+            Assert.AreEqual(patchItemGroup.Description, returnedItemGroup.Description);
+        }
+
+        [TestMethod]
+        public void PatchItemGroupTest_NotFound()
+        {
+            // Arrange
+            var patchItemGroup = new ItemGroupCS { Name = "Updated Group", Description = "Updated Description" };
+
+            _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns((ItemGroupCS)null);
+
+            // Act
+            var result = _itemGroupController.PatchItemGroup(1, patchItemGroup);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
     }
 }
