@@ -74,78 +74,103 @@ public class ItemLineTests
     }
 
     [TestMethod]
-    public async Task AddItemLineTest_ValidItem()
+    public void AddItemLineTest_ValidItem()
     {
         // Arrange
         var newItemLine = new ItemLineCS { Id = 1, Description = "New Item" };
-        _mockItemLineService.Setup(service => service.AddItemLine(newItemLine)).ReturnsAsync(newItemLine);
+        _mockItemLineService.Setup(service => service.AddItemLine(newItemLine)).Returns(newItemLine);
 
         // Act
-        var value = await _itemLineController.AddItemLine(newItemLine);
+        var value = _itemLineController.AddItemLine(newItemLine);
+        var createdResult = value as CreatedAtActionResult;
+        var returnedItem = createdResult.Value as ItemLineCS;
 
         // Assert
-        var createdResult = value.Result as CreatedAtActionResult;
-        var returnedItem = createdResult.Value as ItemLineCS;
         Assert.IsNotNull(createdResult);
         Assert.AreEqual(newItemLine.Description, returnedItem.Description);
     }
 
     [TestMethod]
-    public async Task AddItemLineTest_NullItem()
+    public void AddItemLineTest_NullItem()
     {
         // Act
-        var value = await _itemLineController.AddItemLine(null);
+        var value = _itemLineController.AddItemLine(null);
+        var createdResult = value as BadRequestObjectResult;
 
         // Assert
-        Assert.IsInstanceOfType(value.Result, typeof(BadRequestObjectResult));
+        Assert.IsInstanceOfType(createdResult, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
-    public async Task UpdateItemLineTest_ValidItem()
+    public void CreateMultipleWarehouse_ReturnsCreatedResult_WithNewWarehouse()
+    {
+        // Arrange
+        var itemLines = new List<ItemLineCS>
+            {
+                new ItemLineCS { Id = 3, Name = "Group 3", Description = "Cool items" },
+                new ItemLineCS { Id = 4, Name = "Group 4", Description = "Cool items" }
+            };
+        _mockItemLineService.Setup(service => service.CreateMultipleItemLines(itemLines)).Returns(itemLines);
+
+        // Act
+        var result = _itemLineController.CreateMultipleItemLines(itemLines);
+        var createdResult = result.Result as ObjectResult;
+        var returnedItems = createdResult.Value as List<ItemLineCS>;
+        var firstItemLine = returnedItems[0];
+
+        // Assert
+        Assert.IsNotNull(createdResult);
+        Assert.IsNotNull(returnedItems);
+        Assert.AreEqual(itemLines[0].Name, firstItemLine.Name);
+        Assert.AreEqual(itemLines[0].Description, firstItemLine.Description);
+    }
+
+    [TestMethod]
+    public void UpdateItemLineTest_ValidItem()
     {
         // Arrange
         var existingItemLine = new ItemLineCS { Id = 1, Description = "Existing Item" };
         var updatedItemLine = new ItemLineCS { Id = 1, Description = "Updated Item" };
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(existingItemLine);
-        _mockItemLineService.Setup(service => service.UpdateItemLine(1, updatedItemLine)).ReturnsAsync(updatedItemLine);
+        _mockItemLineService.Setup(service => service.UpdateItemLine(1, updatedItemLine)).Returns(updatedItemLine);
 
         // Act
-        var value = await _itemLineController.UpdateItemLine(1, updatedItemLine);
-
-        // Assert
+        var value = _itemLineController.UpdateItemLine(1, updatedItemLine);
         var okResult = value.Result as OkObjectResult;
         var returnedItem = okResult.Value as ItemLineCS;
+
+        // Assert
         Assert.IsNotNull(okResult);
         Assert.AreEqual(updatedItemLine.Description, returnedItem.Description);
     }
 
     [TestMethod]
-    public async Task UpdateItemLineTest_WrongId()
+    public void UpdateItemLineTest_WrongId()
     {
         // Arrange
         var updatedItemLine = new ItemLineCS { Id = 1, Description = "Updated Item" };
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns((ItemLineCS)null);
 
         // Act
-        var value = await _itemLineController.UpdateItemLine(1, updatedItemLine);
+        var value = _itemLineController.UpdateItemLine(1, updatedItemLine);
 
         // Assert
         Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
     }
 
     [TestMethod]
-    public async Task UpdateItemLineTest_IdMismatch()
+    public void UpdateItemLineTest_IdMismatch()
     {
         // Arrange
         var updatedItemLine = new ItemLineCS { Id = 2, Description = "Updated Item" };
 
         // Act
-        var value = await _itemLineController.UpdateItemLine(1, updatedItemLine);
+        var value = _itemLineController.UpdateItemLine(1, updatedItemLine);
 
         // Assert
         Assert.IsInstanceOfType(value.Result, typeof(BadRequestResult));
     }
-    
+
     [TestMethod]
     public void DeleteItemLineTest_Exists()
     {
@@ -202,9 +227,10 @@ public class ItemLineTests
         Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
     }
     [TestMethod]
-    public void DeleteItemLinesTest_Succes(){
+    public void DeleteItemLinesTest_Succes()
+    {
         //Arrange
-        var idstodel = new List<int>(){1, 2, 3};
+        var idstodel = new List<int>() { 1, 2, 3 };
         //Act
         var result = _itemLineController.DeleteItemLines(idstodel);
         var resultok = result as OkObjectResult;
