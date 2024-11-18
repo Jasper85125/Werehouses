@@ -97,4 +97,12 @@ public class TransferController : ControllerBase
         _transferService.DeleteTransfer(id);
         return Ok();
     }
+    [HttpDelete("batch")]
+    public ActionResult DeleteTransfers(List<int> ids){
+        if(ids is null){
+            return NotFound();
+        }
+        _transferService.DeleteTransfers(ids);
+        return Ok("deleted transfers");
+    }
 }

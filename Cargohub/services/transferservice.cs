@@ -142,4 +142,15 @@ public class TransferService : ITransferService
             File.WriteAllText(Path, jsonData);
         }
     }
+    public void DeleteTransfers(List<int> ids){
+        var transfers = GetAllTransfers();
+        foreach(int id in ids){
+            var transfer = transfers.Find(_=>_.Id == id);
+            if(transfer is not null){
+                transfers.Remove(transfer);
+            }
+        }
+        var json = JsonConvert.SerializeObject(transfers, Formatting.Indented);
+        File.WriteAllText(_path, json);
+    }
 }
