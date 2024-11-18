@@ -8,4 +8,5 @@ public interface ISupplierService
     SupplierCS UpdateSupplier(int id, SupplierCS supplier);
     void DeleteSupplier(int id);
     List<ItemCS> GetItemsBySupplierId(int supplierId);
+    SupplierCS PatchSupplier(int id, SupplierCS updateSupplier);
 }

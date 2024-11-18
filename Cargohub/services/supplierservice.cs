@@ -91,7 +91,6 @@ public class SupplierService : ISupplierService
 
     }
 
-
     public List<ItemCS> GetItemsBySupplierId(int supplierId)
     {
         var itemsPath = "data/items.json";
@@ -105,4 +104,54 @@ public class SupplierService : ISupplierService
 
         return items?.Where(item => item.supplier_id == supplierId).ToList() ?? new List<ItemCS>();
     }
+
+    // public SupplierCS PatchSupplier(int id, Action<SupplierCS> modifyAction)
+    // {
+    //     var allSuppliers = GetAllSuppliers();
+    //     var supplierToPatch = allSuppliers.SingleOrDefault(supplier => supplier.Id == id);
+
+    //     if (supplierToPatch is not null)
+    //     {
+    //         modifyAction(supplierToPatch);
+
+    //         var jsonData = JsonConvert.SerializeObject(allSuppliers, Formatting.Indented);
+    //         File.WriteAllText(_path, jsonData);
+    //         return supplierToPatch;
+    //     }
+    //     return null;
+    // }
+
+    public SupplierCS PatchSupplier(int id, SupplierCS updateSupplier)
+    {
+        var allSuppliers = GetAllSuppliers();
+        var supplierToUpdate = allSuppliers.Single(supplier => supplier.Id == id);
+
+        if (supplierToUpdate is not null)
+        {
+            // Get the current date and time
+            var currentDateTime = DateTime.Now;
+
+            // Format the date and time to the desired format
+            var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+            supplierToUpdate.Code = updateSupplier.Code ?? supplierToUpdate.Code;
+            supplierToUpdate.Name = updateSupplier.Name ?? supplierToUpdate.Name;
+            supplierToUpdate.Address = updateSupplier.Address ?? supplierToUpdate.Address;
+            supplierToUpdate.address_extra = updateSupplier.address_extra ?? supplierToUpdate.address_extra;
+            supplierToUpdate.City = updateSupplier.City ?? supplierToUpdate.City;
+            supplierToUpdate.zip_code = updateSupplier.zip_code ?? supplierToUpdate.zip_code;
+            supplierToUpdate.Province = updateSupplier.Province ?? supplierToUpdate.Province;
+            supplierToUpdate.Country = updateSupplier.Country ?? supplierToUpdate.Country;
+            supplierToUpdate.contact_name = updateSupplier.contact_name ?? supplierToUpdate.contact_name;
+            supplierToUpdate.PhoneNumber = updateSupplier.PhoneNumber ?? supplierToUpdate.PhoneNumber;
+            supplierToUpdate.Reference = updateSupplier.Reference ?? supplierToUpdate.Reference;
+            supplierToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+            var jsonData = JsonConvert.SerializeObject(allSuppliers, Formatting.Indented);
+            File.WriteAllText(_path, jsonData);
+            return supplierToUpdate;
+        }
+        return null;
+    }
+
 }
