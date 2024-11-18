@@ -44,6 +44,17 @@ public class WarehouseService : IWarehouseService
         return newWarehouse;
     }
 
+    public List<WarehouseCS> CreateMultipleWarehouse(List<WarehouseCS>newWarehouse)
+    {
+        List<WarehouseCS> addedWarehouses = new List<WarehouseCS>();
+        foreach(WarehouseCS warehouse in newWarehouse)
+        {
+            WarehouseCS addWarehouse = CreateWarehouse(warehouse);
+            addedWarehouses.Add(addWarehouse);
+        }
+        return addedWarehouses;
+    }
+
     public WarehouseCS UpdateWarehouse(int id, WarehouseCS updateWarehouse)
     {
         var allWarehouses = GetAllWarehouses();

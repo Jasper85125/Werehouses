@@ -50,6 +50,19 @@ public class ClientController : ControllerBase
         return CreatedAtAction(nameof(GetClientById), new { id = createdClient.Id }, createdClient);
     }
 
+    // POST: /clients/multiple
+    [HttpPost("multiple")]
+    public ActionResult<ClientCS> CreateMultipleClients([FromBody] List<ClientCS> newClient)
+    {
+        if (newClient is null)
+        {
+            return BadRequest("Client data is null");
+        }
+
+        var createdClient = _clientservice.CreateMultipleClients(newClient);
+        return StatusCode(StatusCodes.Status201Created, createdClient);
+    }
+
     // PUT: /clients/{id}
     [HttpPut("{id}")]
     public ActionResult<ClientCS> UpdateClient([FromRoute]int id, [FromBody] ClientCS client)
