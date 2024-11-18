@@ -10,4 +10,5 @@ public interface IShipmentService
     ShipmentCS UpdateItemsInShipment(int ShipmentId, List<ItemIdAndAmount> Items);
     void DeleteShipment(int id);
     void DeleteItemFromShipment(int shipmentId, string itemId);
+    void DeleteShipments(List<int> ids);
 }
