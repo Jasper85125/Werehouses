@@ -79,7 +79,7 @@ namespace clients.Test
         }
 
         [TestMethod]
-        public void CreateMultipleWarehouse_ReturnsCreatedResult_WithNewWarehouse()
+        public void CreateMultipleClient_ReturnsCreatedResult_WithNewClient()
         {
             // Arrange
             var clients = new List<ClientCS> 
