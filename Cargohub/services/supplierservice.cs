@@ -142,5 +142,16 @@ public class SupplierService : ISupplierService
         }
         return null;
     }
+    public void DeleteSuppliers(List<int> ids){
+        var suppliers = GetAllSuppliers();
+        foreach(int id in ids){
+            var supplier = suppliers.Find(_=>_.Id == id);
+            if(supplier is not null){
+                suppliers.Remove(supplier);
+            }
+        }
+        var json = JsonConvert.SerializeObject(suppliers, Formatting.Indented);
+        File.WriteAllText(_path, json);
+    }
 
 }
