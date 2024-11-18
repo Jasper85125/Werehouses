@@ -94,5 +94,16 @@ public class ItemTypeService : IItemtypeService
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText(path, jsonData);
     }
-
+    public void DeleteItemTypes(List<int> ids){
+        var item_types = GetAllItemtypes();
+        foreach(int id in ids){
+            var item_type = item_types.Find(_=>_.Id == id);
+            if(item_type is not null){
+                item_types.Remove(item_type);
+            }
+        }
+        var path = "data/item_types.json";
+        var json = JsonConvert.SerializeObject(item_types, Formatting.Indented);
+        File.WriteAllText(path, json);
+    }
 }
