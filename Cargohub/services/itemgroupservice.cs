@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
 namespace Services;
@@ -135,5 +136,17 @@ public class ItemGroupService : ItemService, IitemGroupService
         File.WriteAllText("data/item_groups.json", jsonData);
 
         return existingItem;
+    }
+    public void DeleteItemGroups(List<int> ids){
+        var item_groups = GetAllItemGroups();
+        foreach(int id in ids){
+            var item_group = item_groups.Find(_=>_.Id == id);
+            if(item_group is not null){
+                item_groups.Remove(item_group);
+            }
+        }
+        var path = "data/item_groups.json";
+        var json = JsonConvert.SerializeObject(item_groups, Formatting.Indented);
+        File.WriteAllText(path, json);
     }
 }

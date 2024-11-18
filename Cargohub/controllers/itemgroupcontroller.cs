@@ -87,6 +87,15 @@ public class ItemGroupController : ControllerBase
         _itemgroupService.DeleteItemGroup(id);
         return Ok();
     }
+    [HttpDelete("batch")]
+    public ActionResult DeleteItemGroups([FromBody] List<int> ids){
+        if(ids is null)
+        {
+            return NotFound();
+        }
+        _itemgroupService.DeleteItemGroups(ids);
+        return Ok("Item Groups deleted");
+    }
 
     [HttpPatch("{Id}")]
     public ActionResult<ItemGroupCS> PatchItemGroup([FromRoute] int Id, [FromBody] ItemGroupCS itemGroup)

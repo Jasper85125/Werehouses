@@ -8,4 +8,5 @@ public interface IClientService
     List<ClientCS> CreateMultipleClients(List<ClientCS>newClients);
     public ClientCS UpdateClient(int id, ClientCS client);
     void DeleteClient(int id);
+    void DeleteClients(List<int> ids);
 }

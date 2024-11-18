@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Text.Json;
 using Services;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Controllers;
 
@@ -93,5 +94,13 @@ public class InventoryController : ControllerBase
         }
         _inventoryService.DeleteInventory(id);
         return Ok();
+    }
+    [HttpDelete("batch")]
+    public ActionResult DeleteInventories ([FromBody] List<int> ids){
+        if (ids is null){
+            return NotFound();
+        }
+        _inventoryService.DeleteInventories(ids);
+        return Ok("inventories deleted");
     }
 }

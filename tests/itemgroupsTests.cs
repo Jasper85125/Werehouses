@@ -173,5 +173,16 @@ namespace itemgroup.Tests
             Assert.IsInstanceOfType(value, typeof(List<ItemCS>));
             Assert.AreEqual(value[0].item_group, 1);
         }
+        [TestMethod]
+        public void DeleteItemGroups_Succes(){
+            //Arrange
+            var idstodel = new List<int>(){1, 2, 3};
+            //Act
+            var result = _itemGroupController.DeleteItemGroups(idstodel);
+            var resultok = result as OkObjectResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(resultok.StatusCode, 200);
+        }
     }
 }

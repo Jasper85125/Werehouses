@@ -93,5 +93,16 @@ public class ClientService : IClientService
         File.WriteAllText(_path, jsonData);
         
     }
+    public void DeleteClients(List<int> ids){
+        var clients = GetAllClients();
+        foreach(int id in ids){
+            var client = clients.Find(_ => _.Id == id);
+            if (client is not null) {
+                clients.Remove(client);
+            }
+        }
+        var json = JsonConvert.SerializeObject(clients, Formatting.Indented);
+        File.WriteAllText("data/clients.json", json);
+    }
 }
 
