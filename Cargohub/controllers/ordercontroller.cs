@@ -94,6 +94,19 @@ namespace Controllers
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
         }
 
+        // POST: /orders/multiple
+        [HttpPost("multiple")]
+        public ActionResult<IEnumerable<OrderCS>> CreateMultipleOrders([FromBody] List<OrderCS> newOrders)
+        {
+            if (newOrders is null)
+            {
+                return BadRequest("Order data is null");
+            }
+
+            var createdOrders = _orderService.CreateMultipleOrders(newOrders);
+            return StatusCode(StatusCodes.Status201Created, createdOrders);
+        }
+
         [HttpGet("{orderId}/items")]
         public ActionResult<List<ItemIdAndAmount>> GetItemsByOrderId(int orderId)
         {
