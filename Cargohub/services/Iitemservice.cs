@@ -9,5 +9,6 @@ public interface IItemService
     ItemCS UpdateItem(string uid, ItemCS item);
     IEnumerable<ItemCS> GetAllItemsInItemType(int id);
     void DeleteItem(string uid);
+    void DeleteItems(List<string> uids);
 
 }
