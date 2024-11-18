@@ -120,6 +120,30 @@ namespace Tests
         }
 
         [TestMethod]
+        public void CreateMultipleLocations_ReturnsCreatedResult_WithNewLocations()
+        {
+            // Arrange
+            var locations = new List<LocationCS> 
+            {
+                new LocationCS { Id = 2, warehouse_id = 5, code = "C.3.2", name =  "Row: C, Rack: 3, Shelf: 2"},
+                new LocationCS { Id = 2, warehouse_id = 5, code = "C.3.2", name =  "Row: C, Rack: 3, Shelf: 2"}
+            };
+            _mockLocationService.Setup(service => service.CreateMultipleLocations(locations)).Returns(locations);
+            
+            // Act
+            var result = _locationController.CreateMultipleLocations(locations);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<LocationCS>;
+            var firstLocation = returnedItems[0];
+            
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(locations[0].name, firstLocation.name);
+            Assert.AreEqual(locations[0].code, firstLocation.code);
+        }
+
+        [TestMethod]
         public void UpdatedLocationTest_Success()
         {
             // Arrange

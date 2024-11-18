@@ -91,7 +91,7 @@ namespace itemgroup.Tests
         }
 
         [TestMethod]
-        public void CreateMultipleWarehouse_ReturnsCreatedResult_WithNewWarehouse()
+        public void CreateMultipleItemGroups_ReturnsCreatedResult_WithNewGroups()
         {
             // Arrange
             var itemGroups = new List<ItemGroupCS> 

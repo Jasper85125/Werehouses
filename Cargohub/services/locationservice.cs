@@ -42,13 +42,28 @@ public class LocationService : ILocationService
     public LocationCS CreateLocation(LocationCS newLocation)
     {
         List<LocationCS> locations = GetAllLocations();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         newLocation.Id = locations.Count > 0 ? locations.Max(o => o.Id) + 1 : 1;
+        newLocation.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newLocation.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         locations.Add(newLocation);
 
         var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
         return newLocation;
+    }
+
+    public List<LocationCS> CreateMultipleLocations(List<LocationCS>newLocations)
+    {
+        List<LocationCS> addedLocations = new List<LocationCS>();
+        foreach(LocationCS location in newLocations)
+        {
+            LocationCS addLocation = CreateLocation(location);
+            addedLocations.Add(addLocation);
+        }
+        return addedLocations;
     }
 
     public LocationCS UpdateLocation(LocationCS updatedLocation, int locationId)
