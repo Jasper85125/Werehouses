@@ -10,14 +10,14 @@ namespace clients.Test
     [TestClass]
     public class ClientTest
     {
-        private Mock<IClientService> _clientservice;
+        private Mock<IClientService> _mockClientService;
         private ClientController _clientcontroller;
 
         [TestInitialize]
         public void Setup()
         {
-            _clientservice = new Mock<IClientService>();
-            _clientcontroller = new ClientController(_clientservice.Object);
+            _mockClientService = new Mock<IClientService>();
+            _clientcontroller = new ClientController(_mockClientService.Object);
         }
 
         [TestMethod]
@@ -29,7 +29,7 @@ namespace clients.Test
                 new ClientCS{ Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"},
                 new ClientCS{ Address="street2", City="city2", contact_phone="number2", contact_email="email2", contact_name="name2", Country="Japan2", created_at=default, Id=2, Name="name2", Province="province2", updated_at=default, zip_code="zip2"},
             };
-            _clientservice.Setup(_ => _.GetAllClients()).Returns(listofclients);
+            _mockClientService.Setup(_ => _.GetAllClients()).Returns(listofclients);
 
             //act
             var result = _clientcontroller.GetAllClients();
@@ -45,10 +45,10 @@ namespace clients.Test
         public void GetClientById_Test_returns_true(){
             //arrange
             var client = new ClientCS(){Id=1, Address="", City="", contact_phone="", contact_email="", contact_name="", Country="", created_at=default, updated_at=default, Name="", Province="", zip_code=""};
-            _clientservice.Setup(_ => _.GetClientById(client.Id)).Returns(client);
+            _mockClientService.Setup(_ => _.GetClientById(client.Id)).Returns(client);
 
             //act
-            // var result = _clientservice.Setup(_ => _.GetClientById(client.Id)).Returns(client);
+            // var result = _mockClientService.Setup(_ => _.GetClientById(client.Id)).Returns(client);
             var result = _clientcontroller.GetClientById(1);
 
             //assert
@@ -63,7 +63,7 @@ namespace clients.Test
             // Arrange
             var client = new ClientCS {Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"};
     
-            _clientservice.Setup(service => service.CreateClient(client)).Returns(client);
+            _mockClientService.Setup(service => service.CreateClient(client)).Returns(client);
             
             // Act
             var result = _clientcontroller.CreateClient(client);
@@ -79,12 +79,39 @@ namespace clients.Test
         }
 
         [TestMethod]
+        public void CreateMultipleClient_ReturnsCreatedResult_WithNewClient()
+        {
+            // Arrange
+            var clients = new List<ClientCS> 
+            {
+                new ClientCS { Address="street1", City="city1", contact_phone="number1", contact_email="email1", contact_name="name1",
+                               Country="Japan1", Name="name1", Province="province1", zip_code="zip1"},
+                new ClientCS { Address="street2", City="city2", contact_phone="number2", contact_email="email2", contact_name="name2",
+                               Country="Japan2", Name="name2", Province="province2", zip_code="zip2"}
+            };
+            _mockClientService.Setup(service => service.CreateMultipleClients(clients)).Returns(clients);
+            
+            // Act
+            var result = _clientcontroller.CreateMultipleClients(clients);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<ClientCS>;
+            var firstClient = returnedItems[0];
+            
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(clients[0].Address, firstClient.Address);
+            Assert.AreEqual(clients[0].contact_phone, firstClient.contact_phone);
+            Assert.AreEqual(clients[0].contact_name, firstClient.contact_name);
+        }
+
+        [TestMethod]
         public void UpdatedClientTest_Success()
         {
             // Arrange
             var updatedClient = new ClientCS {Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"};
 
-             _clientservice.Setup(service => service.UpdateClient(1, updatedClient)).Returns(updatedClient);
+             _mockClientService.Setup(service => service.UpdateClient(1, updatedClient)).Returns(updatedClient);
 
             // Act
             var result = _clientcontroller.UpdateClient(1, updatedClient);
@@ -105,7 +132,7 @@ namespace clients.Test
             // Arrange
             var updatedClient = new ClientCS {Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"};
 
-             _clientservice.Setup(service => service.UpdateClient(0, updatedClient)).Returns((ClientCS)null);
+             _mockClientService.Setup(service => service.UpdateClient(0, updatedClient)).Returns((ClientCS)null);
 
             // Act
             var result = _clientcontroller.UpdateClient(0, updatedClient);
@@ -123,7 +150,7 @@ namespace clients.Test
             
             // Arrange
             var existingClient = new ClientCS {Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"};
-            _clientservice.Setup(service => service.GetClientById(1)).Returns(existingClient);
+            _mockClientService.Setup(service => service.GetClientById(1)).Returns(existingClient);
             // Act
             var result = _clientcontroller.DeleteClient(1);
             // Assert
