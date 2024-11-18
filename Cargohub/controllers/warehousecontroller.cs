@@ -52,7 +52,7 @@ public class WarehouseController : ControllerBase
         return CreatedAtAction(nameof(GetWarehouseById), new { id = createdWarehouse.Id }, createdWarehouse);
     }
 
-    // POST: /warehouses
+    // POST: /warehouses/multiple
     [HttpPost("multiple")]
     public ActionResult<WarehouseCS> CreateMultipleWarehouse([FromBody] List<WarehouseCS> newWarehouse)
     {
