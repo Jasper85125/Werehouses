@@ -65,7 +65,7 @@ public class ItemLineController : ControllerBase
 
     // PUT: api/itemLine/5
     [HttpPut("{id}")]
-    public ActionResult UpdateItemLine(int id, [FromBody] ItemLineCS itemLine)
+    public ActionResult<ItemLineCS> UpdateItemLine(int id, [FromBody] ItemLineCS itemLine)
     {
         if (id != itemLine.Id)
         {

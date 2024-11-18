@@ -82,10 +82,10 @@ namespace itemgroup.Tests
 
             // Act
             var result = _itemGroupController.CreateItemGroup(newItemGroup);
-
-            // Assert
             var createdResult = result as CreatedAtActionResult;
             var returnedItem = createdResult.Value as ItemGroupCS;
+
+            // Assert
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(newItemGroup.Name, returnedItem.Name);
         }
@@ -125,10 +125,10 @@ namespace itemgroup.Tests
 
             // Act
             var value = _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
-
-            // Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItem = okResult.Value as ItemGroupCS;
+
+            // Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(updatedItemGroup.Description, returnedItem.Description);
         }
