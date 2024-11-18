@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Services;
-using System.Threading.Tasks;
 
 namespace Controllers;
 
@@ -38,28 +37,28 @@ public class ItemGroupController : ControllerBase
     }
     //GET: all item in item groups
     [HttpGet("{id}/items")]
-    public ActionResult<List<ItemCS>> GetAllItemsFromItemGroupId(int id){
+    public ActionResult<List<ItemCS>> GetAllItemsFromItemGroupId(int id)
+    {
         var result = _itemgroupService.ItemsFromItemGroupId(id);
         if (result is null) return NotFound();
         return Ok(result);
     }
 
-
     // POST: itemgroups
     [HttpPost()]
-    public async Task<IActionResult> CreateItemGroup([FromBody] ItemGroupCS itemGroup)
+    public IActionResult CreateItemGroup([FromBody] ItemGroupCS itemGroup)
     {
         if (itemGroup == null)
         {
             return BadRequest("ItemGroup cannot be null");
         }
 
-        var createdItemGroup = await _itemgroupService.CreateItemGroup(itemGroup);
+        var createdItemGroup = _itemgroupService.CreateItemGroup(itemGroup);
         return CreatedAtAction(nameof(GetItemById), new { id = createdItemGroup.Id }, createdItemGroup);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ItemGroupCS>> UpdateItemGroup(int id, [FromBody] ItemGroupCS itemGroup)
+    public ActionResult<ItemGroupCS> UpdateItemGroup([FromRoute] int id, [FromBody] ItemGroupCS itemGroup)
     {
         if (id != itemGroup.Id)
         {
@@ -72,10 +71,10 @@ public class ItemGroupController : ControllerBase
             return NotFound();
         }
 
-        var updatedItemLine = await _itemgroupService.UpdateItemGroup(id, itemGroup);
+        var updatedItemLine =  _itemgroupService.UpdateItemGroup(id, itemGroup);
         return Ok(updatedItemLine);
     }
-    
+
     [HttpDelete("{id}")]
     public ActionResult DeleteItemGroup(int id)
     {
@@ -96,5 +95,23 @@ public class ItemGroupController : ControllerBase
         }
         _itemgroupService.DeleteItemGroups(ids);
         return Ok("Item Groups deleted");
+    }
+
+    [HttpPatch("{Id}")]
+    public ActionResult<ItemGroupCS> PatchItemGroup([FromRoute] int Id, [FromBody] ItemGroupCS itemGroup)
+    {
+        var existingItemGroup = _itemgroupService.GetItemById(Id);
+        if (existingItemGroup == null)
+        {
+            return NotFound();
+        }
+
+        if (itemGroup.Id != Id)
+        {
+            return BadRequest("id does not match");
+        }
+        var updatedItemGroup = _itemgroupService.UpdateItemGroup(Id, itemGroup);
+
+        return Ok(updatedItemGroup);
     }
 }
