@@ -25,7 +25,7 @@ public class ItemLineController : ControllerBase
         return Ok(itemLine);
     }
 
-    // GET: api/itemLine/5
+    // GET: api/itemlines/5
     [HttpGet("{id}")]
     public ActionResult<ItemLineCS> GetItemLineById(int id)
     {
@@ -37,22 +37,35 @@ public class ItemLineController : ControllerBase
         return Ok(itemLine);
     }
 
-    // POST: api/itemLine
+    // POST: api/itemines
     [HttpPost]
-    public async Task<ActionResult<ItemLineCS>> AddItemLine([FromBody] ItemLineCS newItemLine)
+    public IActionResult AddItemLine([FromBody] ItemLineCS newItemLine)
     {
         if (newItemLine == null)
         {
             return BadRequest("ItemLine is null.");
         }
 
-        var createdItemLine = await _itemLineService.AddItemLine(newItemLine);
+        var createdItemLine = _itemLineService.AddItemLine(newItemLine);
         return CreatedAtAction(nameof(GetItemLineById), new { id = createdItemLine.Id }, createdItemLine);
+    }
+
+    // POST: /itemlines/multiple
+    [HttpPost("multiple")]
+    public ActionResult<ItemLineCS> CreateMultipleItemLines([FromBody] List<ItemLineCS> newItemLines)
+    {
+        if (newItemLines is null)
+        {
+            return BadRequest("Item line data is null");
+        }
+
+        var createdItemLines = _itemLineService.CreateMultipleItemLines(newItemLines);
+        return StatusCode(StatusCodes.Status201Created, createdItemLines);
     }
 
     // PUT: api/itemLine/5
     [HttpPut("{id}")]
-    public async Task<ActionResult<ItemLineCS>> UpdateItemLine(int id, [FromBody] ItemLineCS itemLine)
+    public ActionResult UpdateItemLine(int id, [FromBody] ItemLineCS itemLine)
     {
         if (id != itemLine.Id)
         {
@@ -65,7 +78,7 @@ public class ItemLineController : ControllerBase
             return NotFound();
         }
 
-        var updatedItemLine = await _itemLineService.UpdateItemLine(id, itemLine);
+        var updatedItemLine = _itemLineService.UpdateItemLine(id, itemLine);
         return Ok(updatedItemLine);
     }
 
