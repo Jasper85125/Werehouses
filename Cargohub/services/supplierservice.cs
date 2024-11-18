@@ -30,13 +30,18 @@ public class SupplierService : ISupplierService
         SupplierCS supplier = suppliers.FirstOrDefault(supp => supp.Id == id);
         return supplier;
     }
-
     public SupplierCS CreateSupplier(SupplierCS newSupplier)
     {
         List<SupplierCS> suppliers = GetAllSuppliers();
 
         newSupplier.Id = suppliers.Count > 0 ? suppliers.Max(o => o.Id) + 1 : 1;
         suppliers.Add(newSupplier);
+
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+        newSupplier.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(suppliers, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
@@ -104,22 +109,6 @@ public class SupplierService : ISupplierService
 
         return items?.Where(item => item.supplier_id == supplierId).ToList() ?? new List<ItemCS>();
     }
-
-    // public SupplierCS PatchSupplier(int id, Action<SupplierCS> modifyAction)
-    // {
-    //     var allSuppliers = GetAllSuppliers();
-    //     var supplierToPatch = allSuppliers.SingleOrDefault(supplier => supplier.Id == id);
-
-    //     if (supplierToPatch is not null)
-    //     {
-    //         modifyAction(supplierToPatch);
-
-    //         var jsonData = JsonConvert.SerializeObject(allSuppliers, Formatting.Indented);
-    //         File.WriteAllText(_path, jsonData);
-    //         return supplierToPatch;
-    //     }
-    //     return null;
-    // }
 
     public SupplierCS PatchSupplier(int id, SupplierCS updateSupplier)
     {
