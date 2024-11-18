@@ -120,7 +120,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void CreateMultipleItemGroups_ReturnsCreatedResult_WithNewGroups()
+        public void CreateMultipleLocations_ReturnsCreatedResult_WithNewLocations()
         {
             // Arrange
             var locations = new List<LocationCS> 
