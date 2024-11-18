@@ -95,4 +95,12 @@ public class ItemLineController : ControllerBase
         var items = _itemLineService.GetItemsByItemLineId(id);
         return Ok(items);
     }
+    [HttpDelete("batch")]
+    public ActionResult DeleteItemLines([FromBody]List<int> ids){
+        if(ids is null){
+            return NotFound();
+        }
+        _itemLineService.DeleteItemLines(ids);
+        return Ok("Item lines deleted");
+    }
 }
