@@ -137,11 +137,15 @@ public class ItemGroupService : ItemService, IitemGroupService
 
         return existingItem;
     }
-    public void DeleteItemGroups(List<int> ids){
+
+    public void DeleteItemGroups(List<int> ids)
+    {
         var item_groups = GetAllItemGroups();
-        foreach(int id in ids){
-            var item_group = item_groups.Find(_=>_.Id == id);
-            if(item_group is not null){
+        foreach (int id in ids)
+        {
+            var item_group = item_groups.Find(_ => _.Id == id);
+            if (item_group is not null)
+            {
                 item_groups.Remove(item_group);
             }
         }
