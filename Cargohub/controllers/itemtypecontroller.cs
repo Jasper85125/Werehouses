@@ -94,5 +94,12 @@ public class ItemTypeController : ControllerBase
         _itemtypeService.DeleteItemType(id);
         return Ok();
     }
-
+    [HttpDelete("batch")]
+    public ActionResult DeleteItemTypes(List<int> ids){
+        if(ids is null){
+            return NotFound();
+        }
+        _itemtypeService.DeleteItemTypes(ids);
+        return Ok("item types deleted");
+    }
 }
