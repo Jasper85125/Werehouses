@@ -201,5 +201,21 @@ namespace item.Tests
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+
+        [TestMethod]
+        public void DeleteItems_ReturnsOkResult_WhenItemsAreDeleted()
+        {
+            // Arrange
+            var existingItems = new List<ItemCS>
+            {
+                new ItemCS { uid = "P000001", code = "ExistingItem1" },
+                new ItemCS { uid = "P000002", code = "ExistingItem2" }
+            };
+            _mockItemService.Setup(service => service.GetAllItems()).Returns(existingItems);
+            // Act
+            var result = _itemController.DeleteMultipleItems(new List<string> { "P000001", "P000002" });
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 }

@@ -142,4 +142,22 @@ public class ItemService : IItemService
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText(path, updatedJsonData);
     }
+
+    // Method to delete multiple items
+    public void DeleteItems(List<string> uids)
+    {
+        var items = GetAllItems();
+        foreach (var uid in uids)
+        {
+            var item = items.FirstOrDefault(i => i.uid == uid);
+            if (item != null)
+            {
+                items.Remove(item);
+            }
+        }
+
+        var path = "data/items.json";
+        var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllText(path, updatedJsonData);
+    }
 }
