@@ -49,6 +49,19 @@ public class SupplierController : ControllerBase
         return CreatedAtAction(nameof(GetSupplierById), new { id = createdSupplier.Id }, createdSupplier);
     }
 
+    // POST: /supplier/multiple
+        [HttpPost("multiple")]
+        public ActionResult<IEnumerable<SupplierCS>> CreateMultipleSupplier([FromBody] List<SupplierCS> newSupplier)
+        {
+            if (newSupplier is null)
+            {
+                return BadRequest("Supplier data is null");
+            }
+
+            var createdOrders = _supplierService.CreateMultipleSuppliers(newSupplier);
+            return StatusCode(StatusCodes.Status201Created, createdOrders);
+        }
+
     // PUT: /suppliers/{id}
     [HttpPut("{id}")]
     public ActionResult<SupplierCS> UpdateSupplier([FromRoute] int id, [FromBody] SupplierCS newSupplier)
