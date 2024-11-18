@@ -62,6 +62,19 @@ public class InventoryController : ControllerBase
         return CreatedAtAction(nameof(GetInventoryById), new { id = newInventory.Id }, newInventory);
     }
 
+    // POST: /inventories/multiple
+    [HttpPost("multiple")]
+    public ActionResult<InventoryCS> CreateMultipleInventories([FromBody] List<InventoryCS> newInventory)
+    {
+        if (newInventory is null)
+        {
+            return BadRequest("Inventory data is null");
+        }
+
+        var createdInventories = _inventoryService.CreateMultipleInventories(newInventory);
+        return StatusCode(StatusCodes.Status201Created, createdInventories);
+    }
+
     // PUT: api/warehouse/5
     [HttpPut("{id}")]
     public ActionResult<InventoryCS> UpdateInventoryById(int id, [FromBody] InventoryCS value)
