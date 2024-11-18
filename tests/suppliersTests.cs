@@ -223,6 +223,81 @@ namespace Tests
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+        public void PatchSupplierTest_Success()
+        {
+            // Arrange
+            var patchSupplier = new SupplierCS
+            {
+                Code = "SUP0373",
+                Name = "Supp & liers",
+                Address = "Wall Street 181",
+                address_extra = "Apt. 6996",
+                City = "Houston",
+                zip_code = "4002 AZ",
+                Province = "Texas",
+                Country = "USA",
+                contact_name = "Fem Keijzer",
+                PhoneNumber = "(078) 0013363",
+                Reference = "LPaJ-SUP0001"
+            };
+
+            var existingSupplier = new SupplierCS
+            {
+                Id = 1,
+                Code = "OLD123",
+                Name = "Old Supplier",
+                Address = "Old Address",
+                City = "Old City",
+                Country = "Old Country"
+            };
+
+            _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(existingSupplier);
+            _mockSupplierService.Setup(service => service.PatchSupplier(1, patchSupplier)).Returns(patchSupplier);
+
+            // Act
+            var result = _supplierController.PatchSupplier(1, patchSupplier);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(SupplierCS));
+            var returnedSupplier = okResult.Value as SupplierCS;
+            Assert.AreEqual(patchSupplier.Code, returnedSupplier.Code);
+            Assert.AreEqual(patchSupplier.Address, returnedSupplier.Address);
+            Assert.AreEqual(patchSupplier.contact_name, returnedSupplier.contact_name);
+            Assert.AreEqual(patchSupplier.PhoneNumber, returnedSupplier.PhoneNumber);
+        }
+
+        [TestMethod]
+        public void PatchSupplierTest_Failed()
+        {
+            // Arrange
+            var patchSupplier = new SupplierCS
+            {
+                Code = "SUP0373",
+                Name = "Supp & liers",
+                Address = "Wall Street 181",
+                address_extra = "Apt. 6996",
+                City = "Houston",
+                zip_code = "4002 AZ",
+                Province = "Texas",
+                Country = "USA",
+                contact_name = "Fem Keijzer",
+                PhoneNumber = "(078) 0013363",
+                Reference = "LPaJ-SUP0001"
+            };
+
+            _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns((SupplierCS)null);
+
+            // Act
+            var result = _supplierController.PatchSupplier(1, patchSupplier);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
     }
 }
 

@@ -92,4 +92,22 @@ public class SupplierController : ControllerBase
         var items = _supplierService.GetItemsBySupplierId(id);
         return Ok(items);
     }
+
+    [HttpPatch("{id}")]
+    public ActionResult<SupplierCS> PatchSupplier([FromRoute] int id, [FromBody] SupplierCS patch)
+    {
+        var supplier = _supplierService.GetSupplierById(id);
+        if (supplier is null)
+        {
+            return NotFound();
+        }
+
+        var updatedSupplier = _supplierService.PatchSupplier(id, patch);
+        if (updatedSupplier is null)
+        {
+            return BadRequest("Failed to patch supplier.");
+        }
+
+        return Ok(updatedSupplier);
+    }
 }

@@ -31,13 +31,28 @@ public class ClientService : IClientService
     public ClientCS CreateClient(ClientCS newClient)
     {
         List<ClientCS> clients = GetAllClients();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         newClient.Id = clients.Count > 0 ? clients.Max(c => c.Id) + 1 : 1;
+        newClient.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newClient.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         clients.Add(newClient);
 
         var jsonData = JsonConvert.SerializeObject(clients, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
         return newClient;
+    }
+
+    public List<ClientCS> CreateMultipleClients(List<ClientCS>newClients)
+    {
+        List<ClientCS> addedClient = new List<ClientCS>();
+        foreach(ClientCS client in newClients)
+        {
+            ClientCS addClient = CreateClient(client);
+            addedClient.Add(addClient);
+        }
+        return addedClient;
     }
 
     public ClientCS UpdateClient(int id, ClientCS updateClient)
@@ -77,6 +92,17 @@ public class ClientService : IClientService
         var jsonData = JsonConvert.SerializeObject(clients, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
         
+    }
+    public void DeleteClients(List<int> ids){
+        var clients = GetAllClients();
+        foreach(int id in ids){
+            var client = clients.Find(_ => _.Id == id);
+            if (client is not null) {
+                clients.Remove(client);
+            }
+        }
+        var json = JsonConvert.SerializeObject(clients, Formatting.Indented);
+        File.WriteAllText("data/clients.json", json);
     }
 }
 
