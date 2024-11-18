@@ -91,4 +91,12 @@ public class ClientController : ControllerBase
         _clientservice.DeleteClient(id);
         return Ok();
     }
+    [HttpDelete("batch")]
+    public ActionResult DeleteClients ([FromBody] List<int> ids){
+        if(ids is null){
+            return BadRequest("error in request");
+        }
+        _clientservice.DeleteClients(ids);
+        return Ok("multiple clients deleted");
+    }
 }
