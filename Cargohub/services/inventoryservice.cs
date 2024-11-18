@@ -50,17 +50,30 @@ public class InventoryService : IInventoryService
         var path = "data/inventories.json";
 
         List<InventoryCS> inventories = GetAllInventories();
-
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         newInventory.Id = inventories.Count > 0 ? inventories.Max(i => i.Id) + 1 : 1;
+        newInventory.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newInventory.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         inventories.Add(newInventory);
-
 
         var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
         File.WriteAllText(path, jsonData);
-        return newInventory;
-        
+        return newInventory;  
     }
+
+    public List<InventoryCS> CreateMultipleInventories(List<InventoryCS>newInventories)
+    {
+        List<InventoryCS> addedInventory = new List<InventoryCS>();
+        foreach(InventoryCS inventory in newInventories)
+        {
+            InventoryCS addInventorty = CreateInventory(inventory);
+            addedInventory.Add(addInventorty);
+        }
+        return addedInventory;
+    }
+
     public void DeleteInventory(int id)
     {
         var path = "data/inventories.json";

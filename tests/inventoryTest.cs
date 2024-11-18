@@ -106,16 +106,44 @@ namespace Tests
 
             // Act
             var result = _inventoryController.CreateInventory(inventory);
-
-            // Assert
             var createdAtActionResult = result.Result as CreatedAtActionResult;
             var returnedInventory = createdAtActionResult.Value as InventoryCS;
+
+            // Assert
             Assert.IsNotNull(createdAtActionResult);  // Verify that the result is CreatedAtActionResult
             Assert.IsNotNull(returnedInventory);  // Verify that the returned object is not null
             Assert.AreEqual(1, returnedInventory.Id);  // Verify that the returned object has the expected ID
             Assert.AreEqual("ITEM123", returnedInventory.item_id);  // Verify that the returned object has the expected ItemId
             Assert.AreEqual(50, returnedInventory.total_on_hand);  // Verify that the returned object has the expected Quantity
         }
+
+        [TestMethod]
+        public void CreateMultipleInventories_ReturnsCreatedResult_WithNewInventories()
+        {
+            // Arrange
+            var inventories = new List<InventoryCS> 
+            {
+                new InventoryCS { item_id="P000001", Locations= new List<int>{1,2,3}, total_on_hand=59, total_expected=10,
+                               total_ordered=50, total_allocated=25, total_available=75},
+                new InventoryCS { item_id="P000001", Locations= new List<int>{1,2,3}, total_on_hand=59, total_expected=10,
+                               total_ordered=50, total_allocated=25, total_available=75},
+            };
+            _mockInventoryService.Setup(service => service.CreateMultipleInventories(inventories)).Returns(inventories);
+            
+            // Act
+            var result = _inventoryController.CreateMultipleInventories(inventories);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<InventoryCS>;
+            var firstInventory = returnedItems[0];
+            
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(inventories[0].total_on_hand, firstInventory.total_on_hand);
+            Assert.AreEqual(inventories[0].total_allocated, firstInventory.total_allocated);
+            Assert.AreEqual(inventories[0].total_available, firstInventory.total_available);
+        }
+
         [TestMethod]
         public void UpdateInventoryByIdTest_Succes(){
             //arrange
