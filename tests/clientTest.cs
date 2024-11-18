@@ -130,7 +130,16 @@ namespace clients.Test
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
         [TestMethod]
-        public void DeleteClientsTest_Succes(){}
+        public void DeleteClientsTest_Succes(){
+            //Arrange
+            var clientstodel = new List<int>(){ 1, 2 , 3};
+            //Act
+            var result = _clientcontroller.DeleteClients(clientstodel);
+            var resultOK = result as OkObjectResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(resultOK.StatusCode, 200);
+        }
     }
 
 }
