@@ -9,4 +9,5 @@ public interface IInventoryService
     List<InventoryCS> CreateMultipleInventories(List<InventoryCS>newInventories);
     InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory);
     void DeleteInventory(int id);
+    void DeleteInventories(List<int> ids);
 }

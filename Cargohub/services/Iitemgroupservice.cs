@@ -12,4 +12,5 @@ public interface IitemGroupService
     Task<ItemGroupCS> UpdateItemGroup(int id, ItemGroupCS itemGroup);
     List<ItemCS> ItemsFromItemGroupId(int itemgroup_id);
     void DeleteItemGroup(int id);
+    void DeleteItemGroups(List<int> ids);
 }
