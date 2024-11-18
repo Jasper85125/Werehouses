@@ -201,4 +201,15 @@ public class ItemLineTests
         // Assert
         Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
     }
+    [TestMethod]
+    public void DeleteItemLinesTest_Succes(){
+        //Arrange
+        var idstodel = new List<int>(){1, 2, 3};
+        //Act
+        var result = _itemLineController.DeleteItemLines(idstodel);
+        var resultok = result as OkObjectResult;
+        //Assert
+        Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        Assert.AreEqual(resultok.StatusCode, 200);
+    }
 }
