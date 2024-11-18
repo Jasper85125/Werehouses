@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-
 namespace Services;
 
 public class ItemGroupService : ItemService, IitemGroupService
@@ -36,17 +35,19 @@ public class ItemGroupService : ItemService, IitemGroupService
         var Itemgroup = Itemgroups.FirstOrDefault(i => i.Id == id);
         return Itemgroup;
     }
-    public List<ItemCS> ItemsFromItemGroupId(int groupid){
+    public List<ItemCS> ItemsFromItemGroupId(int groupid)
+    {
         var items = itemService.GetAllItems();
         var find = items.FindAll(_ => _.item_group == groupid);
-        if(find is null){
+        if (find is null)
+        {
             return null;
         }
         return find;
     }
 
     // Method to add a new Itemgroup
-    public async Task<ItemGroupCS> CreateItemGroup(ItemGroupCS newItemType)
+    public ItemGroupCS CreateItemGroup(ItemGroupCS newItemType)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
 
@@ -63,13 +64,13 @@ public class ItemGroupService : ItemService, IitemGroupService
         items.Add(newItemType);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_groups.json", jsonData);
+        File.WriteAllText("data/item_groups.json", jsonData);
 
         return newItemType;
     }
 
     // Method to update an existing Itemgroup
-    public async Task<ItemGroupCS> UpdateItemGroup(int id, ItemGroupCS itemLine)
+    public ItemGroupCS UpdateItemGroup(int id, ItemGroupCS itemLine)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
         var existingItem = items.FirstOrDefault(i => i.Id == id);
@@ -89,11 +90,11 @@ public class ItemGroupService : ItemService, IitemGroupService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+        File.WriteAllText("data/item_groups.json", jsonData);
 
         return existingItem;
     }
-    
+
     // Method to delete an Itemgroup
     public void DeleteItemGroup(int id)
     {
@@ -108,6 +109,31 @@ public class ItemGroupService : ItemService, IitemGroupService
         items.Remove(item);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllTextAsync(path, jsonData);
+        File.WriteAllText(path, jsonData);
+    }
+
+    public ItemGroupCS PatchItemGroup(int Id, ItemGroupCS itemGroup)
+    {
+        List<ItemGroupCS> items = GetAllItemGroups();
+        var existingItem = items.FirstOrDefault(i => i.Id == Id);
+        if (existingItem == null)
+        {
+            return null;
+        }
+
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        existingItem.Name = itemGroup.Name ?? existingItem.Name;
+        existingItem.Description = itemGroup.Description ?? existingItem.Description;
+        existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllText("data/item_groups.json", jsonData);
+
+        return existingItem;
     }
 }
