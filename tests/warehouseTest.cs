@@ -97,6 +97,34 @@ namespace Tests
         }
 
         [TestMethod]
+        public void CreateMultipleWarehouse_ReturnsCreatedResult_WithNewWarehouse()
+        {
+            // Arrange
+            var warehouses = new List<WarehouseCS> 
+            {
+                new WarehouseCS { Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
+                                                Country= "GER", Contact= new Dictionary<string, string>{ 
+                                                {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}},
+                new WarehouseCS { Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
+                                                Country= "GER", Contact= new Dictionary<string, string>{ 
+                                                {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}}
+            };
+            _mockWarehouseService.Setup(service => service.CreateMultipleWarehouse(warehouses)).Returns(warehouses);
+            
+            // Act
+            var result = _warehouseController.CreateMultipleWarehouse(warehouses);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<WarehouseCS>;
+            var firstWarehouse = returnedItems[0];
+            
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(warehouses[0].Address, firstWarehouse.Address);
+            Assert.AreEqual(warehouses[0].Contact, firstWarehouse.Contact);
+        }
+
+        [TestMethod]
         public void UpdatedWarehouseTest_Success()
         {
             // Arrange

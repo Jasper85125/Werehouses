@@ -54,7 +54,7 @@ public class WarehouseController : ControllerBase
 
     // POST: /warehouses
     [HttpPost("multiple")]
-    public ActionResult<WarehouseCS> CreateWarehouse([FromBody] List<WarehouseCS> newWarehouse)
+    public ActionResult<WarehouseCS> CreateMultipleWarehouse([FromBody] List<WarehouseCS> newWarehouse)
     {
         if (newWarehouse is null)
         {
