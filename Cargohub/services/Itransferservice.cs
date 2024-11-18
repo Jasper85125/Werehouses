@@ -9,4 +9,5 @@ public interface ITransferService
     TransferCS UpdateTransfer(int id, TransferCS transfer);
     TransferCS CommitTransfer(int id);
     void DeleteTransfer(int id);
+    void DeleteTransfers(List<int> ids);
 }
