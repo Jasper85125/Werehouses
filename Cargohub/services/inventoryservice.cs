@@ -97,4 +97,15 @@ public class InventoryService : IInventoryService
         File.WriteAllText(path, json);
         return toUpdate;
     }
+
+    public void DeleteInventories(List<int> ids){
+        var inventories = GetAllInventories();
+        foreach(int id in ids)
+        {
+            inventories.Remove(inventories.Find(_=>_.Id == id));
+        }
+        var path = "data/inventories.json";
+        var json = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+        File.WriteAllText(path, json);
+    }
 }

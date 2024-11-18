@@ -149,7 +149,18 @@ namespace Tests
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
-        
+        [TestMethod]
+        public void DeleteInventoriesTest_Succes(){
+            //Act
+            var idstodel = new List<int>(){1, 2, 3};
+            //Arrange
+            var result = _inventoryController.DeleteInventories(idstodel);
+            var reslutok = result as OkObjectResult;
+            // var reslutok = result as OkResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(reslutok.StatusCode, 200);
+        }
     }
 }
 
