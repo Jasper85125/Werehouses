@@ -96,7 +96,7 @@ namespace Controllers
 
         // POST: /orders/multiple
         [HttpPost("multiple")]
-        public ActionResult<IEnumerable<OrderCS>> CreateMultipleOrder([FromBody] List<OrderCS> newOrders)
+        public ActionResult<IEnumerable<OrderCS>> CreateMultipleOrders([FromBody] List<OrderCS> newOrders)
         {
             if (newOrders is null)
             {
