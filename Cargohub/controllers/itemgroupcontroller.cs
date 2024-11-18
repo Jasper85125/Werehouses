@@ -110,7 +110,7 @@ public class ItemGroupController : ControllerBase
         {
             return BadRequest("id does not match");
         }
-        var updatedItemGroup = _itemgroupService.UpdateItemGroup(Id, itemGroup);
+        var updatedItemGroup = _itemgroupService.PatchItemGroup(Id, itemGroup);
 
         return Ok(updatedItemGroup);
     }
