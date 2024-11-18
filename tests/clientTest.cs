@@ -129,6 +129,8 @@ namespace clients.Test
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+        [TestMethod]
+        public void DeleteClientsTest_Succes(){}
     }
 
 }

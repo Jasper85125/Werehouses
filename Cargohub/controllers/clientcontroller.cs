@@ -83,7 +83,7 @@ public class ClientController : ControllerBase
         if(ids is null){
             return BadRequest("error in request");
         }
-        DeleteClients(ids);
+        _clientservice.DeleteClients(ids);
         return Ok("multiple clients deleted");
     }
 }

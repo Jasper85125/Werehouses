@@ -86,8 +86,8 @@ public class ClientService : IClientService
                 clients.Remove(client);
             }
         }
-            var json = JsonConvert.SerializeObject(clients, Formatting.Indented);
-            File.WriteAllText("data/clients.json", json);
+        var json = JsonConvert.SerializeObject(clients, Formatting.Indented);
+        File.WriteAllText("data/clients.json", json);
     }
 }
 
