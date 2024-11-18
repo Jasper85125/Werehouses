@@ -97,7 +97,7 @@ namespace itemgroup.Tests
             var itemGroups = new List<ItemGroupCS> 
             {
                 new ItemGroupCS { Id = 3, Name = "Group 3", Description = "Cool items" },
-                new ItemGroupCS { Id = 3, Name = "Group 3", Description = "Cool items" }
+                new ItemGroupCS { Id = 4, Name = "Group 4", Description = "Cool items" }
             };
             _mockItemGroupService.Setup(service => service.CreateMultipleItemGroups(itemGroups)).Returns(itemGroups);
             
