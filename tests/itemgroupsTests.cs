@@ -77,7 +77,7 @@ namespace itemgroup.Tests
         public void CreateItemGroupTest_Success()
         {
             // Arrange
-            var newItemGroup = new ItemGroupCS { Id = 3, Name = "Group 3" };
+            var newItemGroup = new ItemGroupCS { Id = 3, Name = "Group 3", Description = "Cool items" };
             _mockItemGroupService.Setup(service => service.CreateItemGroup(It.IsAny<ItemGroupCS>())).Returns(newItemGroup);
 
             // Act
@@ -88,6 +88,30 @@ namespace itemgroup.Tests
             var returnedItem = createdResult.Value as ItemGroupCS;
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(newItemGroup.Name, returnedItem.Name);
+        }
+
+        [TestMethod]
+        public void CreateMultipleWarehouse_ReturnsCreatedResult_WithNewWarehouse()
+        {
+            // Arrange
+            var itemGroups = new List<ItemGroupCS> 
+            {
+                new ItemGroupCS { Id = 3, Name = "Group 3", Description = "Cool items" },
+                new ItemGroupCS { Id = 4, Name = "Group 4", Description = "Cool items" }
+            };
+            _mockItemGroupService.Setup(service => service.CreateMultipleItemGroups(itemGroups)).Returns(itemGroups);
+            
+            // Act
+            var result = _itemGroupController.CreateMultipleItemGroups(itemGroups);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<ItemGroupCS>;
+            var firstItemGroup = returnedItems[0];
+            
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(itemGroups[0].Name, firstItemGroup.Name);
+            Assert.AreEqual(itemGroups[0].Description, firstItemGroup.Description);
         }
 
         [TestMethod]
