@@ -59,10 +59,10 @@ public class ItemLineService : IItemLineService
         return newItemLine;
     }
 
-    public List<ItemLineCS> CreateMultipleItemLines(List<ItemLineCS>newItemLines)
+    public List<ItemLineCS> CreateMultipleItemLines(List<ItemLineCS> newItemLines)
     {
         List<ItemLineCS> addedItemLines = new List<ItemLineCS>();
-        foreach(ItemLineCS itemLine in newItemLines)
+        foreach (ItemLineCS itemLine in newItemLines)
         {
             ItemLineCS addItemLine = AddItemLine(itemLine);
             addedItemLines.Add(addItemLine);
@@ -98,7 +98,7 @@ public class ItemLineService : IItemLineService
 
     public void DeleteItemLine(int id)
     {
-        var _path  = "data/item_lines.json";
+        var _path = "data/item_lines.json";
         List<ItemLineCS> items = GetAllItemlines();
         var item = items.FirstOrDefault(i => i.Id == id);
         if (item == null)
@@ -125,16 +125,45 @@ public class ItemLineService : IItemLineService
 
         return items?.Where(item => item.item_line == itemlineId).ToList() ?? new List<ItemCS>();
     }
-    public void DeleteItemLines(List<int> ids){
+
+    public void DeleteItemLines(List<int> ids)
+    {
         var item_lines = GetAllItemlines();
-        foreach(int id in ids){
-            var item_line = item_lines.Find(_=>_.Id == id);
-            if(item_line is not null){
+        foreach (int id in ids)
+        {
+            var item_line = item_lines.Find(_ => _.Id == id);
+            if (item_line is not null)
+            {
                 item_lines.Remove(item_line);
             }
         }
         var path = "data/item_lines.json";
         var json = JsonConvert.SerializeObject(item_lines, Formatting.Indented);
         File.WriteAllText(path, json);
+    }
+
+    public ItemLineCS PatchItemLine(int id, ItemLineCS itemLine)
+    {
+        List<ItemLineCS> items = GetAllItemlines();
+        var existingItem = items.FirstOrDefault(i => i.Id == id);
+        if (existingItem == null)
+        {
+            return null;
+        }
+
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        existingItem.Name = itemLine.Name ?? existingItem.Name;
+        existingItem.Description = itemLine.Description ?? existingItem.Description;
+        existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+        File.WriteAllText("data/item_lines.json", jsonData);
+
+        return existingItem;
     }
 }

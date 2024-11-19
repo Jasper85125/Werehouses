@@ -238,4 +238,41 @@ public class ItemLineTests
         Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         Assert.AreEqual(resultok.StatusCode, 200);
     }
+
+    [TestMethod]
+    public void PatchItemLineTest_Success()
+    {
+        // Arrange
+        var existingItemLine = new ItemLineCS { Id = 1, Description = "Existing Description" };
+        var patchItemLine = new ItemLineCS { Description = "Updated Description" };
+
+        _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(existingItemLine);
+        _mockItemLineService.Setup(service => service.PatchItemLine(1, patchItemLine)).Returns(patchItemLine);
+
+        // Act
+        var result = _itemLineController.PatchItemLine(1, patchItemLine);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.IsInstanceOfType(okResult.Value, typeof(ItemLineCS));
+        var returnedItemLine = okResult.Value as ItemLineCS;
+        Assert.AreEqual(patchItemLine.Description, returnedItemLine.Description);
+    }
+
+    [TestMethod]
+    public void PatchItemLineTest_NotFound()
+    {
+        // Arrange
+        var patchItemLine = new ItemLineCS { Description = "Updated Description" };
+
+        _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns((ItemLineCS)null);
+
+        // Act
+        var result = _itemLineController.PatchItemLine(1, patchItemLine);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+    }
 }
