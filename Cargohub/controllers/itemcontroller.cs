@@ -95,4 +95,18 @@ public class ItemController : ControllerBase
         _itemService.DeleteItem(uid);
         return Ok();
     }
+
+    // Delete: item/multiple/{id}
+    // Deletes multiple items by their ids it can be used to delete multiple items at once so a list input is expected
+    [HttpDelete("multiple")]
+    public ActionResult DeleteMultipleItems([FromBody] List<string> uids)
+    {
+        if (uids == null || uids.Count == 0)
+        {
+            return BadRequest("No items to delete.");
+        }
+
+        _itemService.DeleteItems(uids);
+        return Ok();
+    } 
 }

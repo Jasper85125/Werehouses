@@ -95,4 +95,12 @@ public class WarehouseController : ControllerBase
         
         return Ok();
     }
+    [HttpDelete("batch")]
+    public ActionResult DeleteWarehouses([FromBody]List<int> ids){
+        if(ids is null){
+            return NotFound();
+        }
+        _warehouseService.DeleteWarehouses(ids);
+        return Ok("Deleted warehouses");
+    }
 }

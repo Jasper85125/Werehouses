@@ -35,15 +35,30 @@ public class OrderService : IOrderService
         var Path = "data/orders.json";
 
         List<OrderCS> orders = GetAllOrders();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Add the new order record to the list
         newOrder.Id = orders.Count > 0 ? orders.Max(o => o.Id) + 1 : 1;
+        newOrder.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         orders.Add(newOrder);
 
         // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
         File.WriteAllText(Path, jsonData);
         return newOrder;
+    }
+
+    public List<OrderCS> CreateMultipleOrders(List<OrderCS>newOrders)
+    {
+        List<OrderCS> addedOrder = new List<OrderCS>();
+        foreach(OrderCS order in newOrders)
+        {
+            OrderCS addOrder = CreateOrder(order);
+            addedOrder.Add(addOrder);
+        }
+        return addedOrder;
     }
 
     public List<OrderCS> GetOrdersByClient(int client_id)
@@ -155,5 +170,17 @@ public class OrderService : IOrderService
         File.WriteAllTextAsync("data/orders.json", jsonData);
 
         return Task.FromResult(existingOrder);
+    }
+    public void DeleteOrders(List<int> ids){
+        var orders = GetAllOrders();
+        foreach(int id in ids){
+            var order = orders.Find(_=>_.Id == id);
+            if(order is not null){
+                orders.Remove(order);
+            }
+        }
+        var path = "data/orders.json";
+        var json = JsonConvert.SerializeObject(orders, Formatting.Indented);
+        File.WriteAllText(path, json);
     }
 }

@@ -25,7 +25,7 @@ public class TransferController : ControllerBase
 
     // GET: /transfers/{id}
     [HttpGet("{id}")]
-    public ActionResult<TransferCS> GetTransferById([FromRoute]int id)
+    public ActionResult<TransferCS> GetTransferById([FromRoute] int id)
     {
         var inventory = _transferService.GetTransferById(id);
         if (inventory is null)
@@ -35,7 +35,7 @@ public class TransferController : ControllerBase
         return Ok(inventory);
     }
     [HttpGet("{transfer_id}/items")]
-    public ActionResult<IEnumerable<ItemIdAndAmount>> GetItemsInTransfer([FromRoute]int transfer_id)
+    public ActionResult<IEnumerable<ItemIdAndAmount>> GetItemsInTransfer([FromRoute] int transfer_id)
     {
         var items = _transferService.GetItemsInTransfer(transfer_id);
         if (items is null)
@@ -57,9 +57,22 @@ public class TransferController : ControllerBase
         return CreatedAtAction(nameof(GetTransferById), new { id = newTransfer.Id }, newTransfer);
     }
 
+    // POST: /transfers/multiple
+    [HttpPost("multiple")]
+    public ActionResult<IEnumerable<TransferCS>> CreateMultipleTransfers([FromBody] List<TransferCS> newTransfer)
+    {
+        if (newTransfer is null)
+        {
+            return BadRequest("Transfer data is null");
+        }
+
+        var createdTransfer = _transferService.CreateMultipleTransfers(newTransfer);
+        return StatusCode(StatusCodes.Status201Created, createdTransfer);
+    }
+
     // PUT: transfers/1
     [HttpPut("{id}")]
-    public ActionResult<TransferCS> UpdateTransfer([FromRoute]int id, [FromBody] TransferCS newTransfer)
+    public ActionResult<TransferCS> UpdateTransfer([FromRoute] int id, [FromBody] TransferCS newTransfer)
     {
         if (newTransfer is null)
         {
@@ -96,5 +109,15 @@ public class TransferController : ControllerBase
         }
         _transferService.DeleteTransfer(id);
         return Ok();
+    }
+    [HttpDelete("batch")]
+    public ActionResult DeleteTransfers(List<int> ids)
+    {
+        if (ids is null)
+        {
+            return NotFound();
+        }
+        _transferService.DeleteTransfers(ids);
+        return Ok("deleted transfers");
     }
 }

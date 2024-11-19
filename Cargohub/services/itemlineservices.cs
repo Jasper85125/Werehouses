@@ -34,9 +34,11 @@ public class ItemLineService : IItemLineService
     }
 
     // Method to add a new item
-    public async Task<ItemLineCS> AddItemLine(ItemLineCS newItemLine)
+    public ItemLineCS AddItemLine(ItemLineCS newItemLine)
     {
         List<ItemLineCS> items = GetAllItemlines();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Auto-increment ID
         if (items.Any())
@@ -47,17 +49,29 @@ public class ItemLineService : IItemLineService
         {
             newItemLine.Id = 1;
         }
-
+        newItemLine.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newItemLine.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         items.Add(newItemLine);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+        File.WriteAllText("data/item_lines.json", jsonData);
 
         return newItemLine;
     }
 
+    public List<ItemLineCS> CreateMultipleItemLines(List<ItemLineCS>newItemLines)
+    {
+        List<ItemLineCS> addedItemLines = new List<ItemLineCS>();
+        foreach(ItemLineCS itemLine in newItemLines)
+        {
+            ItemLineCS addItemLine = AddItemLine(itemLine);
+            addedItemLines.Add(addItemLine);
+        }
+        return addedItemLines;
+    }
+
     // Method to update an item
-    public async Task<ItemLineCS> UpdateItemLine(int id, ItemLineCS itemLine)
+    public ItemLineCS UpdateItemLine(int id, ItemLineCS itemLine)
     {
         List<ItemLineCS> items = GetAllItemlines();
         var existingItem = items.FirstOrDefault(i => i.Id == id);
@@ -77,7 +91,7 @@ public class ItemLineService : IItemLineService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+        File.WriteAllText("data/item_lines.json", jsonData);
 
         return existingItem;
     }

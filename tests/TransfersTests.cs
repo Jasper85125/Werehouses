@@ -138,6 +138,32 @@ namespace Tests
         }
 
         [TestMethod]
+        public void CreateMultipleTransfers_ReturnsCreatedResult_WithNewTransfers()
+        {
+            // Arrange
+            var transfers = new List<TransferCS> 
+            {
+                new TransferCS { Id= 1, Reference= "X", transfer_from= 5050, transfer_to= 9292, transfer_status= "Completed",
+                                            Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 }}},
+                new TransferCS { Id= 2, Reference= "Y", transfer_from= 50, transfer_to= 92, transfer_status= "Completed",
+                                            Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 3 }}}
+            };
+            _mockTransferService.Setup(service => service.CreateMultipleTransfers(transfers)).Returns(transfers);
+            
+            // Act
+            var result = _transferController.CreateMultipleTransfers(transfers);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<TransferCS>;
+            var firstTransfer = returnedItems[0];
+            
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(transfers[0].transfer_from, firstTransfer.transfer_from);
+            Assert.AreEqual(transfers[0].transfer_to, firstTransfer.transfer_to);
+        }
+
+        [TestMethod]
         public void UpdatedTransferTest_Success()
         {
             // Arrange
@@ -226,6 +252,17 @@ public void DeleteWarehouseTest_Success()
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
+        [TestMethod]
+        public void DeleteTransfersTest_Succes(){
+            //Arrange
+            var listidstodel = new List<int>(){1,2,3};
+            //Act
+            var result = _transferController.DeleteTransfers(listidstodel);
+            var resultok = result as OkObjectResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(resultok.StatusCode, 200);
         }
     }
 }

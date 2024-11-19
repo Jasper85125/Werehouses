@@ -57,6 +57,19 @@ public class ItemGroupController : ControllerBase
         return CreatedAtAction(nameof(GetItemById), new { id = createdItemGroup.Id }, createdItemGroup);
     }
 
+    // POST: /itemgroup/multiple
+    [HttpPost("multiple")]
+    public ActionResult<ItemGroupCS> CreateMultipleItemGroups([FromBody] List<ItemGroupCS> newItemGroup)
+    {
+        if (newItemGroup is null)
+        {
+            return BadRequest("Item group data is null");
+        }
+
+        var createdItemGroups = _itemgroupService.CreateMultipleItemGroups(newItemGroup);
+        return StatusCode(StatusCodes.Status201Created, createdItemGroups);
+    }
+
     [HttpPut("{id}")]
     public ActionResult<ItemGroupCS> UpdateItemGroup([FromRoute] int id, [FromBody] ItemGroupCS itemGroup)
     {

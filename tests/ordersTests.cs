@@ -120,6 +120,34 @@ namespace Tests
         }
 
         [TestMethod]
+        public void CreateMultipleOrders_ReturnsCreatedResult_WithNewOrders()
+        {
+            // Arrange
+            var orders = new List<OrderCS> 
+            {
+                new OrderCS { Id = 1, source_id = 24, order_date = "2019-04-03T11:33:15Z", request_date = "2019-04-07T11:33:15Z",
+                                      order_status = "Delivered", warehouse_id = 1, ship_to = 1, bill_to = 3, shipment_id = 5, total_amount = 909,
+                                      total_discount = 30, total_tax = 100, total_surcharge = 78 },
+                new OrderCS { Id = 1, source_id = 24, order_date = "2019-04-03T11:33:15Z", request_date = "2019-04-07T11:33:15Z",
+                                      order_status = "Delivered", warehouse_id = 1, ship_to = 1, bill_to = 3, shipment_id = 5, total_amount = 909,
+                                      total_discount = 30, total_tax = 100, total_surcharge = 78 }
+            };
+            _mockOrderService.Setup(service => service.CreateMultipleOrders(orders)).Returns(orders);
+            
+            // Act
+            var result = _orderController.CreateMultipleOrders(orders);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<OrderCS>;
+            var firstOrder = returnedItems[0];
+            
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(orders[0].source_id, firstOrder.source_id);
+            Assert.AreEqual(orders[0].order_status, firstOrder.order_status);
+        }
+
+        [TestMethod]
         public void UpdateOrderTest_Success()
         {
             // Arrange
@@ -161,7 +189,9 @@ namespace Tests
         public void DeleteOrderTest_Exist()
         {
             //arrange
-            var order = new OrderCS { Id = 1, source_id = 24, order_status = "Pending" };
+            var order = new OrderCS { Id = 1, source_id = 24, order_date = "2019-04-03T11:33:15Z", request_date = "2019-04-07T11:33:15Z",
+                                      order_status = "Delivered", warehouse_id = 1, ship_to = 1, bill_to = 3, shipment_id = 5, total_amount = 909,
+                                      total_discount = 30, total_tax = 100, total_surcharge = 78 };
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(order);
 
             //act
@@ -253,7 +283,17 @@ namespace Tests
             var notFoundResult = result.Result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
         }
-        
+        [TestMethod]
+        public void DeleteOrdersTest_Succes(){
+            //Arrange
+            var listidstodel = new List<int>(){1,2,3};
+            //Act
+            var result = _orderController.DeleteOrders(listidstodel);
+            var resultok = result as OkObjectResult;
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(resultok.StatusCode, 200);
+        }
     }
 }
 
