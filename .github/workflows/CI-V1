@@ -1,0 +1,57 @@
+name: CI-V1
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        language: [csharp, python]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Setup for .NET
+    - name: Set up .NET
+      if: matrix.language == 'csharp'
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    # Debug file structure
+    - name: Debug File Structure
+      run: ls -R ../..
+
+    # Build .NET project for V1
+    - name: Build .NET project (V1)
+      if: matrix.language == 'csharp'
+      run: dotnet build --configuration Release ../../Werehouses/V1/Cargohub/Werehouses.csproj
+
+    # Test .NET project for V1
+    - name: Test .NET project (V1)
+      if: matrix.language == 'csharp'
+      run: dotnet test --no-build --verbosity normal --configuration Release ../../Werehouses/V1/Cargohub/Werehouses.csproj
+
+    # Setup for Python
+    - name: Set up Python
+      if: matrix.language == 'python'
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # Install Python dependencies
+    - name: Install dependencies
+      if: matrix.language == 'python'
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    # Run Python tests
+    - name: Run Python tests
+      if: matrix.language == 'python'
+      run: |
+        if [ -f pytest.ini ]; then pytest; fi
