@@ -100,6 +100,7 @@ public class ItemGroupController : ControllerBase
         _itemgroupService.DeleteItemGroup(id);
         return Ok();
     }
+    
     [HttpDelete("batch")]
     public ActionResult DeleteItemGroups([FromBody] List<int> ids){
         if(ids is null)
