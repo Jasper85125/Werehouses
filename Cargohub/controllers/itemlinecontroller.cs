@@ -119,8 +119,9 @@ public class ItemLineController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public ActionResult<ItemLineCS> PatchItemLine(int id, [FromBody] ItemLineCS itemLine)
+    public ActionResult<ItemLineCS> PatchItemLine([FromRoute] int id, [FromBody] ItemLineCS itemLine)
     {
+        itemLine.Id = id;
         if (id != itemLine.Id)
         {
             return BadRequest();

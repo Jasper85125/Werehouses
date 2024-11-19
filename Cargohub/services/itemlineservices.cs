@@ -157,8 +157,8 @@ public class ItemLineService : IItemLineService
         // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        existingItem.Name = itemLine.Name;
-        existingItem.Description = itemLine.Description;
+        existingItem.Name = itemLine.Name ?? existingItem.Name;
+        existingItem.Description = itemLine.Description ?? existingItem.Description;
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
