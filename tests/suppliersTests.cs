@@ -102,6 +102,32 @@ namespace Tests
         }
 
         [TestMethod]
+        public void CreateMultipleSuppliers_ReturnsCreatedResult_WithNewSuppliers()
+        {
+            // Arrange
+            var suppliers = new List<SupplierCS> 
+            {
+                new SupplierCS { Id = 1, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404", City = "Toronto", zip_code = "2935BK",
+                                 Country = "Wano", Province = "Denver", contact_name = "Jeff Bezos", PhoneNumber = "0794327812"},
+                new SupplierCS { Id = 2, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404", City = "Toronto", zip_code = "2935BK",
+                                 Country = "Wano", Province = "Denver", contact_name = "Jeff Bezos", PhoneNumber = "0794327812"}
+            };
+            _mockSupplierService.Setup(service => service.CreateMultipleSuppliers(suppliers)).Returns(suppliers);
+            
+            // Act
+            var result = _supplierController.CreateMultipleSuppliers(suppliers);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<SupplierCS>;
+            var firstSupplier = returnedItems[0];
+            
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(suppliers[0].Name, firstSupplier.Name);
+            Assert.AreEqual(suppliers[0].Code, firstSupplier.Code);
+        }
+
+        [TestMethod]
         public void UpdatedSupplierTest_Success()
         {
             // Arrange

@@ -10,13 +10,16 @@ jobs:
       matrix:
         language: [csharp, python]
 
+    env:
+      DOTNET_INSTALL_DIR: "./.dotnet"
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Set up .NET
       if: matrix.language == 'csharp'
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@main
       with:
         dotnet-version: '8.0.x'
     
