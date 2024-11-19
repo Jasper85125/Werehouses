@@ -51,7 +51,7 @@ public class SupplierController : ControllerBase
 
     // POST: /supplier/multiple
         [HttpPost("multiple")]
-        public ActionResult<IEnumerable<SupplierCS>> CreateMultipleSupplier([FromBody] List<SupplierCS> newSupplier)
+        public ActionResult<IEnumerable<SupplierCS>> CreateMultipleSuppliers([FromBody] List<SupplierCS> newSupplier)
         {
             if (newSupplier is null)
             {
