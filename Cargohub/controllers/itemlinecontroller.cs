@@ -95,6 +95,7 @@ public class ItemLineController : ControllerBase
         var items = _itemLineService.GetItemsByItemLineId(id);
         return Ok(items);
     }
+
     [HttpDelete("batch")]
     public ActionResult DeleteItemLines([FromBody]List<int> ids){
         if(ids is null){
@@ -102,5 +103,23 @@ public class ItemLineController : ControllerBase
         }
         _itemLineService.DeleteItemLines(ids);
         return Ok("Item lines deleted");
+    }
+
+    [HttpPatch("{id}")]
+    public ActionResult<ItemLineCS> PatchItemLine(int id, [FromBody] ItemLineCS itemLine)
+    {
+        if (id != itemLine.Id)
+        {
+            return BadRequest();
+        }
+
+        var existingItemLine = _itemLineService.GetItemLineById(id);
+        if (existingItemLine == null)
+        {
+            return NotFound();
+        }
+
+        var updatedItemLine = _itemLineService.PatchItemLine(id, itemLine);
+        return Ok(updatedItemLine);
     }
 }

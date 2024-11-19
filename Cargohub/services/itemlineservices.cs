@@ -111,6 +111,7 @@ public class ItemLineService : IItemLineService
 
         return items?.Where(item => item.item_line == itemlineId).ToList() ?? new List<ItemCS>();
     }
+
     public void DeleteItemLines(List<int> ids){
         var item_lines = GetAllItemlines();
         foreach(int id in ids){
