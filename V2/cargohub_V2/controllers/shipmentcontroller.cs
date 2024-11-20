@@ -57,6 +57,19 @@ public class ShipmentController : ControllerBase
         var shipment = _shipmentService.CreateShipment(newShipment);
         return CreatedAtAction(nameof(GetShipmentById), new { id = shipment.Id }, shipment);
     }
+
+    // POST: /shipments/multiple
+    [HttpPost("multiple")]
+    public ActionResult<IEnumerable<ShipmentCS>> CreateMultipleShipments([FromBody] List<ShipmentCS> newShipments)
+    {
+        if (newShipments is null)
+        {
+            return BadRequest("Shipment data is null");
+        }
+
+        var createdShipment = _shipmentService.CreateMultipleShipments(newShipments);
+        return StatusCode(StatusCodes.Status201Created, createdShipment);
+    }
   
 
     // PUT: api/warehouse/5
