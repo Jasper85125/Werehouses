@@ -1,21 +1,22 @@
-name: CI-V2
+name: CI
 
 on: [push, pull_request]
 
 jobs:
   build-and-test:
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     strategy:
       matrix:
         language: [csharp, python]
+        version: [V1, V2] # Add versions for C# projects
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Setup for .NET
+    # Setup for .NET projects
     - name: Set up .NET
       if: matrix.language == 'csharp'
       uses: actions/setup-dotnet@v3
@@ -24,19 +25,21 @@ jobs:
 
     # Debug file structure
     - name: Debug File Structure
-      run: ls -R ../..
+      run: ls -R ../../
 
-    # Build .NET project for V2
-    - name: Build .NET project (V2)
+    # Build .NET projects based on version
+    - name: Build .NET project
       if: matrix.language == 'csharp'
-      run: dotnet build --configuration Release ../../Werehouses/V2/Cargohub/Werehouses.csproj
+      run: |
+        dotnet build --configuration Release ../../Werehouses/${{ matrix.version }}/Cargohub/Werehouses.csproj
 
-    # Test .NET project for V2
-    - name: Test .NET project (V2)
+    # Test .NET projects based on version
+    - name: Test .NET project
       if: matrix.language == 'csharp'
-      run: dotnet test --no-build --verbosity normal --configuration Release ../../Werehouses/V2/Cargohub/Werehouses.csproj
+      run: |
+        dotnet test --no-build --verbosity normal --configuration Release ../../Werehouses/${{ matrix.version }}/Cargohub/Werehouses.csproj
 
-    # Setup for Python
+    # Setup for Python projects
     - name: Set up Python
       if: matrix.language == 'python'
       uses: actions/setup-python@v5
