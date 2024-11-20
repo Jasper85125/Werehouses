@@ -46,15 +46,30 @@ public class ShipmentService : IShipmentService
         var Path = "data/shipments.json";
 
         List<ShipmentCS> shipments = GetAllShipments();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Add the new shipment record to the list
         newShipment.Id = shipments.Count > 0 ? shipments.Max(w => w.Id) + 1 : 1;
+        newShipment.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newShipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         shipments.Add(newShipment);
 
         // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
         File.WriteAllText(Path, jsonData);
         return newShipment;
+    }
+
+    public List<ShipmentCS> CreateMultipleShipments(List<ShipmentCS>newShipments)
+    {
+        List<ShipmentCS> addedShipments = new List<ShipmentCS>();
+        foreach(ShipmentCS shipment in newShipments)
+        {
+            ShipmentCS addShipment = CreateShipment(shipment);
+            addedShipments.Add(addShipment);
+        }
+        return addedShipments;
     }
 
     public async Task<ShipmentCS> UpdateShipment(int id, ShipmentCS updateShipment)
