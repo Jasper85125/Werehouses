@@ -6,6 +6,8 @@ jobs:
   build-and-test:
 
     runs-on: self-hosted
+    env:
+      DOTNET_INSTALL_DIR: "./.dotnet"
 
     strategy:
       matrix:
@@ -31,13 +33,13 @@ jobs:
     - name: Build .NET project
       if: matrix.language == 'csharp'
       run: |
-        dotnet build --configuration Release ../../Werehouses/${{ matrix.version }}/Cargohub/Werehouses.csproj
+        dotnet build --configuration Release ../../Werehouses/Werehouses/${{ matrix.version }}/Cargohub/Werehouses.csproj
 
     # Test .NET projects based on version
     - name: Test .NET project
       if: matrix.language == 'csharp'
       run: |
-        dotnet test --no-build --verbosity normal --configuration Release ../../Werehouses/${{ matrix.version }}/Cargohub/Werehouses.csproj
+        dotnet test --no-build --verbosity normal --configuration Release ../../Werehouses/Werehouses/${{ matrix.version }}/Cargohub/Werehouses.csproj
 
     # Setup for Python projects
     - name: Set up Python
