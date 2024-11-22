@@ -191,6 +191,31 @@ namespace Tests
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
         }
+        [TestMethod]
+        public void PatchWarehouse_Succes(){
+            //Arrange
+            var warehouse = new WarehouseCS(){ Id = 1, Code= "LOLJK", Name="KOPLER"};
+            _mockWarehouseService.Setup(service=>service.PatchWarehouse(1, "Code", "LOLJK")).Returns(warehouse);
+            //Act
+            var result1 = _warehouseController.PatchWarehouse(1, "Code", "LOLJK");
+            //ik wilde ook Name testen, result2*
+            // var result2 = _warehouseController.PatchWarehouse(1, "Name", "KOPLER");
+            var result1ok = result1.Result as OkObjectResult;
+            // var result2ok = result2.Result as OkObjectResult;
+            var result1value = result1ok.Value as WarehouseCS;
+            // var result2value = result2ok.Value as WarehouseCS;
+            //Assert
+            Assert.IsNotNull(result1);
+            Assert.IsNotNull(result1ok);
+            // Assert.IsNotNull(result2);
+            // Assert.IsNotNull(result2ok);
+            Assert.IsNotNull(result1value);
+            // Assert.IsNotNull(result2value);
+            Assert.AreEqual(result1ok.StatusCode, 200);
+            // Assert.AreEqual(result2ok.StatusCode, 200);
+            Assert.AreEqual(result1value.Code, warehouse.Code);
+            // Assert.AreEqual(result2value.Name, warehouse.Name);
+        }
     }
 }
 
