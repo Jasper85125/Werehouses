@@ -1,0 +1,62 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+
+    runs-on: self-hosted
+    env:
+      DOTNET_INSTALL_DIR: "./.dotnet"
+
+    strategy:
+      matrix:
+        language: [csharp, python]
+        version: [V1, V2] # Add versions for C# projects
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Setup for .NET projects
+    - name: Set up .NET
+      if: matrix.language == 'csharp'
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    # Debug file structure
+    - name: Debug File Structure
+      run: ls -R ../../
+
+    # Build .NET projects based on version
+    - name: Build .NET project
+      if: matrix.language == 'csharp'
+      run: |
+        dotnet build --configuration Release ../../Werehouses/Werehouses/${{ matrix.version }}/Cargohub/Werehouses.csproj
+
+    # Test .NET projects based on version
+    - name: Test .NET project
+      if: matrix.language == 'csharp'
+      run: |
+        dotnet test --no-build --verbosity normal --configuration Release ../../Werehouses/Werehouses/${{ matrix.version }}/Cargohub/Werehouses.csproj
+
+    # Setup for Python projects
+    - name: Set up Python
+      if: matrix.language == 'python'
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # Install Python dependencies
+    - name: Install dependencies
+      if: matrix.language == 'python'
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    # Run Python tests
+    - name: Run Python tests
+      if: matrix.language == 'python'
+      run: |
+        if [ -f pytest.ini ]; then pytest; fi
