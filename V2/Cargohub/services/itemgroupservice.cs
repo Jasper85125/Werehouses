@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
-namespace Services;
+namespace ServicesV2;
 
 public class ItemGroupService : ItemService, IitemGroupService
 {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Services;
+using ServicesV2;
 
-namespace Controllers;
+namespace ControllersV2;
 
 [ApiController]
 [Route("/clients")]
