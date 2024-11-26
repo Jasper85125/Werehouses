@@ -7,7 +7,7 @@ using System.Reflection.Metadata.Ecma335;
 namespace ControllersV2;
 
 [ApiController]
-[Route("/inventories")]
+[Route("api/v2/inventories")]
 public class InventoryController : ControllerBase
 {
     private readonly IInventoryService _inventoryService;

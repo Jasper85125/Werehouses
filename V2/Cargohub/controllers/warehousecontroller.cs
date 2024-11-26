@@ -6,7 +6,7 @@ using ServicesV2;
 namespace ControllersV2;
 
 [ApiController]
-[Route("/warehouses")]
+[Route("api/v2/warehouses")]
 public class WarehouseController : ControllerBase
 {
     private readonly IWarehouseService _warehouseService;

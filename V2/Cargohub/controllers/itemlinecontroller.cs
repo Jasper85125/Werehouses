@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ControllersV2;
 
-[Route("itemlines")]
+[Route("api/v2/itemlines")]
 [ApiControllerV2]
 public class ItemLineController : ControllerBase
 {

@@ -6,7 +6,7 @@ using ServicesV2;
 namespace ControllersV2
 {
     [ApiController]
-    [Route("/orders")]
+    [Route("api/v2/orders")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;

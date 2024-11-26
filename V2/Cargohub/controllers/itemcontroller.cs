@@ -4,7 +4,7 @@ using ServicesV2;
 
 namespace ControllersV2;
 
-[Route("items")]
+[Route("api/v2/items")]
 [ApiController]
 public class ItemController : ControllerBase
 {

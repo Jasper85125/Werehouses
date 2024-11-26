@@ -6,7 +6,7 @@ using ServicesV2;
 namespace ControllersV2
 {
     [ApiController]
-    [Route("/locations")]
+    [Route("api/v2/locations")]
     public class LocationController : ControllerBase
     {
         private readonly ILocationService _locationService;

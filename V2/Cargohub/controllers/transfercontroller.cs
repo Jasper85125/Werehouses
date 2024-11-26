@@ -6,7 +6,7 @@ using ServicesV2;
 namespace ControllersV2;
 
 [ApiController]
-[Route("/transfers")]
+[Route("api/v2/transfers")]
 public class TransferController : ControllerBase
 {
     private readonly ITransferService _transferService;
