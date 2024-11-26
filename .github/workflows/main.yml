@@ -3,45 +3,55 @@ name: CI
 on:
   push:
     branches:
-      - '**'  # Trigger on any push to any branch
+      - '**'
   pull_request:
     branches:
-      - main  # Trigger for pull requests targeting the 'main' branch
+      - '**'
 
 jobs:
   build-and-test:
     runs-on: self-hosted
+    env:
+      DOTNET_INSTALL_DIR: ..dotnet
 
     strategy:
       matrix:
         language: [csharp, python]
-        version: [V1, V2] # Add versions for C# projects
+        version: [V1, V2]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Setup for .NET projects
+    # Debug file structure to verify paths
+    - name: Debug File Structure
+      run: ls -R .
+
+    # Print working directory
+    - name: Print Working Directory
+      run: pwd
+
+    # Setup .NET
     - name: Setup .NET
       if: matrix.language == 'csharp'
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.x'  # Update to .NET 8
-        install-dir: ${{ runner.temp }}/dotnet  # Set install directory to a writable location
+        dotnet-version: '8.0.x'
+        install-dir: ${{ runner.temp }}/dotnet
 
-    # Restore dependencies for the solution
+    # Restore dependencies
     - name: Restore dependencies
       if: matrix.language == 'csharp'
-      run: dotnet restore ./Werehouses/${{ matrix.version }}/CargoHub.sln
+      run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
 
-    # Build the solution and capture build warnings
+    # Build the solution
     - name: Build solution
       if: matrix.language == 'csharp'
       run: |
-        dotnet build ./Werehouses/${{ matrix.version }}/CargoHub.sln --configuration Release --no-restore /p:NoWarn=true > build-warnings.txt 2>&1
-      continue-on-error: true  # Allow the job to continue even if there are warnings
+        dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore /p:NoWarn=true > build-warnings.txt 2>&1
+      continue-on-error: true
 
-    # Upload Build Warnings as an artifact
+    # Upload Build Warnings
     - name: Upload Build Warnings
       if: matrix.language == 'csharp'
       uses: actions/upload-artifact@v4
@@ -53,7 +63,7 @@ jobs:
     - name: Run NUnit tests with coverage
       if: matrix.language == 'csharp'
       run: |
-        dotnet test ./Werehouses/${{ matrix.version }}/tests/tests.csproj --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+        dotnet test ./Werehouses/${{ matrix.version }}/tests/tests.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -92,4 +102,3 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-        
