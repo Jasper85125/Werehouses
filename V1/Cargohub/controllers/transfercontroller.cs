@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Text.Json;
-using Services;
+using ServicesV1;
 
-namespace Controllers;
+namespace ControllersV1;
 
 [ApiController]
-[Route("/transfers")]
+[Route("api/v1/transfers")]
 public class TransferController : ControllerBase
 {
     private readonly ITransferService _transferService;

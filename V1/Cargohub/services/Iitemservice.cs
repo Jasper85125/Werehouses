@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http.Features;
 
-namespace Services;
+namespace ServicesV1;
 public interface IItemService
 {
     List<ItemCS> GetAllItems();

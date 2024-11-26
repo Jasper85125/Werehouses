@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Text.Json;
-using Services;
+using ServicesV1;
 
-namespace Controllers;
+namespace ControllersV1;
 
 [ApiController]
-[Route("/inventories")]
+[Route("api/v1/inventories")]
 public class InventoryController : ControllerBase
 {
     private readonly IInventoryService _inventoryService;

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Services;
+using ServicesV1;
 
-namespace Controllers;
+namespace ControllersV1;
 
-[Route("items")]
+[Route("api/v1/items")]
 [ApiController]
 public class ItemController : ControllerBase
 {

@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Text.Json;
-using Services;
+using ServicesV1;
 
-namespace Controllers;
+namespace ControllersV1;
 
 [ApiController]
-[Route("/suppliers")]
+[Route("api/v1/suppliers")]
 public class SupplierController : ControllerBase
 {
     private readonly ISupplierService _supplierService;
