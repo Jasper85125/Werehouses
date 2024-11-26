@@ -74,9 +74,9 @@ jobs:
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
-        dotnet tool install --global coverlet.console
-        coverlet ./Werehouses/${{ matrix.version }}/tests/tests.sln --target "dotnet" --targetargs "test ./Werehouses/${{ matrix.version }}/tests/tests.sln --no-build" \
-                        --output "./coverage-results-${{ matrix.version }}" --format opencover
+        dotnet test ./Werehouses/${{ matrix.version }}/tests/tests.sln --no-build --configuration Release \
+          --collect:"XPlat Code Coverage" \
+          /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage-results-${{ matrix.version }}/
         reportgenerator -reports:"coverage-results-${{ matrix.version }}/coverage.opencover.xml" \
                         -targetdir:"coverage-report-${{ matrix.version }}" \
                         -reporttypes:Html
@@ -92,6 +92,7 @@ jobs:
       with:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
+
     # Setup for Python projects
     - name: Set up Python
       if: matrix.language == 'python'
