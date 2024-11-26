@@ -132,6 +132,43 @@ public class TransferService : ITransferService
         TransferCS updatedTransfer = UpdateTransfer(transfer.Id, transfer);
         return updatedTransfer;
     }
+    public TransferCS PatchTransfer(int id, string property, object newvalue){
+        var transfers = GetAllTransfers();
+        var transfer = transfers.Find(_=>_.Id == id);
+        // Get the current date and time
+        var currentDateTime = DateTime.Now;
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+        if (transfer is not null){
+            switch (property){
+                case "Reference":
+                transfer.Reference = newvalue.ToString();
+                break;
+                case "transfer_from":
+                transfer.transfer_from = (int)newvalue;
+                break;
+                case "transfer_to":
+                transfer.transfer_to = (int)newvalue;
+                break;
+                case "transfer_status":
+                transfer.transfer_status = newvalue.ToString();
+                break;
+                // case"created_at":
+                // transfer.created_at = newvalue.ToString();
+                // break;
+                // case"updated_at":
+                // break;
+                case"Items":
+                transfer.Items = newvalue as List<ItemIdAndAmount>;
+                break;
+            }
+            transfer.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+            var jsonData = JsonConvert.SerializeObject(transfers, Formatting.Indented);
+            File.WriteAllText(_path, jsonData);
+            return transfer;
+        }
+        return null;
+    }
 
     public void DeleteTransfer(int id)
     {

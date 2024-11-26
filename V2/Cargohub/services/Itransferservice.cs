@@ -9,6 +9,7 @@ public interface ITransferService
     List<TransferCS> CreateMultipleTransfers(List<TransferCS> transfers);
     TransferCS UpdateTransfer(int id, TransferCS transfer);
     TransferCS CommitTransfer(int id);
+    TransferCS PatchTransfer(int id, string property, object newvalue);
     void DeleteTransfer(int id);
     void DeleteTransfers(List<int> ids);
 }

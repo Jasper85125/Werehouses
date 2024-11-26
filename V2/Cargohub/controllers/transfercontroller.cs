@@ -98,6 +98,15 @@ public class TransferController : ControllerBase
         return Ok(updatedAction);
     }
 
+    [HttpPatch("{id}/{property}")]
+    public ActionResult<TransferCS> PatchTransfer([FromRoute] int id, [FromRoute] string property, [FromBody] string newvalue){
+        if(id == null || property == null || newvalue == null){
+            return BadRequest("Issues in request");
+        }
+        var result = _transferService.PatchTransfer(id, property, newvalue);
+        return Ok(result);
+    }
+
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
     public ActionResult DeleteTransfer(int id)
