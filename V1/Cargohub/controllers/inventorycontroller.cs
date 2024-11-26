@@ -4,7 +4,7 @@ using System.Text.Json;
 using ServicesV1;
 
 namespace ControllersV1;
-
+//test yamal delete later
 [ApiController]
 [Route("api/v1/inventories")]
 public class InventoryController : ControllerBase
