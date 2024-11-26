@@ -61,7 +61,6 @@ jobs:
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-
     # Install ReportGenerator globally
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
@@ -74,7 +73,7 @@ jobs:
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
-        dotnet test ./${{ matrix.version }}/tests/tests.csproj --no-build --configuration Release \
+        dotnet test ./Werehouses/${{ matrix.version }}/tests/tests.sln --no-build --configuration Release \
           --collect:"XPlat Code Coverage" \
           /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage-results-${{ matrix.version }}/
         reportgenerator -reports:"coverage-results-${{ matrix.version }}/coverage.opencover.xml" \
@@ -92,6 +91,7 @@ jobs:
       with:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
+
 
     # Setup for Python projects
     - name: Set up Python
