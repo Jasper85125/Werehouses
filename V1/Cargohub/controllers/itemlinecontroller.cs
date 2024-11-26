@@ -2,9 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Services;
 using System.Threading.Tasks;
-using Controllers;
 
-[Route("itemlines")]
+namespace ControllersV1;
+
+[Route("api/v1/itemlines")]
 [ApiController]
 public class ItemLineController : ControllerBase
 {

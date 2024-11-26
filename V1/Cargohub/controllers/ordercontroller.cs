@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using Services;
 
-namespace Controllers
+namespace ControllersV1
 {
     [ApiController]
-    [Route("/orders")]
+    [Route("api/v1/orders")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;

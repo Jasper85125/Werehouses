@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
-namespace Controllers;
+namespace ControllersV1;
 
 [ApiController]
-[Route("/clients")]
+[Route("api/v1/clients")]
 public class ClientController : ControllerBase
 {
     private readonly IClientService _clientservice;

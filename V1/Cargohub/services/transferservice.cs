@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Testing.Platform.Extensions.Messages;
 using Newtonsoft.Json;
 
-namespace Services;
+namespace ServicesV1;
 
 public class TransferService : ITransferService
 {
