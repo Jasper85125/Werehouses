@@ -68,7 +68,7 @@ jobs:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
-
+    
     # Install ReportGenerator globally
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
@@ -77,12 +77,16 @@ jobs:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
     
+    # Add the tools directory to the PATH for the current session
+    - name: Add .NET Tools to PATH
+      if: matrix.language == 'csharp'
+      run: echo "##[add-path]/home/ubuntu-1009748/.dotnet/tools"
+    
     # Verify ReportGenerator installation
     - name: Verify ReportGenerator Installation
       if: matrix.language == 'csharp'
       run: reportgenerator --version
       env:
-        PATH: $PATH:/home/runner/.dotnet/tools
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
     
@@ -90,14 +94,12 @@ jobs:
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
-        ~/.dotnet/tools/reportgenerator -reports:"./Werehouses/${{ matrix.version }}/tests/TestResults/**/coverage.cobertura.xml" \
-                                         -targetdir:"coverage-report-${{ matrix.version }}" \
-                                         -reporttypes:Html
+        reportgenerator -reports:"./Werehouses/${{ matrix.version }}/tests/TestResults/**/coverage.cobertura.xml" \
+                        -targetdir:"coverage-report-${{ matrix.version }}" \
+                        -reporttypes:Html
       env:
-        PATH: $PATH:/home/runner/.dotnet/tools
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-
 
     # Upload Coverage Report as an artifact
     - name: Upload Coverage Report
