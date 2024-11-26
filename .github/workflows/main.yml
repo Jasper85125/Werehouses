@@ -76,18 +76,28 @@ jobs:
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-
-    # Generate Coverage Report
-    - name: Generate Coverage Report
+    
+    # Verify ReportGenerator installation
+    - name: Verify ReportGenerator Installation
       if: matrix.language == 'csharp'
-      run: |
-        reportgenerator -reports:"./Werehouses/${{ matrix.version }}/tests/TestResults/**/coverage.cobertura.xml" \
-                        -targetdir:"coverage-report-${{ matrix.version }}" \
-                        -reporttypes:Html
+      run: reportgenerator --version
       env:
         PATH: $PATH:/home/runner/.dotnet/tools
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+    
+    # Generate Coverage Report
+    - name: Generate Coverage Report
+      if: matrix.language == 'csharp'
+      run: |
+        ~/.dotnet/tools/reportgenerator -reports:"./Werehouses/${{ matrix.version }}/tests/TestResults/**/coverage.cobertura.xml" \
+                                         -targetdir:"coverage-report-${{ matrix.version }}" \
+                                         -reporttypes:Html
+      env:
+        PATH: $PATH:/home/runner/.dotnet/tools
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+
 
     # Upload Coverage Report as an artifact
     - name: Upload Coverage Report
