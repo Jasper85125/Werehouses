@@ -1,11 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Services;
+using ServicesV1;
 using Moq;
-using Controllers;
+using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Tests
+namespace TestsV1
 {
     [TestClass]
     public class SuppliersTests

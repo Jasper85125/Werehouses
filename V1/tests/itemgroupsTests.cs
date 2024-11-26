@@ -1,13 +1,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Services;
-using Controllers;
+using ServicesV1;
+using ControllersV1;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace itemgroup.Tests
+namespace TestsV1
 {
     [TestClass]
     public class ItemGroupTests
