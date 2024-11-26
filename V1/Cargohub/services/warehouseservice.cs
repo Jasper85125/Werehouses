@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Services;
+namespace ServicesV1;
 
 public class WarehouseService : IWarehouseService
 {

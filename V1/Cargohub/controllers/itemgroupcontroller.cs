@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Services;
 using System.Threading.Tasks;
 
-namespace Controllers;
+namespace ControllersV1;
 
-[Route("itemgroups")]
+[Route("api/v1/itemgroups")]
 [ApiController]
 public class ItemGroupController : ControllerBase
 {

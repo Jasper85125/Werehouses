@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using Services;
 
-namespace Controllers;
+namespace ControllersV1;
 
 [ApiController]
-[Route("/transfers")]
+[Route("api/v1/transfers")]
 public class TransferController : ControllerBase
 {
     private readonly ITransferService _transferService;

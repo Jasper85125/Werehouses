@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
-namespace Services;
+namespace ServicesV1;
 
 public class LocationService : ILocationService
 {
