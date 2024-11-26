@@ -22,11 +22,11 @@ jobs:
       uses: actions/checkout@v4
 
     # Setup for .NET projects
-    - name: Setup .NET 8
+    - name: Setup .NET
       if: matrix.language == 'csharp'
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0'  # Update to .NET 8
+        dotnet-version: '8.0.x'  # Update to .NET 8
 
     # Restore dependencies for the solution
     - name: Restore dependencies
