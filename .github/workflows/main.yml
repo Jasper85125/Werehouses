@@ -34,13 +34,13 @@ jobs:
     # Restore dependencies for the solution
     - name: Restore dependencies
       if: matrix.language == 'csharp'
-      run: dotnet restore ./Werehouses/${{ matrix.version }}/Cargohub/Werehouses.sln
+      run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
 
     # Build the solution and capture build warnings
     - name: Build solution
       if: matrix.language == 'csharp'
       run: |
-        dotnet build ./Werehouses/${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore /p:NoWarn=true > build-warnings.txt 2>&1
+        dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore /p:NoWarn=true > build-warnings.txt 2>&1
       continue-on-error: true  # Allow the job to continue even if there are warnings
 
     # Upload Build Warnings as an artifact
