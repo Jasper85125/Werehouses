@@ -195,6 +195,22 @@ namespace TestsV2
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
         [TestMethod]
+        public void PatchShipmentTest_Succes(){
+            //Arrange
+            var patchedshipment = new ShipmentCS(){ Id= 1, Notes="EW"};
+            _mockShipmentService.Setup(service => service.PatchShipment(1, "Notes", "EW")).Returns(patchedshipment);
+            //Act
+            var result = _shipmentController.PatchShipment(1, "Notes", "EW");
+            var resultok = result.Result as OkObjectResult;
+            var value = resultok.Value as ShipmentCS;
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultok);
+            Assert.IsNotNull(value);
+            Assert.AreEqual(resultok.StatusCode, 200);
+            Assert.AreEqual(value.Notes, patchedshipment.Notes);
+        }
+        [TestMethod]
         public void DeleteShipmentItemTest_Success()
         {
             //arrange
