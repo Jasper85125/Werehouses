@@ -226,6 +226,22 @@ namespace Tests
             Assert.IsInstanceOfType(createdResult2.Value, typeof(TransferCS));
             Assert.AreEqual(transferCommitted.transfer_status, returnedTransfer2.transfer_status);
         }
+        [TestMethod]
+        public void PatchTransferTest_Succes(){
+            //Arrange
+            var updatedtransfer = new TransferCS(){ Id= 1, Reference= "lol weirdo"};
+            _mockTransferService.Setup(service=>service.PatchTransfer(1, "Reference", "lol weirdo")).Returns(updatedtransfer);
+            //Act
+            var result = _transferController.PatchTransfer(1, "Reference", "lol weirdo");
+            var resultok = result.Result as OkObjectResult;
+            var value = resultok.Value as TransferCS;
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultok);
+            Assert.IsNotNull(value);
+            Assert.AreEqual(resultok.StatusCode, 200);
+            Assert.AreEqual(value.Reference, updatedtransfer.Reference);
+        }
 
         [TestMethod]
         public void DeleteTransferTest_Exist(){
