@@ -70,11 +70,14 @@ jobs:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
-    # Generate Coverage Report using coverlet.collector output
+    # Generate Coverage Report
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
-        reportgenerator -reports:"./${{ matrix.version }}/tests/TestResults/**/coverage.cobertura.xml" \
+        dotnet tool install --global coverlet.console
+        coverlet ./Werehouses/${{ matrix.version }}/tests/tests.sln --target "dotnet" --targetargs "test ./Werehouses/${{ matrix.version }}/tests/tests.sln --no-build" \
+                        --output "./coverage-results-${{ matrix.version }}" --format opencover
+        reportgenerator -reports:"coverage-results-${{ matrix.version }}/coverage.opencover.xml" \
                         -targetdir:"coverage-report-${{ matrix.version }}" \
                         -reporttypes:Html
       env:
@@ -89,7 +92,6 @@ jobs:
       with:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
-
     # Setup for Python projects
     - name: Set up Python
       if: matrix.language == 'python'
