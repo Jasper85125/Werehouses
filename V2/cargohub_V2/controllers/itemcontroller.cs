@@ -109,4 +109,18 @@ public class ItemController : ControllerBase
         _itemService.DeleteItems(uids);
         return Ok();
     } 
+
+    // POST: items/multiple
+    // Creates multiple items at once by providing a list of items in the request body
+    [HttpPost("multiple")]
+    public ActionResult CreateMultipleItems([FromBody] List<ItemCS> items)
+    {
+        if (items == null || items.Count == 0)
+        {
+            return BadRequest("No items to create.");
+        }
+
+        _itemService.CreateItems(items);
+        return Ok();
+    }
 }

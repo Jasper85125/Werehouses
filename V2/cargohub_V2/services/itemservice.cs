@@ -160,4 +160,51 @@ public class ItemService : IItemService
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText(path, updatedJsonData);
     }
+
+    // Method to create multiple items
+    public void CreateItems(List<ItemCS> items)
+    {
+        var path = "data/items.json";
+        List<ItemCS> existingItems;
+
+        if (File.Exists(path))
+        {
+            var jsonData = File.ReadAllText(path);
+            existingItems = JsonConvert.DeserializeObject<List<ItemCS>>(jsonData) ?? new List<ItemCS>();
+        }
+        else
+        {
+            existingItems = new List<ItemCS>();
+        }
+
+        // Generate new unique UIDs for the new items
+        if (existingItems.Count > 0)
+        {
+            var maxUid = existingItems.Max(i => i.uid);
+            var numericPart = int.Parse(maxUid.Substring(1)); // Extract numeric part
+            var newUid = "P" + (numericPart + 1).ToString("D6"); // Increment and format back
+
+            foreach (var item in items)
+            {
+                item.uid = newUid;
+                existingItems.Add(item);
+                numericPart++;
+                newUid = "P" + numericPart.ToString("D6");
+            }
+        }
+        else
+        {
+            var newUid = "P000001"; // Starting UID
+
+            foreach (var item in items)
+            {
+                item.uid = newUid;
+                existingItems.Add(item);
+                newUid = "P" + (int.Parse(newUid.Substring(1)) + 1).ToString("D6");
+            }
+        }
+
+        var updatedJsonData = JsonConvert.SerializeObject(existingItems, Formatting.Indented);
+        File.WriteAllText(path, updatedJsonData);
+    }
 }
