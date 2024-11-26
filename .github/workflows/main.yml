@@ -51,15 +51,17 @@ jobs:
         name: build-warnings-${{ matrix.version }}
         path: build-warnings.txt
 
-    # Run NUnit tests with coverage
+    
+    # Run MSTest with coverage using coverlet.collector
     - name: Run MSTest with coverage
       if: matrix.language == 'csharp'
       run: |
-        dotnet test ./${{ matrix.version }}/tests/tests.csproj --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+        dotnet test ./${{ matrix.version }}/tests/tests.csproj --configuration Release --verbosity normal \
+          --collect:"XPlat Code Coverage"
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
- 
+
     # Install ReportGenerator globally
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
@@ -67,8 +69,8 @@ jobs:
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-    
-     # Generate Coverage Report
+
+    # Generate Coverage Report using coverlet.collector output
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
@@ -76,6 +78,7 @@ jobs:
                         -targetdir:"coverage-report-${{ matrix.version }}" \
                         -reporttypes:Html
       env:
+        PATH: $PATH:/home/runner/.dotnet/tools
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
