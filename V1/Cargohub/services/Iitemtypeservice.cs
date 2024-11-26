@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Services;
+namespace ServicesV1;
 
 public interface IItemtypeService
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Services;
+namespace ServicesV1;
 
 public class ItemTypeService : IItemtypeService
 {

@@ -1,4 +1,4 @@
-namespace Services;
+namespace ServicesV1;
 
 public interface IWarehouseService
 {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Services;
 using System.Threading.Tasks;
 
-namespace Controllers;
+namespace ControllersV1;
 
-[Route("itemtypes")]
+[Route("api/v1/itemtypes")]
 [ApiController]
 public class ItemTypeController : ControllerBase
 {

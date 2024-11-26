@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Services;
+namespace ServicesV1;
 
 public interface IitemGroupService
 {
