@@ -94,7 +94,7 @@ jobs:
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
-        reportgenerator -reports:"./Werehouses/${{ matrix.version }}/tests/TestResults/**/coverage.cobertura.xml" \
+        reportgenerator -reports:"./${{ matrix.version }}/tests/TestResults/**/coverage.cobertura.xml" \
                         -targetdir:"coverage-report-${{ matrix.version }}" \
                         -reporttypes:Html
       env:
