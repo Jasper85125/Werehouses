@@ -20,6 +20,7 @@ jobs:
         version: [V1, V2]
 
     steps:
+    # Checkout the code
     - name: Checkout code
       uses: actions/checkout@v4
 
@@ -51,16 +52,17 @@ jobs:
         name: build-warnings-${{ matrix.version }}
         path: build-warnings.txt
 
-    
     # Run MSTest with coverage using coverlet.collector
     - name: Run MSTest with coverage
       if: matrix.language == 'csharp'
       run: |
         dotnet test ./${{ matrix.version }}/tests/tests.csproj --configuration Release --verbosity normal \
-          --collect:"XPlat Code Coverage"
+          --collect:"XPlat Code Coverage" \
+          /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./coverage-results/
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+
     # Install ReportGenerator globally
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
@@ -73,12 +75,9 @@ jobs:
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
-        dotnet test ./${{ matrix.version }}/tests/tests.csproj --no-build --configuration Release \
-          --collect:"XPlat Code Coverage" \
-          /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage-results-${{ matrix.version }}/
-        reportgenerator -reports:"coverage-results-${{ matrix.version }}/coverage.opencover.xml" \
+        reportgenerator -reports:"coverage-results/coverage.cobertura.xml" \
                         -targetdir:"coverage-report-${{ matrix.version }}" \
-                        -reporttypes:Html
+                        -reporttypes:HtmlInline_AzurePipelines;Cobertura
       env:
         PATH: $PATH:/home/runner/.dotnet/tools
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -91,7 +90,6 @@ jobs:
       with:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
-
 
     # Setup for Python projects
     - name: Set up Python
