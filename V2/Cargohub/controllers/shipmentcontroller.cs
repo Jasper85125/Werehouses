@@ -89,6 +89,14 @@ public class ShipmentController : ControllerBase
         }
         return Ok(updated);
     }
+    [HttpPatch("{id}/{property}")]
+    public ActionResult<ShipmentCS> PatchShipment([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue){
+        if(property is null || newvalue is null){
+            return BadRequest("invalid request");
+        }
+        var result = _shipmentService.PatchShipment(id, property, newvalue);
+        return Ok(result);
+    }
 
 
     // DELETE: api/warehouse/5
