@@ -109,7 +109,7 @@ jobs:
     # Install Python dependencies
     - name: Install Python dependencies
       if: matrix.language == 'python'
-      run: pip install -r PythonTests/requirements.txt
+      run: pip install -r ./PythonTests/requirements.txt
 
     # Run Python tests
     - name: Run Python Tests
