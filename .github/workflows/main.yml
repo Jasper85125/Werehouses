@@ -43,7 +43,10 @@ jobs:
         dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore
       continue-on-error: true
 
-   
+   # Create Coverage Output Directory
+    #- name: Create Coverage Output Directory
+      #if: matrix.language == 'csharp'
+      #run: mkdir -p TestResults/coverage-results
     # Clean up previous results
     - name: Clean Up Old Test and Coverage Results
       if: matrix.language == 'csharp'
@@ -51,11 +54,7 @@ jobs:
         echo "Removing old TestResults and coverage reports..."
         rm -rf TestResults
         rm -rf coverage-report-${{ matrix.version }}
-      # Create Coverage Output Directory
-    - name: Create Coverage Output Directory
-      if: matrix.language == 'csharp'
-      run: mkdir -p TestResults/coverage-results
-     #Run MSTest with Coverage
+    # Run MSTest with Coverage
     - name: Run MSTest with Coverage
       if: matrix.language == 'csharp'
       run: |
