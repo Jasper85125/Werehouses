@@ -7,7 +7,6 @@ using Controllers;
 
 namespace clients.Test
 {
-    #test
     [TestClass]
     public class ClientTest
     {
