@@ -78,6 +78,13 @@ jobs:
       if: matrix.language == 'csharp'
       run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
+#debug
+    - name: Debug TestResults Directory
+      if: matrix.language == 'csharp'
+      run: |
+          echo "Listing TestResults directory:"
+          ls -R TestResults
+
 
     # Generate Coverage Report
     - name: Generate Coverage Report
