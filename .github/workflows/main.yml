@@ -102,13 +102,14 @@ jobs:
     # Run C# application
     - name: Start C# Application
       run: |
-        nohup dotnet run --project ./V1/Cargohub/Werehouses.csproj --urls=http://localhost:3000 &
-
+        nohup dotnet run --project ./V1/Cargohub/Werehouses.csproj > app.log 2>&1 &
+        tail -f app.log &
+    
     # Wait for the C# application to be ready
     - name: Wait for C# Application
       run: |
         echo "Waiting for C# application to start..."
-        for i in {1..30}; do
+        for i in {1..60}; do  # Retry up to 60 times (2 minutes)
           if curl --silent --fail http://localhost:3000; then
             echo "C# application is running."
             exit 0
@@ -116,7 +117,9 @@ jobs:
           sleep 2
         done
         echo "C# application failed to start."
+        cat app.log  # Output application logs for debugging
         exit 1
+
 
     # Setup for Python
     - name: Set up Python
