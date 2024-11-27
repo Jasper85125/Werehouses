@@ -44,12 +44,18 @@ jobs:
       continue-on-error: true
 
    # Create Coverage Output Directory
-    - name: Create Coverage Output Directory
+    #- name: Create Coverage Output Directory
+      #if: matrix.language == 'csharp'
+      #run: mkdir -p TestResults/coverage-results
+    # Clean up previous results
+    - name: Clean Up Old Test and Coverage Results
       if: matrix.language == 'csharp'
-      run: mkdir -p TestResults/coverage-results
-
+      run: |
+        echo "Removing old TestResults and coverage reports..."
+        rm -rf TestResults
+        rm -rf coverage-report-${{ matrix.version }}
     # Run MSTest with Coverage
-    - name: Run MSTest with Coverage (Debugging)
+    - name: Run MSTest with Coverage
       if: matrix.language == 'csharp'
       run: |
         dotnet test ./${{ matrix.version }}/tests/tests.csproj --configuration Release --verbosity detailed \
@@ -59,24 +65,25 @@ jobs:
       continue-on-error: true
 
     # Debug File System State
-    - name: Debug File System State
-      if: matrix.language == 'csharp'
-      run: |
-        echo "Listing current directory:"
-        ls -la
-        echo "Listing subdirectories:"
-        find .
+    #- name: Debug File System State
+      #if: matrix.language == 'csharp'
+      #run: |
+        #echo "Listing current directory:"
+        #ls -la
+        #echo "Listing subdirectories:"
+        #find .
 
     # Install ReportGenerator
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
       run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
+
     # Generate Coverage Report
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
-        reportgenerator -reports:"TestResults/coverage-results/coverage.cobertura.xml" \
+        reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" \
                         -targetdir:"coverage-report-${{ matrix.version }}" \
                         -reporttypes:HtmlInline_AzurePipelines;Cobertura
       env:
