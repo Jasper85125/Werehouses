@@ -1,7 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Controllers;
-using Services;
+using ControllersV1;
+using ServicesV1;
 using Microsoft.AspNetCore.Mvc;
 
 namespace item.Tests

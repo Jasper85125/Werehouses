@@ -2,8 +2,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using Microsoft.AspNetCore.Mvc;
-using Services;
-using Controllers;
+using ServicesV1;
+using ControllersV1;
 
 namespace clients.Test
 {

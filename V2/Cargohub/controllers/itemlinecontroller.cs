@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace ControllersV2;
 
 [Route("api/v2/itemlines")]
-[ApiControllerV2]
+[ApiController]
 public class ItemLineController : ControllerBase
 {
     private readonly IItemLineService _itemLineService;
