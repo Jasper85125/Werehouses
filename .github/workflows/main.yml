@@ -115,4 +115,4 @@ jobs:
     - name: Run Python Tests
       if: matrix.language == 'python'
       run: |
-        python -m unittest discover PythonTests/
+        python -m unittest discover ./PythonTests/
