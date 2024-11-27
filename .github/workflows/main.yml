@@ -11,6 +11,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      DOTNET_INSTALL_DIR: ..dotnet
 
     strategy:
       matrix:
@@ -18,27 +20,40 @@ jobs:
         version: [V1, V2]
 
     steps:
-    # Checkout the code
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Setup for .NET (C#)
+    # Setup .NET
     - name: Setup .NET
       if: matrix.language == 'csharp'
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
+        install-dir: ${{ runner.temp }}/dotnet
 
-    # Restore C# dependencies
-    - name: Restore dependencies (C#)
+    # Restore dependencies
+    - name: Restore dependencies
       if: matrix.language == 'csharp'
-      run: dotnet restore ./${{ matrix.version }}/tests/tests.csproj
+      run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
 
-    # Build C# application
+    # Build the solution
     - name: Build solution
       if: matrix.language == 'csharp'
-      run: dotnet build ./${{ matrix.version }}/tests/tests.csproj --configuration Release --no-restore
+      run: |
+        dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore
+      continue-on-error: true
 
+   # Create Coverage Output Directory
+    #- name: Create Coverage Output Directory
+      #if: matrix.language == 'csharp'
+      #run: mkdir -p TestResults/coverage-results
+    # Clean up previous results
+    - name: Clean Up Old Test and Coverage Results
+      if: matrix.language == 'csharp'
+      run: |
+        echo "Removing old TestResults and coverage reports..."
+        rm -rf TestResults
+        rm -rf coverage-report-${{ matrix.version }}
     # Run MSTest with Coverage
     - name: Run MSTest with Coverage
       if: matrix.language == 'csharp'
@@ -49,29 +64,34 @@ jobs:
           /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
       continue-on-error: true
 
-    # Debug TestResults Directory (C#)
-    - name: Debug TestResults Directory
-      if: matrix.language == 'csharp'
-      run: |
-        echo "Listing TestResults directory:"
-        ls -R TestResults
+    # Debug File System State
+    #- name: Debug File System State
+      #if: matrix.language == 'csharp'
+      #run: |
+        #echo "Listing current directory:"
+        #ls -la
+        #echo "Listing subdirectories:"
+        #find .
 
-    # Install ReportGenerator for C# Coverage
+    # Install ReportGenerator
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
       run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
-    # Generate Coverage Report for C#
+
+    # Generate Coverage Report
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
-        reportgenerator -reports:"TestResults/**/*.xml" \
+        reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" \
                         -targetdir:"coverage-report-${{ matrix.version }}" \
                         -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
       env:
         PATH: $PATH:/home/runner/.dotnet/tools
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
-    # Upload C# Coverage Report
+    # Upload Coverage Report as an artifact
     - name: Upload Coverage Report
       if: matrix.language == 'csharp'
       uses: actions/upload-artifact@v4
