@@ -115,6 +115,34 @@ namespace TestsV2
             Assert.AreEqual(shipment.source_id, returnedItems.source_id);
         }
 
+        [TestMethod]
+        public void CreateMultipleShipments_ReturnsCreatedResult_WithNewShipments()
+        {
+            // Arrange
+            var shipments = new List<ShipmentCS> 
+            {
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24, shipment_type = "I", shipment_status = "Transit", carrier_code = "PostNL",
+                                 service_code = "ThreeDay", payment_type = "Card", transfer_mode = "Ground", total_package_count = 56,
+                                 total_package_weight = 42.50, items = new List<ItemIdAndAmount>{ new ItemIdAndAmount { item_id = "P007435", amount = 23 }}}
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24, shipment_type = "I", shipment_status = "Transit", carrier_code = "PostNL",
+                                 service_code = "ThreeDay", payment_type = "Card", transfer_mode = "Ground", total_package_count = 56,
+                                 total_package_weight = 42.50, items = new List<ItemIdAndAmount>{ new ItemIdAndAmount { item_id = "P007435", amount = 23 }}}
+            };
+            _mockShipmentService.Setup(service => service.CreateMultipleShipments(shipments)).Returns(shipments);
+            
+            // Act
+            var result = _shipmentController.CreateMultipleOrders(shipments);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<ShipmentCS>;
+            var firstOrder = returnedItems[0];
+            
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(shipments[0].source_id, firstOrder.source_id);
+            Assert.AreEqual(shipments[0].order_status, firstOrder.order_status);
+        }
+
         public async Task UpdateShipmentTest_Success()
         {
             // Arrange
