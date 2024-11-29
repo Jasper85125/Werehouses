@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Services;
+namespace ServicesV2;
 
 public interface IitemGroupService
 {

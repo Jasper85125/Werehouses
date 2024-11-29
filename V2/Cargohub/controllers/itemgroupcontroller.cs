@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Services;
+using ServicesV2;
 
-namespace Controllers;
+namespace ControllersV2;
 
-[Route("itemgroups")]
+[Route("api/v2/itemgroups")]
 [ApiController]
 public class ItemGroupController : ControllerBase
 {

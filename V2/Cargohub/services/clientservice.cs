@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Services;
+namespace ServicesV2;
 
 public class ClientService : IClientService
 {

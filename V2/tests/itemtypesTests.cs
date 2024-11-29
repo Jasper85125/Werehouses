@@ -1,10 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Services;
+using ServicesV2;
 using Moq;
-using Controllers;
+using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
-namespace itemtype.Tests
+
+namespace itemtype.TestsV2
 {
     [TestClass]
     public class ItemTypeServiceTests

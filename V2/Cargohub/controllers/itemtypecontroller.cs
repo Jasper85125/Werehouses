@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Services;
+using ServicesV2;
 using System.Threading.Tasks;
 
-namespace Controllers;
+namespace ControllersV2;
 
-[Route("itemtypes")]
+[Route("api/v2/itemtypes")]
 [ApiController]
 public class ItemTypeController : ControllerBase
 {

@@ -1,4 +1,4 @@
-namespace Services;
+namespace ServicesV2;
 
 public interface IInventoryService
 {
