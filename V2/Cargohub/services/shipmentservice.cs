@@ -57,6 +57,17 @@ public class ShipmentService : IShipmentService
         return newShipment;
     }
 
+    public List<ShipmentCS> CreateMultipleShipments(List<ShipmentCS>newShipments)
+    {
+        List<ShipmentCS> addedShipments = new List<ShipmentCS>();
+        foreach(ShipmentCS shipment in newShipments)
+        {
+            ShipmentCS addShipment = CreateShipment(shipment);
+            addedShipments.Add(addShipment);
+        }
+        return addedShipments;
+    }
+
     public async Task<ShipmentCS> UpdateShipment(int id, ShipmentCS updateShipment)
     {
         List<ShipmentCS> shipments = GetAllShipments();
