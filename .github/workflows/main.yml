@@ -9,14 +9,14 @@ on:
       - '**'
 
 jobs:
-  build-and-test:
+  csharp-build-and-test:
     runs-on: ubuntu-latest
     env:
       DOTNET_INSTALL_DIR: ..dotnet
 
     strategy:
       matrix:
-        language: [csharp, python]
+        language: [csharp]
         version: [V1, V2]
 
     steps:
@@ -43,11 +43,6 @@ jobs:
         dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore
       continue-on-error: true
 
-   # Create Coverage Output Directory
-    #- name: Create Coverage Output Directory
-      #if: matrix.language == 'csharp'
-      #run: mkdir -p TestResults/coverage-results
-    # Clean up previous results
     - name: Clean Up Old Test and Coverage Results
       if: matrix.language == 'csharp'
       run: |
@@ -64,20 +59,10 @@ jobs:
           /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
       continue-on-error: true
 
-    # Debug File System State
-    #- name: Debug File System State
-      #if: matrix.language == 'csharp'
-      #run: |
-        #echo "Listing current directory:"
-        #ls -la
-        #echo "Listing subdirectories:"
-        #find .
-
     # Install ReportGenerator
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
       run: dotnet tool install --global dotnet-reportgenerator-globaltool
-
 
     # Generate Coverage Report
     - name: Generate Coverage Report
@@ -98,10 +83,3 @@ jobs:
       with:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
-
-    # Setup for Python projects
-    - name: Set up Python
-      if: matrix.language == 'python'
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
