@@ -7,6 +7,7 @@ public interface ILocationService
     List<LocationCS> GetLocationsByWarehouseId(int warehouse_id);
     LocationCS CreateLocation(LocationCS location);
     List<LocationCS> CreateMultipleLocations(List<LocationCS> locations);
+    LocationCS PatchLocation(int id, string property, object newvalue);
     LocationCS UpdateLocation(LocationCS location, int id);
     void DeleteLocation(int id);
     void DeleteLocations(List<int> ids);
