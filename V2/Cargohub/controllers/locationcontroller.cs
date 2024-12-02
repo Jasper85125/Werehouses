@@ -88,7 +88,14 @@ namespace ControllersV2
             }
             return Ok(updatedLocation);
         }
-
+        [HttpPatch("{id}/{property}")]
+        public ActionResult<LocationCS> PatchLocation([FromRoute]int id, [FromRoute]string property, [FromBody]object newvalue){
+            if(string.IsNullOrEmpty(property) || newvalue is null){
+                return BadRequest("Missing inputs in request");
+            }
+            var result = _locationService.PatchLocation(id, property, newvalue);
+            return Ok(result);
+        }
         // DELETE: api/warehouse/5
         [HttpDelete("{id}")]
         public ActionResult DeleteLocation(int id)
