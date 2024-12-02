@@ -164,7 +164,22 @@ namespace TestsV2
             Assert.AreEqual("C.3.2", returnedLocation.code);
             Assert.AreEqual(5, returnedLocation.warehouse_id);
         }
-
+        [TestMethod]
+        public void PatchLocation_Succes(){
+            //Arrange
+            var patchedlocation = new LocationCS(){Id=1, name="ASS"};
+            _mockLocationService.Setup(_=>_.PatchLocation(1,"name", "ASS")).Returns(patchedlocation);
+            //Act
+            var result = _locationController.PatchLocation(1,"name", "ASS");
+            var resultok = result.Result as OkObjectResult;
+            var value = resultok.Value as LocationCS;
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultok);
+            Assert.IsNotNull(value);
+            Assert.AreEqual(resultok.StatusCode, 200);
+            Assert.AreEqual(value.name, patchedlocation.name);
+        }
         [TestMethod]
         public void UpdatedLocationTest_Failed()
         {
