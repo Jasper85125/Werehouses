@@ -120,6 +120,73 @@ public class ShipmentService : IShipmentService
         File.WriteAllText(path, json);
         return updatedShipment;
     }
+    public ShipmentCS PatchShipment(int id, string property, object newvalue){
+        var shipments = GetAllShipments();
+        var shipment = shipments.Find(_ => _.Id == id);
+        if(shipment is not null){
+            // Get the current date and time
+            var currentDateTime = DateTime.Now;
+
+            // Format the date and time to the desired format
+            var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+            switch(property){
+                case"order_id":
+                shipment.order_id = (int)newvalue;
+                break;
+                case"source_id":
+                shipment.source_id = (int)newvalue;
+                break;
+                case"order_date":
+                shipment.order_date = DateTime.ParseExact(newvalue.ToString(), "yyyy-MM-dd HH:mm:ss", null);
+                break;
+                case"request_date":
+                shipment.request_date = DateTime.ParseExact(newvalue.ToString(), "yyyy-MM-dd HH:mm:ss", null);
+                break;
+                case"shipment_date":
+                shipment.shipment_date = DateTime.ParseExact(newvalue.ToString(), "yyyy-MM-dd HH:mm:ss", null);
+                break;
+                case"shipment_type":
+                shipment.shipment_type = newvalue.ToString();
+                break;
+                case"shipment_status":
+                shipment.shipment_status = newvalue.ToString();
+                break;
+                case"Notes":
+                shipment.Notes = newvalue.ToString();
+                break;
+                case"carrier_code":
+                shipment.carrier_code = newvalue.ToString();
+                break;
+                case"carrier_description":
+                shipment.carrier_description = newvalue.ToString();
+                break;
+                case"service_code":
+                shipment.service_code = newvalue.ToString();
+                break;
+                case"payment_type":
+                shipment.payment_type = newvalue.ToString();
+                break;
+                case"transfer_mode":
+                shipment.transfer_mode = newvalue.ToString();
+                break;
+                case"total_package_count":
+                shipment.total_package_count = (int)newvalue;
+                break;
+                case"total_package_weight":
+                shipment.total_package_weight = (int)newvalue;
+                break;
+                case"Items":
+                shipment.Items = newvalue as List<ItemIdAndAmount>;
+                break;
+            }
+            shipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+            var path = "data/shipment.json";
+            var json = JsonConvert.SerializeObject(shipments);
+            File.WriteAllText(path, json);
+            return shipment;
+        }
+        return null;
+    }
     public void DeleteShipment(int id)
     {
         var path = "data/shipments.json";
