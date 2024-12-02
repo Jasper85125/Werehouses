@@ -92,6 +92,28 @@ public class LocationService : ILocationService
 
 
     }
+    public LocationCS PatchLocation(int id, string property, object newvalue){
+        var locations = GetAllLocations();
+        if (locations is not null){
+            var location = locations.Find(_=>_.Id == id);
+            switch(property){
+                case"warehouse_id":
+                location.warehouse_id = (int) newvalue;
+                break;
+                case"code":
+                location.code = newvalue.ToString();
+                break;
+                case"name":
+                location.name = newvalue.ToString();
+                break;
+            }
+            location.updated_at = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            var json = JsonConvert.SerializeObject(locations, Formatting.Indented);
+            File.WriteAllText(_path, json);
+            return location;
+        }
+        return null;
+    }
     public void DeleteLocation(int locationId)
     {
         var locations = GetAllLocations();
