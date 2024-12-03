@@ -81,7 +81,16 @@ public class WarehouseController : ControllerBase
         }
         return Ok(updatedWarehouse);
     }
-
+    //PATCH: Warehouse/{id}/{property_to_change}
+    //''   :     ''   /  ''/      contact == werkt niet
+    [HttpPatch("{id}/{property}")]
+    public ActionResult<WarehouseCS> PatchWarehouse([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue){
+        if(newvalue is null){
+            return NotFound("Erhm what?");
+        }
+        var result = _warehouseService.PatchWarehouse(id, property, newvalue);
+        return Ok(result);
+    }
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
     public ActionResult DeleteWarehouse([FromRoute] int id)
