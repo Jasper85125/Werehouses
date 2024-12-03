@@ -212,6 +212,22 @@ namespace item.TestsV2
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
         [TestMethod]
+        public void PatchItem_Succes(){
+            //Arrange
+            var patcheditem = new ItemCS(){ uid="P000001", code="lol no"};
+            _mockItemService.Setup(service=>service.PatchItem("P000001", "code", "lol no")).Returns(patcheditem);
+            //Act
+            var result = _itemController.PatchItem("P000001", "code", "lol no");
+            var resultok = result.Result as OkObjectResult;
+            var value = resultok.Value as ItemCS;
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultok);
+            Assert.IsNotNull(value);
+            Assert.AreEqual(resultok.StatusCode, 200);
+            Assert.AreEqual(value.code, "lol no");
+        }
+        [TestMethod]
         public void DeleteItem_ReturnsOkResult_WhenItemIsDeleted()
         {
             // Arrange
