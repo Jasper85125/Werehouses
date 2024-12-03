@@ -83,3 +83,59 @@ jobs:
       with:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
+  # Job to run Python tests
+  python-tests:
+    runs-on: ubuntu-latest
+    needs: csharp-build-and-test  # Depends on the C# job
+    steps:
+     # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Setup for .NET (C#)
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    # Run C# application
+    - name: Start C# Application
+      run: |
+        nohup dotnet run --project ./V1/Cargohub/Werehouses.csproj --urls=http://localhost:3000 &
+
+    # Wait for the C# application to be ready
+    - name: Wait for C# Application
+      run: |
+        echo "Waiting for C# application to start..."
+        for i in {1..30}; do
+          if curl --silent --fail http://localhost:3000; then
+            echo "C# application is running."
+            exit 0
+          fi
+          sleep 2
+        done
+        echo "C# application failed to start."
+        exit 1
+
+    # Setup for Python
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # Install Python dependencies
+    - name: Install Python dependencies
+      run: pip install -r PythonTests/requirements.txt
+
+    # Run Python Tests and Generate Report
+    - name: Run Python Tests
+      run: |
+        mkdir -p PythonTests/reports
+        python -m xmlrunner discover -o PythonTests/reports
+
+    # Upload Python Test Reports
+    - name: Upload Python Test Reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-test-reports
+        path: PythonTests/reports
