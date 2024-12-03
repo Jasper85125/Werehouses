@@ -78,7 +78,27 @@ public class ItemTypeService : IItemtypeService
 
         return existingItem;
     }
-
+    public ItemTypeCS PatchItemType(int id, string property, object newvalue){
+        var formattednow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        var itemtypes = GetAllItemtypes();
+        var itemtype = itemtypes.Find(_=>_.Id == id);
+        if(itemtype is null){
+            return null;
+        }
+        switch (property){
+            case"Name":
+            itemtype.Name = newvalue.ToString();
+            break;
+            case"description":
+            itemtype.description = newvalue.ToString();
+            break;
+        }
+        itemtype.updated_at = DateTime.ParseExact(formattednow, "yyyy-MM-dd HH:mm:ss", null);
+        var path = "data/item_types.json";
+        var json = JsonConvert.SerializeObject(itemtypes, Formatting.Indented);
+        File.WriteAllText(path, json);
+        return itemtype;
+    }
     public void DeleteItemType(int id)
     {
         var path = "data/item_types.json";

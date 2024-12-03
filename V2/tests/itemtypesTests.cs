@@ -117,6 +117,22 @@ namespace itemtype.TestsV2
             Assert.IsNull(result);
         }
         [TestMethod]
+        public void PatchItemType_Succes(){
+            //Arrange
+            var patcheditemtype = new ItemTypeCS(){ Id=1, Name="HAHA"};
+            _mockItemTypeService.Setup(service=>service.PatchItemType(1, "Name", "HAHA")).Returns(patcheditemtype);
+            //Act
+            var result = _itemTypeController.PatchItemType(1, "Name", "HAHA");
+            var resultok = result.Result as OkObjectResult;
+            var value = resultok.Value as ItemTypeCS;
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultok);
+            Assert.IsNotNull(value);
+            Assert.AreEqual(resultok.StatusCode, 200);
+            Assert.AreEqual(value.Name, "HAHA");
+        }
+        [TestMethod]
         public void DeleteItemTypeTest_Exists()
         {
             // Arrange

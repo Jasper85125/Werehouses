@@ -82,6 +82,16 @@ public class ItemTypeController : ControllerBase
         var updatedItemLine = await _itemtypeService.UpdateItemType(id, itemType);
         return Ok(updatedItemLine);
     }
+    //zet een nieuwe value in een property van een item_type object 
+    [HttpPatch("{id}/{property}")]
+    public ActionResult<ItemTypeCS> PatchItemType([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue){
+        if(int.IsNegative(id) || string.IsNullOrEmpty(property) || newvalue is null){
+            return BadRequest("Errors in request");
+        }
+        var result = _itemtypeService.PatchItemType(id, property, newvalue);
+        return Ok(result);
+    }
+
     
     [HttpDelete("{id}")]
     public ActionResult DeleteItemType(int id)
