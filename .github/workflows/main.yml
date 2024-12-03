@@ -49,6 +49,7 @@ jobs:
         echo "Removing old TestResults and coverage reports..."
         rm -rf TestResults
         rm -rf coverage-report-${{ matrix.version }}
+
     # Run MSTest with Coverage
     - name: Run MSTest with Coverage
       if: matrix.language == 'csharp'
@@ -83,3 +84,39 @@ jobs:
       with:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
+
+  # Job to run Python tests
+  python-tests:
+    runs-on: ubuntu-latest
+    needs: csharp-build-and-test  # Depends on the C# job
+    steps:
+    # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Run application
+    - name: Run application
+      run: dotnet run --no-build --configuration Release --urls=http://0.0.0.0:5000/ & sleep 5
+
+    # Setup Python
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'  # Specify the Python version you are using
+
+    # Install Python dependencies
+    - name: Install Python dependencies
+      run: pip install -r ./PythonTests/requirements.txt
+
+    # Run Python Tests and Generate Report
+    - name: Run Python Tests
+      run: |
+        mkdir -p ./PythonTests/reports
+        python -m xmlrunner discover -o PythonTests/reports
+
+    # Upload Python Test Reports
+    - name: Upload Python Test Reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-test-reports
+        path: PythonTests/reports
