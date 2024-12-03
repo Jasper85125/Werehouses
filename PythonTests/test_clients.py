@@ -52,12 +52,12 @@ class TestClass(unittest.TestCase):
         # Check dat de response een list is
         self.assertEqual(type(response.json()), list)
 
-        # Als de list iets bevat (want een list van 0 objects is in principe
+        # Als de list iets bevat (want een list van 0 objects is inprincipe
         # "legaal")
         # Check of de object in de list ook echt een "object" (eigenlijk
         # overal een dictionary) is,
-        # Check of de object in de list ook echt een "object"
-        # (eigenlijk overal een dictionary) is,
+        # Check of de object in de list ook echt een "object" is,
+        # (eigenlijk overal een dictionary),
         # dus niet dat het een list van ints, strings etc. zijn
         self.assertEqual(type(response.json()[0]), dict)
 
@@ -70,8 +70,8 @@ class TestClass(unittest.TestCase):
         # Check dat de response een dictionary is (representatief voor een
         # enkel client object)
 
-        # Check dat de response een dictionary is
-        # (representatief voor een enkel client object)
+        # Check dat de response een dictionary is (representatief voor een
+        # enkel client object)
         self.assertEqual(type(response.json()), dict)
 
         # Check dat het client object de juiste properties heeft
@@ -133,7 +133,7 @@ class TestClass(unittest.TestCase):
 
         # Check de status code
         self.assertEqual(response.status_code, 200)
-
+# # git checkout . -f
 
 # to run the file: python -m unittest test_clients.py
 # # git checkout . -f
