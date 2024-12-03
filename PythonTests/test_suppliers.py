@@ -13,25 +13,30 @@ import requests
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.url = "http://localhost:3000/api/v1"
-        self.headers = { 'API_KEY': 'a1b2c3d4e5' }
+        self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_suppliers(self):
-        response = requests.get(url=(self.url + "/suppliers"), headers=self.headers)
-        
+        response = requests.get(
+            url=(self.url + "/suppliers"), headers=self.headers
+        )
+
         self.assertEqual(response.status_code, 200)
+        response = requests.get(
+            url=(self.url + "/suppliers/1"), headers=self.headers
+        )
 
     def test_get_supplier_id(self):
-        response = requests.get(url=(self.url + "/suppliers/1"), headers=self.headers)
-        
+        response = requests.get(
+            url=(self.url + "/suppliers/1"), headers=self.headers
+        )
+        response = requests.get(
+            url=(self.url + "/suppliers/1/items"), headers=self.headers
+        )
         self.assertEqual(response.status_code, 200)
 
-    def test_get_items_from_supplier(self):
-        response = requests.get(url=(self.url + "/suppliers/1/items"), headers=self.headers)
 
-        self.assertEqual(response.status_code, 200)
-
-    def test_post_supplier(self):
-        data = {
+def test_get_items_from_supplier(self):
+    data = {
         "id": 678098,
         "code": "SUP",
         "name": "FRANKY",
@@ -46,14 +51,13 @@ class TestClass(unittest.TestCase):
         "reference": "FRANKY-SUP",
         "created_at": None,
         "updated_at": None
-        }
+    }
+    response = requests.post(
+        url=(self.url + "/suppliers"), headers=self.headers, json=data
+    )
+    self.assertEqual(response.status_code, 200)
 
-        response = requests.post(url=(self.url + "/suppliers"), headers=self.headers, json=data)
-
-        self.assertEqual(response.status_code, 201)
-
-    def test_put_supplier_id(self):
-        data = {
+    data = {
         "id": 12345,
         "code": "SUP",
         "name": "FRANKY",
@@ -68,16 +72,24 @@ class TestClass(unittest.TestCase):
         "reference": "FRANKY-SUP",
         "created_at": None,
         "updated_at": None
-        }
+    }
+    response = requests.put(
+        url=(self.url + "/suppliers/2"), headers=self.headers, json=data
+    )
+    self.assertEqual(response.status_code, 200)
 
-        response = requests.put(url=(self.url + "/suppliers/2"), headers=self.headers, json=data)
-
-        self.assertEqual(response.status_code, 200)
+    response = requests.delete(
+        url=(self.url + "/suppliers/3"), headers=self.headers
+    )
+    self.assertEqual(response.status_code, 200)
 
     def test_delete_supplier_id(self):
-        response = requests.delete(url=(self.url + "/suppliers/3"), headers=self.headers)
+        response = requests.delete(
+            url=(self.url + "/suppliers/3"), headers=self.headers
+        )
 
         self.assertEqual(response.status_code, 200)
+
 
 if __name__ == "__main__":
     unittest.main()

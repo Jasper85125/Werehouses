@@ -124,9 +124,8 @@ class TestItemTypesAPI(unittest.TestCase):
                     for item_type in response.json()
                 )
             )
-
-
     # Updates an item type based on the given item type id
+
     def test_05_put_item_type_id(self):
         data = {
             "id": 4,

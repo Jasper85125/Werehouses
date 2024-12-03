@@ -65,7 +65,10 @@ class TestClass(unittest.TestCase):
         }
 
         response = requests.put(
-            url=(self.url + "/inventories/99999"), headers=self.headers, json=data)
+            url=(self.url + "/inventories/99999"),
+            headers=self.headers,
+            json=data
+        )
 
         self.assertEqual(response.status_code, 200)
 

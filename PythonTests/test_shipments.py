@@ -199,7 +199,9 @@ class TestClass(unittest.TestCase):
             ]
         }
         response = requests.put(
-            url=(self.url + "/shipments/9999"), headers=self.headers, json=data)
+            url=(self.url + "/shipments/9999"),
+            headers=self.headers,
+            json=data)
         self.assertEqual(response.status_code, 200)
 
     def test_put_shipment_by_id_items(self):
@@ -220,7 +222,10 @@ class TestClass(unittest.TestCase):
             ]
         }
         response = requests.put(
-            url=(self.url + "/shipments/9999/items"), headers=self.headers, json=data)
+            url=(self.url + "/shipments/9999/items"),
+            headers=self.headers,
+            json=data
+        )
         # print(response.status_code)
         # print(response.text)
         self.assertEqual(response.status_code, 200)

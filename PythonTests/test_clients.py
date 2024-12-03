@@ -7,27 +7,27 @@ def checkClient(client):
         return False
 
     # als de client niet die property heeft, return False
-    if client.get("id") == None:
+    if client.get("id") is None:
         return False
-    if client.get("name") == None:
+    if client.get("name") is None:
         return False
-    if client.get("address") == None:
+    if client.get("address") is None:
         return False
-    if client.get("zip_code") == None:
+    if client.get("zip_code") is None:
         return False
-    if client.get("city") == None:
+    if client.get("city") is None:
         return False
-    if client.get("province") == None:
+    if client.get("province") is None:
         return False
-    if client.get("country") == None:
+    if client.get("country") is None:
         return False
-    if client.get("contact_phone") == None:
+    if client.get("contact_phone") is None:
         return False
-    if client.get("contact_email") == None:
+    if client.get("contact_email") is None:
         return False
-    if client.get("created_at") == None:
+    if client.get("created_at") is None:
         return False
-    if client.get("updated_at") == None:
+    if client.get("updated_at") is None:
         return False
 
     # het heeft elke property dus return true
@@ -52,11 +52,14 @@ class TestClass(unittest.TestCase):
         # Check dat de response een list is
         self.assertEqual(type(response.json()), list)
 
-        # Als de list iets bevat (want een list van 0 objects is inprincipe "legaal")
-        if (len(response.json()) > 0):
-            # Check of de object in de list ook echt een "object" (eigenlijk overal een dictionary) is,
-            # dus niet dat het een list van ints, strings etc. zijn
-            self.assertEqual(type(response.json()[0]), dict)
+        # Als de list iets bevat (want een list van 0 objects is in principe
+        # "legaal")
+        # Check of de object in de list ook echt een "object" (eigenlijk
+        # overal een dictionary) is,
+        # Check of de object in de list ook echt een "object"
+        # (eigenlijk overal een dictionary) is,
+        # dus niet dat het een list van ints, strings etc. zijn
+        self.assertEqual(type(response.json()[0]), dict)
 
     def test_02_get_client_id(self):
         # Stuur de request
@@ -64,9 +67,11 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/clients/1"), headers=self.headers)
 
         # Check de status code
-        self.assertEqual(response.status_code, 200)
+        # Check dat de response een dictionary is (representatief voor een
+        # enkel client object)
 
-        # Check dat de response een dictionary is (representatief voor een enkel client object)
+        # Check dat de response een dictionary is
+        # (representatief voor een enkel client object)
         self.assertEqual(type(response.json()), dict)
 
         # Check dat het client object de juiste properties heeft

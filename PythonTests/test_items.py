@@ -1,6 +1,4 @@
 import unittest
-import os
-import json
 import httpx
 # from api.models.items import Items
 
