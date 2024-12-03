@@ -152,7 +152,30 @@ namespace item.TestsV2
             Assert.AreEqual("P000002", returnedItem.uid);
             Assert.AreEqual("NewItem", returnedItem.code);
         }
-
+        [TestMethod]
+        public void CreateItemsTest_Succes(){
+            //arrange
+            var newitems = new List<ItemCS>(){
+                new ItemCS(){ uid="P000002", code="WHY"},
+                new ItemCS(){ uid="P000003", code="WHY1"},
+            };
+            // var createditems = new List<ItemCS>(){
+            //     new ItemCS(){ uid="P000002", code="WHY"},
+            //     new ItemCS(){ uid="P000003", code="WHY1"},
+            // };
+            _mockItemService.Setup(_ => _.CreateItems(newitems)).Returns(newitems);
+            //Act
+            var result = _itemController.CreateItems(newitems);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<ItemCS>;
+            //Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(newitems[0].uid, returnedItems[0].uid);
+            Assert.AreEqual(newitems[0].code, returnedItems[0].code);
+            Assert.AreEqual(newitems[1].uid, returnedItems[1].uid);
+            Assert.AreEqual(newitems[1].code, returnedItems[1].code);
+        }
         [TestMethod]
         public void UpdateItem_ReturnsOkResult_WithUpdatedItem()
         {
