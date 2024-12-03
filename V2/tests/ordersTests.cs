@@ -284,6 +284,22 @@ namespace TestsV2
             Assert.IsNotNull(notFoundResult);
         }
         [TestMethod]
+        public void PatchOrder_succes(){
+            //Arrange
+            var patchedorder = new OrderCS(){ Id = 1, Reference="lol, weirdo"};
+            _mockOrderService.Setup(_=>_.PatchOrder(1, "Reference", "lol, weirdo")).Returns(patchedorder);
+            //Act
+            var result = _orderController.PatchOrder(1, "Reference", "lol, weirdo");
+            var resultok = result.Result as OkObjectResult;
+            var value = resultok.Value as OrderCS;
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultok);
+            Assert.IsNotNull(value);
+            Assert.AreEqual(resultok.StatusCode, 200);
+            Assert.AreEqual(value.Reference, patchedorder.Reference);
+        }
+        [TestMethod]
         public void DeleteOrdersTest_Succes(){
             //Arrange
             var listidstodel = new List<int>(){1,2,3};

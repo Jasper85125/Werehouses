@@ -64,7 +64,15 @@ public class ItemController : ControllerBase
         var createdItem = _itemService.CreateItem(newItem);
         return CreatedAtAction(nameof(GetByUid), new { uid = createdItem.uid }, createdItem);
     }
-
+        //POST: more than =>1 ItemCS
+    [HttpPost("batch")]
+    public ActionResult<IEnumerable<ItemCS>> CreateItems([FromBody] List<ItemCS> items){
+        if(items is null){
+            return BadRequest("Items are null");
+        }
+        var result = _itemService.CreateItems(items);
+        return StatusCode(StatusCodes.Status201Created, result);
+    }
     // PUT: items/5
     [HttpPut("{uid}")]
     public ActionResult<ItemCS> UpdateItem(string uid, [FromBody] ItemCS updatedItem)
