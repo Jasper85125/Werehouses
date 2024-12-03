@@ -36,6 +36,12 @@ jobs:
       if: matrix.language == 'csharp'
       run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
 
+    # Run StyleCop Check using the Bash script
+    - name: Run StyleCop Check (Bash Script)
+      run: |
+        chmod +x ./scripts/check-stylecop.sh
+        ./scripts/check-stylecop.sh
+
     # Build the solution
     - name: Build solution
       if: matrix.language == 'csharp'
