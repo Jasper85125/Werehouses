@@ -136,7 +136,7 @@ namespace ControllersV2
             return Ok(updatedOrder);
         }
         [HttpPatch("{id}/{property}")]
-        public ActionResult PatchOrder([FromRoute]int id, [FromRoute]string property, [FromBody]object newvalue){
+        public ActionResult<OrderCS> PatchOrder([FromRoute]int id, [FromRoute]string property, [FromBody]object newvalue){
             if(string.IsNullOrEmpty(property) || newvalue is null){
                 return BadRequest("Missing inputs in request");
             }
