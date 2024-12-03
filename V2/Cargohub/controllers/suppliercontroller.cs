@@ -123,6 +123,7 @@ public class SupplierController : ControllerBase
 
         return Ok(updatedSupplier);
     }
+    
     [HttpDelete("batch")]
     public ActionResult DeleteSuppliers([FromBody]List<int> ids){
         if(ids is null){
