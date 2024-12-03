@@ -85,7 +85,20 @@ public class ItemService : IItemService
 
         return item;
     }
-
+    // Method to create multiple items in one post request
+    public List<ItemCS> CreateItems(List<ItemCS> items)
+    {
+        //list to return
+        var newitemdata = new List<ItemCS>();
+        foreach (ItemCS item in items)
+        {
+            //turn element in list into an itemCS
+            ItemCS addItem = CreateItem(item);
+            //add to list
+            newitemdata.Add(addItem);
+        }
+        return newitemdata;
+    }
     // Method to update an existing item
     public ItemCS UpdateItem(string uid, ItemCS item)
     {
