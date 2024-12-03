@@ -64,19 +64,14 @@ public class ItemController : ControllerBase
         var createdItem = _itemService.CreateItem(newItem);
         return CreatedAtAction(nameof(GetByUid), new { uid = createdItem.uid }, createdItem);
     }
-    // Method to create multiple items in one post request
-    public List<ItemCS> CreateItems(List<ItemCS> items)
-    {
-        //list to return
-        var newitemdata = new List<ItemCS>();
-        foreach (ItemCS item in items)
-        {
-            //turn element in list into an itemCS
-            ItemCS addItem = CreateItem(item);
-            //add to list
-            newitemdata.Add(addItem);
+        //POST: more than =>1 ItemCS
+    [HttpPost("batch")]
+    public ActionResult<IEnumerable<ItemCS>> CreateItems([FromBody] List<ItemCS> items){
+        if(items is null){
+            return BadRequest("Items are null");
         }
-        return newitemdata;
+        var result = _itemService.CreateItems(items);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
     // PUT: items/5
     [HttpPut("{uid}")]
