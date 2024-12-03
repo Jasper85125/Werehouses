@@ -37,7 +37,7 @@ def checkClient(client):
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.url = "http://localhost:3000/api/v1"
+        self.url = "http://localhost:5125/api/v1"
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
 
     def test_01_get_clients(self):
