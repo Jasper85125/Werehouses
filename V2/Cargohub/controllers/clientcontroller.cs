@@ -80,6 +80,7 @@ public class ClientController : ControllerBase
         return Ok(updatedClient);
 
     }
+
     [HttpDelete("{id}")]
     public ActionResult DeleteClient([FromRoute]int id)
     {
@@ -91,6 +92,7 @@ public class ClientController : ControllerBase
         _clientservice.DeleteClient(id);
         return Ok();
     }
+
     [HttpDelete("batch")]
     public ActionResult DeleteClients ([FromBody] List<int> ids){
         if(ids is null){
@@ -98,5 +100,22 @@ public class ClientController : ControllerBase
         }
         _clientservice.DeleteClients(ids);
         return Ok("multiple clients deleted");
+    }
+
+    //PATCH: /clients/{id}
+    [HttpPatch("{id}")]
+    public ActionResult<ClientCS> PatchClient([FromRoute]int id, [FromBody] ClientCS client)
+    {
+        if (client is null)
+        {
+            return BadRequest("Client data is null.");
+        }
+
+        var updatedClient = _clientservice.UpdateClient(id, client);
+        if (updatedClient is null)
+        {
+            return NotFound("No Client found with the given id");
+        }
+        return Ok(updatedClient);
     }
 }
