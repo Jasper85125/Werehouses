@@ -60,13 +60,13 @@ public class InventoryService : IInventoryService
 
         var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
         File.WriteAllText(path, jsonData);
-        return newInventory;  
+        return newInventory;
     }
 
-    public List<InventoryCS> CreateMultipleInventories(List<InventoryCS>newInventories)
+    public List<InventoryCS> CreateMultipleInventories(List<InventoryCS> newInventories)
     {
         List<InventoryCS> addedInventory = new List<InventoryCS>();
-        foreach(InventoryCS inventory in newInventories)
+        foreach (InventoryCS inventory in newInventories)
         {
             InventoryCS addInventorty = CreateInventory(inventory);
             addedInventory.Add(addInventorty);
@@ -87,12 +87,13 @@ public class InventoryService : IInventoryService
         var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
         File.WriteAllText(path, jsonData);
     }
-    public InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory){
+    public InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory)
+    {
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         var inventories = GetAllInventories();
         var toUpdate = inventories.Find(_ => _.Id == id);
-        if(toUpdate is null)
+        if (toUpdate is null)
         {
             return null;
         }
@@ -111,14 +112,70 @@ public class InventoryService : IInventoryService
         return toUpdate;
     }
 
-    public void DeleteInventories(List<int> ids){
+    public void DeleteInventories(List<int> ids)
+    {
         var inventories = GetAllInventories();
-        foreach(int id in ids)
+        foreach (int id in ids)
         {
-            inventories.Remove(inventories.Find(_=>_.Id == id));
+            inventories.Remove(inventories.Find(_ => _.Id == id));
         }
         var path = "data/inventories.json";
         var json = JsonConvert.SerializeObject(inventories, Formatting.Indented);
         File.WriteAllText(path, json);
+    }
+
+
+
+    public InventoryCS PatchInventory(int id, InventoryCS patchInventory)
+    {
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+        var inventories = GetAllInventories();
+        var toPatch = inventories.Find(_ => _.Id == id);
+        if (toPatch is null)
+        {
+            return null;
+        }
+
+        if (patchInventory.description != null)
+        {
+            toPatch.description = patchInventory.description;
+        }
+        if (patchInventory.item_reference != null)
+        {
+            toPatch.item_reference = patchInventory.item_reference;
+        }
+        if (patchInventory.Locations != null)
+        {
+            toPatch.Locations = patchInventory.Locations;
+        }
+        if (patchInventory.total_on_hand != 0)
+        {
+            toPatch.total_on_hand = patchInventory.total_on_hand;
+        }
+        if (patchInventory.total_expected != 0)
+        {
+            toPatch.total_expected = patchInventory.total_expected;
+        }
+        if (patchInventory.total_ordered != 0)
+        {
+            toPatch.total_ordered = patchInventory.total_ordered;
+        }
+        if (patchInventory.total_allocated != 0)
+        {
+            toPatch.total_allocated = patchInventory.total_allocated;
+        }
+        if (patchInventory.total_available != 0)
+        {
+            toPatch.total_available = patchInventory.total_available;
+        }
+
+        patchInventory.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+        var path = "data/inventories.json";
+        var json = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+        File.WriteAllText(path, json);
+
+        return toPatch;
     }
 }
