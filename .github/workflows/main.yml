@@ -106,12 +106,12 @@ jobs:
 
     # Install Python dependencies
     - name: Install Python dependencies
-      run: pip install -r PythonTests/requirements.txt
+      run: pip install -r ./PythonTests/requirements.txt
 
     # Run Python Tests and Generate Report
     - name: Run Python Tests
       run: |
-        mkdir -p PythonTests/reports
+        mkdir -p ./PythonTests/reports
         python -m xmlrunner discover -o PythonTests/reports
 
     # Upload Python Test Reports
