@@ -91,6 +91,15 @@ public class ItemController : ControllerBase
         var updatedItemResult = _itemService.UpdateItem(uid, updatedItem);
         return Ok(updatedItemResult);
     }
+    // change the value of one property in an item object
+    [HttpPatch("{uid}/{property}")]
+    public ActionResult<ItemCS> PatchItem([FromRoute] string uid, [FromRoute] string property, [FromBody] object newvalue){
+        if(string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(property) || newvalue is null){
+            return BadRequest("Error in request");
+        }
+        var result = _itemService.PatchItem(uid, property, newvalue);
+        return Ok(result);
+    } 
     [HttpDelete("{uid}")]
     public ActionResult DeleteItem(string uid)
     {
