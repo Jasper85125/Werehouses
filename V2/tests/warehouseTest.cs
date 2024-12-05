@@ -275,7 +275,7 @@ namespace TestsV2
         public void DeleteWarehousesTest_Succes()
         {
             //Arrange
-            var idstodel = new List<int>() { 1, 2, 3 };
+            var idsToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -287,7 +287,7 @@ namespace TestsV2
             };
 
             //Act
-            var result = _warehouseController.DeleteWarehouses(idstodel);
+            var result = _warehouseController.DeleteWarehouses(idsToDelete);
             var resultok = result as OkObjectResult;
 
             //Assert

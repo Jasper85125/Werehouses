@@ -17,6 +17,14 @@ public class ClientController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<ClientCS>> GetAllClients()
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var clients = _clientservice.GetAllClients();
         if (clients is null)
         {
@@ -27,8 +35,16 @@ public class ClientController : ControllerBase
 
     // GET: /clients/{id}
     [HttpGet("{id}")]
-    public ActionResult<ClientCS> GetClientById([FromRoute]int Id)
+    public ActionResult<ClientCS> GetClientById([FromRoute] int Id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var client = _clientservice.GetClientById(Id);
         if (client is null)
         {
@@ -36,11 +52,19 @@ public class ClientController : ControllerBase
         }
         return Ok(client);
     }
-    
+
     // POST: /clients
     [HttpPost()]
     public ActionResult<ClientCS> CreateClient([FromBody] ClientCS newClient)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (newClient is null)
         {
             return BadRequest("Client data is null");
@@ -54,6 +78,14 @@ public class ClientController : ControllerBase
     [HttpPost("multiple")]
     public ActionResult<ClientCS> CreateMultipleClients([FromBody] List<ClientCS> newClient)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (newClient is null)
         {
             return BadRequest("Client data is null");
@@ -65,8 +97,16 @@ public class ClientController : ControllerBase
 
     // PUT: /clients/{id}
     [HttpPut("{id}")]
-    public ActionResult<ClientCS> UpdateClient([FromRoute]int id, [FromBody] ClientCS client)
+    public ActionResult<ClientCS> UpdateClient([FromRoute] int id, [FromBody] ClientCS client)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (client is null)
         {
             return BadRequest("Client data is null.");
@@ -81,8 +121,16 @@ public class ClientController : ControllerBase
 
     }
     [HttpDelete("{id}")]
-    public ActionResult DeleteClient([FromRoute]int id)
+    public ActionResult DeleteClient([FromRoute] int id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var existingClient = _clientservice.GetClientById(id);
         if (existingClient is null)
         {
@@ -91,9 +139,20 @@ public class ClientController : ControllerBase
         _clientservice.DeleteClient(id);
         return Ok();
     }
+
     [HttpDelete("batch")]
-    public ActionResult DeleteClients ([FromBody] List<int> ids){
-        if(ids is null){
+    public ActionResult DeleteClients([FromBody] List<int> ids)
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        
+        if (ids is null)
+        {
             return BadRequest("error in request");
         }
         _clientservice.DeleteClients(ids);
