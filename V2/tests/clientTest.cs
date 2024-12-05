@@ -4,6 +4,7 @@ using Moq.Protected;
 using Microsoft.AspNetCore.Mvc;
 using ServicesV2;
 using ControllersV2;
+using Microsoft.AspNetCore.Http;
 
 namespace clients.TestsV2
 {

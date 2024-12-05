@@ -4,6 +4,7 @@ using Moq;
 using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace TestsV2
 {
@@ -35,7 +36,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -65,7 +66,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -91,7 +92,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -117,7 +118,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -145,7 +146,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -183,7 +184,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -213,7 +214,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -242,7 +243,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -270,7 +271,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -297,7 +298,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -322,7 +323,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -351,7 +352,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -387,7 +388,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -410,7 +411,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-            _clientController.ControllerContext = new ControllerContext
+            _orderController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -418,7 +419,7 @@ namespace TestsV2
             //Act
             var result = _orderController.DeleteOrders(ordersToDelete);
             var resultok = result as OkObjectResult;
-            
+
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
