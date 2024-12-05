@@ -1,4 +1,5 @@
 using ServicesV1;
+using ApiKeyAuthentication.Authentication;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,8 @@ builder.Services.AddTransient<ITransferService, TransferService>();
 builder.Services.AddTransient<IOrderService, OrderService>();
 
 var app = builder.Build();
+
+app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapControllers();
 

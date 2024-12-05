@@ -21,16 +21,15 @@ public class ApiKeyMiddleware
             return;
         }
 
-        var apiKey = ApiKeyStorage.ApiKeys.FirstOrDefault(k => k.Key == extractedApiKey);
-        
-        if (apiKey == null)
-        {
-            context.Response.StatusCode = 403; // Forbidden
-            await context.Response.WriteAsync("Api-Key is ongeldig");
-            return;
-        } 
+        var apiKey = _configuration.GetValue<string>(AuthConstants.ApiKeySectionName);
 
-        context.Items["UserRole"] = apiKey.Role; // Attach role to the request
-        await _next(context);  
+        if (!apiKey.Equals(extractedApiKey))
+        {
+            context.Response.StatusCode = 401;
+            await context.Response.WriteAsync("Ongeldige Api-Key");
+            return;
+        }
+
+        await _next(context);
     }
 }

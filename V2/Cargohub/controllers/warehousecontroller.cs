@@ -19,6 +19,14 @@ public class WarehouseController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<WarehouseCS>> GetAllWarehouses()
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var warehouses = _warehouseService.GetAllWarehouses();
         if (warehouses is null)
         {
@@ -31,6 +39,14 @@ public class WarehouseController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<WarehouseCS> GetWarehouseById([FromRoute] int id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var warehouse = _warehouseService.GetWarehouseById(id);
         if (warehouse is null)
         {
@@ -43,6 +59,14 @@ public class WarehouseController : ControllerBase
     [HttpPost()]
     public ActionResult<WarehouseCS> CreateWarehouse([FromBody] WarehouseCS newWarehouse)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (newWarehouse is null)
         {
             return BadRequest("Warehouse data is null");
@@ -56,6 +80,14 @@ public class WarehouseController : ControllerBase
     [HttpPost("multiple")]
     public ActionResult<WarehouseCS> CreateMultipleWarehouse([FromBody] List<WarehouseCS> newWarehouse)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (newWarehouse is null)
         {
             return BadRequest("Warehouse data is null");
@@ -67,8 +99,16 @@ public class WarehouseController : ControllerBase
 
     // PUT: /warehouses/{id}
     [HttpPut("{id}")]
-    public ActionResult<WarehouseCS> UpdateWarehouse([FromRoute]int id, [FromBody] WarehouseCS newWarehouse)
+    public ActionResult<WarehouseCS> UpdateWarehouse([FromRoute] int id, [FromBody] WarehouseCS newWarehouse)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (newWarehouse is null)
         {
             return BadRequest("Warehouse is null.");
@@ -86,18 +126,37 @@ public class WarehouseController : ControllerBase
     [HttpDelete("{id}")]
     public ActionResult DeleteWarehouse([FromRoute] int id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var warehouse = _warehouseService.GetWarehouseById(id);
         if (warehouse is null)
         {
             return NotFound();
         }
         _warehouseService.DeleteWarehouse(id);
-        
+
         return Ok();
     }
+
     [HttpDelete("batch")]
-    public ActionResult DeleteWarehouses([FromBody]List<int> ids){
-        if(ids is null){
+    public ActionResult DeleteWarehouses([FromBody] List<int> ids)
+    {
+        List<string> listOfAllowedRoles = new List<string> () {"Admin"};
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        if (ids is null)
+        {
             return NotFound();
         }
         _warehouseService.DeleteWarehouses(ids);
