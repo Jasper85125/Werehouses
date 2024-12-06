@@ -165,6 +165,10 @@ namespace item.TestsV2
             {
                 HttpContext = httpContext
             };
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _itemTypeController.GetAllItemsInItemType(1);
