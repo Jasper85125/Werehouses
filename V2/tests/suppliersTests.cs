@@ -4,6 +4,7 @@ using Moq;
 using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace TestsV2
 {
@@ -31,6 +32,15 @@ namespace TestsV2
             };
             _mockSupplierService.Setup(service => service.GetAllSuppliers()).Returns(suppliers);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var value = _supplierController.GetAllSuppliers();
 
@@ -53,6 +63,15 @@ namespace TestsV2
             };
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(suppliers[0]);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var value = _supplierController.GetSupplierById(1);
 
@@ -70,6 +89,15 @@ namespace TestsV2
             //arrange
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns((SupplierCS)null);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var value = _supplierController.GetSupplierById(1);
 
@@ -86,6 +114,15 @@ namespace TestsV2
 
             // Set up the mock service to return the created order
             _mockSupplierService.Setup(service => service.CreateSupplier(newSupplier)).Returns(createdSupplier);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _supplierController.CreateSupplier(newSupplier);
@@ -105,7 +142,7 @@ namespace TestsV2
         public void CreateMultipleSuppliers_ReturnsCreatedResult_WithNewSuppliers()
         {
             // Arrange
-            var suppliers = new List<SupplierCS> 
+            var suppliers = new List<SupplierCS>
             {
                 new SupplierCS { Id = 1, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404", City = "Toronto", zip_code = "2935BK",
                                  Country = "Wano", Province = "Denver", contact_name = "Jeff Bezos", PhoneNumber = "0794327812"},
@@ -113,13 +150,22 @@ namespace TestsV2
                                  Country = "Wano", Province = "Denver", contact_name = "Jeff Bezos", PhoneNumber = "0794327812"}
             };
             _mockSupplierService.Setup(service => service.CreateMultipleSuppliers(suppliers)).Returns(suppliers);
-            
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _supplierController.CreateMultipleSuppliers(suppliers);
             var createdResult = result.Result as ObjectResult;
             var returnedItems = createdResult.Value as List<SupplierCS>;
             var firstSupplier = returnedItems[0];
-            
+
             // Assert
             Assert.IsNotNull(createdResult);
             Assert.IsNotNull(returnedItems);
@@ -149,15 +195,24 @@ namespace TestsV2
 
             _mockSupplierService.Setup(service => service.UpdateSupplier(1, updatedSupplier)).Returns(updatedSupplier);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _supplierController.UpdateSupplier(1, updatedSupplier);
+            var createdResult = result.Result as OkObjectResult;
+            var returnedSupplier = createdResult.Value as SupplierCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var createdResult = result.Result as OkObjectResult;
             Assert.IsNotNull(createdResult);
             Assert.IsInstanceOfType(createdResult.Value, typeof(SupplierCS));
-            var returnedSupplier = createdResult.Value as SupplierCS;
             Assert.AreEqual(updatedSupplier.Code, returnedSupplier.Code);
             Assert.AreEqual(updatedSupplier.Address, returnedSupplier.Address);
             Assert.AreEqual(updatedSupplier.contact_name, returnedSupplier.contact_name);
@@ -186,13 +241,22 @@ namespace TestsV2
 
             _mockSupplierService.Setup(service => service.UpdateSupplier(0, updatedSupplier)).Returns((SupplierCS)null);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _supplierController.UpdateSupplier(0, updatedSupplier);
+            var createdResult = result.Result as BadRequestObjectResult;
+            var returnedSupplier = createdResult.Value as SupplierCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
-            var createdResult = result.Result as BadRequestObjectResult;
-            var returnedSupplier = createdResult.Value as SupplierCS;
             Assert.IsNull(returnedSupplier);
         }
 
@@ -202,6 +266,15 @@ namespace TestsV2
             // Arrange
             var supplier = new SupplierCS { Id = 1, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404" };
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(supplier);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _supplierController.DeleteSupplier(1);
@@ -224,15 +297,23 @@ namespace TestsV2
             };
             _mockSupplierService.Setup(service => service.GetItemsBySupplierId(1)).Returns(items);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act: Call the controller method
             var result = _supplierController.GetItemsBySupplierId(1);
+            var okResult = result.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<ItemCS>;
 
             // Assert: Verify the result
             Assert.IsNotNull(result);
-            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult, "Expected OkObjectResult, but got null.");
-
-            var returnedItems = okResult.Value as IEnumerable<ItemCS>;
             Assert.IsNotNull(returnedItems, "Expected returnedItems to be non-null.");
             Assert.AreEqual(2, returnedItems.Count(), "Expected returnedItems to contain 2 items.");
         }
@@ -242,6 +323,15 @@ namespace TestsV2
         {
             // Arrange
             _mockSupplierService.Setup(service => service.GetItemsBySupplierId(1)).Returns((List<ItemCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _supplierController.GetItemsBySupplierId(1);
@@ -282,15 +372,24 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(existingSupplier);
             _mockSupplierService.Setup(service => service.PatchSupplier(1, patchSupplier)).Returns(patchSupplier);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _supplierController.PatchSupplier(1, patchSupplier);
+            var okResult = result.Result as OkObjectResult;
+            var returnedSupplier = okResult.Value as SupplierCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(SupplierCS));
-            var returnedSupplier = okResult.Value as SupplierCS;
             Assert.AreEqual(patchSupplier.Code, returnedSupplier.Code);
             Assert.AreEqual(patchSupplier.Address, returnedSupplier.Address);
             Assert.AreEqual(patchSupplier.contact_name, returnedSupplier.contact_name);
@@ -318,6 +417,15 @@ namespace TestsV2
 
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns((SupplierCS)null);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _supplierController.PatchSupplier(1, patchSupplier);
 
@@ -325,12 +433,24 @@ namespace TestsV2
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
         [TestMethod]
-        public void DeleteSuppliersTest_Succes(){
+        public void DeleteSuppliersTest_Succes()
+        {
             //Arrange
-            var listidstodel = new List<int>(){1,2,3};
+            var suppliersToDelete = new List<int>() { 1, 2, 3 };
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+             _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
-            var result = _supplierController.DeleteSuppliers(listidstodel);
+            var result = _supplierController.DeleteSuppliers(suppliersToDelete);
             var resultok = result as OkObjectResult;
+
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
