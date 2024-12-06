@@ -86,6 +86,17 @@ public class ItemService : IItemService
         return item;
     }
 
+    public List<ItemCS> CreateMultipleItems(List<ItemCS>newItems)
+    {
+        List<ItemCS> addedItem = new List<ItemCS>();
+        foreach(ItemCS item in newItems)
+        {
+            ItemCS addItem = CreateClient(item);
+            addedItem.Add(addItem);
+        }
+        return addedItem;
+    }
+
     // Method to update an existing item
     public ItemCS UpdateItem(string uid, ItemCS item)
     {

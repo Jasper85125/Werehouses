@@ -3,6 +3,7 @@ using Moq;
 using ControllersV2;
 using ServicesV2;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace item.TestsV2
 {
@@ -36,6 +37,15 @@ namespace item.TestsV2
             };
             _mockItemService.Setup(service => service.GetAllItems()).Returns(items);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _itemController.GetAllItems();
 
@@ -54,6 +64,15 @@ namespace item.TestsV2
             // Arrange
             var item = new ItemCS { uid = "1", code = "Item1" };
             _mockItemService.Setup(service => service.GetItemById("1")).Returns(item);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _itemController.GetByUid("1");
@@ -74,6 +93,15 @@ namespace item.TestsV2
             // Arrange
             _mockItemService.Setup(service => service.GetItemById("1")).Returns((ItemCS)null);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _itemController.GetByUid("1");
 
@@ -89,6 +117,15 @@ namespace item.TestsV2
                                                       total_ordered = 90, total_allocated = 68, total_available = -134};
             // Arrange
             _mockInventoryService.Setup(service => service.GetInventoriesForItem("P000003")).Returns(inventory);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _itemController.GetInventoriesForItem("P000003");
@@ -120,6 +157,15 @@ namespace item.TestsV2
 
             _mockItemService.Setup(service => service.GetAllItemsInItemType(1)).Returns(items);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _itemTypeController.GetAllItemsInItemType(1);
             var okResult = result.Result as OkObjectResult;
@@ -140,17 +186,64 @@ namespace item.TestsV2
             var createdItem = new ItemCS { uid = "P000002", code = "NewItem" };
             _mockItemService.Setup(service => service.CreateItem(newItem)).Returns(createdItem);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _itemController.CreateItem(newItem);
+            var createdResult = result.Result as CreatedAtActionResult;
+            var returnedItem = createdResult.Value as ItemCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
-            var createdResult = result.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdResult);
             Assert.IsInstanceOfType(createdResult.Value, typeof(ItemCS));
-            var returnedItem = createdResult.Value as ItemCS;
             Assert.AreEqual("P000002", returnedItem.uid);
             Assert.AreEqual("NewItem", returnedItem.code);
+        }
+
+         [TestMethod]
+        public void CreateMultipleItems_ReturnsCreatedResult_WithNewItems()
+        {
+            // Arrange
+            List<ItemCS> items = new List<ItemCS>
+            {
+                new ItemCS { uid = "P000123", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"},
+                new ItemCS { uid = "P100000", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"}
+            };
+            _mockItemService.Setup(service => service.CreateMultipleItems(items)).Returns(items);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+           _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result =_itemController.CreateMultipleItems(items);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<ClientCS>;
+            var firstItem = returnedItems[0];
+
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(items[0].code, firstItem.code);
+            Assert.AreEqual(items[0].supplier_code, firstItem.supplier_code);
+            Assert.AreEqual(items[0].item_group, firstItem.item_group);
         }
 
         [TestMethod]
@@ -162,15 +255,24 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.GetItemById("P000001")).Returns(existingItem);
             _mockItemService.Setup(service => service.UpdateItem("P000001", updatedItem)).Returns(updatedItem);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _itemController.UpdateItem("P000001", updatedItem);
+            var okResult = result.Result as OkObjectResult;
+            var returnedItem = okResult.Value as ItemCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(ItemCS));
-            var returnedItem = okResult.Value as ItemCS;
             Assert.AreEqual("P000001", returnedItem.uid);
             Assert.AreEqual("UpdatedItem", returnedItem.code);
         }
@@ -182,18 +284,37 @@ namespace item.TestsV2
             var updatedItem = new ItemCS { uid = "P000001", code = "UpdatedItem" };
             _mockItemService.Setup(service => service.GetItemById("P000001")).Returns((ItemCS)null);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _itemController.UpdateItem("P000001", updatedItem);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+
         [TestMethod]
         public void DeleteItem_ReturnsOkResult_WhenItemIsDeleted()
         {
             // Arrange
             var existingItem = new ItemCS { uid = "P000001", code = "ExistingItem" };
             _mockItemService.Setup(service => service.GetItemById("P000001")).Returns(existingItem);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _itemController.DeleteItem("P000001");
@@ -212,8 +333,19 @@ namespace item.TestsV2
                 new ItemCS { uid = "P000002", code = "ExistingItem2" }
             };
             _mockItemService.Setup(service => service.GetAllItems()).Returns(existingItems);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _itemController.DeleteMultipleItems(new List<string> { "P000001", "P000002" });
+            
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
