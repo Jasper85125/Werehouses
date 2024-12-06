@@ -20,7 +20,7 @@ public class TransferController : ControllerBase
     public ActionResult<IEnumerable<TransferCS>> GetAllTransfers()
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-                                                                   "Floor Manager", "Analyst", "Supervisor", "Operative" };
+                                                               "Floor Manager", "Analyst", "Supervisor", "Operative" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
 
         if (userRole == null || !listOfAllowedRoles.Contains(userRole))
