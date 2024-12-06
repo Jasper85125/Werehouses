@@ -91,7 +91,7 @@ public class ItemService : IItemService
         List<ItemCS> addedItem = new List<ItemCS>();
         foreach(ItemCS item in newItems)
         {
-            ItemCS addItem = CreateClient(item);
+            ItemCS addItem = CreateItem(item);
             addedItem.Add(addItem);
         }
         return addedItem;

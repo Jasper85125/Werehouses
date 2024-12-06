@@ -235,7 +235,7 @@ namespace item.TestsV2
             // Act
             var result =_itemController.CreateMultipleItems(items);
             var createdResult = result.Result as ObjectResult;
-            var returnedItems = createdResult.Value as List<ClientCS>;
+            var returnedItems = createdResult.Value as List<ItemCS>;
             var firstItem = returnedItems[0];
 
             // Assert
