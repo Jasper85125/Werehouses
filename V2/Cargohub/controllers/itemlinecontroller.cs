@@ -22,6 +22,15 @@ public class ItemLineController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<ItemCS>> GetAllItemLines()
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Analyst", "Logistics", "Sales" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var itemLine = _itemLineService.GetAllItemlines();
         return Ok(itemLine);
     }
@@ -30,6 +39,15 @@ public class ItemLineController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<ItemLineCS> GetItemLineById(int id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Analyst", "Logistics", "Sales" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var itemLine = _itemLineService.GetItemLineById(id);
         if (itemLine == null)
         {
@@ -38,10 +56,41 @@ public class ItemLineController : ControllerBase
         return Ok(itemLine);
     }
 
+    // GET: /{id}/items
+    [HttpGet("{id}/items")]
+    public ActionResult<IEnumerable<ItemCS>> GetItemsByItemLineId([FromRoute] int id)
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Analyst", "Logistics", "Sales" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var Itemline = _itemLineService.GetItemLineById(id);
+        if (Itemline is null)
+        {
+            return NotFound();
+        }
+
+        var items = _itemLineService.GetItemsByItemLineId(id);
+        return Ok(items);
+    }
+
     // POST: api/itemines
     [HttpPost]
     public IActionResult AddItemLine([FromBody] ItemLineCS newItemLine)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (newItemLine == null)
         {
             return BadRequest("ItemLine is null.");
@@ -55,6 +104,14 @@ public class ItemLineController : ControllerBase
     [HttpPost("multiple")]
     public ActionResult<ItemLineCS> CreateMultipleItemLines([FromBody] List<ItemLineCS> newItemLines)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (newItemLines is null)
         {
             return BadRequest("Item line data is null");
@@ -68,6 +125,14 @@ public class ItemLineController : ControllerBase
     [HttpPut("{id}")]
     public ActionResult<ItemLineCS> UpdateItemLine(int id, [FromBody] ItemLineCS itemLine)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (id != itemLine.Id)
         {
             return BadRequest();
@@ -86,6 +151,14 @@ public class ItemLineController : ControllerBase
     [HttpDelete("{id}")]
     public ActionResult DeleteItemLine(int id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var itemLine = _itemLineService.GetItemLineById(id);
         if (itemLine == null)
         {
@@ -96,23 +169,19 @@ public class ItemLineController : ControllerBase
         return Ok();
     }
 
-    // GET: /{id}/items
-    [HttpGet("{id}/items")]
-    public ActionResult<IEnumerable<ItemCS>> GetItemsByItemLineId([FromRoute] int id)
+    [HttpDelete("batch")]
+    public ActionResult DeleteItemLines([FromBody] List<int> ids)
     {
-        var Itemline = _itemLineService.GetItemLineById(id);
-        if (Itemline is null)
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
         {
-            return NotFound();
+            return Unauthorized();
         }
 
-        var items = _itemLineService.GetItemsByItemLineId(id);
-        return Ok(items);
-    }
-
-    [HttpDelete("batch")]
-    public ActionResult DeleteItemLines([FromBody]List<int> ids){
-        if(ids is null){
+        if (ids is null)
+        {
             return NotFound();
         }
         _itemLineService.DeleteItemLines(ids);
@@ -122,6 +191,14 @@ public class ItemLineController : ControllerBase
     [HttpPatch("{id}")]
     public ActionResult<ItemLineCS> PatchItemLine([FromRoute] int id, [FromBody] ItemLineCS itemLine)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         itemLine.Id = id;
         if (id != itemLine.Id)
         {
