@@ -43,10 +43,10 @@ namespace TestsV2
 
             //Act
             var value = _shipmentController.GetAllShipments();
-
-            //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<ShipmentCS>;
+
+            //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
@@ -73,10 +73,10 @@ namespace TestsV2
 
             //Act
             var value = _shipmentController.GetShipmentById(1);
-
-            //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as ShipmentCS;
+
+            //Assert
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(shipments[0].source_id, returnedItems.source_id);
@@ -126,10 +126,10 @@ namespace TestsV2
 
             //Act
             var value = _shipmentController.GetItemsInShipment(1);
-
-            //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<ItemIdAndAmount>;
+
+            //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
@@ -216,13 +216,13 @@ namespace TestsV2
 
             // Act
             var result = await _shipmentController.UpdateShipment(1, updatedShipment);
+            var okResult = result.Result as OkObjectResult;
+            var returnedShipment = okResult.Value as ShipmentCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(ShipmentCS));
-            var returnedShipment = okResult.Value as ShipmentCS;
             Assert.AreEqual(updatedShipment.source_id, returnedShipment.source_id);
         }
 
@@ -308,15 +308,28 @@ namespace TestsV2
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+
         [TestMethod]
-        public void PatchShipmentTest_Succes(){
+        public void PatchShipmentTest_Succes()
+        {
             //Arrange
-            var patchedshipment = new ShipmentCS(){ Id= 1, Notes="EW"};
+            var patchedshipment = new ShipmentCS() { Id = 1, Notes = "EW" };
             _mockShipmentService.Setup(service => service.PatchShipment(1, "Notes", "EW")).Returns(patchedshipment);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var result = _shipmentController.PatchShipment(1, "Notes", "EW");
             var resultok = result.Result as OkObjectResult;
             var value = resultok.Value as ShipmentCS;
+
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotNull(resultok);
@@ -324,6 +337,7 @@ namespace TestsV2
             Assert.AreEqual(resultok.StatusCode, 200);
             Assert.AreEqual(value.Notes, patchedshipment.Notes);
         }
+
         [TestMethod]
         public void DeleteShipmentTest_Success()
         {
