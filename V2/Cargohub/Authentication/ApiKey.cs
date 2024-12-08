@@ -1,22 +1,30 @@
+using Newtonsoft.Json;
+
 namespace ApiKeyAuthentication.Authentication;
 public class ApiKeyModel
 {
     public string Key {get; set;}
     public string Role {get; set;}
+    public int WarehouseID {get; set;}
 }
 
 public class ApiKeyStorage
 {
-    public static List<ApiKeyModel> ApiKeys = new()
+    private static string _path = "data/apikeys.json";
+    public static List<ApiKeyModel> GetApiKeys()
     {
-        new ApiKeyModel {Key = "AdminKey", Role = "Admin"},
-        new ApiKeyModel {Key = "WarehouseManagerKey", Role = "Warehouse Manager"},
-        new ApiKeyModel {Key = "InventoryManagerKey", Role = "Inventory Manager"},
-        new ApiKeyModel {Key = "FloorManagerKey", Role = "Floor Manager"},
-        new ApiKeyModel {Key = "OperativeKey", Role = "Operative"},
-        new ApiKeyModel {Key = "SupervisorKey", Role = "Supervisor"},
-        new ApiKeyModel {Key = "AnalystKey", Role = "Analyst"},
-        new ApiKeyModel {Key = "LogisticsKey", Role = "Logistics"},
-        new ApiKeyModel {Key = "SalesKey", Role = "Sales"},
-    };
+        if (!File.Exists(_path))
+        {
+            return new List<ApiKeyModel>();
+        }
+        var jsonData = File.ReadAllText(_path);
+        List<ApiKeyModel> apikeys = JsonConvert.DeserializeObject<List<ApiKeyModel>>(jsonData);
+        return apikeys ?? new List<ApiKeyModel>();
+    }
+
+    public static void UpdateApiKey(List<ApiKeyModel> apikeys)
+    {
+        var jsonData = JsonConvert.SerializeObject(apikeys, Formatting.Indented);
+        File.WriteAllText(_path, jsonData);
+    }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ApiKeyAuthentication.Authentication;
 using Newtonsoft.Json;
 
 namespace ServicesV2;
@@ -37,6 +38,19 @@ public class WarehouseService : IWarehouseService
         // Add the new warehouse record to the list
         newWarehouse.Id = warehouses.Count > 0 ? warehouses.Max(w => w.Id) + 1 : 1;
         warehouses.Add(newWarehouse);
+
+        ApiKeyModel newInventoryManager = new ApiKeyModel {Key = $"InventoryManagerKey{newWarehouse.Id}", Role = "Inventory Manager", WarehouseID = newWarehouse.Id};
+        ApiKeyModel newFloorManager = new ApiKeyModel {Key = $"FloorManagerKey{newWarehouse.Id}", Role = "Floor Manager", WarehouseID = newWarehouse.Id};
+        ApiKeyModel newOperative = new ApiKeyModel {Key = $"OperativeKey{newWarehouse.Id}", Role = "Operative", WarehouseID = newWarehouse.Id};
+        ApiKeyModel newSupervisor = new ApiKeyModel {Key = $"Supervisor{newWarehouse.Id}", Role = "Supervisor", WarehouseID = newWarehouse.Id};
+        var apikeys = ApiKeyStorage.GetApiKeys();
+        apikeys.Add(newInventoryManager);
+        apikeys.Add(newFloorManager);
+        apikeys.Add(newOperative);
+        apikeys.Add(newSupervisor);
+        ApiKeyStorage.UpdateApiKey(apikeys);
+
+        
 
         // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);

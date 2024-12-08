@@ -21,7 +21,7 @@ public class ApiKeyMiddleware
             return;
         }
 
-        var apiKey = ApiKeyStorage.ApiKeys.FirstOrDefault(k => k.Key == extractedApiKey);
+        var apiKey = ApiKeyStorage.GetApiKeys().FirstOrDefault(k => k.Key == extractedApiKey);
         
         if (apiKey == null)
         {
