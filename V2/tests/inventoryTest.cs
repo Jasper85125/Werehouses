@@ -275,6 +275,43 @@ namespace inventory.TestsV2
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(reslutok.StatusCode, 200);
         }
+
+        [TestMethod]
+        public void PatchInventoryTest_Succes(){
+            //arrange
+            var inventory = new InventoryCS(){ Id = 1, item_id="ITEM321", total_on_hand= 100};
+            _mockInventoryService.Setup(service => service.PatchInventory(1, inventory)).Returns(inventory);
+
+            //Act
+            var result = _inventoryController.PatchInventory(1, inventory);
+            var resultOk = result.Result as OkObjectResult;
+            var patchedinventory = resultOk.Value as InventoryCS;
+
+            //Assert
+            Assert.AreEqual(resultOk.StatusCode, 200);
+            Assert.IsNotNull(resultOk);
+            Assert.IsNotNull(patchedinventory);
+            Assert.AreEqual(patchedinventory.Id, inventory.Id);
+            Assert.AreEqual(patchedinventory.item_id, inventory.item_id);
+            Assert.AreEqual(patchedinventory.total_on_hand, inventory.total_on_hand);
+        }
+
+        [TestMethod]
+        public void PatchInventoryTest_Fail(){
+            //arrange
+            var inventory = new InventoryCS(){ Id = 1, item_id="ITEM321", total_on_hand= 100};
+            _mockInventoryService.Setup(service => service.PatchInventory(1, inventory)).Returns((InventoryCS)null);
+
+            //Act
+            var result = _inventoryController.PatchInventory(1, inventory);
+            var resultOk = result.Result as OkObjectResult;
+            var patchedinventory = resultOk.Value as InventoryCS;
+
+            //Assert
+            Assert.AreEqual(resultOk.StatusCode, 200);
+            Assert.IsNull(patchedinventory);
+        }
+        
     }
 }
 

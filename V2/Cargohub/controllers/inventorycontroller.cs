@@ -189,4 +189,16 @@ public class InventoryController : ControllerBase
         _inventoryService.DeleteInventories(ids);
         return Ok("inventories deleted");
     }
+
+    //PATCH: /inventories/{id}
+    [HttpPatch("{id}")]
+    public ActionResult<InventoryCS> PatchInventory(int id, [FromBody] InventoryCS patch)
+    {
+        if (patch is null)
+        {
+            return BadRequest("patch document is null");
+        }
+        var patchedInventory = _inventoryService.PatchInventory(id, patch);
+        return Ok(patchedInventory);
+    }
 }

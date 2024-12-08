@@ -4,7 +4,8 @@ using Moq;
 using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
-namespace itemtype.Tests
+
+namespace TestsV1
 {
     [TestClass]
     public class ItemTypeServiceTests

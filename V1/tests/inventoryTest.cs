@@ -6,7 +6,7 @@ using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace Tests
+namespace TestsV1
 {
     [TestClass]
     public class InventoryTest

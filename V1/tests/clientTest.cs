@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServicesV1;
 using ControllersV1;
 
-namespace clients.Test
+namespace TestsV1
 {
     [TestClass]
     public class ClientTest

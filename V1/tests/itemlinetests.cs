@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tests;
+namespace TestsV1;
 
 [TestClass]
 public class ItemLineTests

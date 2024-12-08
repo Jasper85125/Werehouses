@@ -4,7 +4,7 @@ using ControllersV1;
 using ServicesV1;
 using Microsoft.AspNetCore.Mvc;
 
-namespace item.Tests
+namespace TestsV1
 {
     [TestClass]
     public class ItemControllerTests

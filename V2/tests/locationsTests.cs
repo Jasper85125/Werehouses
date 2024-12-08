@@ -258,7 +258,34 @@ namespace TestsV2
             Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
             Assert.IsNull(returnedLocation);
         }
+        public void PatchLocation_Succes()
+        {
+            //Arrange
+            var patchedlocation = new LocationCS() { Id = 1, name = "ASS" };
+            _mockLocationService.Setup(_ => _.PatchLocation(1, "name", "ASS")).Returns(patchedlocation);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var result = _locationController.PatchLocation(1, "name", "ASS");
+            var resultok = result.Result as OkObjectResult;
+            var value = resultok.Value as LocationCS;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultok);
+            Assert.IsNotNull(value);
+            Assert.AreEqual(resultok.StatusCode, 200);
+            Assert.AreEqual(value.name, patchedlocation.name);
+        }
+        
         [TestMethod]
         public void DeleteLocationTest_Exists()
         {

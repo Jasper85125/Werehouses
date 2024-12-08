@@ -5,7 +5,7 @@ using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Tests
+namespace TestsV1
 {
     [TestClass]
     public class WarehouseTest

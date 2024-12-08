@@ -193,6 +193,14 @@ namespace ControllersV2
             var updatedOrder = await _orderService.UpdateOrderItems(orderId, items);
             return Ok(updatedOrder);
         }
+        [HttpPatch("{id}/{property}")]
+        public ActionResult<OrderCS> PatchOrder([FromRoute]int id, [FromRoute]string property, [FromBody]object newvalue){
+            if(string.IsNullOrEmpty(property) || newvalue is null){
+                return BadRequest("Missing inputs in request");
+            }
+            var result = _orderService.PatchOrder(id, property, newvalue);
+            return Ok(result);
+        }
 
         // DELETE: api/warehouse/5
         [HttpDelete("{id}")]
