@@ -24,7 +24,7 @@ builder.Services.AddTransient<IOrderService, OrderService>();
 
 var app = builder.Build();
 
-app.UseMiddleware<ApiKeyMiddleware>();
+//app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapControllers();
 
