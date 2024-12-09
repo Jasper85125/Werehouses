@@ -1,95 +1,78 @@
 # from models.suppliers import Suppliers
 import unittest
-import requests
+import httpx
 
 
-# class TestSuppliers(unittest.TestCase):
-#     def setUp(self) -> None:
-#         self.suppliers = Suppliers("../data/")
+def checkSupplier(supplier):
+    required_properties = ["id", "code", "name", "address", "province",
+                           "country", "contact_name", "reference"]
+    for prop in required_properties:
+        if supplier.get(prop) is None:
+            return False
+    return True
 
-#     def test_loaded(self):
-#         self.assertGreater(len(self.suppliers.get_suppliers()), 0)
 
 class TestClass(unittest.TestCase):
     def setUp(self):
+        self.client = httpx.Client()
         self.url = "http://localhost:5125/api/v2"
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_suppliers(self):
-        response = requests.get(
+        response = self.client.get(
             url=(self.url + "/suppliers"), headers=self.headers
         )
 
         self.assertEqual(response.status_code, 200)
-        response = requests.get(
+        response = self.client.get(
             url=(self.url + "/suppliers/1"), headers=self.headers
         )
 
     def test_get_supplier_id(self):
-        response = requests.get(
+        response = self.client.get(
             url=(self.url + "/suppliers/1"), headers=self.headers
         )
-        response = requests.get(
+        response = self.client.get(
             url=(self.url + "/suppliers/1/items"), headers=self.headers
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_post_suppliers(self):
+        data = {
+            "code": "12345",
+            "name": "Test Supplier",
+            "address": "123 Test St",
+            "province": "Test Province",
+            "country": "Test Country",
+            "contact_name": "Test Contact",
+            "reference": "Test Reference"
+        }
+        response = self.client.post(
+            url=(self.url + "/suppliers"), headers=self.headers, json=data
+        )
 
-def test_get_items_from_supplier(self):
-    data = {
-        "id": 678098,
-        "code": "SUP",
-        "name": "FRANKY",
-        "address": "SUNNY",
-        "address_extra": None,
-        "city": None,
-        "zip_code": None,
-        "province": "East Blue",
-        "country": "Water Severn",
-        "contact_name": "Iceberg",
-        "phonenumber": None,
-        "reference": "FRANKY-SUP",
-        "created_at": None,
-        "updated_at": None
-    }
-    response = requests.post(
-        url=(self.url + "/suppliers"), headers=self.headers, json=data
-    )
-    self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
+    
+    def test_put_supplier_id(self):
+        data = {
+            "code": "12345",
+            "name": "Test Supplier",
+            "address": "123 Test St",
+            "province": "Test Province",
+            "country": "Test Country",
+            "contact_name": "Test Contact",
+            "reference": "Test Reference"
+        }
+        response = self.client.put(
+            url=(self.url + "/suppliers/2"), headers=self.headers, json=data
+        )
 
-    data = {
-        "id": 12345,
-        "code": "SUP",
-        "name": "FRANKY",
-        "address": "SUNNY",
-        "address_extra": None,
-        "city": None,
-        "zip_code": None,
-        "province": "East Blue",
-        "country": "Water Severn",
-        "contact_name": "Iceberg",
-        "phonenumber": None,
-        "reference": "FRANKY-SUP",
-        "created_at": None,
-        "updated_at": None
-    }
-    response = requests.put(
-        url=(self.url + "/suppliers/2"), headers=self.headers, json=data
-    )
-    self.assertEqual(response.status_code, 200)
-
-    response = requests.delete(
-        url=(self.url + "/suppliers/3"), headers=self.headers
-    )
-    self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_delete_supplier_id(self):
-        response = requests.delete(
+        response = self.client.delete(
             url=(self.url + "/suppliers/3"), headers=self.headers
         )
 
         self.assertEqual(response.status_code, 200)
 
-
-if __name__ == "__main__":
-    unittest.main()

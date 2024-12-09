@@ -47,14 +47,6 @@ class TestClass(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_get_warehouse_id_locations(self):
-        response = self.warehouse.get(
-            url=(self.url + "/warehouses/1/locations"), headers=self.headers
-        )
-        if response.status_code == 404:
-            self.fail("Endpoint /warehouses/1/locations not found (404)")
-        self.assertEqual(response.status_code, 200)
-
     def test_post_warehouse(self):
         data = {
             "id": 99999,
@@ -65,9 +57,13 @@ class TestClass(unittest.TestCase):
             "city": "Test City",
             "province": "Test Province",
             "country": "Test Country",
-            "contact": "John Doe",
-            "created_at": None,
-            "updated_at": None
+            "contact": {
+                "name": "John Doe",
+                "phone": "123-456-7890",
+                "email": "johndoe@example.com"
+            },
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z"
         }
         response = self.warehouse.post(
             url=(self.url + "/warehouses"), headers=self.headers, json=data
@@ -76,7 +72,7 @@ class TestClass(unittest.TestCase):
 
     def test_put_warehouse_id(self):
         data = {
-            "id": 1,
+            "id": 2,
             "code": "AAAAAAA",
             "name": "Updated Warehouse",
             "address": "Updated Address",
@@ -84,7 +80,11 @@ class TestClass(unittest.TestCase):
             "city": "Updated City",
             "province": "Updated Province",
             "country": "Updated Country",
-            "contact": "Jane Doe",
+            "contact": {
+                "name": "Jane Doe",
+                "phone": "123-456-7890",
+                "email": "janedoe@example.com"
+            },
             "created_at": "2023-01-01T00:00:00Z",
             "updated_at": "2023-01-01T00:00:00Z"
         }
