@@ -17,6 +17,22 @@ class TestItemGroups(unittest.TestCase):
         self.url = "http://localhost:5125/api/v2"
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
 
+    def test_01_post_item_groups(self):
+        data = {
+            "name": "Test Group",
+            "description": "This is a test item group."
+        }
+
+        # Send the request
+        response = self.client.post(
+            url=(self.url + "/item_groups"),
+            headers=self.headers,
+            json=data
+        )
+
+        # Check the status code
+        self.assertEqual(response.status_code, 201)
+
     def test_02_get_item_group_id(self):
         # Send the request
         response = self.client.get(

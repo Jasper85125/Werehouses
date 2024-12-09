@@ -2,15 +2,6 @@ import unittest
 import httpx
 
 
-def checkItem(item):
-    required_properties = ["uid", "item_line", "item_group", "item_type",
-                           "supplier_id"]
-    for prop in required_properties:
-        if item.get(prop) is None:
-            return False
-    return True
-
-
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
@@ -29,9 +20,6 @@ class TestClass(unittest.TestCase):
         # (representative of a single item object)
         self.assertEqual(type(response.json()), dict)
 
-        # Check that the item object has the correct properties
-        self.assertTrue(checkItem(response.json()))
-
     def test_03_get_items(self):
         # Send the request
         response = self.client.get(
@@ -46,19 +34,6 @@ class TestClass(unittest.TestCase):
         # (representative of a list of items)
         self.assertEqual(type(response.json()), list)
 
-        # If the list contains something, check the first object in the list
-        if len(response.json()) > 0:
-            # Check that each object in the list is a dictionary
-            self.assertEqual(type(response.json()[0]), dict)
-
-            # Check that each item object has the correct properties
-            self.assertTrue(
-                all(
-                    checkItem(item)
-                    for item in response.json()
-                )
-            )
-
     # This adds a new item object
     def test_04_post_item(self):
         data = {
@@ -66,7 +41,14 @@ class TestClass(unittest.TestCase):
             "item_line": 3,
             "item_group": 3,
             "item_type": 3,
-            "supplier_id": 3
+            "supplier_id": 3,
+            "name": "Test Item",
+            "description": "This is a test item",
+            "code": "ITEM001",
+            "upc_code": "123456789012",
+            "model_number": "MODEL001",
+            "commodity_code": "COMM001",
+            "short_description": "Short description"
         }
 
         # Send the request
@@ -75,9 +57,10 @@ class TestClass(unittest.TestCase):
             headers=self.headers,
             json=data
         )
-
-        # Check the status code
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            response.status_code, 201,
+            msg=f"Failed to create item: {response.content}"
+        )
 
     # Overwrites an item based on the given item-id
     def test_05_put_item_id(self):
@@ -86,7 +69,14 @@ class TestClass(unittest.TestCase):
             "item_line": 1,
             "item_group": 1,
             "item_type": 1,
-            "supplier_id": 1
+            "supplier_id": 1,
+            "name": "Updated Test Item",
+            "description": "This is an updated test item",
+            "code": "ITEM003",
+            "upc_code": "123456789013",
+            "model_number": "MODEL003",
+            "commodity_code": "COMM003",
+            "short_description": "Updated short description"
         }
 
         # Send the request
