@@ -1,67 +1,131 @@
 import unittest
-import requests
+import httpx
+
+
+def checkTransfer(transfer):
+    required_keys = [
+        "id", "reference", "transfer_from", "transfer_to", "transfer_status",
+        "created_at", "updated_at", "items"
+    ]
+    return all(key in transfer for key in required_keys)
 
 
 class TestClass(unittest.TestCase):
     def setUp(self):
+        self.client = httpx.Client()
         self.url = "http://localhost:5125/api/v2"
-        self.headers = {'API_KEY': 'a1b2c3d4e5'}
+        self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
 
-    def test_get_transfers(self):
-        response = requests.get(
+    def test_01_get_transfers(self):
+        response = self.client.get(
             url=(self.url + "/transfers"), headers=self.headers)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Response content: {response.content}"
+        )
+        self.assertEqual(type(response.json()), list)
+        if response.json():
+            self.assertEqual(type(response.json()[0]), dict)
 
-        response = requests.get(
+    def test_02_get_transfer_id(self):
+        response = self.client.get(
             url=(self.url + "/transfers/1"), headers=self.headers)
-        response = requests.get(
-            url=(self.url + "/transfers/1"), headers=self.headers
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Response content: {response.content}"
         )
+        self.assertEqual(type(response.json()), dict)
+        self.assertTrue(checkTransfer(response.json()))
 
-        self.assertEqual(response.status_code, 200)
-        response = requests.get(
+    def test_03_get_items_in_transfer(self):
+        response = self.client.get(
             url=self.url + "/transfers/1/items", headers=self.headers)
-
-    def test_get_items_in_transfers(self):
-        response = requests.get(
-            url=self.url + "/transfers/1/items", headers=self.headers
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Response content: {response.content}"
         )
+        self.assertEqual(type(response.json()), list)
+        if response.json():
+            self.assertEqual(type(response.json()[0]), dict)
 
-        self.assertEqual(response.status_code, 200)
-        data = {
-            "id": 70202,
-            "reference": None,
-            "transfer_from": None,
-            "transfer_to": None,
-            "transfer_status": None,
-            "created_at": None,
-            "updated_at": None,
-            "items": None
-        }
-        response = requests.post(
-            url=(self.url + "/transfers"), headers=self.headers, json=data)
-
+    def test_04_post_transfer(self):
         data = {
             "id": 99999,
-            "reference": None,
-            "transfer_from": None,
-            "transfer_to": None,
-            "transfer_status": None,
-            "created_at": None,
-            "updated_at": None,
-            "items": None
+            "reference": "Test Reference",
+            "transfer_from": 1,
+            "transfer_to": 2,
+            "transfer_status": "Pending",
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z",
+            "items": [],
+            "transfer": "Sample Transfer"
         }
-        response = requests.put(
-            url=(self.url + "/transfers/2"), headers=self.headers, json=data)
+        response = self.client.post(
+            url=(self.url + "/transfers"), headers=self.headers, json=data)
+        self.assertEqual(
+            response.status_code, 201,
+            msg=f"Failed to create transfer: {response.content}"
+        )
 
-        response = requests.delete(
-            url=(self.url + "/transfers/3"), headers=self.headers)
+    def test_05_put_transfer_id(self):
+        response = self.client.get(
+            url=(self.url + "/transfers"), headers=self.headers)
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Failed to get transfers: {response.content}"
+        )
+        transfers = response.json()
+        last_transfer_id = transfers[-1]["id"] if transfers else 99999
 
-        self.assertEqual(response.status_code, 200)
+        if not transfers:
+            data = {
+                "id": last_transfer_id,
+                "reference": "Test Reference",
+                "transfer_from": 1,
+                "transfer_to": 2,
+                "transfer_status": "Pending",
+                "created_at": "2023-01-01T00:00:00Z",
+                "updated_at": "2023-01-01T00:00:00Z",
+                "items": [],
+                "transfer": "Sample Transfer"
+            }
+            response = self.client.post(
+                url=(self.url + "/transfers"), headers=self.headers, json=data)
+            self.assertEqual(
+                response.status_code, 201,
+                msg=f"Failed to create transfer: {response.content}"
+            )
 
-    def test_delete_transfer_id(self):
-        response = requests.delete(
-            url=(self.url + "/transfers/3"), headers=self.headers)
+        response = self.client.get(
+            url=(self.url + f"/transfers/{last_transfer_id}"),
+            headers=self.headers)
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Transfer not found: {response.content}"
+        )
 
+        data = {
+            "id": last_transfer_id,
+            "reference": "Updated Reference",
+            "transfer_from": 1,
+            "transfer_to": 2,
+            "transfer_status": "Completed",
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-02T00:00:00Z",
+            "items": []
+        }
+        response = self.client.put(
+            url=(self.url + f"/transfers/{last_transfer_id}"),
+            headers=self.headers, json=data)
+        if response.status_code == 500:
+            self.fail(f"Server error: {response.content}")
+        else:
+            self.assertEqual(
+                response.status_code, 200,
+                msg=f"Response content: {response.content}"
+            )
+
+    def test_06_delete_transfer_id(self):
+        response = self.client.delete(
+            url=(self.url + "/transfers/15"), headers=self.headers)
         self.assertEqual(response.status_code, 200)
