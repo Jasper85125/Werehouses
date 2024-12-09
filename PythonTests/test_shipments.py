@@ -5,32 +5,38 @@ import httpx
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.url = "http://localhost:5125/api/v2"
+        self.versions = ["http://localhost:5001/api/v1",
+                         "http://localhost:5002/api/v2"]
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_shipments(self):
-        response = self.client.get(
-            url=(self.url + "/shipments"), headers=self.headers)
-
-        self.assertIn(response.status_code, [200, 204])
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments"), headers=self.headers)
+                self.assertIn(response.status_code, [200, 204])
 
     def test_get_shipments_by_id(self):
-        response = self.client.get(
-            url=(self.url + "/shipments/1"), headers=self.headers)
-
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments/1"), headers=self.headers)
+                self.assertEqual(response.status_code, 200)
 
     def test_get_shipments_by_id_items(self):
-        response = self.client.get(
-            url=(self.url + "/shipments/1/items"), headers=self.headers)
-
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments/1/items"), headers=self.headers)
+                self.assertEqual(response.status_code, 200)
 
     def test_get_shipments_by_id_orders(self):
-        response = self.client.get(
-            url=(self.url + "/shipments/1/orders"), headers=self.headers)
-
-        self.assertEqual(response.status_code, 405)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments/1/orders"),
+                    headers=self.headers)
+                self.assertEqual(response.status_code, 405)
 
     def test_post_shipment(self):
         data = {
@@ -67,13 +73,16 @@ class TestClass(unittest.TestCase):
             ]
         }
 
-        response = self.client.post(
-            url=(self.url + "/shipments"), headers=self.headers, json=data)
-
-        self.assertEqual(response.status_code, 201)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.post(
+                    url=(version + "/shipments"),
+                    headers=self.headers, json=data)
+                self.assertEqual(response.status_code, 201)
 
     def test_delete_shipment_by_id(self):
-        response = self.client.delete(
-            url=(self.url + "/shipments/10"), headers=self.headers)
-
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.delete(
+                    url=(version + "/shipments/10"), headers=self.headers)
+                self.assertEqual(response.status_code, 200)

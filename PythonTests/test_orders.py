@@ -47,32 +47,39 @@ def checkOrder(order):
 class TestOrdersAPI(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.url = "http://localhost:5125/api/v2"
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_orders(self):
-        response = self.client.get(
-            url=(self.url + "/orders"), headers=self.headers)
+        for version in ["http://localhost:5001/api/v1",
+                        "http://localhost:5002/api/v2"]:
+            response = self.client.get(
+                url=(version + "/orders"), headers=self.headers)
 
-        self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
     def test_get_orders_by_id(self):
-        response = self.client.get(
-            url=(self.url + "/orders/10"), headers=self.headers)
+        for version in ["http://localhost:5001/api/v1",
+                        "http://localhost:5002/api/v2"]:
+            response = self.client.get(
+                url=(version + "/orders/10"), headers=self.headers)
 
-        self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
     def test_get_orders_by_id_items(self):
-        response = self.client.get(
-            url=(self.url + "/orders/10/items"), headers=self.headers)
+        for version in ["http://localhost:5001/api/v1",
+                        "http://localhost:5002/api/v2"]:
+            response = self.client.get(
+                url=(version + "/orders/10/items"), headers=self.headers)
 
-        self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
     def test_get_orders_by_id_shipments(self):
-        response = self.client.get(
-            url=(self.url + "/orders/10/shipments"), headers=self.headers)
+        for version in ["http://localhost:5001/api/v1",
+                        "http://localhost:5002/api/v2"]:
+            response = self.client.get(
+                url=(version + "/orders/10/shipments"), headers=self.headers)
 
-        self.assertIn(response.status_code, [200, 405])
+            self.assertIn(response.status_code, [200, 405])
 
     def test_post_order(self):
         data = {
@@ -104,10 +111,12 @@ class TestOrdersAPI(unittest.TestCase):
                 }
             ]
         }
-        response = self.client.post(
-            url=(self.url + "/orders"), headers=self.headers, json=data)
+        for version in ["http://localhost:5001/api/v1",
+                        "http://localhost:5002/api/v2"]:
+            response = self.client.post(
+                url=(version + "/orders"), headers=self.headers, json=data)
 
-        self.assertIn(response.status_code, [201, 405])
+            self.assertIn(response.status_code, [201, 405])
 
     def test_put_order_id(self):
         data = {
@@ -139,13 +148,17 @@ class TestOrdersAPI(unittest.TestCase):
                 }
             ]
         }
-        response = self.client.put(
-            url=(self.url + "/orders/5"), headers=self.headers, json=data)
+        for version in ["http://localhost:5001/api/v1",
+                        "http://localhost:5002/api/v2"]:
+            response = self.client.put(
+                url=(version + "/orders/5"), headers=self.headers, json=data)
 
-        self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
     def test_delete_order_id(self):
-        response = self.client.delete(
-            url=(self.url + "/orders/1"), headers=self.headers)
+        for version in ["http://localhost:5001/api/v1",
+                        "http://localhost:5002/api/v2"]:
+            response = self.client.delete(
+                url=(version + "/orders/1"), headers=self.headers)
 
-        self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)

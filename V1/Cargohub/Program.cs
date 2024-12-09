@@ -22,7 +22,7 @@ builder.Services.AddTransient<ITransferService, TransferService>();
 builder.Services.AddTransient<IOrderService, OrderService>();
 
 var app = builder.Build();
-
+app.Urls.Add("http://localhost:5001");
 app.MapControllers();
 
 app.UseHttpsRedirection();

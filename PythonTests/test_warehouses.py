@@ -32,20 +32,27 @@ def checkWarehouse(warehouse):
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.warehouse = httpx.Client()
-        self.url = "http://localhost:5125/api/v2"
+        self.versions = [
+            "http://localhost:5001/api/v1",
+            "http://localhost:5002/api/v2"
+        ]
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_warehouses(self):
-        response = self.warehouse.get(
-            url=(self.url + "/warehouses"), headers=self.headers
-        )
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.warehouse.get(
+                    url=(version + "/warehouses"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
 
     def test_get_warehouse_id(self):
-        response = self.warehouse.get(
-            url=(self.url + "/warehouses/1"), headers=self.headers
-        )
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.warehouse.get(
+                    url=(version + "/warehouses/1"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
 
     def test_post_warehouse(self):
         data = {
@@ -65,10 +72,13 @@ class TestClass(unittest.TestCase):
             "created_at": "2023-01-01T00:00:00Z",
             "updated_at": "2023-01-01T00:00:00Z"
         }
-        response = self.warehouse.post(
-            url=(self.url + "/warehouses"), headers=self.headers, json=data
-        )
-        self.assertEqual(response.status_code, 201)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.warehouse.post(
+                    url=(version + "/warehouses"),
+                    headers=self.headers, json=data
+                )
+                self.assertEqual(response.status_code, 201)
 
     def test_put_warehouse_id(self):
         data = {
@@ -88,13 +98,18 @@ class TestClass(unittest.TestCase):
             "created_at": "2023-01-01T00:00:00Z",
             "updated_at": "2023-01-01T00:00:00Z"
         }
-        response = self.warehouse.put(
-            url=(self.url + "/warehouses/2"), headers=self.headers, json=data
-        )
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.warehouse.put(
+                    url=(version + "/warehouses/2"),
+                    headers=self.headers, json=data
+                )
+                self.assertEqual(response.status_code, 200)
 
     def test_delete_warehouse_id(self):
-        response = self.warehouse.delete(
-            url=(self.url + "/warehouses/3"), headers=self.headers
-        )
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.warehouse.delete(
+                    url=(version + "/warehouses/3"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)

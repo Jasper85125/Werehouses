@@ -1,31 +1,27 @@
 import httpx
 import unittest
 
-# class TestWarehouses(unittest.TestCase):
-#     def setUp(self) -> None:
-#         self.warehouses = Warehouses("../data/")
-
-#     def test_loaded(self):
-#         self.assertGreater(len(self.warehouses.get_warehouses()), 0)
-
 
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.url = "http://localhost:5125/api/v2"
+        self.versions = ["http://localhost:5001/api/v1",
+                         "http://localhost:5002/api/v2"]
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_inventories(self):
-
-        response = self.client.get(
-            url=(self.url + "/inventories"), headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(url=(version + "/inventories"),
+                                           headers=self.headers)
+                self.assertEqual(response.status_code, 200)
 
     def test_get_inventory_id(self):
-        response = self.client.get(
-            url=(self.url + "/inventories/1"), headers=self.headers)
-
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(url=(version + "/inventories/1"),
+                                           headers=self.headers)
+                self.assertEqual(response.status_code, 200)
 
     def test_post_inventory(self):
         data = {
@@ -42,11 +38,11 @@ class TestClass(unittest.TestCase):
             "created_at": "2023-01-01T00:00:00Z",
             "updated_at": "2023-01-01T00:00:00Z"
         }
-
-        response = self.client.post(
-            url=(self.url + "/inventories"), headers=self.headers, json=data)
-
-        self.assertEqual(response.status_code, 201)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.post(url=(version + "/inventories"),
+                                            headers=self.headers, json=data)
+                self.assertEqual(response.status_code, 201)
 
     def test_put_inventory_id(self):
         data = {
@@ -63,17 +59,15 @@ class TestClass(unittest.TestCase):
             "created_at": "2023-01-01T00:00:00Z",
             "updated_at": "2023-01-01T00:00:00Z"
         }
-
-        response = self.client.put(
-            url=(self.url + "/inventories/1"),
-            headers=self.headers,
-            json=data
-        )
-
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.put(url=(version + "/inventories/1"),
+                                           headers=self.headers, json=data)
+                self.assertEqual(response.status_code, 200)
 
     def test_delete_inventory_id(self):
-        response = self.client.delete(
-            url=(self.url + "/inventories/5"), headers=self.headers)
-
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.delete(url=(version + "/inventories/5"),
+                                              headers=self.headers)
+                self.assertEqual(response.status_code, 200)

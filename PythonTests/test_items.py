@@ -5,36 +5,28 @@ import httpx
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.url = "http://localhost:5125/api/v2"
+        self.versions = ["http://localhost:5001/api/v1",
+                         "http://localhost:5002/api/v2"]
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
 
     def test_02_get_item_id(self):
-        # Send the request
-        response = self.client.get(
-            url=(self.url + "/items/P000006"), headers=self.headers
-        )
-        # Check the status code
-        self.assertEqual(response.status_code, 200)
-
-        # Check that the response is a dictionary
-        # (representative of a single item object)
-        self.assertEqual(type(response.json()), dict)
+        for url in self.versions:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/items/P000006"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), dict)
 
     def test_03_get_items(self):
-        # Send the request
-        response = self.client.get(
-            url=(self.url + "/items"),
-            headers=self.headers
-        )
+        for url in self.versions:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/items"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), list)
 
-        # Check the status code
-        self.assertEqual(response.status_code, 200)
-
-        # Check that the response is a list
-        # (representative of a list of items)
-        self.assertEqual(type(response.json()), list)
-
-    # This adds a new item object
     def test_04_post_item(self):
         data = {
             "uid": "P000001",
@@ -50,19 +42,16 @@ class TestClass(unittest.TestCase):
             "commodity_code": "COMM001",
             "short_description": "Short description"
         }
+        for url in self.versions:
+            with self.subTest(url=url):
+                response = self.client.post(
+                    url=(url + "/items"), headers=self.headers, json=data
+                )
+                self.assertEqual(
+                    response.status_code, 201,
+                    msg=f"Failed to create item: {response.content}"
+                )
 
-        # Send the request
-        response = self.client.post(
-            url=(self.url + "/items"),
-            headers=self.headers,
-            json=data
-        )
-        self.assertEqual(
-            response.status_code, 201,
-            msg=f"Failed to create item: {response.content}"
-        )
-
-    # Overwrites an item based on the given item-id
     def test_05_put_item_id(self):
         data = {
             "uid": "P000003",
@@ -78,27 +67,21 @@ class TestClass(unittest.TestCase):
             "commodity_code": "COMM003",
             "short_description": "Updated short description"
         }
+        for url in self.versions:
+            with self.subTest(url=url):
+                response = self.client.put(
+                    url=(url + "/items/P000003"),
+                    headers=self.headers, json=data
+                )
+                self.assertEqual(response.status_code, 200)
 
-        # Send the request
-        response = self.client.put(
-            url=(self.url + "/items/P000003"),
-            headers=self.headers,
-            json=data
-        )
-
-        # Check the status code
-        self.assertEqual(response.status_code, 200)
-
-    # This deletes an item based on an id
     def test_06_delete_item_id(self):
-        # Send the request
-        response = self.client.delete(
-            url=(self.url + "/items/P000001"), headers=self.headers
-        )
-
-        # Check the status code
-        self.assertEqual(response.status_code, 200)
+        for url in self.versions:
+            with self.subTest(url=url):
+                response = self.client.delete(
+                    url=(url + "/items/P000001"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
 
 
 # to run the file: python -m unittest test_items.py
-# # git checkout . -f
