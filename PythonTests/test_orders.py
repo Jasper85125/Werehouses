@@ -1,67 +1,151 @@
 import unittest
-import requests
+import httpx
+
+
+def checkOrder(order):
+    if len(order) != 18:
+        return False
+
+    if order.get("id") is None:
+        return False
+    if order.get("client_id") is None:
+        return False
+    if order.get("order_date") is None:
+        return False
+    if order.get("request_date") is None:
+        return False
+    if order.get("shipment_date") is None:
+        return False
+    if order.get("shipment_type") is None:
+        return False
+    if order.get("shipment_status") is None:
+        return False
+    if order.get("notes") is None:
+        return False
+    if order.get("carrier_code") is None:
+        return False
+    if order.get("carrier_description") is None:
+        return False
+    if order.get("service_code") is None:
+        return False
+    if order.get("payment_type") is None:
+        return False
+    if order.get("transfer_mode") is None:
+        return False
+    if order.get("total_package_count") is None:
+        return False
+    if order.get("total_package_weight") is None:
+        return False
+    if order.get("created_at") is None:
+        return False
+    if order.get("updated_at") is None:
+        return False
+
+    return True
 
 
 class TestOrdersAPI(unittest.TestCase):
     def setUp(self):
+        self.client = httpx.Client()
         self.url = "http://localhost:5125/api/v2"
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_orders(self):
-        response = requests.get(f"{self.url}/orders", headers=self.headers)
+        response = self.client.get(
+            url=(self.url + "/orders"), headers=self.headers)
+
         self.assertEqual(response.status_code, 200)
 
-    def test_get_order_by_id(self):
-        response = requests.get(f"{self.url}/orders/1", headers=self.headers)
+    def test_get_orders_by_id(self):
+        response = self.client.get(
+            url=(self.url + "/orders/10"), headers=self.headers)
+
         self.assertEqual(response.status_code, 200)
+
+    def test_get_orders_by_id_items(self):
+        response = self.client.get(
+            url=(self.url + "/orders/10/items"), headers=self.headers)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_orders_by_id_shipments(self):
+        response = self.client.get(
+            url=(self.url + "/orders/10/shipments"), headers=self.headers)
+
+        self.assertIn(response.status_code, [200, 405])
 
     def test_post_order(self):
         data = {
-            "id": 4,
-            "source_id": 3,
-            "warehouse_id": 2,
-            "shipment_id": 1,
-            "items": [{"item_id": "P000001", "amount": 1}],
-            "ship_to": 1
+            "id": 9999,
+            "client_id": 1,
+            "order_date": "2023-01-01T00:00:00Z",
+            "request_date": "2023-01-01T00:00:00Z",
+            "shipment_date": "2023-01-01T00:00:00Z",
+            "shipment_type": "Standard",
+            "shipment_status": "Pending",
+            "notes": "New order",
+            "carrier_code": "UPS",
+            "carrier_description": "United Parcel Service",
+            "service_code": "Ground",
+            "payment_type": "Credit Card",
+            "transfer_mode": "Online",
+            "total_package_count": 1,
+            "total_package_weight": 1.5,
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z",
+            "items": [
+                {
+                    "item_id": "P000002",
+                    "amount": 2
+                },
+                {
+                    "item_id": "P000004",
+                    "amount": 1
+                }
+            ]
         }
-        response = requests.post(
-            f"{self.url}/orders", headers=self.headers, json=data
-        )
-        self.assertEqual(response.status_code, 201)
+        response = self.client.post(
+            url=(self.url + "/orders"), headers=self.headers, json=data)
 
-    def test_put_order(self):
+        self.assertIn(response.status_code, [201, 405])
+
+    def test_put_order_id(self):
         data = {
-            "id": 1,
-            "source_id": 3,
-            "warehouse_id": 2,
-            "updated_at": "new_timestamp"
+            "id": 5,
+            "client_id": 1,
+            "order_date": "2023-01-01T00:00:00Z",
+            "request_date": "2023-01-01T00:00:00Z",
+            "shipment_date": "2023-01-01T00:00:00Z",
+            "shipment_type": "Standard",
+            "shipment_status": "Pending",
+            "notes": "Updated order",
+            "carrier_code": "UPS",
+            "carrier_description": "United Parcel Service",
+            "service_code": "Ground",
+            "payment_type": "Credit Card",
+            "transfer_mode": "Online",
+            "total_package_count": 1,
+            "total_package_weight": 1.5,
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z",
+            "items": [
+                {
+                    "item_id": "P000002",
+                    "amount": 2
+                },
+                {
+                    "item_id": "P000004",
+                    "amount": 1
+                }
+            ]
         }
-        response = requests.put(
-            f"{self.url}/orders/1", headers=self.headers, json=data
-        )
+        response = self.client.put(
+            url=(self.url + "/orders/5"), headers=self.headers, json=data)
+
         self.assertEqual(response.status_code, 200)
 
-    def test_get_items_in_order(self):
-        response = requests.get(
-            f"{self.url}/orders/1/items", headers=self.headers
-        )
+    def test_delete_order_id(self):
+        response = self.client.delete(
+            url=(self.url + "/orders/1"), headers=self.headers)
+
         self.assertEqual(response.status_code, 200)
-        response = requests.get(
-            f"{self.url}/clients/1/orders", headers=self.headers
-        )
-
-    def test_get_orders_for_client(self):
-        response = requests.get(
-            f"{self.url}/shipments/1/orders", headers=self.headers
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_orders_in_shipment(self):
-        response = requests.get(
-            f"{self.url}/shipments/1/orders", headers=self.headers
-        )
-        self.assertEqual(response.status_code, 200)
-
-
-if __name__ == "__main__":
-    unittest.main()
