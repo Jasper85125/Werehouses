@@ -31,6 +31,7 @@ public class ApiKeyMiddleware
         } 
 
         context.Items["UserRole"] = apiKey.Role; // Attach role to the request
+        context.Items["WarehouseID"] = apiKey.WarehouseID;
         await _next(context);  
     }
 }

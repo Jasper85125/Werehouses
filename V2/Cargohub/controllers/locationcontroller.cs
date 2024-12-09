@@ -19,12 +19,18 @@ namespace ControllersV2
         [HttpGet()]
         public ActionResult<IEnumerable<LocationCS>> GetAllLocations()
         {
-            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-                                                               "Floor Manager", "Analyst", "Supervisor", "Operative" };
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Analyst",
+                                                                   "Logistics", "Sales" };
             var userRole = HttpContext.Items["UserRole"]?.ToString();
+            var WarehouseIDFromKey = (int)HttpContext.Items["WarehouseID"];
 
             if (userRole == null || !listOfAllowedRoles.Contains(userRole))
             {
+                if (userRole == "Operative" || userRole == "Supervisor" || userRole == "Floor Manager" || userRole == "Inventory Manager")
+                {
+                    var LocationsForWarehouse = _locationService.GetLocationsByWarehouseId(WarehouseIDFromKey);
+                    return Ok(LocationsForWarehouse);
+                }
                 return Unauthorized();
             }
 

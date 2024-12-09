@@ -20,12 +20,17 @@ namespace ControllersV2
         public ActionResult<IEnumerable<OrderCS>> GetAllOrders()
         {
             List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-                                                                   "Floor Manager", "Sales", "Analyst", "Logistics",
-                                                                   "Operative", "Supervisor" };
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
             var userRole = HttpContext.Items["UserRole"]?.ToString();
+            var WarehouseIDFromKey = (int)HttpContext.Items["WarehouseID"];
 
             if (userRole == null || !listOfAllowedRoles.Contains(userRole))
             {
+                if (userRole == "Operative" || userRole == "Supervisor")
+                {
+                    var ordersForWarehouse = _orderService.GetOrdersByWarehouse(WarehouseIDFromKey);
+                    return Ok(ordersForWarehouse);
+                }
                 return Unauthorized();
             }
 

@@ -34,6 +34,7 @@ namespace TestsV2
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["WarehouseID"] = 0;
 
             // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext

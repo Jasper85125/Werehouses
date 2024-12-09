@@ -38,16 +38,22 @@ public class WarehouseService : IWarehouseService
         // Add the new warehouse record to the list
         newWarehouse.Id = warehouses.Count > 0 ? warehouses.Max(w => w.Id) + 1 : 1;
         warehouses.Add(newWarehouse);
+        var listOfNewKeys = new List<ApiKeyModel>()
+        {
+            new ApiKeyModel {Key = $"InventoryManagerKey{newWarehouse.Id}", Role = "Inventory Manager", WarehouseID = newWarehouse.Id},
+            new ApiKeyModel {Key = $"FloorManagerKey{newWarehouse.Id}", Role = "Floor Manager", WarehouseID = newWarehouse.Id},
+            new ApiKeyModel {Key = $"OperativeKey{newWarehouse.Id}", Role = "Operative", WarehouseID = newWarehouse.Id},
+            new ApiKeyModel {Key = $"Supervisor{newWarehouse.Id}", Role = "Supervisor", WarehouseID = newWarehouse.Id}
+        };
 
-        ApiKeyModel newInventoryManager = new ApiKeyModel {Key = $"InventoryManagerKey{newWarehouse.Id}", Role = "Inventory Manager", WarehouseID = newWarehouse.Id};
-        ApiKeyModel newFloorManager = new ApiKeyModel {Key = $"FloorManagerKey{newWarehouse.Id}", Role = "Floor Manager", WarehouseID = newWarehouse.Id};
-        ApiKeyModel newOperative = new ApiKeyModel {Key = $"OperativeKey{newWarehouse.Id}", Role = "Operative", WarehouseID = newWarehouse.Id};
-        ApiKeyModel newSupervisor = new ApiKeyModel {Key = $"Supervisor{newWarehouse.Id}", Role = "Supervisor", WarehouseID = newWarehouse.Id};
         var apikeys = ApiKeyStorage.GetApiKeys();
-        apikeys.Add(newInventoryManager);
-        apikeys.Add(newFloorManager);
-        apikeys.Add(newOperative);
-        apikeys.Add(newSupervisor);
+        foreach (ApiKeyModel key in listOfNewKeys)
+        {
+            if (!apikeys.Any(k => k.Key == key.Key))
+            {
+                apikeys.Add(key);
+            }
+        }
         ApiKeyStorage.UpdateApiKey(apikeys);
 
         
