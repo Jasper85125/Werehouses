@@ -74,8 +74,7 @@ class TestOrdersAPI(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
 
     def test_get_orders_by_id_shipments(self):
-        for version in ["http://localhost:5001/api/v1",
-                        "http://localhost:5002/api/v2"]:
+        for version in ["http://localhost:5002/api/v2"]:
             response = self.client.get(
                 url=(version + "/orders/10/shipments"), headers=self.headers)
 

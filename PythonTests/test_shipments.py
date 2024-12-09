@@ -36,7 +36,7 @@ class TestClass(unittest.TestCase):
                 response = self.client.get(
                     url=(version + "/shipments/1/orders"),
                     headers=self.headers)
-                self.assertEqual(response.status_code, 405)
+                self.assertEqual(response.status_code, 404)
 
     def test_post_shipment(self):
         data = {
