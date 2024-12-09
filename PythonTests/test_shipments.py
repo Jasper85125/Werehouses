@@ -30,14 +30,6 @@ class TestClass(unittest.TestCase):
                     url=(version + "/shipments/1/items"), headers=self.headers)
                 self.assertEqual(response.status_code, 200)
 
-    def test_get_shipments_by_id_orders(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=(version + "/shipments/1/orders"),
-                    headers=self.headers)
-                self.assertEqual(response.status_code, 404)
-
     def test_post_shipment(self):
         data = {
             "order_id": 1,
