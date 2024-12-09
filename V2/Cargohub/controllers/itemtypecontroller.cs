@@ -100,7 +100,7 @@ public class ItemTypeController : ControllerBase
         return CreatedAtAction(nameof(GetItemById), new { id = createditemtype.Id }, createditemtype);
     }
 
-    // POST: /items/multiple
+    // POST: /itemtypes/multiple
     [HttpPost("multiple")]
     public ActionResult<ItemTypeCS> CreateMultipleItemTypes([FromBody] List<ItemTypeCS> newItemTypes)
     {
