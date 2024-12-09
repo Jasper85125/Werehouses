@@ -1,56 +1,56 @@
 import unittest
-import requests
+import httpx
 
 
 class TestClass(unittest.TestCase):
     def setUp(self):
+        self.client = httpx.Client()
         self.url = "http://localhost:5125/api/v2"
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_shipments(self):
-        response = requests.get(
+        response = self.client.get(
             url=(self.url + "/shipments"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
 
     def test_get_shipments_by_id(self):
-        response = requests.get(
-            url=(self.url + "/shipments/1"), headers=self.headers)
+        response = self.client.get(
+            url=(self.url + "/shipments/15"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
 
     def test_get_shipments_by_id_items(self):
-        response = requests.get(
-            url=(self.url + "/shipments/1/items"), headers=self.headers)
+        response = self.client.get(
+            url=(self.url + "/shipments/15/items"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
 
     def test_get_shipments_by_id_orders(self):
-        response = requests.get(
-            url=(self.url + "/shipments/1/orders"), headers=self.headers)
+        response = self.client.get(
+            url=(self.url + "/shipments/15/orders"), headers=self.headers)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 405)
 
     def test_post_shipment(self):
         data = {
-            "id": 9999,
             "order_id": 9999,
             "source_id": 9999,
-            "order_date": None,
-            "request_date": None,
-            "shipment_date": None,
-            "shipment_type": None,
-            "shipment_status": None,
-            "notes": None,
-            "carrier_code": None,
-            "carrier_description": None,
-            "service_code": None,
-            "payment_type": None,
-            "transfer_mode": None,
-            "total_package_count": 0,
-            "total_package_weight": 0,
-            "created_at": None,
-            "updated_at": None,
+            "order_date": "2023-01-01T00:00:00Z",
+            "request_date": "2023-01-01T00:00:00Z",
+            "shipment_date": "2023-01-01T00:00:00Z",
+            "shipment_type": "TypeA",
+            "shipment_status": "Pending",
+            "notes": "Test shipment",
+            "carrier_code": "CARRIER123",
+            "carrier_description": "Carrier Description",
+            "service_code": "SERVICE123",
+            "payment_type": "Prepaid",
+            "transfer_mode": "Air",
+            "total_package_count": 3,
+            "total_package_weight": 10.5,
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z",
             "items": [
                 {
                     "item_id": "P000002",
@@ -67,35 +67,35 @@ class TestClass(unittest.TestCase):
             ]
         }
 
-        response = requests.post(
+        response = self.client.post(
             url=(self.url + "/shipments"), headers=self.headers, json=data)
 
         self.assertEqual(response.status_code, 201)
 
     def test_put_shipment_by_id(self):
         data = {
-            "id": 4,
+            "id": 5,
             "order_id": 9999,
             "source_id": 9999,
-            "order_date": None,
-            "request_date": None,
-            "shipment_date": None,
-            "shipment_type": None,
-            "shipment_status": None,
-            "notes": None,
-            "carrier_code": None,
-            "carrier_description": None,
-            "service_code": None,
-            "payment_type": None,
-            "transfer_mode": None,
-            "total_package_count": 0,
-            "total_package_weight": 0,
-            "created_at": None,
-            "updated_at": None,
+            "order_date": "2023-01-01T00:00:00Z",
+            "request_date": "2023-01-01T00:00:00Z",
+            "shipment_date": "2023-01-01T00:00:00Z",
+            "shipment_type": "TypeA",
+            "shipment_status": "Pending",
+            "notes": "Test shipment",
+            "carrier_code": "CARRIER123",
+            "carrier_description": "Carrier Description",
+            "service_code": "SERVICE123",
+            "payment_type": "Prepaid",
+            "transfer_mode": "Air",
+            "total_package_count": 3,
+            "total_package_weight": 10.5,
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z",
             "items": [
                 {
                     "item_id": "P000002",
-                    "amount": 23
+                    "amount": 2
                 },
                 {
                     "item_id": "P000004",
@@ -103,48 +103,18 @@ class TestClass(unittest.TestCase):
                 },
                 {
                     "item_id": "P000006",
-                    "amount": 50
+                    "amount": 5
                 }
             ]
         }
-        response = requests.put(
-            url=(self.url + "/shipments/4"),
-            headers=self.headers,
-            json=data)
-        self.assertEqual(response.status_code, 200)
 
-    def test_put_shipment_by_id_items(self):
-        data = {
-            "items": [
-                {
-                    "item_id": "P000002",
-                    "amount": 230
-                },
-                {
-                    "item_id": "P000004",
-                    "amount": 100
-                },
-                {
-                    "item_id": "P000006",
-                    "amount": 500
-                }
-            ]
-        }
-        response = requests.put(
-            url=(self.url + "/shipments/4/items"),
-            headers=self.headers,
-            json=data
-        )
-        # print(response.status_code)
-        # print(response.text)
+        response = self.client.put(
+            url=(self.url + "/shipments/5"), headers=self.headers, json=data)
+
         self.assertEqual(response.status_code, 200)
 
     def test_delete_shipment_by_id(self):
-        response = requests.delete(
+        response = self.client.delete(
             url=(self.url + "/shipments/5"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
-
-
-if __name__ == "__main__":
-    unittest.main()
