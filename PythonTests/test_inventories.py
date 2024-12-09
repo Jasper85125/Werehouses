@@ -12,7 +12,7 @@ import requests
 
 class TestClass(unittest.TestCase):
     def setUp(self):
-        self.url = "http://localhost:5125/api/v1"
+        self.url = "http://localhost:5125/api/v2"
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_inventories(self):
@@ -50,7 +50,7 @@ class TestClass(unittest.TestCase):
 
     def test_put_inventory_id(self):
         data = {
-            "id": 99999,
+            "id": 1,
             "item_id": None,
             "description": None,
             "item_reference": None,
@@ -65,7 +65,7 @@ class TestClass(unittest.TestCase):
         }
 
         response = requests.put(
-            url=(self.url + "/inventories/99999"),
+            url=(self.url + "/inventories/1"),
             headers=self.headers,
             json=data
         )
@@ -74,6 +74,6 @@ class TestClass(unittest.TestCase):
 
     def test_delete_inventory_id(self):
         response = requests.delete(
-            url=(self.url + "/inventories/99999"), headers=self.headers)
+            url=(self.url + "/inventories/5"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)

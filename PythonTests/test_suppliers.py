@@ -12,7 +12,7 @@ import requests
 
 class TestClass(unittest.TestCase):
     def setUp(self):
-        self.url = "http://localhost:5125/api/v1"
+        self.url = "http://localhost:5125/api/v2"
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_suppliers(self):

@@ -4,7 +4,7 @@ import requests
 
 class TestClass(unittest.TestCase):
     def setUp(self):
-        self.url = "http://localhost:5125/api/v1"  # Add the base URL
+        self.url = "http://localhost:5125/api/v2"  # Add the base URL
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_location_id(self):
@@ -35,13 +35,13 @@ class TestClass(unittest.TestCase):
 
     def test_update_location(self):
         data = {
-            "id": 69696,
+            "id": 5,
             "warehouse_id": 20,
             "code": "A.D.0",
             "created_at": None,
         }
         response = requests.put(
-            url=(self.url + "/locations/1"), headers=self.headers, json=data
+            url=(self.url + "/locations/5"), headers=self.headers, json=data
         )
         self.assertEqual(response.status_code, 200)
 

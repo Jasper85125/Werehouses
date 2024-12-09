@@ -16,7 +16,7 @@ def checkItemLine(item_line):
 class TestItemLines(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.url = "http://localhost:5125/api/v1"
+        self.url = "http://localhost:5125/api/v2"
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
 
     def test_get_item_line_id(self):
@@ -85,7 +85,7 @@ class TestItemLines(unittest.TestCase):
     def test_delete_item_line_id(self):
         # Send the request
         response = self.client.delete(
-            url=(self.url + "/item_lines/100"), headers=self.headers
+            url=(self.url + "/item_lines/5"), headers=self.headers
         )
 
         # Check the status code

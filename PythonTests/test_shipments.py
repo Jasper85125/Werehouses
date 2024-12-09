@@ -4,7 +4,7 @@ import requests
 
 class TestClass(unittest.TestCase):
     def setUp(self):
-        self.url = "http://localhost:5125/api/v1"
+        self.url = "http://localhost:5125/api/v2"
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
 
     def test_get_shipments(self):
@@ -74,7 +74,7 @@ class TestClass(unittest.TestCase):
 
     def test_put_shipment_by_id(self):
         data = {
-            "id": 9999,
+            "id": 4,
             "order_id": 9999,
             "source_id": 9999,
             "order_date": None,
@@ -108,7 +108,7 @@ class TestClass(unittest.TestCase):
             ]
         }
         response = requests.put(
-            url=(self.url + "/shipments/9999"),
+            url=(self.url + "/shipments/4"),
             headers=self.headers,
             json=data)
         self.assertEqual(response.status_code, 200)
@@ -131,7 +131,7 @@ class TestClass(unittest.TestCase):
             ]
         }
         response = requests.put(
-            url=(self.url + "/shipments/9999/items"),
+            url=(self.url + "/shipments/4/items"),
             headers=self.headers,
             json=data
         )
@@ -141,7 +141,7 @@ class TestClass(unittest.TestCase):
 
     def test_delete_shipment_by_id(self):
         response = requests.delete(
-            url=(self.url + "/shipments/9999"), headers=self.headers)
+            url=(self.url + "/shipments/5"), headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
 

@@ -37,7 +37,7 @@ def checkClient(client):
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.url = "http://localhost:5125/api/v1"
+        self.url = "http://localhost:5125/api/v2"
         self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
 
     def test_01_get_clients(self):
@@ -47,7 +47,10 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/clients"), headers=self.headers)
 
         # Check de status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Response content: {response.content}"
+        )
 
         # Check dat de response een list is
         self.assertEqual(type(response.json()), list)
@@ -81,16 +84,16 @@ class TestClass(unittest.TestCase):
     def test_04_post_client(self):
         data = {
             "id": 99999,
-            "name": None,
-            "address": None,
-            "zip_code": None,
-            "city": None,
-            "province": None,
-            "country": None,
-            "contact_phone": None,
-            "contact_email": None,
-            "created_at": None,
-            "updated_at": None
+            "name": "Test Client",
+            "address": "123 Test Street",
+            "zip_code": "12345",
+            "city": "Test City",
+            "province": "Test Province",
+            "country": "Test Country",
+            "contact_phone": "123-456-7890",
+            "contact_email": "test@example.com",
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z"
         }
 
         # Stuur de request
@@ -98,38 +101,89 @@ class TestClass(unittest.TestCase):
             url=(self.url + "/clients"), headers=self.headers, json=data)
 
         # Check de status code
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            response.status_code, 201,
+            msg=f"Failed to create client: {response.content}"
+        )
 
     # Overschrijft een warehouse op basis van de opgegeven warehouse-id
 
     def test_05_put_client_id(self):
+        # Get the last client ID
+        response = self.client.get(
+            url=(self.url + "/clients"), headers=self.headers)
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Failed to get clients: {response.content}"
+        )
+        clients = response.json()
+        last_client_id = clients[-1]["id"] if clients else 99999
+
+        # Create the client if no clients exist
+        if not clients:
+            data = {
+                "id": last_client_id,
+                "name": "Test Client",
+                "address": "123 Test Street",
+                "zip_code": "12345",
+                "city": "Test City",
+                "province": "Test Province",
+                "country": "Test Country",
+                "contact_phone": "123-456-7890",
+                "contact_email": "test@example.com",
+                "created_at": "2023-01-01T00:00:00Z",
+                "updated_at": "2023-01-01T00:00:00Z"
+            }
+            response = self.client.post(
+                url=(self.url + "/clients"), headers=self.headers, json=data)
+            self.assertEqual(
+                response.status_code, 201,
+                msg=f"Failed to create client: {response.content}"
+            )
+
+        # Ensure the client exists before updating
+        response = self.client.get(
+            url=(self.url + f"/clients/{last_client_id}"),
+            headers=self.headers)
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Client not found: {response.content}"
+        )
+
+        # Update the client
         data = {
-            "id": 99999,
-            "code": "AAAAAAA",
-            "name": None,
-            "address": None,
-            "zip": None,
-            "city": None,
-            "province": None,
-            "country": None,
-            "contact": None,
-            "created_at": None,
-            "updated_at": None
+            "id": last_client_id,
+            "name": "Updated Test Client",
+            "address": "123 Updated Street",
+            "zip_code": "54321",
+            "city": "Updated City",
+            "province": "Updated Province",
+            "country": "Updated Country",
+            "contact_phone": "098-765-4321",
+            "contact_email": "updated@example.com",
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-02T00:00:00Z"
         }
 
         # Stuur de request
         response = self.client.put(
-            url=(self.url + "/clients/99999"), headers=self.headers, json=data)
-
-        # Check de status code
-        self.assertEqual(response.status_code, 200)
+            url=(self.url + f"/clients/{last_client_id}"),
+            headers=self.headers, json=data
+        )
+        if response.status_code == 500:
+            self.fail(f"Server error: {response.content}")
+        else:
+            self.assertEqual(
+                response.status_code, 200,
+                msg=f"Response content: {response.content}"
+            )
 
         # deze delete een warehouse op basis van een id
 
     def test_06_delete_client_id(self):
         # Stuur de request
         response = self.client.delete(
-            url=(self.url + "/clients/99999"), headers=self.headers)
+            url=(self.url + "/clients/1"), headers=self.headers)
 
         # Check de status code
         self.assertEqual(response.status_code, 200)
