@@ -64,12 +64,12 @@ class TestItemLines(unittest.TestCase):
     # Overwrites an item line based on the given item line id
     def test_put_item_line_id(self):
         data = {
-            "id": 5,
-            "name": "Updated Item Line",
-            "description": "Updated description",
-            "created_at": "2022-08-18 07:05:25",
-            "updated_at": "2023-10-01 12:00:00"
-        }
+                "id": 5,
+                "name": "Tech Gadgets",
+                "description": "cool gadgets",
+                "created_at": "2022-08-18T07:05:25",
+                "updated_at": "2023-05-15T15:44:28"
+            }
 
         # Send the request
         response = self.client.put(

@@ -66,8 +66,8 @@ class TestItemTypesAPI(unittest.TestCase):
             "id": 4,
             "name": "Updated Item Type",
             "description": "An updated item type",
-            "created_at": "2023-10-01 00:00:00",
-            "updated_at": "2023-10-01 00:00:00",
+            "created_at": "2023-10-01T00:00:00",
+            "updated_at": "2023-10-01T00:00:00",
         }
 
         # Send the request
