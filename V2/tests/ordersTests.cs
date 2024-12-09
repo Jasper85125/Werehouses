@@ -4,6 +4,7 @@ using Moq;
 using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace TestsV2
 {
@@ -31,6 +32,15 @@ namespace TestsV2
             };
             _mockOrderService.Setup(service => service.GetAllOrders()).Returns(orders);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var value = _orderController.GetAllOrders();
 
@@ -52,6 +62,15 @@ namespace TestsV2
             };
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(orders[0]);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var value = _orderController.GetOrderById(1);
 
@@ -69,6 +88,15 @@ namespace TestsV2
             //arrange
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns((OrderCS)null);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var value = _orderController.GetOrderById(1);
 
@@ -85,6 +113,15 @@ namespace TestsV2
                 new OrderCS { Id = 2,  bill_to = 24 },
             };
             _mockOrderService.Setup(service => service.GetOrdersByClient(24)).Returns(orders);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             //Act
             var value = _orderController.GetOrdersByClient(24);
@@ -104,6 +141,15 @@ namespace TestsV2
 
             // Set up the mock service to return the created order
             _mockOrderService.Setup(service => service.CreateOrder(newOrder)).Returns(createdOrder);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _orderController.CreateOrder(newOrder);
@@ -133,6 +179,15 @@ namespace TestsV2
                                       total_discount = 30, total_tax = 100, total_surcharge = 78 }
             };
             _mockOrderService.Setup(service => service.CreateMultipleOrders(orders)).Returns(orders);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
             
             // Act
             var result = _orderController.CreateMultipleOrders(orders);
@@ -155,6 +210,15 @@ namespace TestsV2
             _mockOrderService.Setup(service => service.UpdateOrder(1, updatedOrder)).Returns(Task.FromResult(updatedOrder));
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(updatedOrder);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _orderController.UpdateOrder(1, updatedOrder);
 
@@ -175,6 +239,15 @@ namespace TestsV2
             var updatedOrder = new OrderCS { Id = 1, source_id = 24, order_status = "Shipped" };
             _mockOrderService.Setup(service => service.UpdateOrder(1, updatedOrder)).Returns(Task.FromResult((OrderCS)null));
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _orderController.UpdateOrder(1, updatedOrder);
 
@@ -194,6 +267,15 @@ namespace TestsV2
                                       total_discount = 30, total_tax = 100, total_surcharge = 78 };
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(order);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //act
             var result = _orderController.DeleteOrder(1);
 
@@ -212,6 +294,15 @@ namespace TestsV2
             };
             _mockOrderService.Setup(service => service.GetItemsByOrderId(1)).Returns(items);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _orderController.GetItemsByOrderId(1);
 
@@ -227,6 +318,15 @@ namespace TestsV2
         {
             // Arrange
             _mockOrderService.Setup(service => service.GetItemsByOrderId(1)).Returns((List<ItemIdAndAmount>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _orderController.GetItemsByOrderId(1);
@@ -247,6 +347,15 @@ namespace TestsV2
             var updatedOrder = new OrderCS { Id = 1, items = items };
             _mockOrderService.Setup(service => service.UpdateOrderItems(1, items)).Returns(Task.FromResult(updatedOrder));
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(updatedOrder);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _orderController.UpdateOrderItems(1, items);
@@ -275,6 +384,15 @@ namespace TestsV2
             };
             _mockOrderService.Setup(service => service.UpdateOrderItems(1, items)).Returns(Task.FromResult((OrderCS)null));
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _orderController.UpdateOrderItems(1, items);
 
@@ -283,6 +401,7 @@ namespace TestsV2
             var notFoundResult = result.Result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
         }
+
         [TestMethod]
         public void PatchOrder_succes(){
             //Arrange
@@ -302,10 +421,21 @@ namespace TestsV2
         [TestMethod]
         public void DeleteOrdersTest_Succes(){
             //Arrange
-            var listidstodel = new List<int>(){1,2,3};
+            var ordersToDelete = new List<int>(){1,2,3};
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _orderController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
-            var result = _orderController.DeleteOrders(listidstodel);
+            var result = _orderController.DeleteOrders(ordersToDelete);
             var resultok = result as OkObjectResult;
+
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);

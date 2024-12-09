@@ -20,14 +20,34 @@ public class InventoryController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<InventoryCS>> GetAllInventories()
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics",
+                                                                   "Operative", "Supervisor" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var inventories = _inventoryService.GetAllInventories();
         return Ok(inventories);
     }
 
     // GET: /inventories/{id}
     [HttpGet("{id}")]
-    public ActionResult<InventoryCS> GetInventoryById([FromRoute]int id)
+    public ActionResult<InventoryCS> GetInventoryById([FromRoute] int id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics",
+                                                                   "Operative", "Supervisor" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var inventory = _inventoryService.GetInventoryById(id);
         if (inventory is null)
         {
@@ -39,22 +59,41 @@ public class InventoryController : ControllerBase
     // GET: /inventories/total/{item_id}
     // (GET) The system must allow users to fetch inventory totals for a specific item. the total is the total_on_hand + total_allocated it must return either a 200 or 404 status code and the sum of the total_on_hand and total_allocated for the item.
     [HttpGet("total/{item_id}")]
-    public ActionResult<int> GetInventoryByItemId([FromRoute]string item_id)
+    public ActionResult<int> GetInventoryByItemId([FromRoute] string item_id)
     {
-            // (GET) The system must allow users to fetch inventory totals for a specific item. the total is the total_on_hand + total_allocated it must return either a 200 or 404 status code and the sum of the total_on_hand and total_allocated for the item.
-            var inventory = _inventoryService.GetInventoriesForItem(item_id);
-            if (inventory is null)
-            {
-                return NotFound();
-            }
-            var inventory_total = inventory.total_on_hand + inventory.total_allocated;
-            return Ok(inventory_total);
-       
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics",
+                                                                   "Operative", "Supervisor" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        // (GET) The system must allow users to fetch inventory totals for a specific item. the total is the total_on_hand + total_allocated it must return either a 200 or 404 status code and the sum of the total_on_hand and total_allocated for the item.
+        var inventory = _inventoryService.GetInventoriesForItem(item_id);
+        if (inventory is null)
+        {
+            return NotFound();
+        }
+        var inventory_total = inventory.total_on_hand + inventory.total_allocated;
+        return Ok(inventory_total);
+
     }
+
     // POST: /inventories
     [HttpPost()]
     public ActionResult<InventoryCS> CreateInventory([FromBody] InventoryCS inventory)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (inventory is null)
         {
             return BadRequest("Inventory is null");
@@ -67,6 +106,14 @@ public class InventoryController : ControllerBase
     [HttpPost("multiple")]
     public ActionResult<InventoryCS> CreateMultipleInventories([FromBody] List<InventoryCS> newInventory)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (newInventory is null)
         {
             return BadRequest("Inventory data is null");
@@ -88,7 +135,15 @@ public class InventoryController : ControllerBase
         // || value.Locations is null){
         //     return BadRequest("request is invalid/contains invalid values");
         // }
-        if(value is null)
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        if (value is null)
         {
             return BadRequest("request is invalid/contains invalid values");
         }
@@ -100,6 +155,14 @@ public class InventoryController : ControllerBase
     [HttpDelete("{id}")]
     public ActionResult DeleteInventory(int id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var existingInventory = _inventoryService.GetInventoryById(id);
         if (existingInventory is null)
         {
@@ -109,8 +172,18 @@ public class InventoryController : ControllerBase
         return Ok();
     }
     [HttpDelete("batch")]
-    public ActionResult DeleteInventories ([FromBody] List<int> ids){
-        if (ids is null){
+    public ActionResult DeleteInventories([FromBody] List<int> ids)
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        if (ids is null)
+        {
             return NotFound();
         }
         _inventoryService.DeleteInventories(ids);

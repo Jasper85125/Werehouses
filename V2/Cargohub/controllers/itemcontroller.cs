@@ -23,6 +23,15 @@ public class ItemController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<ItemCS>> GetAllItems()
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var items = _itemService.GetAllItems();
         return Ok(items);
     }
@@ -32,6 +41,16 @@ public class ItemController : ControllerBase
     [HttpGet("{uid}")]
     public ActionResult<ItemCS> GetByUid(string uid)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics",
+                                                                   "Operative", "Supervisor" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        
         var item = _itemService.GetItemById(uid);
         if (item == null)
         {
@@ -44,6 +63,16 @@ public class ItemController : ControllerBase
     [HttpGet("{uid}/inventory")]
     public ActionResult<InventoryCS> GetInventoriesForItem([FromRoute] string uid)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics",
+                                                                   "Operative", "Supervisor" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var inventory = _inventoryService.GetInventoriesForItem(uid);
         if (inventory is null)
         {
@@ -56,6 +85,13 @@ public class ItemController : ControllerBase
     [HttpPost()]
     public ActionResult<ItemCS> CreateItem([FromBody] ItemCS newItem)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
         if (newItem == null)
         {
             return BadRequest("Item is null.");
@@ -64,19 +100,40 @@ public class ItemController : ControllerBase
         var createdItem = _itemService.CreateItem(newItem);
         return CreatedAtAction(nameof(GetByUid), new { uid = createdItem.uid }, createdItem);
     }
-        //POST: more than =>1 ItemCS
-    [HttpPost("batch")]
-    public ActionResult<IEnumerable<ItemCS>> CreateItems([FromBody] List<ItemCS> items){
-        if(items is null){
-            return BadRequest("Items are null");
+
+    // POST: /items/multiple
+    [HttpPost("multiple")]
+    public ActionResult<ItemCS> CreateMultipleItems([FromBody] List<ItemCS> newItems)
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
         }
-        var result = _itemService.CreateItems(items);
-        return StatusCode(StatusCodes.Status201Created, result);
+
+        if (newItems is null)
+        {
+            return BadRequest("Item data is null");
+        }
+
+        var createdItems = _itemService.CreateMultipleItems(newItems);
+        return StatusCode(StatusCodes.Status201Created, createdItems);
     }
+
     // PUT: items/5
     [HttpPut("{uid}")]
     public ActionResult<ItemCS> UpdateItem(string uid, [FromBody] ItemCS updatedItem)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales"};
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (updatedItem == null)
         {
             return BadRequest("Item is null.");
@@ -103,6 +160,14 @@ public class ItemController : ControllerBase
     [HttpDelete("{uid}")]
     public ActionResult DeleteItem(string uid)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var existingItem = _itemService.GetItemById(uid);
         if (existingItem == null)
         {
@@ -118,6 +183,14 @@ public class ItemController : ControllerBase
     [HttpDelete("multiple")]
     public ActionResult DeleteMultipleItems([FromBody] List<string> uids)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (uids == null || uids.Count == 0)
         {
             return BadRequest("No items to delete.");

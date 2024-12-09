@@ -31,9 +31,11 @@ public class ItemTypeService : IItemtypeService
     }
 
     // Method to create a new item type
-    public async Task<ItemTypeCS> CreateItemType(ItemTypeCS newItemType)
+    public ItemTypeCS CreateItemType(ItemTypeCS newItemType)
     {
         List<ItemTypeCS> items = GetAllItemtypes();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Auto-increment ID
         if (items.Any())
@@ -45,12 +47,25 @@ public class ItemTypeService : IItemtypeService
             newItemType.Id = 1;
         }
 
+        newItemType.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newItemType.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         items.Add(newItemType);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_types.json", jsonData);
+        File.WriteAllText("data/item_types.json", jsonData);
 
         return newItemType;
+    }
+
+    public List<ItemTypeCS> CreateMultipleItemTypes(List<ItemTypeCS>newItemTypes)
+    {
+        List<ItemTypeCS> addedItemTypes = new List<ItemTypeCS>();
+        foreach(ItemTypeCS itemType in newItemTypes)
+        {
+            ItemTypeCS addItemType = CreateItemType(itemType);
+            addedItemTypes.Add(addItemType);
+        }
+        return addedItemTypes;
     }
 
     // Method to update an item type
