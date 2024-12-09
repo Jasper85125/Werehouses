@@ -9,6 +9,7 @@ public interface IItemService
     List<ItemCS> CreateMultipleItems(List<ItemCS>newItem);
     ItemCS UpdateItem(string uid, ItemCS item);
     IEnumerable<ItemCS> GetAllItemsInItemType(int id);
+    ItemCS PatchItem(string uid, string property, object newvalue);
     void DeleteItem(string uid);
     void DeleteItems(List<string> uids);
 

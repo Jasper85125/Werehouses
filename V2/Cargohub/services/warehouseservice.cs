@@ -105,6 +105,44 @@ public class WarehouseService : IWarehouseService
         }
         return null;
     }
+    public WarehouseCS PatchWarehouse(int id, string property, object value){
+        var warehouses = GetAllWarehouses();
+        var warehouse = warehouses.Find(_=>_.Id == id);
+        if(warehouse is null){
+                return null;
+            }
+
+        switch(property){
+            case "Code":
+            warehouse.Code = value.ToString();
+            break;
+            case"Name":
+            warehouse.Name = value.ToString();
+            break;
+            case"Address":
+            warehouse = value as WarehouseCS;
+            break;
+            case"Zip":
+            warehouse.Zip = value.ToString();
+            break;
+            case"City":
+            warehouse.City = value.ToString();
+            break;
+            case"Province":
+            warehouse.Province = value.ToString();
+            break;
+            case"Country":
+            warehouse.Country = value.ToString();
+            break;
+            //ik weet hoe ik moet omgaan met Contact op moment
+            // case"Contact":
+            // warehouse.Contact = value;
+            // break;
+        }
+        var json = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
+        File.WriteAllText(_path, json);
+        return warehouse;
+    }
     public void DeleteWarehouse(int id){
         var allWarehouses = GetAllWarehouses();
         var warehouseToDelete = allWarehouses.FirstOrDefault(warehouse => warehouse.Id == id);

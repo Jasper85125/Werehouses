@@ -136,7 +136,66 @@ public class ItemService : IItemService
 
         return existingItem;
     }
-
+    public ItemCS PatchItem(string uid, string property, object newvalue){
+        var formattednow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        var items = GetAllItems();
+        var item = items.Find(_=>_.uid == uid);
+        if(item is null){
+            return null;
+        }
+        switch(property){
+            case"code":
+            item.code = newvalue.ToString();
+            break;
+            case"description":
+            item.description = newvalue.ToString();
+            break;
+            case"short_description":
+            item.short_description = newvalue.ToString();
+            break;
+            case"upc_code":
+            item.upc_code = newvalue.ToString();
+            break;
+            case"model_number":
+            item.model_number = newvalue.ToString();
+            break;
+            case"commodity_code":
+            item.commodity_code = newvalue.ToString();
+            break;
+            case"item_line":
+            item.item_line = (int)newvalue;
+            break;
+            case"item_group":
+            item.item_group = (int) newvalue;
+            break;
+            case"item_type":
+            item.item_type = (int)newvalue;
+            break;
+            case"unit_purchase_quantity":
+            item.unit_purchase_quantity = (int)newvalue;
+            break;
+            case"unit_order_quantity":
+            item.unit_order_quantity = (int)newvalue;
+            break;
+            case"pack_order_quantity":
+            item.pack_order_quantity = (int)newvalue;
+            break;
+            case"supplier_id":
+            item.supplier_id = (int)newvalue;
+            break;
+            case"supplier_code":
+            item.supplier_code = newvalue.ToString();
+            break;
+            case"supplier_part_number":
+            item.supplier_part_number = newvalue.ToString();
+            break;
+        }
+        item.updated_at = DateTime.ParseExact(formattednow, "yyyy-MM-dd HH:mm:ss", null);
+        var json = JsonConvert.SerializeObject(items, Formatting.Indented);
+        var path = "data/items.json";
+        File.WriteAllText(path, json);
+        return item;
+    }
     // Method to delete an item
     public void DeleteItem(string uid)
     {

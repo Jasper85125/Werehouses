@@ -10,6 +10,7 @@ public interface IItemtypeService
     ItemTypeCS CreateItemType(ItemTypeCS newItemType);
     List<ItemTypeCS> CreateMultipleItemTypes(List<ItemTypeCS>newItemType);
     Task<ItemTypeCS> UpdateItemType(int id, ItemTypeCS itemType);
+    ItemTypeCS PatchItemType(int id, string property, object newvalue);
     void DeleteItemType(int id);
     void DeleteItemTypes(List<int> ids);
 }
