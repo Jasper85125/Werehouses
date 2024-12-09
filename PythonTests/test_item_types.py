@@ -22,7 +22,7 @@ class TestItemTypesAPI(unittest.TestCase):
     def test_02_get_item_type_id(self):
         # Send the request
         response = self.client.get(
-            url=(self.url + "/item_types/8"), headers=self.headers
+            url=(self.url + "/itemtypes/8"), headers=self.headers
         )
         # Check the status code
         self.assertEqual(response.status_code, 200)
@@ -37,7 +37,7 @@ class TestItemTypesAPI(unittest.TestCase):
     def test_03_get_item_types(self):
         # Send the request
         response = self.client.get(
-            url=(self.url + "/item_types"), headers=self.headers
+            url=(self.url + "/itemtypes"), headers=self.headers
         )
 
         # Check the status code
@@ -72,7 +72,7 @@ class TestItemTypesAPI(unittest.TestCase):
 
         # Send the request
         response = self.client.put(
-            url=(self.url + "/item_types/4"),
+            url=(self.url + "/itemtypes/4"),
             headers=self.headers,
             json=data
         )
@@ -84,7 +84,7 @@ class TestItemTypesAPI(unittest.TestCase):
     def test_06_delete_item_type_id(self):
         # Send the request
         response = self.client.delete(
-            url=(self.url + "/item_types/3"), headers=self.headers
+            url=(self.url + "/itemtypes/3"), headers=self.headers
         )
 
         # Check the status code

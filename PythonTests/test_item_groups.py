@@ -25,7 +25,7 @@ class TestItemGroups(unittest.TestCase):
 
         # Send the request
         response = self.client.post(
-            url=(self.url + "/item_groups"),
+            url=(self.url + "/itemgroups"),
             headers=self.headers,
             json=data
         )
@@ -36,7 +36,7 @@ class TestItemGroups(unittest.TestCase):
     def test_02_get_item_group_id(self):
         # Send the request
         response = self.client.get(
-            url=(self.url + "/item_groups/1"), headers=self.headers
+            url=(self.url + "/itemgroups/1"), headers=self.headers
         )
         # Check the status code
         self.assertEqual(response.status_code, 200)
@@ -51,7 +51,7 @@ class TestItemGroups(unittest.TestCase):
     def test_03_get_item_groups(self):
         # Send the request
         response = self.client.get(
-            url=(self.url + "/item_groups"),
+            url=(self.url + "/itemgroups"),
             headers=self.headers
         )
 
@@ -85,7 +85,7 @@ class TestItemGroups(unittest.TestCase):
 
         # Send the request
         response = self.client.put(
-            url=(self.url + "/item_groups/1"),
+            url=(self.url + "/itemgroups/1"),
             headers=self.headers,
             json=data
         )
@@ -97,7 +97,7 @@ class TestItemGroups(unittest.TestCase):
     def test_06_delete_item_group_id(self):
         # Send the request
         response = self.client.delete(
-            url=(self.url + "/item_groups/1"), headers=self.headers
+            url=(self.url + "/itemgroups/19"), headers=self.headers
         )
 
         # Check the status code

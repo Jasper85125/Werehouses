@@ -22,7 +22,7 @@ class TestItemLines(unittest.TestCase):
     def test_get_item_line_id(self):
         # Send the request
         response = self.client.get(
-            url=(self.url + "/item_lines/0"), headers=self.headers
+            url=(self.url + "/itemlines/0"), headers=self.headers
         )
         # Check the status code
         self.assertEqual(response.status_code, 200)
@@ -37,7 +37,7 @@ class TestItemLines(unittest.TestCase):
     def test_get_item_lines(self):
         # Send the request
         response = self.client.get(
-            url=(self.url + "/item_lines"),
+            url=(self.url + "/itemlines"),
             headers=self.headers
         )
 
@@ -64,7 +64,7 @@ class TestItemLines(unittest.TestCase):
     # Overwrites an item line based on the given item line id
     def test_put_item_line_id(self):
         data = {
-            "id": 0,
+            "id": 5,
             "name": "Updated Item Line",
             "description": "Updated description",
             "created_at": "2022-08-18 07:05:25",
@@ -73,7 +73,7 @@ class TestItemLines(unittest.TestCase):
 
         # Send the request
         response = self.client.put(
-            url=(self.url + "/item_lines/0"),
+            url=(self.url + "/itemlines/5"),
             headers=self.headers,
             json=data
         )
@@ -85,7 +85,7 @@ class TestItemLines(unittest.TestCase):
     def test_delete_item_line_id(self):
         # Send the request
         response = self.client.delete(
-            url=(self.url + "/item_lines/5"), headers=self.headers
+            url=(self.url + "/itemlines/20"), headers=self.headers
         )
 
         # Check the status code
