@@ -169,4 +169,56 @@ namespace clients.TestsV2
         }
     }
 
+    [TestMethod]
+    public void PatchClientTest_Success()
+    {
+        // Arrange
+        var existingClient = new ClientCS { Address = "street", City = "city", contact_phone = "number", contact_email = "email", contact_name = "name", Country = "Japan", created_at = default, Id = 1, Name = "name", Province = "province", updated_at = default, zip_code = "zip" };
+        var patchClient = new ClientCS { City = "new city" };
+
+        _mockClientService.Setup(service => service.PatchClient(1, patchClient)).Returns(new ClientCS
+        {
+        Address = existingClient.Address,
+        City = patchClient.City,
+        contact_phone = existingClient.contact_phone,
+        contact_email = existingClient.contact_email,
+        contact_name = existingClient.contact_name,
+        Country = existingClient.Country,
+        created_at = existingClient.created_at,
+        Id = existingClient.Id,
+        Name = existingClient.Name,
+        Province = existingClient.Province,
+        updated_at = existingClient.updated_at,
+        zip_code = existingClient.zip_code
+        });
+
+        // Act
+        var result = _clientcontroller.PatchClient(1, patchClient);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        var returnedClient = okResult.Value as ClientCS;
+        Assert.AreEqual(patchClient.City, returnedClient.City);
+        Assert.AreEqual(existingClient.Address, returnedClient.Address);
+    }
+
+    [TestMethod]
+    public void PatchClientTest_Failed()
+    {
+        // Arrange
+        var patchClient = new ClientCS { City = "new city" };
+
+        _mockClientService.Setup(service => service.PatchClient(0, patchClient)).Returns((ClientCS)null);
+
+        // Act
+        var result = _clientcontroller.PatchClient(0, patchClient);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.IsNotNull(notFoundResult);
+    }
+
 }

@@ -115,10 +115,11 @@ public class ClientService : IClientService
     public ClientCS PatchClient(int id, ClientCS updateClient)
     {
         var allClients = GetAllClients();
-        var clientToUpdate = allClients.Single(client => client.Id == id);
+        var clientToUpdate = allClients.SingleOrDefault(client => client.Id == id);
 
         if (clientToUpdate is not null)
         {
+            // Get the current date and time
             var currentDateTime = DateTime.Now;
 
             // Format the date and time to the desired format
@@ -133,6 +134,7 @@ public class ClientService : IClientService
             clientToUpdate.contact_name = updateClient.contact_name ?? clientToUpdate.contact_name;
             clientToUpdate.contact_phone = updateClient.contact_phone ?? clientToUpdate.contact_phone;
             clientToUpdate.contact_email = updateClient.contact_email ?? clientToUpdate.contact_email;
+
             clientToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
             var jsonData = JsonConvert.SerializeObject(allClients, Formatting.Indented);

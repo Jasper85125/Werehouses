@@ -27,7 +27,7 @@ public class ClientController : ControllerBase
 
     // GET: /clients/{id}
     [HttpGet("{id}")]
-    public ActionResult<ClientCS> GetClientById([FromRoute]int Id)
+    public ActionResult<ClientCS> GetClientById([FromRoute] int Id)
     {
         var client = _clientservice.GetClientById(Id);
         if (client is null)
@@ -36,7 +36,7 @@ public class ClientController : ControllerBase
         }
         return Ok(client);
     }
-    
+
     // POST: /clients
     [HttpPost()]
     public ActionResult<ClientCS> CreateClient([FromBody] ClientCS newClient)
@@ -65,7 +65,7 @@ public class ClientController : ControllerBase
 
     // PUT: /clients/{id}
     [HttpPut("{id}")]
-    public ActionResult<ClientCS> UpdateClient([FromRoute]int id, [FromBody] ClientCS client)
+    public ActionResult<ClientCS> UpdateClient([FromRoute] int id, [FromBody] ClientCS client)
     {
         if (client is null)
         {
@@ -82,7 +82,7 @@ public class ClientController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult DeleteClient([FromRoute]int id)
+    public ActionResult DeleteClient([FromRoute] int id)
     {
         var existingClient = _clientservice.GetClientById(id);
         if (existingClient is null)
@@ -94,8 +94,10 @@ public class ClientController : ControllerBase
     }
 
     [HttpDelete("batch")]
-    public ActionResult DeleteClients ([FromBody] List<int> ids){
-        if(ids is null){
+    public ActionResult DeleteClients([FromBody] List<int> ids)
+    {
+        if (ids is null)
+        {
             return BadRequest("error in request");
         }
         _clientservice.DeleteClients(ids);
@@ -104,18 +106,20 @@ public class ClientController : ControllerBase
 
     //PATCH: /clients/{id}
     [HttpPatch("{id}")]
-    public ActionResult<ClientCS> PatchClient([FromRoute]int id, [FromBody] ClientCS client)
+    public ActionResult<ClientCS> PatchClient([FromRoute] int id, [FromBody] ClientCS patch)
     {
+        var client = _clientservice.GetClientById(id);
         if (client is null)
         {
-            return BadRequest("Client data is null.");
+            return NotFound();
         }
 
-        var updatedClient = _clientservice.UpdateClient(id, client);
+        var updatedClient = _clientservice.PatchClient(id, patch);
         if (updatedClient is null)
         {
-            return NotFound("No Client found with the given id");
+            return BadRequest("Failed to patch client.");
         }
+
         return Ok(updatedClient);
     }
 }
