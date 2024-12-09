@@ -248,6 +248,7 @@ namespace TestsV2
             var returnedWarehouse = createdResult.Value as WarehouseCS;
             Assert.IsNull(returnedWarehouse);
         }
+        
         [TestMethod]
         public void PatchWarehouse_Succes(){
             //Arrange
