@@ -74,7 +74,7 @@ class TestClass(unittest.TestCase):
 
     def test_put_shipment_by_id(self):
         data = {
-            "id": 4,
+            "id": 5,
             "order_id": 9999,
             "source_id": 9999,
             "order_date": "2023-01-01T00:00:00Z",
@@ -109,7 +109,8 @@ class TestClass(unittest.TestCase):
         }
 
         response = self.client.put(
-            url=(self.url + "/shipments/4"), headers=self.headers, json=data)
+            url=(self.url + "/shipments/5"), headers=self.headers, json=data)
+
         self.assertEqual(response.status_code, 200)
 
     def test_delete_shipment_by_id(self):
