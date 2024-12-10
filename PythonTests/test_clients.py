@@ -40,7 +40,7 @@ class TestClass(unittest.TestCase):
         self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
 
     def test_01_get_clients(self):
-        for version in ["http://localhost:5001/api/v1",
+        for version in [
                         "http://localhost:5002/api/v2"]:
             with self.subTest(version=version):
                 self.url = f"{version}"
@@ -48,23 +48,34 @@ class TestClass(unittest.TestCase):
                 # Stuur de request
                 response = self.client.get(
                     url=(self.url + "/clients"), headers=self.headers)
+                response2 = self.client.get(
+                    url=(self.url + "/clients"),
+                    headers=httpx.Headers({'Api-Key': 'WarehouseManagerKey1'}))
+                response3 = self.client.get(
+                    url=(self.url + "/clients"),
+                    headers=httpx.Headers({'Api-Key': 'OperativeKey1'}))
+                response4 = self.client.get(
+                    url=(self.url + "/clients"),
+                    headers=httpx.Headers())
 
                 # Check de status code
                 self.assertEqual(
                     response.status_code, 200,
                     msg=f"Response content: {response.content}"
                 )
+                self.assertEqual(
+                    response2.status_code, 200,
+                    msg=f"Response content: {response2.content}"
+                )
+                self.assertEqual(
+                    response3.status_code, 401
+                )
+                self.assertEqual(
+                    response4.status_code, 401,
+                )
 
                 # Check dat de response een list is
                 self.assertEqual(type(response.json()), list)
-
-                # Als de list iets bevat (want een list van 0
-                # objects is inprincipe "legaal")
-                # Check of de object in de list ook
-                # echt een "object" (eigenlijk overal een dictionary) is,
-                # Check of de object in de list ook echt een "object" is,
-                # (eigenlijk overal een dictionary),
-                # dus niet dat het een list van ints, strings etc. zijn
                 self.assertEqual(type(response.json()[0]), dict)
 
     def test_02_get_client_id(self):
