@@ -1,76 +1,73 @@
-# import httpx
+import httpx
 import unittest
-import requests
-
-# class TestWarehouses(unittest.TestCase):
-#     def setUp(self) -> None:
-#         self.warehouses = Warehouses("../data/")
-
-#     def test_loaded(self):
-#         self.assertGreater(len(self.warehouses.get_warehouses()), 0)
 
 
 class TestClass(unittest.TestCase):
     def setUp(self):
-        self.url = "http://localhost:3000/api/v1"
-        self.headers = {'API_KEY': 'a1b2c3d4e5'}
+        self.client = httpx.Client()
+        self.versions = ["http://localhost:5001/api/v1",
+                         "http://localhost:5002/api/v2"]
+        self.headers = {'Api-Key': 'AdminKey'}
 
     def test_get_inventories(self):
-
-        response = requests.get(
-            url=(self.url + "/inventories"), headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(url=(version + "/inventories"),
+                                           headers=self.headers)
+                self.assertEqual(response.status_code, 200)
 
     def test_get_inventory_id(self):
-        response = requests.get(
-            url=(self.url + "/inventories/1"), headers=self.headers)
-
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(url=(version + "/inventories/1"),
+                                           headers=self.headers)
+                self.assertEqual(response.status_code, 200)
 
     def test_post_inventory(self):
         data = {
             "id": 99999,
-            "item_id": None,
-            "description": None,
-            "item_reference": None,
-            "locations": None,
-            "total_on_hand": None,
-            "total_expected": None,
-            "total_ordered": None,
-            "total_allocated": None,
-            "total_available": None,
-            "created_at": None,
-            "updated_at": None
+            "item_id": "ITEM123",
+            "description": "Test description",
+            "item_reference": "Test reference",
+            "locations": [],
+            "total_on_hand": 10,
+            "total_expected": 5,
+            "total_ordered": 3,
+            "total_allocated": 2,
+            "total_available": 8,
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z"
         }
-
-        response = requests.post(
-            url=(self.url + "/inventories"), headers=self.headers, json=data)
-
-        self.assertEqual(response.status_code, 201)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.post(url=(version + "/inventories"),
+                                            headers=self.headers, json=data)
+                self.assertEqual(response.status_code, 201)
 
     def test_put_inventory_id(self):
         data = {
-            "id": 99999,
-            "item_id": None,
-            "description": None,
-            "item_reference": None,
-            "locations": None,
-            "total_on_hand": None,
-            "total_expected": None,
-            "total_ordered": None,
-            "total_allocated": None,
-            "total_available": None,
-            "created_at": None,
-            "updated_at": None
+            "id": 1,
+            "item_id": "ITEM123",
+            "description": "Updated description",
+            "item_reference": "Updated reference",
+            "locations": [],
+            "total_on_hand": 20,
+            "total_expected": 10,
+            "total_ordered": 5,
+            "total_allocated": 3,
+            "total_available": 15,
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z"
         }
-
-        response = requests.put(
-            url=(self.url + "/inventories/99999"), headers=self.headers, json=data)
-
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.put(url=(version + "/inventories/1"),
+                                           headers=self.headers, json=data)
+                self.assertEqual(response.status_code, 200)
 
     def test_delete_inventory_id(self):
-        response = requests.delete(
-            url=(self.url + "/inventories/99999"), headers=self.headers)
-
-        self.assertEqual(response.status_code, 200)
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.delete(url=(version + "/inventories/5"),
+                                              headers=self.headers)
+                self.assertEqual(response.status_code, 200)

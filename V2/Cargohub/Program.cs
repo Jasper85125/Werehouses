@@ -26,6 +26,7 @@ var app = builder.Build();
 
 app.UseMiddleware<ApiKeyMiddleware>();
 
+app.Urls.Add("http://localhost:5002");
 app.MapControllers();
 
 app.UseHttpsRedirection();

@@ -120,6 +120,7 @@ public class ClientController : ControllerBase
         return Ok(updatedClient);
 
     }
+
     [HttpDelete("{id}")]
     public ActionResult DeleteClient([FromRoute] int id)
     {
@@ -141,21 +142,32 @@ public class ClientController : ControllerBase
     }
 
     [HttpDelete("batch")]
-    public ActionResult DeleteClients([FromBody] List<int> ids)
-    {
-        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
-        var userRole = HttpContext.Items["UserRole"]?.ToString();
-
-        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-        {
-            return Unauthorized();
-        }
-        
-        if (ids is null)
-        {
+    public ActionResult DeleteClients ([FromBody] List<int> ids){
+        if(ids is null){
             return BadRequest("error in request");
         }
         _clientservice.DeleteClients(ids);
         return Ok("multiple clients deleted");
     }
+
+    //PATCH: /clients/{id}
+    [HttpPatch("{id}")]
+    public ActionResult<ClientCS> PatchClient([FromRoute] int id, [FromBody] ClientCS patch)
+    {
+        var client = _clientservice.GetClientById(id);
+        if (client is null)
+        {
+            return NotFound();
+        }
+
+        var updatedClient = _clientservice.PatchClient(id, patch);
+        if (updatedClient is null)
+        {
+            return BadRequest("Failed to patch client.");
+        }
+
+        return Ok(updatedClient);
+    }
+
+    
 }

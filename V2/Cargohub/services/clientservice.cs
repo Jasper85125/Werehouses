@@ -44,10 +44,10 @@ public class ClientService : IClientService
         return newClient;
     }
 
-    public List<ClientCS> CreateMultipleClients(List<ClientCS>newClients)
+    public List<ClientCS> CreateMultipleClients(List<ClientCS> newClients)
     {
         List<ClientCS> addedClient = new List<ClientCS>();
-        foreach(ClientCS client in newClients)
+        foreach (ClientCS client in newClients)
         {
             ClientCS addClient = CreateClient(client);
             addedClient.Add(addClient);
@@ -57,6 +57,10 @@ public class ClientService : IClientService
 
     public ClientCS UpdateClient(int id, ClientCS updateClient)
     {
+        var currentDateTime = DateTime.Now;
+
+        // Format the date and time to the desired format
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         var allClients = GetAllClients();
         var clientToUpdate = allClients.Single(client => client.Id == id);
 
@@ -71,7 +75,7 @@ public class ClientService : IClientService
             clientToUpdate.contact_name = updateClient.contact_name;
             clientToUpdate.contact_phone = updateClient.contact_phone;
             clientToUpdate.contact_email = updateClient.contact_email;
-            clientToUpdate.updated_at = DateTime.UtcNow;
+            clientToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
             var jsonData = JsonConvert.SerializeObject(allClients, Formatting.Indented);
             File.WriteAllText(_path, jsonData);
@@ -91,18 +95,53 @@ public class ClientService : IClientService
         clients.Remove(client);
         var jsonData = JsonConvert.SerializeObject(clients, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
-        
+
     }
-    public void DeleteClients(List<int> ids){
+    public void DeleteClients(List<int> ids)
+    {
         var clients = GetAllClients();
-        foreach(int id in ids){
+        foreach (int id in ids)
+        {
             var client = clients.Find(_ => _.Id == id);
-            if (client is not null) {
+            if (client is not null)
+            {
                 clients.Remove(client);
             }
         }
         var json = JsonConvert.SerializeObject(clients, Formatting.Indented);
         File.WriteAllText("data/clients.json", json);
+    }
+
+    public ClientCS PatchClient(int id, ClientCS updateClient)
+    {
+        var allClients = GetAllClients();
+        var clientToUpdate = allClients.SingleOrDefault(client => client.Id == id);
+
+        if (clientToUpdate is not null)
+        {
+            // Get the current date and time
+            var currentDateTime = DateTime.Now;
+
+            // Format the date and time to the desired format
+            var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+            clientToUpdate.Name = updateClient.Name ?? clientToUpdate.Name;
+            clientToUpdate.Address = updateClient.Address ?? clientToUpdate.Address;
+            clientToUpdate.City = updateClient.City ?? clientToUpdate.City;
+            clientToUpdate.zip_code = updateClient.zip_code ?? clientToUpdate.zip_code;
+            clientToUpdate.Province = updateClient.Province ?? clientToUpdate.Province;
+            clientToUpdate.Country = updateClient.Country ?? clientToUpdate.Country;
+            clientToUpdate.contact_name = updateClient.contact_name ?? clientToUpdate.contact_name;
+            clientToUpdate.contact_phone = updateClient.contact_phone ?? clientToUpdate.contact_phone;
+            clientToUpdate.contact_email = updateClient.contact_email ?? clientToUpdate.contact_email;
+
+            clientToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+
+            var jsonData = JsonConvert.SerializeObject(allClients, Formatting.Indented);
+            File.WriteAllText(_path, jsonData);
+            return clientToUpdate;
+        }
+        return null;
     }
 }
 

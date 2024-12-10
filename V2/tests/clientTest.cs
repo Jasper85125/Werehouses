@@ -222,6 +222,7 @@ namespace clients.TestsV2
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
 
+
         [TestMethod]
         public void DeleteClientsTest_Succes()
         {
@@ -244,6 +245,44 @@ namespace clients.TestsV2
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultOK.StatusCode, 200);
+        }
+
+        [TestMethod]
+        public void PatchClientTest_Success()
+        {
+            // Arrange
+            var existingClient = new ClientCS { Id = 1, Address = "old street", City = "old city", contact_phone = "old number", contact_email = "old email", contact_name = "old name", Country = "old country", Name = "old name", Province = "old province", zip_code = "old zip" };
+            var patchClient = new ClientCS { Address = "new street", City = "new city", contact_phone = "new number", contact_email = "new email", contact_name = "new name", Country = "new country", Name = "new name", Province = "new province", zip_code = "new zip" };
+
+            _mockClientService.Setup(service => service.GetClientById(1)).Returns(existingClient);
+            _mockClientService.Setup(service => service.PatchClient(1, patchClient)).Returns(patchClient);
+
+            // Act
+            var result = _clientController.PatchClient(1, patchClient);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var resultOk = result.Result as OkObjectResult;
+            Assert.IsNotNull(resultOk);
+            var returnedClient = resultOk.Value as ClientCS;
+            Assert.IsNotNull(returnedClient);
+            Assert.AreEqual(patchClient.Address, returnedClient.Address);
+            Assert.AreEqual(patchClient.City, returnedClient.City);
+        }
+
+        [TestMethod]
+        public void PatchClientTest_NotFound()
+        {
+            // Arrange
+            var patchClient = new ClientCS { Address = "new street", City = "new city", contact_phone = "new number", contact_email = "new email", contact_name = "new name", Country = "new country", Name = "new name", Province = "new province", zip_code = "new zip" };
+
+            _mockClientService.Setup(service => service.GetClientById(1)).Returns((ClientCS)null);
+
+            // Act
+            var result = _clientController.PatchClient(1, patchClient);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
     }
 }
