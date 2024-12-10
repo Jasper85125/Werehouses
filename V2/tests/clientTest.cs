@@ -258,7 +258,7 @@ namespace clients.TestsV2
             _mockClientService.Setup(service => service.PatchClient(1, patchClient)).Returns(patchClient);
 
             // Act
-            var result = _clientcontroller.PatchClient(1, patchClient);
+            var result = _clientController.PatchClient(1, patchClient);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -279,7 +279,7 @@ namespace clients.TestsV2
             _mockClientService.Setup(service => service.GetClientById(1)).Returns((ClientCS)null);
 
             // Act
-            var result = _clientcontroller.PatchClient(1, patchClient);
+            var result = _clientController.PatchClient(1, patchClient);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
