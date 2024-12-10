@@ -10,7 +10,7 @@ on:
 
 jobs:
   csharp-build-and-test:
-    runs-on: ubuntu-latest,self-hosted
+    runs-on: self-hosted
     env:
       DOTNET_INSTALL_DIR: ..dotnet
 
