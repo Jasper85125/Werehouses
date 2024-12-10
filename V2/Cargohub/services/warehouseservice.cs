@@ -164,4 +164,10 @@ public class WarehouseService : IWarehouseService
         var json = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
         File.WriteAllText(_path, json);
     }
+
+    public List<WarehouseCS> GetLatestUpdatedWarehouse(int count = 5)
+    {
+        var allWarehouses = GetAllWarehouses();
+        return allWarehouses.OrderByDescending(warehouse => warehouse.updated_at).Take(count).ToList();
+    }
 }
