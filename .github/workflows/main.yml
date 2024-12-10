@@ -97,8 +97,8 @@ jobs:
     # Run application
     - name: Run application
       run: |
-        dotnet run --no-build --configuration Release --project ./V1/Cargohub/Werehouses/Werehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
-        dotnet run --no-build --configuration Release --project ./V2/Cargohub/Werehouses/Werehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
+        dotnet run --no-build --configuration Release --project ./V1/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
+        dotnet run --no-build --configuration Release --project ./V2/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
     
     # Setup Python
     - name: Setup Python
