@@ -34,6 +34,7 @@ namespace TestsV2
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["WarehouseID"] = 0;
 
             // Assign HttpContext to the controller
             _orderController.ControllerContext = new ControllerContext
@@ -43,10 +44,10 @@ namespace TestsV2
 
             //Act
             var value = _orderController.GetAllOrders();
-
-            //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<OrderCS>;
+
+            //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }

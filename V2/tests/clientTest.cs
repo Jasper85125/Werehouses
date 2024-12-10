@@ -221,6 +221,7 @@ namespace clients.TestsV2
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+
         [TestMethod]
         public void DeleteClientsTest_Succes()
         {
@@ -245,5 +246,4 @@ namespace clients.TestsV2
             Assert.AreEqual(resultOK.StatusCode, 200);
         }
     }
-
 }
