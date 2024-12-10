@@ -96,7 +96,9 @@ jobs:
 
     # Run application
     - name: Run application
-      run: dotnet run --no-build --configuration Release --urls=http://0.0.0.0:5002/ & sleep 5
+      run: |
+        dotnet run --no-build --configuration Release --urls=http://0.0.0.0:5001/ & sleep 5
+        dotnet run --no-build --configuration Release --urls=http://0.0.0.0:5002/ & sleep 5
 
     # Setup Python
     - name: Setup Python
