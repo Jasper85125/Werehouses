@@ -320,6 +320,55 @@ namespace TestsV2
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
         }
+
+        [TestMethod]
+        public void GetLatestUpdatedWarehouseTest_Success()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.GetLatestUpdatedWarehouse(It.IsAny<int>())).Returns(new List<WarehouseCS> { warehouse });
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _warehouseController.GetLatestUpdatedWarehouse();
+
+            // Assert
+            var okResult = result.Result as OkObjectResult;
+            var returnedItems = (okResult.Value as IEnumerable<WarehouseCS>)?.FirstOrDefault();
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(warehouse.Address, returnedItems.Address);
+        }
+
+        [TestMethod]
+        public void GetLatestUpdatedWarehouseTest_Failed()
+        {
+            // Arrange
+            _mockWarehouseService.Setup(service => service.GetLatestUpdatedWarehouse(It.IsAny<int>())).Returns((List<WarehouseCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _warehouseController.GetLatestUpdatedWarehouse();
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
     }
 }
 

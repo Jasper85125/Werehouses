@@ -10,4 +10,5 @@ public interface IWarehouseService
     WarehouseCS PatchWarehouse(int id, string property, object value);
     void DeleteWarehouse(int id);
     void DeleteWarehouses(List<int> ids);
+    List<WarehouseCS> GetLatestUpdatedWarehouse(int count = 5);
 }

@@ -171,4 +171,24 @@ public class WarehouseController : ControllerBase
         _warehouseService.DeleteWarehouses(ids);
         return Ok("Deleted warehouses");
     }
+
+    // GET: /warehouses/latest
+    [HttpGet("latest")]
+    public ActionResult<WarehouseCS> GetLatestUpdatedWarehouse()
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var latestWarehouse = _warehouseService.GetLatestUpdatedWarehouse();
+        if (latestWarehouse is null)
+        {
+            return NotFound();
+        }
+        return Ok(latestWarehouse);
+    }
 }
