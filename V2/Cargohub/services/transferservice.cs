@@ -168,4 +168,11 @@ public class TransferService : ITransferService
         var json = JsonConvert.SerializeObject(transfers, Formatting.Indented);
         File.WriteAllText(_path, json);
     }
+
+    public List<TransferCS> GetLatestTransfers(int count = 5)
+    {
+        List<TransferCS> transfers = GetAllTransfers();
+        return transfers.OrderByDescending(t => t.updated_at).Take(count).ToList();
+    }
+
 }

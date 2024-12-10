@@ -11,4 +11,5 @@ public interface ITransferService
     TransferCS CommitTransfer(int id);
     void DeleteTransfer(int id);
     void DeleteTransfers(List<int> ids);
+    List<TransferCS> GetLatestTransfers(int count = 5);
 }
