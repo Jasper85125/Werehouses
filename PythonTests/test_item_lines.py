@@ -16,7 +16,7 @@ class TestItemLines(unittest.TestCase):
         self.client = httpx.Client()
         self.versions = ["http://localhost:5001/api/v1",
                          "http://localhost:5002/api/v2"]
-        self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
+        self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
 
     def test_get_item_line_id(self):
         for version in self.versions:

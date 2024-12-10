@@ -17,7 +17,7 @@ class TestClass(unittest.TestCase):
             "http://localhost:5001/api/v1",
             "http://localhost:5002/api/v2"
         ]
-        self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
+        self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
 
     def test_01_get_transfers(self):
         for version in self.versions:

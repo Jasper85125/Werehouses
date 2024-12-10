@@ -14,7 +14,7 @@ def checkItemType(item_type):
 class TestItemTypesAPI(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
+        self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
         self.versions = ["http://localhost:5001/api/v1",
                          "http://localhost:5002/api/v2"]
 

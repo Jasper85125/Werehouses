@@ -37,7 +37,7 @@ def checkClient(client):
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.headers = httpx.Headers({'API_KEY': 'a1b2c3d4e5'})
+        self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
 
     def test_01_get_clients(self):
         for version in ["http://localhost:5001/api/v1",

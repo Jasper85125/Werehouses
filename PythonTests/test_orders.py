@@ -47,7 +47,7 @@ def checkOrder(order):
 class TestOrdersAPI(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
-        self.headers = {'API_KEY': 'a1b2c3d4e5'}
+        self.headers = {'Api-Key': 'AdminKey'}
 
     def test_get_orders(self):
         for version in ["http://localhost:5001/api/v1",

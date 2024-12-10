@@ -7,7 +7,7 @@ class TestClass(unittest.TestCase):
         self.client = httpx.Client()
         self.versions = ["http://localhost:5001/api/v1",
                          "http://localhost:5002/api/v2"]
-        self.headers = {'API_KEY': 'a1b2c3d4e5'}
+        self.headers = {'Api-Key': 'AdminKey'}
 
     def test_get_inventories(self):
         for version in self.versions:
