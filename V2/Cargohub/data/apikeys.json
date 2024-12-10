@@ -1,0 +1,37 @@
+[
+  {
+    "Key": "AdminKey",
+    "Role": "Admin",
+    "WarehouseID": 0
+  },
+  {
+    "Key": "WarehouseManagerKey1",
+    "Role": "Warehouse Manager",
+    "WarehouseID": 0
+  },
+  {
+    "Key": "InventoryManagerKey1",
+    "Role": "Inventory Manager",
+    "WarehouseID": 1
+  },
+  {
+    "Key": "FloorManagerKey1",
+    "Role": "Floor Manager",
+    "WarehouseID": 1
+  },
+  {
+    "Key": "OperativeKey1",
+    "Role": "Operative",
+    "WarehouseID": 1
+  },
+  {
+    "Key": "SupervisorKey1",
+    "Role": "Supervisor",
+    "WarehouseID": 1
+  },
+  {
+    "Key": "AnalystKey",
+    "Role": "Analyst",
+    "WarehouseID": 0
+  }
+]

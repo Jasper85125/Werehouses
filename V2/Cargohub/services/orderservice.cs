@@ -50,10 +50,10 @@ public class OrderService : IOrderService
         return newOrder;
     }
 
-    public List<OrderCS> CreateMultipleOrders(List<OrderCS>newOrders)
+    public List<OrderCS> CreateMultipleOrders(List<OrderCS> newOrders)
     {
         List<OrderCS> addedOrder = new List<OrderCS>();
-        foreach(OrderCS order in newOrders)
+        foreach (OrderCS order in newOrders)
         {
             OrderCS addOrder = CreateOrder(order);
             addedOrder.Add(addOrder);
@@ -71,7 +71,17 @@ public class OrderService : IOrderService
             return null;
         }
         return clientOrders;
+    }
 
+    public List<OrderCS> GetOrdersByWarehouse(int warehouseId)
+    {
+        List<OrderCS> orders = GetAllOrders();
+        List<OrderCS> warehouseOrders = orders.Where(order => order.warehouse_id == warehouseId).ToList();
+        if (warehouseOrders == null)
+        {
+            return null;
+        }
+        return warehouseOrders;
     }
 
     public Task<OrderCS> UpdateOrder(int id, OrderCS updateOrder)
@@ -115,65 +125,67 @@ public class OrderService : IOrderService
 
         return Task.FromResult(existingOrder);
     }
-    public OrderCS PatchOrder(int id, string property, object newvalue){
+    public OrderCS PatchOrder(int id, string property, object newvalue)
+    {
         var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         var orders = GetAllOrders();
-        var order = orders.Find(_=>_.Id == id);
-        switch(property){
-            case"source_id":
-            order.source_id = (int) newvalue;
-            break;
-            case"order_date":
-            order.order_date = newvalue.ToString();
-            break;
-            case"request_date":
-            order.request_date = newvalue.ToString();
-            break;
-            case"Reference":
-            order.Reference = newvalue.ToString();
-            break;
-            case"reference_extra":
-            order.reference_extra = newvalue.ToString();
-            break;
-            case"order_status":
-            order.order_status = newvalue.ToString();
-            break;
-            case"Notes":
-            order.Notes = newvalue.ToString();
-            break;
-            case"shipping_notes":
-            order.shipping_notes = newvalue.ToString();
-            break;
-            case"picking_notes":
-            order.picking_notes = newvalue.ToString();
-            break;
-            case"warehouse_id":
-            order.warehouse_id = (int)newvalue;
-            break;
-            case"ship_to":
-            order.ship_to = (int)newvalue;
-            break;
-            case"bill_to":
-            order.bill_to = (int)newvalue;
-            break;
-            case"shipment_id":
-            order.shipment_id = (int)newvalue;
-            break;
-            case"total_amount":
-            order.total_amount = (int)newvalue;
-            break;
-            case"total_discount":
-            order.total_discount = (int)newvalue;
-            break;
-            case"total_tax":
-            order.total_tax = (int)newvalue;
-            break;
-            case"total_surcharge":
-            order.total_surcharge = (int)newvalue;
-            break;
-            case"items":
-            order.items = newvalue as List<ItemIdAndAmount>;
-            break;
+        var order = orders.Find(_ => _.Id == id);
+        switch (property)
+        {
+            case "source_id":
+                order.source_id = (int)newvalue;
+                break;
+            case "order_date":
+                order.order_date = newvalue.ToString();
+                break;
+            case "request_date":
+                order.request_date = newvalue.ToString();
+                break;
+            case "Reference":
+                order.Reference = newvalue.ToString();
+                break;
+            case "reference_extra":
+                order.reference_extra = newvalue.ToString();
+                break;
+            case "order_status":
+                order.order_status = newvalue.ToString();
+                break;
+            case "Notes":
+                order.Notes = newvalue.ToString();
+                break;
+            case "shipping_notes":
+                order.shipping_notes = newvalue.ToString();
+                break;
+            case "picking_notes":
+                order.picking_notes = newvalue.ToString();
+                break;
+            case "warehouse_id":
+                order.warehouse_id = (int)newvalue;
+                break;
+            case "ship_to":
+                order.ship_to = (int)newvalue;
+                break;
+            case "bill_to":
+                order.bill_to = (int)newvalue;
+                break;
+            case "shipment_id":
+                order.shipment_id = (int)newvalue;
+                break;
+            case "total_amount":
+                order.total_amount = (int)newvalue;
+                break;
+            case "total_discount":
+                order.total_discount = (int)newvalue;
+                break;
+            case "total_tax":
+                order.total_tax = (int)newvalue;
+                break;
+            case "total_surcharge":
+                order.total_surcharge = (int)newvalue;
+                break;
+            case "items":
+                order.items = newvalue as List<ItemIdAndAmount>;
+                break;
         }
         order.updated_at = DateTime.ParseExact(now, "yyyy-MM-dd HH:mm:ss", null);
         var json = JsonConvert.SerializeObject(orders, Formatting.Indented);
@@ -236,11 +248,14 @@ public class OrderService : IOrderService
 
         return Task.FromResult(existingOrder);
     }
-    public void DeleteOrders(List<int> ids){
+    public void DeleteOrders(List<int> ids)
+    {
         var orders = GetAllOrders();
-        foreach(int id in ids){
-            var order = orders.Find(_=>_.Id == id);
-            if(order is not null){
+        foreach (int id in ids)
+        {
+            var order = orders.Find(_ => _.Id == id);
+            if (order is not null)
+            {
                 orders.Remove(order);
             }
         }

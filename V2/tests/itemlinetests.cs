@@ -5,6 +5,7 @@ using ControllersV2;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace TestsV2;
 
@@ -32,12 +33,21 @@ public class ItemLineTests
             };
         _mockItemLineService.Setup(service => service.GetAllItemlines()).Returns(itemLines);
 
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         // Act
         var value = _itemLineController.GetAllItemLines();
-
-        // Assert
         var okResult = value.Result as OkObjectResult;
         var returnedItems = okResult.Value as IEnumerable<ItemLineCS>;
+
+        // Assert
         Assert.IsNotNull(okResult);
         Assert.AreEqual(2, returnedItems.Count());
     }
@@ -49,12 +59,21 @@ public class ItemLineTests
         var itemLine = new ItemLineCS { Id = 1, Description = "Item 1" };
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(itemLine);
 
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         // Act
         var value = _itemLineController.GetItemLineById(1);
-
-        // Assert
         var okResult = value.Result as OkObjectResult;
         var returnedItem = okResult.Value as ItemLineCS;
+
+        // Assert
         Assert.IsNotNull(okResult);
         Assert.IsNotNull(okResult.Value);
         Assert.AreEqual(itemLine.Description, returnedItem.Description);
@@ -65,6 +84,15 @@ public class ItemLineTests
     {
         // Arrange
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns((ItemLineCS)null);
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
 
         // Act
         var value = _itemLineController.GetItemLineById(1);
@@ -80,6 +108,15 @@ public class ItemLineTests
         var newItemLine = new ItemLineCS { Id = 1, Description = "New Item" };
         _mockItemLineService.Setup(service => service.AddItemLine(newItemLine)).Returns(newItemLine);
 
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         // Act
         var value = _itemLineController.AddItemLine(newItemLine);
         var createdResult = value as CreatedAtActionResult;
@@ -93,6 +130,15 @@ public class ItemLineTests
     [TestMethod]
     public void AddItemLineTest_NullItem()
     {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         // Act
         var value = _itemLineController.AddItemLine(null);
         var createdResult = value as BadRequestObjectResult;
@@ -111,6 +157,15 @@ public class ItemLineTests
                 new ItemLineCS { Id = 4, Name = "Group 4", Description = "Cool items" }
             };
         _mockItemLineService.Setup(service => service.CreateMultipleItemLines(itemLines)).Returns(itemLines);
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
 
         // Act
         var result = _itemLineController.CreateMultipleItemLines(itemLines);
@@ -134,6 +189,15 @@ public class ItemLineTests
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(existingItemLine);
         _mockItemLineService.Setup(service => service.UpdateItemLine(1, updatedItemLine)).Returns(updatedItemLine);
 
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         // Act
         var value = _itemLineController.UpdateItemLine(1, updatedItemLine);
         var okResult = value.Result as OkObjectResult;
@@ -151,6 +215,15 @@ public class ItemLineTests
         var updatedItemLine = new ItemLineCS { Id = 1, Description = "Updated Item" };
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns((ItemLineCS)null);
 
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         // Act
         var value = _itemLineController.UpdateItemLine(1, updatedItemLine);
 
@@ -163,6 +236,15 @@ public class ItemLineTests
     {
         // Arrange
         var updatedItemLine = new ItemLineCS { Id = 2, Description = "Updated Item" };
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
 
         // Act
         var value = _itemLineController.UpdateItemLine(1, updatedItemLine);
@@ -177,6 +259,15 @@ public class ItemLineTests
         // Arrange
         var itemLine = new ItemLineCS { Id = 1, Description = "Item 1" };
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(itemLine);
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
 
         // Act
         var value = _itemLineController.DeleteItemLine(1);
@@ -200,6 +291,15 @@ public class ItemLineTests
         };
         _mockItemLineService.Setup(service => service.GetItemsByItemLineId(1)).Returns(items);
 
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         // Act: Call the controller method
         var result = _itemLineController.GetItemsByItemLineId(1);
 
@@ -220,6 +320,15 @@ public class ItemLineTests
         // Arrange
         _mockItemLineService.Setup(service => service.GetItemsByItemLineId(1)).Returns((List<ItemCS>)null);
 
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         // Act
         var value = _itemLineController.GetItemsByItemLineId(1);
 
@@ -230,10 +339,21 @@ public class ItemLineTests
     public void DeleteItemLinesTest_Succes()
     {
         //Arrange
-        var idstodel = new List<int>() { 1, 2, 3 };
+        var itemlinesToDelete = new List<int>() { 1, 2, 3 };
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         //Act
-        var result = _itemLineController.DeleteItemLines(idstodel);
+        var result = _itemLineController.DeleteItemLines(itemlinesToDelete);
         var resultok = result as OkObjectResult;
+
         //Assert
         Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         Assert.AreEqual(resultok.StatusCode, 200);
@@ -249,15 +369,24 @@ public class ItemLineTests
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(existingItemLine);
         _mockItemLineService.Setup(service => service.PatchItemLine(1, patchItemLine)).Returns(patchItemLine);
 
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
         // Act
         var result = _itemLineController.PatchItemLine(1, patchItemLine);
+        var okResult = result.Result as OkObjectResult;
+        var returnedItemLine = okResult.Value as ItemLineCS;
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-        var okResult = result.Result as OkObjectResult;
         Assert.IsNotNull(okResult);
         Assert.IsInstanceOfType(okResult.Value, typeof(ItemLineCS));
-        var returnedItemLine = okResult.Value as ItemLineCS;
         Assert.AreEqual(patchItemLine.Description, returnedItemLine.Description);
     }
 
@@ -268,6 +397,15 @@ public class ItemLineTests
         var patchItemLine = new ItemLineCS { Description = "Updated Description" };
 
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns((ItemLineCS)null);
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+        // Assign HttpContext to the controller
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
 
         // Act
         var result = _itemLineController.PatchItemLine(1, patchItemLine);

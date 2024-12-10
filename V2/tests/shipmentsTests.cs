@@ -4,6 +4,7 @@ using Moq;
 using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace TestsV2
 {
@@ -31,12 +32,21 @@ namespace TestsV2
             };
             _mockShipmentService.Setup(service => service.GetAllShipments()).Returns(shipments);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var value = _shipmentController.GetAllShipments();
-
-            //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<ShipmentCS>;
+
+            //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
@@ -52,12 +62,21 @@ namespace TestsV2
             };
             _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipments[0]);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var value = _shipmentController.GetShipmentById(1);
-
-            //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as ShipmentCS;
+
+            //Assert
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(shipments[0].source_id, returnedItems.source_id);
@@ -68,6 +87,15 @@ namespace TestsV2
         {
             //arrange
             _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns((ShipmentCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             //Act
             var value = _shipmentController.GetShipmentById(1);
@@ -87,21 +115,40 @@ namespace TestsV2
             };
             _mockShipmentService.Setup(service => service.GetItemsInShipment(1)).Returns(items);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var value = _shipmentController.GetItemsInShipment(1);
-
-            //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<ItemIdAndAmount>;
+
+            //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
+
         [TestMethod]
         public void CreateShipment_ReturnsCreatedResult_WithNewShipment()
         {
             // Arrange
             var shipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24 };
             _mockShipmentService.Setup(service => service.CreateShipment(shipment)).Returns(shipment);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var value = _shipmentController.CreateShipment(shipment);
@@ -119,7 +166,7 @@ namespace TestsV2
         public void CreateMultipleShipments_ReturnsCreatedResult_WithNewShipments()
         {
             // Arrange
-            var shipments = new List<ShipmentCS> 
+            var shipments = new List<ShipmentCS>
             {
                 new ShipmentCS { Id = 1, order_id = 1, source_id = 24, shipment_type = "I", shipment_status = "Transit", carrier_code = "PostNL",
                                  service_code = "ThreeDay", payment_type = "Card", transfer_mode = "Ground", total_package_count = 56,
@@ -129,13 +176,22 @@ namespace TestsV2
                                  total_package_weight = 42.50,Items = new List<ItemIdAndAmount>{ new ItemIdAndAmount { item_id = "P007435", amount = 23 }}}
             };
             _mockShipmentService.Setup(service => service.CreateMultipleShipments(shipments)).Returns(shipments);
-            
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _shipmentController.CreateMultipleShipments(shipments);
             var createdResult = result.Result as ObjectResult;
             var returnedItems = createdResult.Value as List<ShipmentCS>;
             var firstOrder = returnedItems[0];
-            
+
             // Assert
             Assert.IsNotNull(createdResult);
             Assert.IsNotNull(returnedItems);
@@ -149,17 +205,27 @@ namespace TestsV2
             var updatedShipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24 };
             _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).ReturnsAsync(updatedShipment);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = await _shipmentController.UpdateShipment(1, updatedShipment);
+            var okResult = result.Result as OkObjectResult;
+            var returnedShipment = okResult.Value as ShipmentCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(ShipmentCS));
-            var returnedShipment = okResult.Value as ShipmentCS;
             Assert.AreEqual(updatedShipment.source_id, returnedShipment.source_id);
         }
+
         [TestMethod]
         public void UpdateItemsInShipmentById_Succes()
         {
@@ -171,20 +237,45 @@ namespace TestsV2
                 new ItemIdAndAmount(){ item_id= "P002084", amount= 100}
             };
 
-            ShipmentCS testshipment = new ShipmentCS() { Id = 1, order_id = 1, source_id = 33, order_date = DateTime.Parse("2000-03-09"), 
-            request_date = DateTime.Parse("2000-03-11"), shipment_date = DateTime.Parse("2000-03-13"), shipment_type="I", shipment_status="Pending",
-            Notes="Zee vertrouwen klas rots heet lachen oneven begrijpen.", carrier_code="DPD",
-            carrier_description="Dynamic Parcel Distribution", service_code="Fastest", payment_type="Manual",
-            transfer_mode="Ground", total_package_count=31, total_package_weight=594.42, created_at=DateTime.Parse("2000-03-10T11:11:14Z"),
-            updated_at=DateTime.Parse("2000-03-11T13:11:14Z"), Items=newItemsAndAmounts};
+            ShipmentCS testshipment = new ShipmentCS()
+            {
+                Id = 1,
+                order_id = 1,
+                source_id = 33,
+                order_date = DateTime.Parse("2000-03-09"),
+                request_date = DateTime.Parse("2000-03-11"),
+                shipment_date = DateTime.Parse("2000-03-13"),
+                shipment_type = "I",
+                shipment_status = "Pending",
+                Notes = "Zee vertrouwen klas rots heet lachen oneven begrijpen.",
+                carrier_code = "DPD",
+                carrier_description = "Dynamic Parcel Distribution",
+                service_code = "Fastest",
+                payment_type = "Manual",
+                transfer_mode = "Ground",
+                total_package_count = 31,
+                total_package_weight = 594.42,
+                created_at = DateTime.Parse("2000-03-10T11:11:14Z"),
+                updated_at = DateTime.Parse("2000-03-11T13:11:14Z"),
+                Items = newItemsAndAmounts
+            };
 
             _mockShipmentService.Setup(service => service.UpdateItemsInShipment(1, newItemsAndAmounts)).Returns(testshipment);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             //Act
             var result = _shipmentController.UpdateItemsinShipment(1, newItemsAndAmounts);
             var okResult = result.Result as OkObjectResult;
             var value = okResult.Value as ShipmentCS;
-            
+
             //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(okResult.StatusCode, 200);
@@ -202,21 +293,43 @@ namespace TestsV2
             var updatedShipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24 };
             _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).ReturnsAsync((ShipmentCS)null);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = await _shipmentController.UpdateShipment(1, updatedShipment);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+
         [TestMethod]
-        public void PatchShipmentTest_Succes(){
+        public void PatchShipmentTest_Succes()
+        {
             //Arrange
-            var patchedshipment = new ShipmentCS(){ Id= 1, Notes="EW"};
+            var patchedshipment = new ShipmentCS() { Id = 1, Notes = "EW" };
             _mockShipmentService.Setup(service => service.PatchShipment(1, "Notes", "EW")).Returns(patchedshipment);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var result = _shipmentController.PatchShipment(1, "Notes", "EW");
             var resultok = result.Result as OkObjectResult;
             var value = resultok.Value as ShipmentCS;
+
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotNull(resultok);
@@ -224,6 +337,7 @@ namespace TestsV2
             Assert.AreEqual(resultok.StatusCode, 200);
             Assert.AreEqual(value.Notes, patchedshipment.Notes);
         }
+
         [TestMethod]
         public void DeleteShipmentTest_Success()
         {
@@ -231,30 +345,64 @@ namespace TestsV2
             var shipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24 };
             _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipment);
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _shipmentController.DeleteShipment(1);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+
         [TestMethod]
         public void DeleteShipmentItemTest_Success()
         {
             //arrange
-            var shipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24, Items=new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P01", amount = 23 }}};
+            var shipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24, Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P01", amount = 23 } } };
             _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipment);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //act
             var result = _shipmentController.DeleteItemFromShipment(1, "P01");
+
             //assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+
         [TestMethod]
-        public void DeleteShipmentsTest_Succes(){
+        public void DeleteShipmentsTest_Succes()
+        {
             //Arrange
-            var idstodel = new List<int>(){1,2,3};
+            var shipmentsToDelete = new List<int>() { 1, 2, 3 };
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
-            var result = _shipmentController.DeleteShipments(idstodel);
+            var result = _shipmentController.DeleteShipments(shipmentsToDelete);
             var resultok = result as OkObjectResult;
+
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);

@@ -19,6 +19,21 @@ namespace ControllersV2
         [HttpGet()]
         public ActionResult<IEnumerable<LocationCS>> GetAllLocations()
         {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Analyst",
+                                                                   "Logistics", "Sales" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+            var WarehouseIDFromKey = (int)HttpContext.Items["WarehouseID"];
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                if (userRole == "Operative" || userRole == "Supervisor" || userRole == "Floor Manager" || userRole == "Inventory Manager")
+                {
+                    var LocationsForWarehouse = _locationService.GetLocationsByWarehouseId(WarehouseIDFromKey);
+                    return Ok(LocationsForWarehouse);
+                }
+                return Unauthorized();
+            }
+
             var locations = _locationService.GetAllLocations();
             return Ok(locations);
         }
@@ -27,6 +42,16 @@ namespace ControllersV2
         [HttpGet("{id}")]
         public ActionResult<LocationCS> GetLocationById([FromRoute] int id)
         {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Supervisor", "Operative", "Analyst",
+                                                                   "Logistics", "Sales" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
             var location = _locationService.GetLocationById(id);
             if (location is null)
             {
@@ -34,10 +59,21 @@ namespace ControllersV2
             }
             return Ok(location);
         }
+
         // GET: /locations/warehouse/{warehouse_id}
         [HttpGet("warehouse/{warehouse_id}")]
         public ActionResult<IEnumerable<LocationCS>> GetLocationsByWarehouseId([FromRoute] int warehouse_id)
         {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Supervisor", "Operative", "Analyst",
+                                                                   "Logistics", "Sales" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
             var locations = _locationService.GetLocationsByWarehouseId(warehouse_id);
             if (locations is null)
             {
@@ -50,6 +86,15 @@ namespace ControllersV2
         [HttpPost()]
         public ActionResult<LocationCS> CreateLocation([FromBody] LocationCS location)
         {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Floor Manager" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
             if (location is null)
             {
                 return BadRequest("Location is null.");
@@ -64,6 +109,15 @@ namespace ControllersV2
         [HttpPost("multiple")]
         public ActionResult<IEnumerable<LocationCS>> CreateMultipleLocations([FromBody] List<LocationCS> newLocations)
         {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Floor Manager" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
             if (newLocations is null)
             {
                 return BadRequest("Location data is null");
@@ -77,6 +131,15 @@ namespace ControllersV2
         [HttpPut("{id}")]
         public ActionResult<LocationCS> UpdateLocation([FromRoute] int id, [FromBody] LocationCS newLocation)
         {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Floor Manager" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
             if (newLocation is null)
             {
                 return BadRequest("Location is null.");
@@ -100,6 +163,14 @@ namespace ControllersV2
         [HttpDelete("{id}")]
         public ActionResult DeleteLocation(int id)
         {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
             var location = _locationService.GetLocationById(id);
             if (location == null)
             {
@@ -108,9 +179,18 @@ namespace ControllersV2
             _locationService.DeleteLocation(id);
             return Ok();
         }
+
         [HttpDelete("batch")]
         public ActionResult DeleteLocations([FromBody] List<int> ids)
         {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
             if (ids is null)
             {
                 return NotFound();

@@ -20,6 +20,15 @@ public class ItemGroupController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<ItemGroupCS>> GetAllItemGroups()
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Analyst", "Logistics", "Sales" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var itemgroup = _itemgroupService.GetAllItemGroups();
         return Ok(itemgroup);
     }
@@ -28,6 +37,15 @@ public class ItemGroupController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<ItemGroupCS> GetItemById(int id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Analyst", "Logistics", "Sales" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var itemtype = _itemgroupService.GetItemById(id);
         if (itemtype == null)
         {
@@ -35,10 +53,20 @@ public class ItemGroupController : ControllerBase
         }
         return Ok(itemtype);
     }
+
     //GET: all item in item groups
     [HttpGet("{id}/items")]
     public ActionResult<List<ItemCS>> GetAllItemsFromItemGroupId(int id)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Analyst", "Logistics", "Sales" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var result = _itemgroupService.ItemsFromItemGroupId(id);
         if (result is null) return NotFound();
         return Ok(result);
@@ -48,6 +76,14 @@ public class ItemGroupController : ControllerBase
     [HttpPost()]
     public IActionResult CreateItemGroup([FromBody] ItemGroupCS itemGroup)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (itemGroup == null)
         {
             return BadRequest("ItemGroup cannot be null");
@@ -61,6 +97,14 @@ public class ItemGroupController : ControllerBase
     [HttpPost("multiple")]
     public ActionResult<ItemGroupCS> CreateMultipleItemGroups([FromBody] List<ItemGroupCS> newItemGroup)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (newItemGroup is null)
         {
             return BadRequest("Item group data is null");
@@ -73,6 +117,14 @@ public class ItemGroupController : ControllerBase
     [HttpPut("{id}")]
     public ActionResult<ItemGroupCS> UpdateItemGroup([FromRoute] int id, [FromBody] ItemGroupCS itemGroup)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (id != itemGroup.Id)
         {
             return BadRequest();
@@ -84,36 +136,21 @@ public class ItemGroupController : ControllerBase
             return NotFound();
         }
 
-        var updatedItemLine =  _itemgroupService.UpdateItemGroup(id, itemGroup);
+        var updatedItemLine = _itemgroupService.UpdateItemGroup(id, itemGroup);
         return Ok(updatedItemLine);
-    }
-
-    [HttpDelete("{id}")]
-    public ActionResult DeleteItemGroup(int id)
-    {
-        var itemGroup = _itemgroupService.GetItemById(id);
-        if (itemGroup == null)
-        {
-            return NotFound();
-        }
-
-        _itemgroupService.DeleteItemGroup(id);
-        return Ok();
-    }
-    
-    [HttpDelete("batch")]
-    public ActionResult DeleteItemGroups([FromBody] List<int> ids){
-        if(ids is null)
-        {
-            return NotFound();
-        }
-        _itemgroupService.DeleteItemGroups(ids);
-        return Ok("Item Groups deleted");
     }
 
     [HttpPatch("{id}")]
     public ActionResult<ItemGroupCS> PatchItemGroup([FromRoute] int id, [FromBody] ItemGroupCS itemGroup)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        
         var existingItemGroup = _itemgroupService.GetItemById(id);
         if (existingItemGroup == null)
         {
@@ -124,5 +161,45 @@ public class ItemGroupController : ControllerBase
         var updatedItemGroup = _itemgroupService.PatchItemGroup(id, itemGroup);
 
         return Ok(updatedItemGroup);
+    }
+
+    [HttpDelete("{id}")]
+    public ActionResult DeleteItemGroup(int id)
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var itemGroup = _itemgroupService.GetItemById(id);
+        if (itemGroup == null)
+        {
+            return NotFound();
+        }
+
+        _itemgroupService.DeleteItemGroup(id);
+        return Ok();
+    }
+
+    [HttpDelete("batch")]
+    public ActionResult DeleteItemGroups([FromBody] List<int> ids)
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        if (ids is null)
+        {
+            return NotFound();
+        }
+        _itemgroupService.DeleteItemGroups(ids);
+        return Ok("Item Groups deleted");
     }
 }

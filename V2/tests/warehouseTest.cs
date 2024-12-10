@@ -4,6 +4,7 @@ using Moq;
 using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace TestsV2
 {
@@ -30,10 +31,19 @@ namespace TestsV2
                 new WarehouseCS { Id = 2, Address = "Warenhuislaan 280" }
             };
             _mockWarehouseService.Setup(service => service.GetAllWarehouses()).Returns(warehouses);
-            
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _warehouseController.GetAllWarehouses();
-            
+
             // Assert
             var okResult = result.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<WarehouseCS>;
@@ -51,10 +61,19 @@ namespace TestsV2
                 new WarehouseCS { Id = 2, Address = "Warenhuislaan 280" }
             };
             _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouses[0]);
-            
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _warehouseController.GetWarehouseById(1);
-            
+
             // Assert
             var okResult = result.Result as OkObjectResult;
             var returnedItems = okResult.Value as WarehouseCS;
@@ -68,10 +87,19 @@ namespace TestsV2
         {
             // Arrange
             _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns((WarehouseCS)null);
-            
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _warehouseController.GetWarehouseById(1);
-            
+
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
@@ -81,16 +109,25 @@ namespace TestsV2
         {
             // Arrange
             var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-    
+
             _mockWarehouseService.Setup(service => service.CreateWarehouse(warehouse)).Returns(warehouse);
-            
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _warehouseController.CreateWarehouse(warehouse);
-            
+
             // Assert
             var createdResult = result.Result as CreatedAtActionResult;  // Use CreatedAtActionResult here
             Assert.IsNotNull(createdResult);
-            
+
             var returnedItems = createdResult.Value as WarehouseCS;
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(warehouse.Address, returnedItems.Address);
@@ -100,23 +137,32 @@ namespace TestsV2
         public void CreateMultipleWarehouse_ReturnsCreatedResult_WithNewWarehouse()
         {
             // Arrange
-            var warehouses = new List<WarehouseCS> 
+            var warehouses = new List<WarehouseCS>
             {
                 new WarehouseCS { Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
-                                                Country= "GER", Contact= new Dictionary<string, string>{ 
+                                                Country= "GER", Contact= new Dictionary<string, string>{
                                                 {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}},
                 new WarehouseCS { Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
-                                                Country= "GER", Contact= new Dictionary<string, string>{ 
+                                                Country= "GER", Contact= new Dictionary<string, string>{
                                                 {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}}
             };
             _mockWarehouseService.Setup(service => service.CreateMultipleWarehouse(warehouses)).Returns(warehouses);
-            
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _warehouseController.CreateMultipleWarehouse(warehouses);
             var createdResult = result.Result as ObjectResult;
             var returnedItems = createdResult.Value as List<WarehouseCS>;
             var firstWarehouse = returnedItems[0];
-            
+
             // Assert
             Assert.IsNotNull(createdResult);
             Assert.IsNotNull(returnedItems);
@@ -128,11 +174,29 @@ namespace TestsV2
         public void UpdatedWarehouseTest_Success()
         {
             // Arrange
-            var updatedWarehouse = new WarehouseCS { Id= 1, Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
-                                                    Country= "GER", Contact= new Dictionary<string, string>{ {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}
-                                                   };
+            var updatedWarehouse = new WarehouseCS
+            {
+                Id = 1,
+                Code = "X",
+                Name = "cargo hub",
+                Address = "bruv",
+                Zip = "4002 AZ",
+                City = "hub",
+                Province = "Utrecht",
+                Country = "GER",
+                Contact = new Dictionary<string, string> { { "name", "Fem Keijzer" }, { "phone", "(078) 0013363" }, { "email", "blamore@example.net" } }
+            };
 
-             _mockWarehouseService.Setup(service => service.UpdateWarehouse(1, updatedWarehouse)).Returns(updatedWarehouse);
+            _mockWarehouseService.Setup(service => service.UpdateWarehouse(1, updatedWarehouse)).Returns(updatedWarehouse);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _warehouseController.UpdateWarehouse(1, updatedWarehouse);
@@ -151,11 +215,29 @@ namespace TestsV2
         public void UpdatedWarehouseTest_Failed()
         {
             // Arrange
-            var updatedWarehouse = new WarehouseCS { Id= 1, Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
-                                                    Country= "GER", Contact= new Dictionary<string, string>{ {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}
-                                                   };
+            var updatedWarehouse = new WarehouseCS
+            {
+                Id = 1,
+                Code = "X",
+                Name = "cargo hub",
+                Address = "bruv",
+                Zip = "4002 AZ",
+                City = "hub",
+                Province = "Utrecht",
+                Country = "GER",
+                Contact = new Dictionary<string, string> { { "name", "Fem Keijzer" }, { "phone", "(078) 0013363" }, { "email", "blamore@example.net" } }
+            };
 
-             _mockWarehouseService.Setup(service => service.UpdateWarehouse(0, updatedWarehouse)).Returns((WarehouseCS)null);
+            _mockWarehouseService.Setup(service => service.UpdateWarehouse(0, updatedWarehouse)).Returns((WarehouseCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = _warehouseController.UpdateWarehouse(0, updatedWarehouse);
@@ -166,6 +248,7 @@ namespace TestsV2
             var returnedWarehouse = createdResult.Value as WarehouseCS;
             Assert.IsNull(returnedWarehouse);
         }
+        
         [TestMethod]
         public void PatchWarehouse_Succes(){
             //Arrange
@@ -198,20 +281,41 @@ namespace TestsV2
             // Arrange
             var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
             _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
-            
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             // Act
             var result = _warehouseController.DeleteWarehouse(1);
-            
+
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
         [TestMethod]
-        public void DeleteWarehousesTest_Succes(){
+        public void DeleteWarehousesTest_Succes()
+        {
             //Arrange
-            var idstodel = new List<int>(){1,2,3};
+            var idsToDelete = new List<int>() { 1, 2, 3 };
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
-            var result = _warehouseController.DeleteWarehouses(idstodel);
+            var result = _warehouseController.DeleteWarehouses(idsToDelete);
             var resultok = result as OkObjectResult;
+
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
