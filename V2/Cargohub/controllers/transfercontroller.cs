@@ -201,4 +201,21 @@ public class TransferController : ControllerBase
         _transferService.DeleteTransfers(ids);
         return Ok("deleted transfers");
     }
+
+    // GET: /transfers/latest
+    [HttpGet("latest")]
+    public ActionResult<IEnumerable<TransferCS>> GetLatestTransfers()
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager",
+                                                                "Analyst", "Supervisor", "Operative" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var latestTransfers = _transferService.GetLatestTransfers();
+        return Ok(latestTransfers);
+    }
 }

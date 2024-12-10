@@ -397,6 +397,36 @@ public void DeleteWarehouseTest_Success()
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
         }
+
+        [TestMethod]
+        public void GetLatestTransfersTest()
+        {
+            //arrange
+            var transfers = new List<TransferCS>
+            {
+                new TransferCS { Id = 1, Reference = "JoJo", transfer_from = 9292, transfer_to = null, transfer_status = "completed", created_at = default, updated_at = default, Items = new List<ItemIdAndAmount> ()},
+                new TransferCS { Id = 2, Reference = "JoJo part 2", transfer_from = null, transfer_to = 1, transfer_status = "processing", created_at = default, updated_at = default, Items = new List<ItemIdAndAmount> ()}
+            };
+            _mockTransferService.Setup(service => service.GetLatestTransfers(5)).Returns(transfers);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var value = _transferController.GetLatestTransfers();
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<TransferCS>;
+
+            //Assert
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Count());
+        }
     }
 }
 
