@@ -108,6 +108,13 @@ jobs:
     - name: Install Python dependencies
       run: pip install -r ./PythonTests/requirements.txt
 
+      # Run a Python formatter
+    - name: autopep8
+      uses: peter-evans/autopep8@v2.0.0
+      # run a python code style checker -- does not work
+    # - name: Python Style Checker
+    #   uses: andymckay/pycodestyle-action@0.1.3
+
     # Run Python Tests and Generate Report
     - name: Run Python Tests
       run: |
