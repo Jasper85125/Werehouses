@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
+using System.Threading.Tasks.Dataflow;
 using Newtonsoft.Json;
 
 namespace ServicesV2;
@@ -7,6 +9,7 @@ namespace ServicesV2;
 public class SupplierService : ISupplierService
 {
     private string _path = "data/suppliers.json";
+    private string _actionpath = "data/supplier_actions.json";
     // Constructor
     public SupplierService()
     {
@@ -29,6 +32,15 @@ public class SupplierService : ISupplierService
         List<SupplierCS> suppliers = GetAllSuppliers();
         SupplierCS supplier = suppliers.FirstOrDefault(supp => supp.Id == id);
         return supplier;
+    }
+    public List<ActionLogCS> GetLatestActionsForSuppliers(){
+        if(!File.Exists(_actionpath)){
+            return new List<ActionLogCS>();
+        }
+        var json = File.ReadAllText(_actionpath);
+        List<ActionLogCS> actions = JsonConvert.DeserializeObject<List<ActionLogCS>>(json);
+
+        return actions?.GroupBy(_=>_.supplier_id).Select(_ => _.OrderByDescending(_ => _.timestamp).FirstOrDefault()).ToList() ?? new List<ActionLogCS?>();
     }
     public SupplierCS CreateSupplier(SupplierCS newSupplier)
     {

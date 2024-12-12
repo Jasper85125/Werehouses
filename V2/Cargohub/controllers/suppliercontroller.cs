@@ -78,6 +78,54 @@ public class SupplierController : ControllerBase
         return Ok(items);
     }
 
+    [HttpGet("latest-actions")]
+    public ActionResult<IEnumerable<object>> GetSuppliersWithLatestActions()
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var suppliers = _supplierService.GetAllSuppliers();
+        var actions = _supplierService.GetLatestActionsForSuppliers();
+
+        var result = suppliers.Select(supplier => new
+        {
+            Supplier = supplier,
+            LatestAction = actions.FirstOrDefault(action => action.supplier_id == supplier.Id)
+        });
+
+        return Ok(result);
+    }
+    [HttpGet("latest-actions/{amount}")]
+    public ActionResult<IEnumerable<object>> GetSuppliersWithLatestActions([FromRoute] int amount)
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var suppliers = _supplierService.GetAllSuppliers();
+        var actions = _supplierService.GetLatestActionsForSuppliers();
+
+        var result = suppliers.Select(supplier => new
+        {
+            Supplier = supplier,
+            LatestAction = actions.FirstOrDefault(action => action.supplier_id == supplier.Id)
+        });
+        var listed = result.ToList();
+        while(listed.Count() > amount){
+            listed.Remove(listed.Last());
+        }
+
+        return Ok(listed);
+    }
     // POST: /suppliers
     [HttpPost()]
     public ActionResult<SupplierCS> CreateSupplier([FromBody] SupplierCS supplier)

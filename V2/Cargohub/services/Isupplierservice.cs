@@ -11,4 +11,5 @@ public interface ISupplierService
     void DeleteSuppliers(List<int> ids);
     List<ItemCS> GetItemsBySupplierId(int supplierId);
     SupplierCS PatchSupplier(int id, SupplierCS updateSupplier);
+    List<ActionLogCS> GetLatestActionsForSuppliers();
 }
