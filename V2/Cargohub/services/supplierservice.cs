@@ -9,7 +9,7 @@ namespace ServicesV2;
 public class SupplierService : ISupplierService
 {
     private string _path = "data/suppliers.json";
-    private string _actionpath = "data/supplier_actions.json";
+    private string _logpath = "data/actionlogs.json";
     // Constructor
     public SupplierService()
     {
@@ -33,14 +33,16 @@ public class SupplierService : ISupplierService
         SupplierCS supplier = suppliers.FirstOrDefault(supp => supp.Id == id);
         return supplier;
     }
-    public List<ActionLogCS> GetLatestActionsForSuppliers(){
-        if(!File.Exists(_actionpath)){
+    public List<ActionLogCS> GetLatestActionsForSuppliers()
+    {
+        if (!File.Exists(_logpath))
+        {
             return new List<ActionLogCS>();
         }
-        var json = File.ReadAllText(_actionpath);
+        var json = File.ReadAllText(_logpath);
         List<ActionLogCS> actions = JsonConvert.DeserializeObject<List<ActionLogCS>>(json);
 
-        return actions?.GroupBy(_=>_.supplier_id).Select(_ => _.OrderByDescending(_ => _.timestamp).FirstOrDefault()).ToList() ?? new List<ActionLogCS?>();
+        return actions?.GroupBy(_ => _.model == "supplier").Select(_ => _.OrderByDescending(_ => _.timestamp).FirstOrDefault()).ToList() ?? new List<ActionLogCS?>();
     }
     public SupplierCS CreateSupplier(SupplierCS newSupplier)
     {
@@ -60,10 +62,10 @@ public class SupplierService : ISupplierService
         return newSupplier;
     }
 
-    public List<SupplierCS> CreateMultipleSuppliers(List<SupplierCS>newSuppliers)
+    public List<SupplierCS> CreateMultipleSuppliers(List<SupplierCS> newSuppliers)
     {
         List<SupplierCS> addedSuppliers = new List<SupplierCS>();
-        foreach(SupplierCS supplier in newSuppliers)
+        foreach (SupplierCS supplier in newSuppliers)
         {
             SupplierCS addSupplier = CreateSupplier(supplier);
             addedSuppliers.Add(addSupplier);
@@ -133,8 +135,14 @@ public class SupplierService : ISupplierService
         return items?.Where(item => item.supplier_id == supplierId).ToList() ?? new List<ItemCS>();
     }
 
-    public SupplierCS PatchSupplier(int id, SupplierCS updateSupplier)
+    public SupplierCS PatchSupplier(int id, string property, object newvalue, string userRole)
     {
+        var actionlogs = JsonConvert.DeserializeObject<List<ActionLogCS>>(_logpath).ToList();
+        var actionlog = actionlogs.Find(_ => _.id == id) ?? new ActionLogCS();
+        actionlog.id = actionlogs.Count() + 1;
+        actionlog.performed_by = userRole;
+        actionlog.model = "supplier";
+
         var allSuppliers = GetAllSuppliers();
         var supplierToUpdate = allSuppliers.Single(supplier => supplier.Id == id);
 
@@ -145,31 +153,66 @@ public class SupplierService : ISupplierService
 
             // Format the date and time to the desired format
             var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+            switch (property)
+            {
+                case "code":
+                    supplierToUpdate.Code = newvalue.ToString();
+                    break;
+                case "name":
+                    supplierToUpdate.Name = newvalue.ToString();
+                    break;
+                case "address":
+                    supplierToUpdate.Address = newvalue.ToString();
+                    break;
+                case "address_extra":
+                    supplierToUpdate.address_extra = newvalue.ToString();
+                    break;
+                case "city":
+                    supplierToUpdate.City = newvalue.ToString();
+                    break;
+                case "zip_code":
+                    supplierToUpdate.zip_code = newvalue.ToString();
+                    break;
+                case "province":
+                    supplierToUpdate.Province = newvalue.ToString();
+                    break;
+                case "country":
+                    supplierToUpdate.Country = newvalue.ToString();
+                    break;
+                case "contact_name":
+                    supplierToUpdate.contact_name = newvalue.ToString();
+                    break;
+                case "phonenumber":
+                    supplierToUpdate.PhoneNumber = newvalue.ToString();
+                    break;
+                case "reference":
+                    supplierToUpdate.Reference = newvalue.ToString();
+                    break;
+                default:
+                    break;
+            }
 
-            supplierToUpdate.Code = updateSupplier.Code ?? supplierToUpdate.Code;
-            supplierToUpdate.Name = updateSupplier.Name ?? supplierToUpdate.Name;
-            supplierToUpdate.Address = updateSupplier.Address ?? supplierToUpdate.Address;
-            supplierToUpdate.address_extra = updateSupplier.address_extra ?? supplierToUpdate.address_extra;
-            supplierToUpdate.City = updateSupplier.City ?? supplierToUpdate.City;
-            supplierToUpdate.zip_code = updateSupplier.zip_code ?? supplierToUpdate.zip_code;
-            supplierToUpdate.Province = updateSupplier.Province ?? supplierToUpdate.Province;
-            supplierToUpdate.Country = updateSupplier.Country ?? supplierToUpdate.Country;
-            supplierToUpdate.contact_name = updateSupplier.contact_name ?? supplierToUpdate.contact_name;
-            supplierToUpdate.PhoneNumber = updateSupplier.PhoneNumber ?? supplierToUpdate.PhoneNumber;
-            supplierToUpdate.Reference = updateSupplier.Reference ?? supplierToUpdate.Reference;
             supplierToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+            actionlog.timestamp = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
             var jsonData = JsonConvert.SerializeObject(allSuppliers, Formatting.Indented);
             File.WriteAllText(_path, jsonData);
+
+            var jsonactionlog = JsonConvert.SerializeObject(actionlogs, Formatting.Indented);
+            File.WriteAllText(_logpath, jsonactionlog);
+
             return supplierToUpdate;
         }
         return null;
     }
-    public void DeleteSuppliers(List<int> ids){
+    public void DeleteSuppliers(List<int> ids)
+    {
         var suppliers = GetAllSuppliers();
-        foreach(int id in ids){
-            var supplier = suppliers.Find(_=>_.Id == id);
-            if(supplier is not null){
+        foreach (int id in ids)
+        {
+            var supplier = suppliers.Find(_ => _.Id == id);
+            if (supplier is not null)
+            {
                 suppliers.Remove(supplier);
             }
         }

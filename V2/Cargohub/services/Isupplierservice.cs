@@ -10,6 +10,6 @@ public interface ISupplierService
     void DeleteSupplier(int id);
     void DeleteSuppliers(List<int> ids);
     List<ItemCS> GetItemsBySupplierId(int supplierId);
-    SupplierCS PatchSupplier(int id, SupplierCS updateSupplier);
+    SupplierCS PatchSupplier(int id, string property, object newvalue, string userRole);
     List<ActionLogCS> GetLatestActionsForSuppliers();
 }

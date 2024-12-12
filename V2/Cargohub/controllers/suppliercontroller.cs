@@ -95,7 +95,7 @@ public class SupplierController : ControllerBase
         var result = suppliers.Select(supplier => new
         {
             Supplier = supplier,
-            LatestAction = actions.FirstOrDefault(action => action.supplier_id == supplier.Id)
+            LatestAction = actions.FirstOrDefault(action => action.model == "supplier")
         });
 
         return Ok(result);
@@ -117,7 +117,7 @@ public class SupplierController : ControllerBase
         var result = suppliers.Select(supplier => new
         {
             Supplier = supplier,
-            LatestAction = actions.FirstOrDefault(action => action.supplier_id == supplier.Id)
+            LatestAction = actions.FirstOrDefault(action => action.model == "supplier")
         });
         var listed = result.ToList();
         while(listed.Count() > amount){
@@ -195,7 +195,7 @@ public class SupplierController : ControllerBase
     }
   
     [HttpPatch("{id}")]
-    public ActionResult<SupplierCS> PatchSupplier([FromRoute] int id, [FromBody] SupplierCS patch)
+    public ActionResult<SupplierCS> PatchSupplier(int id, [FromRoute]string property, [FromBody]object newvalue)
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
@@ -211,7 +211,7 @@ public class SupplierController : ControllerBase
             return NotFound();
         }
 
-        var updatedSupplier = _supplierService.PatchSupplier(id, patch);
+        var updatedSupplier = _supplierService.PatchSupplier(id, property, newvalue, userRole);
         if (updatedSupplier is null)
         {
             return BadRequest("Failed to patch supplier.");

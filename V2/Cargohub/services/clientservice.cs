@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Newtonsoft.Json;
 
 namespace ServicesV2;
@@ -5,9 +6,10 @@ namespace ServicesV2;
 public class ClientService : IClientService
 {
     private string _path = "data/clients.json";
-    public ClientService()
+    private readonly Iactionlogservice _actionlogservice;
+    public ClientService(ActionLogService actionLogService)
     {
-
+        _actionlogservice = actionLogService;
     }
 
     public List<ClientCS> GetAllClients()
@@ -62,24 +64,24 @@ public class ClientService : IClientService
         // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         var allClients = GetAllClients();
-        var clientToUpdate = allClients.Single(client => client.Id == id);
+        var clientToPatch = allClients.Single(client => client.Id == id);
 
-        if (clientToUpdate is not null)
+        if (clientToPatch is not null)
         {
-            clientToUpdate.Name = updateClient.Name;
-            clientToUpdate.Address = updateClient.Address;
-            clientToUpdate.City = updateClient.City;
-            clientToUpdate.zip_code = updateClient.zip_code;
-            clientToUpdate.Province = updateClient.Province;
-            clientToUpdate.Country = updateClient.Country;
-            clientToUpdate.contact_name = updateClient.contact_name;
-            clientToUpdate.contact_phone = updateClient.contact_phone;
-            clientToUpdate.contact_email = updateClient.contact_email;
-            clientToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+            clientToPatch.Name = updateClient.Name;
+            clientToPatch.Address = updateClient.Address;
+            clientToPatch.City = updateClient.City;
+            clientToPatch.zip_code = updateClient.zip_code;
+            clientToPatch.Province = updateClient.Province;
+            clientToPatch.Country = updateClient.Country;
+            clientToPatch.contact_name = updateClient.contact_name;
+            clientToPatch.contact_phone = updateClient.contact_phone;
+            clientToPatch.contact_email = updateClient.contact_email;
+            clientToPatch.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
             var jsonData = JsonConvert.SerializeObject(allClients, Formatting.Indented);
             File.WriteAllText(_path, jsonData);
-            return clientToUpdate;
+            return clientToPatch;
         }
         return null;
     }
@@ -112,34 +114,75 @@ public class ClientService : IClientService
         File.WriteAllText("data/clients.json", json);
     }
 
-    public ClientCS PatchClient(int id, ClientCS updateClient)
+    public ClientCS PatchClient(int id, string property, object newvalue, string userRole)
     {
-        var allClients = GetAllClients();
-        var clientToUpdate = allClients.SingleOrDefault(client => client.Id == id);
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlog = actionlogs.Find(_=>_.id == id) ?? new ActionLogCS();
+        actionlog.id = actionlogs.Count() + 1;
+        actionlog.performed_by = userRole;
+        actionlog.model = "supplier";
 
-        if (clientToUpdate is not null)
+        var clients = GetAllClients();
+        var clientToPatch = clients.Find(_=>_.Id == id);
+        
+        if (clientToPatch is not null)
         {
             // Get the current date and time
             var currentDateTime = DateTime.Now;
 
             // Format the date and time to the desired format
             var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+            switch (property)
+            {
+                case"Name":
+                    clientToPatch.Name = newvalue.ToString();
+                    actionlog.action = "changed Name";
+                break;
+                case"Address":
+                    clientToPatch.Address = newvalue.ToString();
+                    actionlog.action = "changed Address";
+                break;
+                case"City":
+                    clientToPatch.City = newvalue.ToString();
+                    actionlog.action = "changed City";
+                break;
+                case"zip_code":
+                    clientToPatch.zip_code = newvalue.ToString();
+                    actionlog.action = "changed zip code";
+                break;
+                case"Province":
+                    clientToPatch.Province = newvalue.ToString();
+                    actionlog.action = "changed province";
+                break;
+                case"Country":
+                    clientToPatch.Country = newvalue.ToString();
+                    actionlog.action = "changed Country";
+                break;
+                case"contact_name":
+                    clientToPatch.contact_name = newvalue.ToString();
+                    actionlog.action = "changed contact name";
+                break;
+                case"contact_phone":
+                    clientToPatch.contact_phone = newvalue.ToString();
+                    actionlog.action = "changed contact phone";
+                break;
+                case"contact_email":
+                    actionlog.action = "changed contact email";
+                    clientToPatch.contact_email = newvalue.ToString();
+                break;
+                default:
+                break;
+            }
 
-            clientToUpdate.Name = updateClient.Name ?? clientToUpdate.Name;
-            clientToUpdate.Address = updateClient.Address ?? clientToUpdate.Address;
-            clientToUpdate.City = updateClient.City ?? clientToUpdate.City;
-            clientToUpdate.zip_code = updateClient.zip_code ?? clientToUpdate.zip_code;
-            clientToUpdate.Province = updateClient.Province ?? clientToUpdate.Province;
-            clientToUpdate.Country = updateClient.Country ?? clientToUpdate.Country;
-            clientToUpdate.contact_name = updateClient.contact_name ?? clientToUpdate.contact_name;
-            clientToUpdate.contact_phone = updateClient.contact_phone ?? clientToUpdate.contact_phone;
-            clientToUpdate.contact_email = updateClient.contact_email ?? clientToUpdate.contact_email;
+            clientToPatch.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+            actionlog.timestamp = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
-            clientToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
-
-            var jsonData = JsonConvert.SerializeObject(allClients, Formatting.Indented);
+            var jsonData = JsonConvert.SerializeObject(clients, Formatting.Indented);
             File.WriteAllText(_path, jsonData);
-            return clientToUpdate;
+
+            _actionlogservice.SaveActionLogs(actionlogs);
+
+            return clientToPatch;
         }
         return null;
     }

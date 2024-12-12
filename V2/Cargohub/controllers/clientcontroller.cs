@@ -8,9 +8,11 @@ namespace ControllersV2;
 public class ClientController : ControllerBase
 {
     private readonly IClientService _clientservice;
-    public ClientController(IClientService clientservice)
+    private readonly Iactionlogservice _actionlogservice;
+    public ClientController(IClientService clientservice, Iactionlogservice iactionlogservice)
     {
         _clientservice = clientservice;
+        _actionlogservice = iactionlogservice;
     }
 
     // GET: /clients
@@ -53,6 +55,55 @@ public class ClientController : ControllerBase
         return Ok(client);
     }
 
+    [HttpGet("latest-actions")]
+    public ActionResult<IEnumerable<object>> GetSuppliersWithLatestActions()
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var suppliers = _clientservice.GetAllClients();
+        var actions = _actionlogservice.GetLatestActionsForClients();
+
+        var result = suppliers.Select(supplier => new
+        {
+            Supplier = supplier,
+            LatestAction = actions.FirstOrDefault(action => action.model == "supplier")
+        });
+
+        return Ok(result);
+    }
+    
+    [HttpGet("latest-actions/{amount}")]
+    public ActionResult<IEnumerable<object>> GetSuppliersWithLatestActions([FromRoute] int amount)
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var suppliers = _clientservice.GetAllClients();
+        var actions = _actionlogservice.GetLatestActionsForClients();
+
+        var result = suppliers.Select(supplier => new
+        {
+            Supplier = supplier,
+            LatestAction = actions.FirstOrDefault(action => action.model == "supplier")
+        });
+        var listed = result.ToList();
+        while(listed.Count() > amount){
+            listed.Remove(listed.Last());
+        }
+
+        return Ok(listed);
+    }
     // POST: /clients
     [HttpPost()]
     public ActionResult<ClientCS> CreateClient([FromBody] ClientCS newClient)
@@ -151,8 +202,8 @@ public class ClientController : ControllerBase
     }
 
     //PATCH: /clients/{id}
-    [HttpPatch("{id}")]
-    public ActionResult<ClientCS> PatchClient([FromRoute] int id, [FromBody] ClientCS patch)
+    [HttpPatch("{id}/{property}")]
+    public ActionResult<ClientCS> PatchClient([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue)
     {
         var client = _clientservice.GetClientById(id);
         if (client is null)
@@ -160,14 +211,12 @@ public class ClientController : ControllerBase
             return NotFound();
         }
 
-        var updatedClient = _clientservice.PatchClient(id, patch);
-        if (updatedClient is null)
+        var result = _clientservice.PatchClient(id, property, newvalue, HttpContext.Items["UserRole"].ToString());
+        if (result is null)
         {
             return BadRequest("Failed to patch client.");
         }
 
-        return Ok(updatedClient);
+        return Ok(result);
     }
-
-    
 }
