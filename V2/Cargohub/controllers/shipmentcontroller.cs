@@ -10,9 +10,11 @@ namespace ControllersV2;
 public class ShipmentController : ControllerBase
 {
     private readonly IShipmentService _shipmentService;
+    ActionLogService _actionlogservice;
     public ShipmentController(IShipmentService shipmentService)
     {
         _shipmentService = shipmentService;
+        _actionlogservice = new ActionLogService();
     }
 
     // GET: /shipments
@@ -76,6 +78,55 @@ public class ShipmentController : ControllerBase
         return Ok(items);
     }
 
+    [HttpGet("latest-actions")]
+    public ActionResult<IEnumerable<object>> GetShipmentsWithLatestActions()
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        var shipments = _shipmentService.GetAllShipments();
+        var actions = _actionlogservice.GetLatestActionsForShipments();
+
+        var result = shipments.Select(shipment => new
+        {
+            Shipment = shipment,
+            LatestAction = actions.FirstOrDefault(action => action.model == "shipment")
+        });
+
+        return Ok(result);
+    }
+    
+    [HttpGet("latest-actions/{amount}")]
+    public ActionResult<IEnumerable<object>> GetShipmentsWithLatestActions([FromRoute] int amount)
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var shipments = _shipmentService.GetAllShipments();
+        var actions = _actionlogservice.GetLatestActionsForShipments();
+
+        var result = shipments.Select(shipment => new
+        {
+            Shipment = shipment,
+            LatestAction = actions.FirstOrDefault(action => action.model == "shipment")
+        });
+        var listed = result.ToList();
+        while(listed.Count() > amount){
+            listed.Remove(listed.Last());
+        }
+
+        return Ok(listed);
+    }
+
     // POST: /shipments
     [HttpPost]
     public ActionResult<ShipmentCS> CreateShipment([FromBody] ShipmentCS newShipment)
@@ -93,6 +144,17 @@ public class ShipmentController : ControllerBase
             return BadRequest("shipment data is null");
         }
         var shipment = _shipmentService.CreateShipment(newShipment);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "shipment";
+        actionLog.action = "shipment created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return CreatedAtAction(nameof(GetShipmentById), new { id = shipment.Id }, shipment);
     }
 
@@ -114,6 +176,17 @@ public class ShipmentController : ControllerBase
         }
 
         var createdShipment = _shipmentService.CreateMultipleShipments(newShipments);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "shipment";
+        actionLog.action = "multiple shipments created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return StatusCode(StatusCodes.Status201Created, createdShipment);
     }
 
@@ -142,6 +215,17 @@ public class ShipmentController : ControllerBase
         }
 
         var updatedItemLine = _shipmentService.UpdateShipment(id, updateShipment);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "shipment";
+        actionLog.action = "shipment updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Task.FromResult<ActionResult<ShipmentCS>>(Ok(updatedItemLine));
     }
 
@@ -165,6 +249,17 @@ public class ShipmentController : ControllerBase
         {
             return BadRequest("invalid id's/ items");
         }
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "shipment";
+        actionLog.action = "items inside shipment updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updated);
     }
     [HttpPatch("{id}/{property}")]
@@ -183,6 +278,17 @@ public class ShipmentController : ControllerBase
             return BadRequest("invalid request");
         }
         var result = _shipmentService.PatchShipment(id, property, newvalue);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "shipment";
+        actionLog.action = "shipment patched";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(result);
     }
 
@@ -204,6 +310,17 @@ public class ShipmentController : ControllerBase
             return NotFound();
         }
         _shipmentService.DeleteShipment(id);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "shipment";
+        actionLog.action = "shipment deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     }
 
@@ -225,6 +342,17 @@ public class ShipmentController : ControllerBase
             return NotFound();
         }
         _shipmentService.DeleteItemFromShipment(id, itemid);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "shipment";
+        actionLog.action = "item inside shipment created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     }
 
@@ -244,6 +372,17 @@ public class ShipmentController : ControllerBase
             return NotFound();
         }
         _shipmentService.DeleteShipments(ids);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "shipment";
+        actionLog.action = "multiple shipments deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok("deleted shipments");
     }
 }

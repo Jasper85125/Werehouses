@@ -10,11 +10,13 @@ namespace ControllersV2;
 public class ItemLineController : ControllerBase
 {
     private readonly IItemLineService _itemLineService;
+    ActionLogService _actionlogservice;
 
     // Constructor to initialize the ItemController with an IItemService instance
     public ItemLineController(IItemLineService itemLineService)
     {
         _itemLineService = itemLineService;
+        _actionlogservice = new ActionLogService();
     }
 
     // GET: api/items
@@ -79,6 +81,55 @@ public class ItemLineController : ControllerBase
         return Ok(items);
     }
 
+    [HttpGet("latest-actions")]
+    public ActionResult<IEnumerable<object>> GetItemLineWithLatestActions()
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        var itemlines = _itemLineService.GetAllItemlines();
+        var actions = _actionlogservice.GetLatestActionsForItem_Groups();
+
+        var result = itemlines.Select(itemline => new
+        {
+            ItemLine = itemline,
+            LatestAction = actions.FirstOrDefault(action => action.model == "item-line")
+        });
+
+        return Ok(result);
+    }
+    
+    [HttpGet("latest-actions/{amount}")]
+    public ActionResult<IEnumerable<object>> GetItemLinesWithLatestActions([FromRoute] int amount)
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var itemlines = _itemLineService.GetAllItemlines();
+        var actions = _actionlogservice.GetLatestActionsForItem_Groups();
+
+        var result = itemlines.Select(itemline => new
+        {
+            ItemLine = itemline,
+            LatestAction = actions.FirstOrDefault(action => action.model == "item-line")
+        });
+        var listed = result.ToList();
+        while(listed.Count() > amount){
+            listed.Remove(listed.Last());
+        }
+
+        return Ok(listed);
+    }
+
     // POST: api/itemines
     [HttpPost]
     public IActionResult AddItemLine([FromBody] ItemLineCS newItemLine)
@@ -97,6 +148,17 @@ public class ItemLineController : ControllerBase
         }
 
         var createdItemLine = _itemLineService.AddItemLine(newItemLine);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item-line created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return CreatedAtAction(nameof(GetItemLineById), new { id = createdItemLine.Id }, createdItemLine);
     }
 
@@ -118,6 +180,17 @@ public class ItemLineController : ControllerBase
         }
 
         var createdItemLines = _itemLineService.CreateMultipleItemLines(newItemLines);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "multiple item-lines created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return StatusCode(StatusCodes.Status201Created, createdItemLines);
     }
 
@@ -145,6 +218,17 @@ public class ItemLineController : ControllerBase
         }
 
         var updatedItemLine = _itemLineService.UpdateItemLine(id, itemLine);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item-line updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updatedItemLine);
     }
 
@@ -166,6 +250,17 @@ public class ItemLineController : ControllerBase
         }
 
         _itemLineService.DeleteItemLine(id);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item-line deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     }
 
@@ -185,6 +280,17 @@ public class ItemLineController : ControllerBase
             return NotFound();
         }
         _itemLineService.DeleteItemLines(ids);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "multiple item-lines deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok("Item lines deleted");
     }
 
@@ -212,6 +318,17 @@ public class ItemLineController : ControllerBase
         }
 
         var updatedItemLine = _itemLineService.PatchItemLine(id, itemLine);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item-line patched";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updatedItemLine);
     }
 }

@@ -9,9 +9,11 @@ namespace ControllersV2;
 public class ItemGroupController : ControllerBase
 {
     private readonly IitemGroupService _itemgroupService;
+    ActionLogService _actionlogservice;
 
     public ItemGroupController(IitemGroupService itemgroupService)
     {
+        _actionlogservice = new ActionLogService();
         _itemgroupService = itemgroupService;
     }
 
@@ -72,6 +74,55 @@ public class ItemGroupController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("latest-actions")]
+    public ActionResult<IEnumerable<object>> GetItemGroupsWithLatestActions()
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        var itemgroups = _itemgroupService.GetAllItemGroups();
+        var actions = _actionlogservice.GetLatestActionsForItem_Groups();
+
+        var result = itemgroups.Select(itemgroup => new
+        {
+            ItemGroup = itemgroup,
+            LatestAction = actions.FirstOrDefault(action => action.model == "item-group")
+        });
+
+        return Ok(result);
+    }
+    
+    [HttpGet("latest-actions/{amount}")]
+    public ActionResult<IEnumerable<object>> GetSuppliersWithLatestActions([FromRoute] int amount)
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var itemgroups = _itemgroupService.GetAllItemGroups();
+        var actions = _actionlogservice.GetLatestActionsForItem_Groups();
+
+        var result = itemgroups.Select(itemgroup => new
+        {
+            ItemGroup = itemgroup,
+            LatestAction = actions.FirstOrDefault(action => action.model == "item-group")
+        });
+        var listed = result.ToList();
+        while(listed.Count() > amount){
+            listed.Remove(listed.Last());
+        }
+
+        return Ok(listed);
+    }
+
     // POST: itemgroups
     [HttpPost()]
     public IActionResult CreateItemGroup([FromBody] ItemGroupCS itemGroup)
@@ -90,6 +141,17 @@ public class ItemGroupController : ControllerBase
         }
 
         var createdItemGroup = _itemgroupService.CreateItemGroup(itemGroup);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item-group created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return CreatedAtAction(nameof(GetItemById), new { id = createdItemGroup.Id }, createdItemGroup);
     }
 
@@ -111,6 +173,17 @@ public class ItemGroupController : ControllerBase
         }
 
         var createdItemGroups = _itemgroupService.CreateMultipleItemGroups(newItemGroup);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "multiple item-groups created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return StatusCode(StatusCodes.Status201Created, createdItemGroups);
     }
 
@@ -137,6 +210,17 @@ public class ItemGroupController : ControllerBase
         }
 
         var updatedItemLine = _itemgroupService.UpdateItemGroup(id, itemGroup);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item-group updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updatedItemLine);
     }
 
@@ -160,6 +244,16 @@ public class ItemGroupController : ControllerBase
         itemGroup.Id = id;
         var updatedItemGroup = _itemgroupService.PatchItemGroup(id, itemGroup);
 
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item-group patched";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updatedItemGroup);
     }
 
@@ -181,6 +275,17 @@ public class ItemGroupController : ControllerBase
         }
 
         _itemgroupService.DeleteItemGroup(id);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item-group deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     }
 
@@ -200,6 +305,17 @@ public class ItemGroupController : ControllerBase
             return NotFound();
         }
         _itemgroupService.DeleteItemGroups(ids);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "multiple item-groups deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok("Item Groups deleted");
     }
 }

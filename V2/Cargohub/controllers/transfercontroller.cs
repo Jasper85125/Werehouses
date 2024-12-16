@@ -10,9 +10,11 @@ namespace ControllersV2;
 public class TransferController : ControllerBase
 {
     private readonly ITransferService _transferService;
+    ActionLogService _actionlogservice;
     public TransferController(ITransferService transferService)
     {
         _transferService = transferService;
+        _actionlogservice = new ActionLogService();
     }
 
     // GET: /transfers
@@ -73,6 +75,55 @@ public class TransferController : ControllerBase
         return Ok(items);
     }
 
+    [HttpGet("latest-actions")]
+    public ActionResult<IEnumerable<object>> GetTransfersWithLatestActions()
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var transfers = _transferService.GetAllTransfers();
+        var actions = _actionlogservice.GetLatestActionsForTransfers();
+
+        var result = transfers.Select(transfer => new
+        {
+            Transfer = transfer,
+            LatestAction = actions.FirstOrDefault(action => action.model == "transfer")
+        });
+
+        return Ok(result);
+    }
+    [HttpGet("latest-actions/{amount}")]
+    public ActionResult<IEnumerable<object>> GetTransfersWithLatestActions([FromRoute] int amount)
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var transfers = _transferService.GetAllTransfers();
+        var actions = _actionlogservice.GetLatestActionsForTransfers();
+
+        var result = transfers.Select(transfer => new
+        {
+            Transfer = transfer,
+            LatestAction = actions.FirstOrDefault(action => action.model == "transfer")
+        });
+        var listed = result.ToList();
+        while(listed.Count() > amount){
+            listed.Remove(listed.Last());
+        }
+
+        return Ok(listed);
+    }
+
     // POST: /transfers
     [HttpPost]
     public ActionResult<TransferCS> CreateTransfer([FromBody] TransferCS transfer)
@@ -91,6 +142,17 @@ public class TransferController : ControllerBase
             return BadRequest("transfer data is null");
         }
         var newTransfer = _transferService.CreateTransfer(transfer);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "transfer";
+        actionLog.action = "transfer created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return CreatedAtAction(nameof(GetTransferById), new { id = newTransfer.Id }, newTransfer);
     }
 
@@ -113,6 +175,17 @@ public class TransferController : ControllerBase
         }
 
         var createdTransfer = _transferService.CreateMultipleTransfers(newTransfer);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "transfer";
+        actionLog.action = "multiple transfers created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return StatusCode(StatusCodes.Status201Created, createdTransfer);
     }
 
@@ -139,6 +212,17 @@ public class TransferController : ControllerBase
         {
             return NotFound("No warehouse found with the given id.");
         }
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "transfer";
+        actionLog.action = "transfer updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updatedTransfer);
     }
 
@@ -159,6 +243,17 @@ public class TransferController : ControllerBase
         {
             return NotFound("There is no transfer with the given id!!");
         }
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "transfer";
+        actionLog.action = "transfer commited";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updatedAction);
     }
 
@@ -180,6 +275,17 @@ public class TransferController : ControllerBase
             return NotFound();
         }
         _transferService.DeleteTransfer(id);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "transfer";
+        actionLog.action = "transfer deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     }
 
@@ -199,23 +305,34 @@ public class TransferController : ControllerBase
             return NotFound();
         }
         _transferService.DeleteTransfers(ids);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "transfer";
+        actionLog.action = "multiple transfers deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok("deleted transfers");
     }
 
-    // GET: /transfers/latest
-    [HttpGet("latest")]
-    public ActionResult<IEnumerable<TransferCS>> GetLatestTransfers()
-    {
-        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager",
-                                                                "Analyst", "Supervisor", "Operative" };
-        var userRole = HttpContext.Items["UserRole"]?.ToString();
+    // // GET: /transfers/latest
+    // [HttpGet("latest")]
+    // public ActionResult<IEnumerable<TransferCS>> GetLatestTransfers()
+    // {
+    //     List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager",
+    //                                                             "Analyst", "Supervisor", "Operative" };
+    //     var userRole = HttpContext.Items["UserRole"]?.ToString();
 
-        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-        {
-            return Unauthorized();
-        }
+    //     if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+    //     {
+    //         return Unauthorized();
+    //     }
 
-        var latestTransfers = _transferService.GetLatestTransfers();
-        return Ok(latestTransfers);
-    }
+    //     var latestTransfers = _transferService.GetLatestTransfers();
+    //     return Ok(latestTransfers);
+    // }
 }

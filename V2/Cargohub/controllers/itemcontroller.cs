@@ -10,11 +10,13 @@ public class ItemController : ControllerBase
 {
     private readonly IItemService _itemService;
     private readonly IInventoryService _inventoryService;
+    ActionLogService _actionlogservice;
 
     // Constructor to initialize the ItemController with an IItemService instance
     public ItemController(IItemService itemService, IInventoryService inventoryService)
     {
         _itemService = itemService;
+        _actionlogservice = new ActionLogService();
         _inventoryService = inventoryService;
     }
 
@@ -81,6 +83,55 @@ public class ItemController : ControllerBase
         return Ok(inventory);
     }
 
+    [HttpGet("latest-actions")]
+    public ActionResult<IEnumerable<object>> GetItemsWithLatestActions()
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        var items = _itemService.GetAllItems();
+        var actions = _actionlogservice.GetLatestActionsForItems();
+
+        var result = items.Select(item => new
+        {
+            Item = item,
+            LatestAction = actions.FirstOrDefault(action => action.model == "item")
+        });
+
+        return Ok(result);
+    }
+    
+    [HttpGet("latest-actions/{amount}")]
+    public ActionResult<IEnumerable<object>> GetItemsWithLatestActions([FromRoute] int amount)
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var items = _itemService.GetAllItems();
+        var actions = _actionlogservice.GetLatestActionsForItems();
+
+        var result = items.Select(item => new
+        {
+            Item = item,
+            LatestAction = actions.FirstOrDefault(action => action.model == "item")
+        });
+        var listed = result.ToList();
+        while(listed.Count() > amount){
+            listed.Remove(listed.Last());
+        }
+
+        return Ok(listed);
+    }
+
     // POST: items
     [HttpPost()]
     public ActionResult<ItemCS> CreateItem([FromBody] ItemCS newItem)
@@ -98,6 +149,17 @@ public class ItemController : ControllerBase
         }
 
         var createdItem = _itemService.CreateItem(newItem);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return CreatedAtAction(nameof(GetByUid), new { uid = createdItem.uid }, createdItem);
     }
 
@@ -119,6 +181,17 @@ public class ItemController : ControllerBase
         }
 
         var createdItems = _itemService.CreateMultipleItems(newItems);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "multiple items created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return StatusCode(StatusCodes.Status201Created, createdItems);
     }
 
@@ -146,6 +219,17 @@ public class ItemController : ControllerBase
         }
 
         var updatedItemResult = _itemService.UpdateItem(uid, updatedItem);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updatedItemResult);
     }
     // change the value of one property in an item object
@@ -154,7 +238,26 @@ public class ItemController : ControllerBase
         if(string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(property) || newvalue is null){
             return BadRequest("Error in request");
         }
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales"};
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var result = _itemService.PatchItem(uid, property, newvalue);
+        
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(result);
     } 
     [HttpDelete("{uid}")]
@@ -175,6 +278,17 @@ public class ItemController : ControllerBase
         }
 
         _itemService.DeleteItem(uid);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "item deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     }
 
@@ -197,6 +311,17 @@ public class ItemController : ControllerBase
         }
 
         _itemService.DeleteItems(uids);
+        
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "item";
+        actionLog.action = "multiple items deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     } 
 }

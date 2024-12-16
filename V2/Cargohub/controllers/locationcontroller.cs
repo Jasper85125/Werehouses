@@ -9,9 +9,11 @@ namespace ControllersV2
     [Route("api/v2/locations")]
     public class LocationController : ControllerBase
     {
+        ActionLogService _actionlogservice;
         private readonly ILocationService _locationService;
         public LocationController(ILocationService locationService)
         {
+            _actionlogservice = new ActionLogService();
             _locationService = locationService;
         }
 
@@ -81,6 +83,55 @@ namespace ControllersV2
             }
             return Ok(locations);
         }
+    
+        [HttpGet("latest-actions")]
+        public ActionResult<IEnumerable<object>> GetLocationsWithLatestActions()
+        {
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+            List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+            if (userRole == null || !allowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+            var locations = _locationService.GetAllLocations();
+            var actions = _actionlogservice.GetLatestActionsForLocations();
+
+            var result = locations.Select(location => new
+            {
+                Location = location,
+                LatestAction = actions.FirstOrDefault(action => action.model == "location")
+            });
+
+            return Ok(result);
+        }
+        
+        [HttpGet("latest-actions/{amount}")]
+        public ActionResult<IEnumerable<object>> GetLocationsWithLatestActions([FromRoute] int amount)
+        {
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+            List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+            if (userRole == null || !allowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
+            var locations = _locationService.GetAllLocations();
+            var actions = _actionlogservice.GetLatestActionsForLocations();
+
+            var result = locations.Select(location => new
+            {
+                Location = location,
+                LatestAction = actions.FirstOrDefault(action => action.model == "location")
+            });
+            var listed = result.ToList();
+            while(listed.Count() > amount){
+                listed.Remove(listed.Last());
+            }
+
+            return Ok(listed);
+        }
 
         // POST: /locations
         [HttpPost()]
@@ -101,6 +152,16 @@ namespace ControllersV2
             }
 
             var createdLocation = _locationService.CreateLocation(location);
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "location";
+            actionLog.action = "location created";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+            _actionlogservice.SaveActionLogs(actionlogs);
 
             return CreatedAtAction(nameof(GetLocationById), new { id = createdLocation.Id }, createdLocation);
         }
@@ -124,6 +185,17 @@ namespace ControllersV2
             }
 
             var createdLocations = _locationService.CreateMultipleLocations(newLocations);
+            
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "location";
+            actionLog.action = "multiple locations created";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+            _actionlogservice.SaveActionLogs(actionlogs);
+
             return StatusCode(StatusCodes.Status201Created, createdLocations);
         }
 
@@ -149,6 +221,18 @@ namespace ControllersV2
             {
                 return BadRequest("No location found with that id");
             }
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "location";
+            actionLog.action = "location updated";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+
+            _actionlogservice.SaveActionLogs(actionlogs);
+
             return Ok(updatedLocation);
         }
         [HttpPatch("{id}/{property}")]
@@ -156,7 +240,28 @@ namespace ControllersV2
             if(string.IsNullOrEmpty(property) || newvalue is null){
                 return BadRequest("Missing inputs in request");
             }
+
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                               "Floor Manager" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
             var result = _locationService.PatchLocation(id, property, newvalue);
+            
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "location";
+            actionLog.action = "location patched";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+            _actionlogservice.SaveActionLogs(actionlogs);
+
             return Ok(result);
         }
         // DELETE: api/warehouse/5
@@ -177,6 +282,16 @@ namespace ControllersV2
                 return NotFound();
             }
             _locationService.DeleteLocation(id);
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "location";
+            actionLog.action = "location deleted";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+
             return Ok();
         }
 
@@ -196,6 +311,16 @@ namespace ControllersV2
                 return NotFound();
             }
             _locationService.DeleteLocations(ids);
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "location";
+            actionLog.action = "multiple locations deleted";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+
             return Ok("Locations deleted");
         }
     }

@@ -56,7 +56,7 @@ public class ClientController : ControllerBase
     }
 
     [HttpGet("latest-actions")]
-    public ActionResult<IEnumerable<object>> GetSuppliersWithLatestActions()
+    public ActionResult<IEnumerable<object>> GetClientsWithLatestActions()
     {
         var userRole = HttpContext.Items["UserRole"]?.ToString();
         List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
@@ -71,7 +71,7 @@ public class ClientController : ControllerBase
 
         var result = suppliers.Select(supplier => new
         {
-            Supplier = supplier,
+            Client = supplier,
             LatestAction = actions.FirstOrDefault(action => action.model == "supplier")
         });
 
@@ -79,7 +79,7 @@ public class ClientController : ControllerBase
     }
     
     [HttpGet("latest-actions/{amount}")]
-    public ActionResult<IEnumerable<object>> GetSuppliersWithLatestActions([FromRoute] int amount)
+    public ActionResult<IEnumerable<object>> GetClientsWithLatestActions([FromRoute] int amount)
     {
         var userRole = HttpContext.Items["UserRole"]?.ToString();
         List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
@@ -94,7 +94,7 @@ public class ClientController : ControllerBase
 
         var result = suppliers.Select(supplier => new
         {
-            Supplier = supplier,
+            Client = supplier,
             LatestAction = actions.FirstOrDefault(action => action.model == "supplier")
         });
         var listed = result.ToList();
@@ -123,9 +123,10 @@ public class ClientController : ControllerBase
 
         var createdClient = _clientservice.CreateClient(newClient);
         
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "client";
         actionLog.action = "client created";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -153,9 +154,11 @@ public class ClientController : ControllerBase
         }
 
         var createdClient = _clientservice.CreateMultipleClients(newClient);
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "client";
         actionLog.action = "multiple clients created";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -188,9 +191,10 @@ public class ClientController : ControllerBase
             return NotFound("No Client found with the given id");
         }
         
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "client";
         actionLog.action = "client updated";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -220,9 +224,10 @@ public class ClientController : ControllerBase
         
         _clientservice.DeleteClient(id);
         
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "client";
         actionLog.action = "client deleted";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -246,9 +251,10 @@ public class ClientController : ControllerBase
 
         _clientservice.DeleteClients(ids);
         
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "client";
         actionLog.action = "multiple clients deleted";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -282,43 +288,12 @@ public class ClientController : ControllerBase
             return BadRequest("Failed to patch client.");
         }
 
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "client";
-
-        switch (property)
-        {
-            case"name":
-            actionLog.action = "changed name";
-            break;
-            case"address":
-            actionLog.action = "changed address";
-            break;
-            case"city":
-            actionLog.action = "changed city";
-            break;
-            case"zip_code":
-            actionLog.action = "changed zip code";
-            break;
-            case"province":
-            actionLog.action = "changed province";
-            break;
-            case"country":
-            actionLog.action = "changed country";
-            break;
-            case"contact_name":
-            actionLog.action = "changed contact name";
-            break;
-            case"contact_phone":
-            actionLog.action = "changed contact phone";
-            break;
-            case"contact_email":
-            actionLog.action = "changed contact email";
-            break;
-            default:
-            break;
-        }
+        actionLog.action = "inventory patched";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
         actionlogs.Add(actionLog);
         _actionlogservice.SaveActionLogs(actionlogs);

@@ -1,4 +1,5 @@
 public interface Iactionlogservice{
+    public List<ActionLogCS> GetAllActionLogs();
     public List<ActionLogCS> GetLatestActionsForClients();
     public List<ActionLogCS> GetLatestActionsForInventories();
     public List<ActionLogCS> GetLatestActionsForItem_Groups();

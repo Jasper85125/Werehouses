@@ -3,6 +3,14 @@ using Newtonsoft.Json;
 namespace ServicesV2;
 public class ActionLogService : Iactionlogservice{
     private string _logpath = "data/actionlogs.json";
+    public List<ActionLogCS> GetAllActionLogs(){
+        if(!File.Exists(_logpath)){
+            return new List<ActionLogCS>();
+        }
+        var json = File.ReadAllText(_logpath);
+        var result = JsonConvert.DeserializeObject<List<ActionLogCS>>(json) ?? new List<ActionLogCS>();
+        return result;
+    }
     public List<ActionLogCS> GetLatestActionsForClients(){
         if(!File.Exists(_logpath)){
             return new List<ActionLogCS>();

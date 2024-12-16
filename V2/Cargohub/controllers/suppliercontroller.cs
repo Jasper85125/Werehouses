@@ -94,8 +94,7 @@ public class SupplierController : ControllerBase
         }
 
         var suppliers = _supplierService.GetAllSuppliers();
-        var actions = _supplierService.GetLatestActionsForSuppliers();
-
+        var actions = _actionlogservice.GetLatestActionsForSuppliers();
         var result = suppliers.Select(supplier => new
         {
             Supplier = supplier,
@@ -116,7 +115,7 @@ public class SupplierController : ControllerBase
         }
 
         var suppliers = _supplierService.GetAllSuppliers();
-        var actions = _supplierService.GetLatestActionsForSuppliers();
+        var actions = _actionlogservice.GetLatestActionsForSuppliers();
 
         var result = suppliers.Select(supplier => new
         {
@@ -149,9 +148,10 @@ public class SupplierController : ControllerBase
 
         var createdSupplier = _supplierService.CreateSupplier(supplier);
 
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "supplier";
         actionLog.action = "supplier created";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -180,9 +180,10 @@ public class SupplierController : ControllerBase
 
         var createdOrders = _supplierService.CreateMultipleSuppliers(newSupplier);
 
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "supplier";
         actionLog.action = "multiple suppliers created";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -215,9 +216,10 @@ public class SupplierController : ControllerBase
             return BadRequest("No supplier found with the given id.");
         }
 
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "supplier";
         actionLog.action = "supplier updated";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -249,9 +251,10 @@ public class SupplierController : ControllerBase
         {
             return BadRequest("Failed to patch supplier.");
         }
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "supplier";
         actionLog.action = "supplier patched";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -279,9 +282,10 @@ public class SupplierController : ControllerBase
         }
         _supplierService.DeleteSupplier(id);
 
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "supplier";
         actionLog.action = "supplier deleted";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
@@ -308,9 +312,10 @@ public class SupplierController : ControllerBase
         }
         _supplierService.DeleteSuppliers(ids);
 
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        var actionlogs = _actionlogservice.GetAllActionLogs();
         ActionLogCS actionLog = new ActionLogCS();
         actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
         actionLog.model = "supplier";
         actionLog.action = "multiple suppliers deleted";
         actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);

@@ -11,8 +11,10 @@ namespace ControllersV2;
 public class InventoryController : ControllerBase
 {
     private readonly IInventoryService _inventoryService;
+    ActionLogService _actionlogservice;
     public InventoryController(IInventoryService inventoryService)
     {
+        _actionlogservice = new ActionLogService();
         _inventoryService = inventoryService;
     }
 
@@ -81,6 +83,54 @@ public class InventoryController : ControllerBase
         return Ok(inventory_total);
 
     }
+    [HttpGet("latest-actions")]
+    public ActionResult<IEnumerable<object>> GetInventoriesWithLatestActions()
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        var inventories = _inventoryService.GetAllInventories();
+        var actions = _actionlogservice.GetLatestActionsForSuppliers();
+
+        var result = inventories.Select(supplier => new
+        {
+            Inventory = supplier,
+            LatestAction = actions.FirstOrDefault(action => action.model == "supplier")
+        });
+
+        return Ok(result);
+    }
+    
+    [HttpGet("latest-actions/{amount}")]
+    public ActionResult<IEnumerable<object>> GetSuppliersWithLatestActions([FromRoute] int amount)
+    {
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+        if (userRole == null || !allowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var inventories = _inventoryService.GetAllInventories();
+        var actions = _actionlogservice.GetLatestActionsForSuppliers();
+
+        var result = inventories.Select(inventory => new
+        {
+            Inventory = inventory,
+            LatestAction = actions.FirstOrDefault(action => action.model == "inventory")
+        });
+        var listed = result.ToList();
+        while(listed.Count() > amount){
+            listed.Remove(listed.Last());
+        }
+
+        return Ok(listed);
+    }
 
     // POST: /inventories
     [HttpPost()]
@@ -98,7 +148,19 @@ public class InventoryController : ControllerBase
         {
             return BadRequest("Inventory is null");
         }
+
         var newInventory = _inventoryService.CreateInventory(inventory);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "inventory";
+        actionLog.action = "inventory created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return CreatedAtAction(nameof(GetInventoryById), new { id = newInventory.Id }, newInventory);
     }
 
@@ -120,6 +182,17 @@ public class InventoryController : ControllerBase
         }
 
         var createdInventories = _inventoryService.CreateMultipleInventories(newInventory);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "inventory";
+        actionLog.action = "multiple inventories created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return StatusCode(StatusCodes.Status201Created, createdInventories);
     }
 
@@ -148,6 +221,17 @@ public class InventoryController : ControllerBase
             return BadRequest("request is invalid/contains invalid values");
         }
         var patchedinventory = _inventoryService.UpdateInventoryById(id, value);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "inventory";
+        actionLog.action = "inventory updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+        
         return Ok(patchedinventory);
     }
 
@@ -169,6 +253,17 @@ public class InventoryController : ControllerBase
             return NotFound();
         }
         _inventoryService.DeleteInventory(id);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "inventory";
+        actionLog.action = "inventory deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     }
     [HttpDelete("batch")]
@@ -187,6 +282,17 @@ public class InventoryController : ControllerBase
             return NotFound();
         }
         _inventoryService.DeleteInventories(ids);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "inventory";
+        actionLog.action = "multiple inventories deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok("inventories deleted");
     }
 
@@ -194,11 +300,30 @@ public class InventoryController : ControllerBase
     [HttpPatch("{id}")]
     public ActionResult<InventoryCS> PatchInventory(int id, [FromBody] InventoryCS patch)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         if (patch is null)
         {
             return BadRequest("patch document is null");
         }
         var patchedInventory = _inventoryService.PatchInventory(id, patch);
+
+        var actionlogs = _actionlogservice.GetAllActionLogs();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.id = actionlogs.Count()  + 1;
+        actionLog.model = "inventory";
+        actionLog.action = "inventory patched";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(patchedInventory);
     }
 }

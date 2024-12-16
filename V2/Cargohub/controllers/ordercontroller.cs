@@ -10,8 +10,10 @@ namespace ControllersV2
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        ActionLogService _actionlogservice;
         public OrderController(IOrderService orderService)
         {
+        _actionlogservice = new ActionLogService();
             _orderService = orderService;
         }
 
@@ -103,6 +105,55 @@ namespace ControllersV2
             return Ok(items);
         }
 
+        [HttpGet("latest-actions")]
+        public ActionResult<IEnumerable<object>> GetOrdersWithLatestActions()
+        {
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+            List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+            if (userRole == null || !allowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+            var orders = _orderService.GetAllOrders();
+            var actions = _actionlogservice.GetLatestActionsForOrders();
+
+            var result = orders.Select(order => new
+            {
+                Order = order,
+                LatestAction = actions.FirstOrDefault(action => action.model == "order")
+            });
+
+            return Ok(result);
+        }
+        
+        [HttpGet("latest-actions/{amount}")]
+        public ActionResult<IEnumerable<object>> GetOrdersWithLatestActions([FromRoute] int amount)
+        {
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+            List<string> allowedRoles = new List<string>() { "Admin", "Analyst", "Logistics" };
+
+            if (userRole == null || !allowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+
+            var orders = _orderService.GetAllOrders();
+            var actions = _actionlogservice.GetLatestActionsForOrders();
+
+            var result = orders.Select(order => new
+            {
+                Order = order,
+                LatestAction = actions.FirstOrDefault(action => action.model == "order")
+            });
+            var listed = result.ToList();
+            while(listed.Count() > amount){
+                listed.Remove(listed.Last());
+            }
+
+            return Ok(listed);
+        }
+
         [HttpPost("orders")]
         public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
         {
@@ -120,6 +171,16 @@ namespace ControllersV2
             }
 
             var createdOrder = _orderService.CreateOrder(order);
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "order";
+            actionLog.action = "order created";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+            _actionlogservice.SaveActionLogs(actionlogs);
 
             // Return the CreatedAtAction result, which includes the route to the GetOrderById action for the newly created order.
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
@@ -143,6 +204,17 @@ namespace ControllersV2
             }
 
             var createdOrders = _orderService.CreateMultipleOrders(newOrders);
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "order";
+            actionLog.action = "multiple orders created";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+            _actionlogservice.SaveActionLogs(actionlogs);
+
             return StatusCode(StatusCodes.Status201Created, createdOrders);
         }
 
@@ -170,6 +242,17 @@ namespace ControllersV2
             }
 
             var updatedItemLine = await _orderService.UpdateOrder(id, updateOrder);
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "order";
+            actionLog.action = "order updated";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+            _actionlogservice.SaveActionLogs(actionlogs);
+
             return Ok(updatedItemLine);
         }
 
@@ -196,6 +279,18 @@ namespace ControllersV2
             }
 
             var updatedOrder = await _orderService.UpdateOrderItems(orderId, items);
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "order";
+            actionLog.action = "items inside order updated";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+
+            _actionlogservice.SaveActionLogs(actionlogs);
+
             return Ok(updatedOrder);
         }
         [HttpPatch("{id}/{property}")]
@@ -203,7 +298,25 @@ namespace ControllersV2
             if(string.IsNullOrEmpty(property) || newvalue is null){
                 return BadRequest("Missing inputs in request");
             }
+
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
             var result = _orderService.PatchOrder(id, property, newvalue);
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "order";
+            actionLog.action = "order patched";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+
             return Ok(result);
         }
 
@@ -225,7 +338,17 @@ namespace ControllersV2
                 return NotFound();
             }
             _orderService.DeleteOrder(id);
-            return Ok();
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "order";
+            actionLog.action = "order deleted";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+
+            return Ok("order deleted");
         }
 
         [HttpDelete("batch")]
@@ -244,6 +367,16 @@ namespace ControllersV2
                 return NotFound();
             }
             _orderService.DeleteOrders(ids);
+
+            var actionlogs = _actionlogservice.GetAllActionLogs();
+            ActionLogCS actionLog = new ActionLogCS();
+            actionLog.performed_by = userRole;
+            actionLog.id = actionlogs.Count()  + 1;
+            actionLog.model = "order";
+            actionLog.action = "multiple orders deleted";
+            actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+            actionlogs.Add(actionLog);
+
             return Ok("orders deleted");
         }
     }
