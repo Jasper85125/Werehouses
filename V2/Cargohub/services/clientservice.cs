@@ -6,11 +6,8 @@ namespace ServicesV2;
 public class ClientService : IClientService
 {
     private string _path = "data/clients.json";
-    private readonly Iactionlogservice _actionlogservice;
-    public ClientService(ActionLogService actionLogService)
-    {
-        _actionlogservice = actionLogService;
-    }
+    public ClientService()
+    { }
 
     public List<ClientCS> GetAllClients()
     {
@@ -114,17 +111,11 @@ public class ClientService : IClientService
         File.WriteAllText("data/clients.json", json);
     }
 
-    public ClientCS PatchClient(int id, string property, object newvalue, string userRole)
+    public ClientCS PatchClient(int id, string property, object newvalue)
     {
-        var actionlogs = _actionlogservice.GetLatestActionsForClients();
-        var actionlog = actionlogs.Find(_=>_.id == id) ?? new ActionLogCS();
-        actionlog.id = actionlogs.Count() + 1;
-        actionlog.performed_by = userRole;
-        actionlog.model = "supplier";
-
         var clients = GetAllClients();
-        var clientToPatch = clients.Find(_=>_.Id == id);
-        
+        var clientToPatch = clients.Find(_ => _.Id == id);
+
         if (clientToPatch is not null)
         {
             // Get the current date and time
@@ -134,53 +125,41 @@ public class ClientService : IClientService
             var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
             switch (property)
             {
-                case"Name":
+                case "name":
                     clientToPatch.Name = newvalue.ToString();
-                    actionlog.action = "changed Name";
-                break;
-                case"Address":
+                    break;
+                case "address":
                     clientToPatch.Address = newvalue.ToString();
-                    actionlog.action = "changed Address";
-                break;
-                case"City":
+                    break;
+                case "city":
                     clientToPatch.City = newvalue.ToString();
-                    actionlog.action = "changed City";
-                break;
-                case"zip_code":
+                    break;
+                case "zip_code":
                     clientToPatch.zip_code = newvalue.ToString();
-                    actionlog.action = "changed zip code";
-                break;
-                case"Province":
+                    break;
+                case "province":
                     clientToPatch.Province = newvalue.ToString();
-                    actionlog.action = "changed province";
-                break;
-                case"Country":
+                    break;
+                case "country":
                     clientToPatch.Country = newvalue.ToString();
-                    actionlog.action = "changed Country";
-                break;
-                case"contact_name":
+                    break;
+                case "contact_name":
                     clientToPatch.contact_name = newvalue.ToString();
-                    actionlog.action = "changed contact name";
-                break;
-                case"contact_phone":
+                    break;
+                case "contact_phone":
                     clientToPatch.contact_phone = newvalue.ToString();
-                    actionlog.action = "changed contact phone";
-                break;
-                case"contact_email":
-                    actionlog.action = "changed contact email";
+                    break;
+                case "contact_email":
                     clientToPatch.contact_email = newvalue.ToString();
-                break;
+                    break;
                 default:
-                break;
+                    break;
             }
 
             clientToPatch.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
-            actionlog.timestamp = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
             var jsonData = JsonConvert.SerializeObject(clients, Formatting.Indented);
             File.WriteAllText(_path, jsonData);
-
-            _actionlogservice.SaveActionLogs(actionlogs);
 
             return clientToPatch;
         }

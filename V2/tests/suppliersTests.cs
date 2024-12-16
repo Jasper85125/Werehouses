@@ -13,12 +13,21 @@ namespace TestsV2
     {
         private Mock<ISupplierService> _mockSupplierService;
         private SupplierController _supplierController;
+        private Mock<Iactionlogservice> _mockIactionlogservice;
 
         [TestInitialize]
         public void Setup()
         {
             _mockSupplierService = new Mock<ISupplierService>();
+            _mockIactionlogservice = new Mock<Iactionlogservice>();
             _supplierController = new SupplierController(_mockSupplierService.Object);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Ensure UserRole is set correctly.
+
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
         }
 
         [TestMethod]
@@ -370,7 +379,7 @@ namespace TestsV2
             };
 
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(existingSupplier);
-            _mockSupplierService.Setup(service => service.PatchSupplier(1, patchSupplier)).Returns(patchSupplier);
+            _mockSupplierService.Setup(service => service.PatchSupplier(1, "Country", "USA")).Returns(patchSupplier);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -382,7 +391,7 @@ namespace TestsV2
             };
 
             // Act
-            var result = _supplierController.PatchSupplier(1, patchSupplier);
+            var result = _supplierController.PatchSupplier(1, "Country", "USA");
             var okResult = result.Result as OkObjectResult;
             var returnedSupplier = okResult.Value as SupplierCS;
 
@@ -427,10 +436,10 @@ namespace TestsV2
             };
 
             // Act
-            var result = _supplierController.PatchSupplier(1, patchSupplier);
+            var result = _supplierController.PatchSupplier(1, "Country", "USA");
 
             // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult), result.Result.ToString());
         }
         [TestMethod]
         public void DeleteSuppliersTest_Succes()
@@ -442,7 +451,7 @@ namespace TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-             _supplierController.ControllerContext = new ControllerContext
+            _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -455,6 +464,29 @@ namespace TestsV2
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
         }
+        // [TestMethod]
+        // public void ActionLogPatch_Succes()
+        // {
+        //     //Arrange
+        //     // var httpContext = new DefaultHttpContext();
+        //     // httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+        //     var supplier = new SupplierCS() { Id = 1, Code = "no ass" };
+        //     var patchedsupplier = new SupplierCS() { Id = 1, Code = "ASS" };
+        //     var actions = new List<ActionLogCS>(){ new ActionLogCS() { id = 1, action = "changed code", model = "supplier", timestamp = default, performed_by= "Admin" }};
+        //     _mockSupplierService.Setup(_ => _.GetLatestActionsForSuppliers()).Returns(actions);
+        //     _mockSupplierService.Setup(_ => _.PatchSupplier(1, "code", "ASS")).Returns(patchedsupplier);
+
+        //     //Act
+        //     _supplierController.PatchSupplier(1, "code", "ASS");
+        //     var result = _supplierController.GetSuppliersWithLatestActions();
+        //     var resultOk = result.Result as OkObjectResult;
+        //     var value = resultOk.Value as List<ActionLogCS>;
+        //     //Assert
+        //     Assert.IsNotNull(result);
+        //     Assert.IsNotNull(resultOk);
+        //     Assert.IsNotNull(value);
+        //     Assert.AreEqual(value.Count(), 1);
+        // }
     }
 }
 

@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 
+builder.Services.AddTransient<Iactionlogservice, ActionLogService>();
 builder.Services.AddTransient<IItemService,ItemService>();
 builder.Services.AddTransient<IWarehouseService, WarehouseService>();
 builder.Services.AddTransient<IItemtypeService, ItemTypeService>();

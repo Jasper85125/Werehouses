@@ -12,13 +12,22 @@ namespace clients.TestsV2
     public class ClientTest
     {
         private Mock<IClientService> _mockClientService;
+        private Mock<Iactionlogservice> _mockIactionlogservice;
         private ClientController _clientController;
 
         [TestInitialize]
         public void Setup()
         {
             _mockClientService = new Mock<IClientService>();
+            _mockIactionlogservice = new Mock<Iactionlogservice>();
             _clientController = new ClientController(_mockClientService.Object);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Ensure UserRole is set correctly.
+
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
         }
 
         [TestMethod]
@@ -251,35 +260,49 @@ namespace clients.TestsV2
         public void PatchClientTest_Success()
         {
             // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             var existingClient = new ClientCS { Id = 1, Address = "old street", City = "old city", contact_phone = "old number", contact_email = "old email", contact_name = "old name", Country = "old country", Name = "old name", Province = "old province", zip_code = "old zip" };
-            var patchClient = new ClientCS { Address = "new street", City = "new city", contact_phone = "new number", contact_email = "new email", contact_name = "new name", Country = "new country", Name = "new name", Province = "new province", zip_code = "new zip" };
+            var patchClient = new ClientCS {Id=1, Address = "new street", City = "new city", contact_phone = "new number", contact_email = "new email", contact_name = "new name", Country = "new country", Name = "new name", Province = "new province", zip_code = "new zip" };
 
             _mockClientService.Setup(service => service.GetClientById(1)).Returns(existingClient);
-            _mockClientService.Setup(service => service.PatchClient(1, patchClient)).Returns(patchClient);
+            _mockClientService.Setup(service => service.PatchClient(1, "Address", "new street")).Returns(patchClient);
 
             // Act
-            var result = _clientController.PatchClient(1, patchClient);
+            var result = _clientController.PatchClient(1, "Address", "new street");
+            var resultOk = result.Result as ObjectResult;
+            var value = resultOk.Value as ClientCS;
 
             // Assert
+            Assert.IsNotNull(existingClient, "Expected existing client to be initialized");
+            Assert.IsNotNull(patchClient, "Expected patchClient to be returned from the service");
+            Assert.IsNotNull(result);
+            // Console.WriteLine();
+            Assert.AreEqual(resultOk.StatusCode, 200);
+            Assert.IsNotNull(resultOk, resultOk.ToString());
+            Assert.IsNotNull(value);
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var resultOk = result.Result as OkObjectResult;
-            Assert.IsNotNull(resultOk);
-            var returnedClient = resultOk.Value as ClientCS;
-            Assert.IsNotNull(returnedClient);
-            Assert.AreEqual(patchClient.Address, returnedClient.Address);
-            Assert.AreEqual(patchClient.City, returnedClient.City);
+            Assert.AreEqual(patchClient.Address, value.Address);
+            Assert.AreEqual(patchClient.City, value.City);
         }
 
         [TestMethod]
         public void PatchClientTest_NotFound()
         {
             // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
             var patchClient = new ClientCS { Address = "new street", City = "new city", contact_phone = "new number", contact_email = "new email", contact_name = "new name", Country = "new country", Name = "new name", Province = "new province", zip_code = "new zip" };
 
             _mockClientService.Setup(service => service.GetClientById(1)).Returns((ClientCS)null);
 
             // Act
-            var result = _clientController.PatchClient(1, patchClient);
+            var result = _clientController.PatchClient(1, "Adress", "new street");
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));

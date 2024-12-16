@@ -9,5 +9,5 @@ public interface IClientService
     public ClientCS UpdateClient(int id, ClientCS client);
     void DeleteClient(int id);
     void DeleteClients(List<int> ids);
-    ClientCS PatchClient(int id, string property, object newvalue, string userRole);
+    ClientCS PatchClient(int id, string property, object newvalue);
 }

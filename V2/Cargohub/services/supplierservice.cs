@@ -135,12 +135,11 @@ public class SupplierService : ISupplierService
         return items?.Where(item => item.supplier_id == supplierId).ToList() ?? new List<ItemCS>();
     }
 
-    public SupplierCS PatchSupplier(int id, string property, object newvalue, string userRole)
+    public SupplierCS PatchSupplier(int id, string property, object newvalue)
     {
         var actionlogs = JsonConvert.DeserializeObject<List<ActionLogCS>>(_logpath).ToList();
         var actionlog = actionlogs.Find(_ => _.id == id) ?? new ActionLogCS();
         actionlog.id = actionlogs.Count() + 1;
-        actionlog.performed_by = userRole;
         actionlog.model = "supplier";
 
         var allSuppliers = GetAllSuppliers();

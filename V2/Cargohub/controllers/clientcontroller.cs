@@ -8,11 +8,11 @@ namespace ControllersV2;
 public class ClientController : ControllerBase
 {
     private readonly IClientService _clientservice;
-    private readonly Iactionlogservice _actionlogservice;
-    public ClientController(IClientService clientservice, Iactionlogservice iactionlogservice)
+    public ActionLogService _actionlogservice;
+    public ClientController(IClientService clientservice)
     {
         _clientservice = clientservice;
-        _actionlogservice = iactionlogservice;
+        _actionlogservice = new ActionLogService();
     }
 
     // GET: /clients
@@ -67,7 +67,7 @@ public class ClientController : ControllerBase
         }
 
         var suppliers = _clientservice.GetAllClients();
-        var actions = _actionlogservice.GetLatestActionsForClients();
+        var actions = _actionlogservice.GetLatestActionsForSuppliers();
 
         var result = suppliers.Select(supplier => new
         {
@@ -90,7 +90,7 @@ public class ClientController : ControllerBase
         }
 
         var suppliers = _clientservice.GetAllClients();
-        var actions = _actionlogservice.GetLatestActionsForClients();
+        var actions = _actionlogservice.GetLatestActionsForSuppliers();
 
         var result = suppliers.Select(supplier => new
         {
@@ -122,6 +122,16 @@ public class ClientController : ControllerBase
         }
 
         var createdClient = _clientservice.CreateClient(newClient);
+        
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "client";
+        actionLog.action = "client created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return CreatedAtAction(nameof(GetClientById), new { id = createdClient.Id }, createdClient);
     }
 
@@ -143,6 +153,15 @@ public class ClientController : ControllerBase
         }
 
         var createdClient = _clientservice.CreateMultipleClients(newClient);
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "client";
+        actionLog.action = "multiple clients created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return StatusCode(StatusCodes.Status201Created, createdClient);
     }
 
@@ -168,6 +187,16 @@ public class ClientController : ControllerBase
         {
             return NotFound("No Client found with the given id");
         }
+        
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "client";
+        actionLog.action = "client updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updatedClient);
 
     }
@@ -188,16 +217,44 @@ public class ClientController : ControllerBase
         {
             return NotFound();
         }
+        
         _clientservice.DeleteClient(id);
+        
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "client";
+        actionLog.action = "client deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     }
 
     [HttpDelete("batch")]
     public ActionResult DeleteClients ([FromBody] List<int> ids){
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
         if(ids is null){
             return BadRequest("error in request");
         }
+
         _clientservice.DeleteClients(ids);
+        
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "client";
+        actionLog.action = "multiple clients deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+        
         return Ok("multiple clients deleted");
     }
 
@@ -205,18 +262,66 @@ public class ClientController : ControllerBase
     [HttpPatch("{id}/{property}")]
     public ActionResult<ClientCS> PatchClient([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+        
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var client = _clientservice.GetClientById(id);
         if (client is null)
         {
             return NotFound();
         }
 
-        var result = _clientservice.PatchClient(id, property, newvalue, HttpContext.Items["UserRole"].ToString());
+        var result = _clientservice.PatchClient(id, property, newvalue);
         if (result is null)
         {
             return BadRequest("Failed to patch client.");
         }
 
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "client";
+
+        switch (property)
+        {
+            case"name":
+            actionLog.action = "changed name";
+            break;
+            case"address":
+            actionLog.action = "changed address";
+            break;
+            case"city":
+            actionLog.action = "changed city";
+            break;
+            case"zip_code":
+            actionLog.action = "changed zip code";
+            break;
+            case"province":
+            actionLog.action = "changed province";
+            break;
+            case"country":
+            actionLog.action = "changed country";
+            break;
+            case"contact_name":
+            actionLog.action = "changed contact name";
+            break;
+            case"contact_phone":
+            actionLog.action = "changed contact phone";
+            break;
+            case"contact_email":
+            actionLog.action = "changed contact email";
+            break;
+            default:
+            break;
+        }
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
         return Ok(result);
     }
 }

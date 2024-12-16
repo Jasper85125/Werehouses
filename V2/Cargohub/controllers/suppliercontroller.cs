@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Text.Json;
 using ServicesV2;
+using System.Collections;
 
 namespace ControllersV2;
 
@@ -10,9 +11,12 @@ namespace ControllersV2;
 public class SupplierController : ControllerBase
 {
     private readonly ISupplierService _supplierService;
+    ActionLogService _actionlogservice;
+
     public SupplierController(ISupplierService supplierService)
     {
         _supplierService = supplierService;
+        _actionlogservice = new ActionLogService();
     }
 
     // GET: /suppliers
@@ -145,6 +149,15 @@ public class SupplierController : ControllerBase
 
         var createdSupplier = _supplierService.CreateSupplier(supplier);
 
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "supplier";
+        actionLog.action = "supplier created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return CreatedAtAction(nameof(GetSupplierById), new { id = createdSupplier.Id }, createdSupplier);
     }
 
@@ -166,6 +179,16 @@ public class SupplierController : ControllerBase
         }
 
         var createdOrders = _supplierService.CreateMultipleSuppliers(newSupplier);
+
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "supplier";
+        actionLog.action = "multiple suppliers created";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return StatusCode(StatusCodes.Status201Created, createdOrders);
     }
 
@@ -191,11 +214,21 @@ public class SupplierController : ControllerBase
         {
             return BadRequest("No supplier found with the given id.");
         }
+
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "supplier";
+        actionLog.action = "supplier updated";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok(updatedSupplier);
     }
   
-    [HttpPatch("{id}")]
-    public ActionResult<SupplierCS> PatchSupplier(int id, [FromRoute]string property, [FromBody]object newvalue)
+    [HttpPatch("{id}/{property}")]
+    public ActionResult<SupplierCS> PatchSupplier([FromRoute]int id, [FromRoute]string property, [FromBody]object newvalue)
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
@@ -208,15 +241,22 @@ public class SupplierController : ControllerBase
         var supplier = _supplierService.GetSupplierById(id);
         if (supplier is null)
         {
-            return NotFound();
+            return NotFound("id does not exist");
         }
 
-        var updatedSupplier = _supplierService.PatchSupplier(id, property, newvalue, userRole);
+        var updatedSupplier = _supplierService.PatchSupplier(id, property, newvalue);
         if (updatedSupplier is null)
         {
             return BadRequest("Failed to patch supplier.");
         }
-
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "supplier";
+        actionLog.action = "supplier patched";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
         return Ok(updatedSupplier);
     }
 
@@ -238,6 +278,16 @@ public class SupplierController : ControllerBase
             return NotFound();
         }
         _supplierService.DeleteSupplier(id);
+
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "supplier";
+        actionLog.action = "supplier deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok();
     }
 
@@ -257,6 +307,16 @@ public class SupplierController : ControllerBase
             return NotFound();
         }
         _supplierService.DeleteSuppliers(ids);
+
+        var actionlogs = _actionlogservice.GetLatestActionsForClients();
+        ActionLogCS actionLog = new ActionLogCS();
+        actionLog.performed_by = userRole;
+        actionLog.model = "supplier";
+        actionLog.action = "multiple suppliers deleted";
+        actionLog.timestamp = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", null);
+        actionlogs.Add(actionLog);
+        _actionlogservice.SaveActionLogs(actionlogs);
+
         return Ok("Deleted suppliers");
     }
 }
