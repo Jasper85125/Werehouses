@@ -19,54 +19,64 @@ public class AdminController : ControllerBase
     [HttpPost("AddData")]
     public IActionResult AddData([FromForm] IFormFile file)
     {
-        // Log incoming form data for debugging
-    var form = HttpContext.Request.Form;
-    foreach (var key in form.Keys)
-    {
-        Console.WriteLine($"Key: {key}, Value: {form[key]}");
-    }
+        // Allowed roles
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
 
-    // Check for file binding issues
-    if (file == null)
-    {
-        return BadRequest(new { error = "File is not being recognized. Ensure the key is 'file'." });
-    }
+        // Authorization check
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized("You are not authorized to upload data.");
+        }
 
-    return Ok("File successfully received.");
-        // // Allowed roles
-        // List<string> listOfAllowedRoles = new List<string>() { "Admin" };
-        // var userRole = HttpContext.Items["UserRole"]?.ToString();
+        // Check if the file is provided
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { error = "The file field is required and cannot be empty." });
+        }
 
-        // // Authorization check
-        // if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-        // {
-        //     return Unauthorized("You are not authorized to upload data.");
-        // }
+        try
+        {
+            // Read CSV content
+            using var reader = new StreamReader(file.OpenReadStream());
+            var csvContent = reader.ReadToEnd();
 
-        // // Check if the file is provided
-        // if (file == null || file.Length == 0)
-        // {
-        //     return BadRequest(new { error = "The file field is required and cannot be empty." });
-        // }
+            // Parse CSV into JSON format
+            var lines = csvContent.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            var headers = lines[0].Split(',');
 
-        // try
-        // {
-        //     // Ensure it's saved as .json
-        //     var saveFileName = Path.ChangeExtension(file.FileName, ".json");
-        //     var path = Path.Combine(Directory.GetCurrentDirectory(), "Data", saveFileName);
+            var clients = new List<Dictionary<string, string>>();
 
-        //     // Save the file
-        //     using (var stream = new FileStream(path, FileMode.Create))
-        //     {
-        //         file.CopyTo(stream);
-        //     }
+            for (int i = 1; i < lines.Length; i++)
+            {
+                var values = lines[i].Split(',');
+                var client = new Dictionary<string, string>();
 
-        //     return Ok(new { message = "File uploaded and saved successfully as JSON.", fileName = saveFileName });
-        // }
-        // catch (Exception ex)
-        // {
-        //     return StatusCode(500, new { error = "An error occurred while saving the file.", details = ex.Message });
-        // }
+                for (int j = 0; j < headers.Length; j++)
+                {
+                    client[headers[j].Trim()] = values[j].Trim();
+                }
+
+                clients.Add(client);
+            }
+
+            var jsonContent = System.Text.Json.JsonSerializer.Serialize(clients, new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            // Save as JSON file
+            var saveFileName = Path.ChangeExtension(file.FileName, ".json");
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Data", saveFileName);
+
+            System.IO.File.WriteAllText(path, jsonContent);
+
+            return Ok(new { message = "File uploaded, converted, and saved successfully as JSON.", fileName = saveFileName });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = "An error occurred while processing the file.", details = ex.Message });
+        }
     }
 
 }
