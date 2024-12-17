@@ -279,6 +279,8 @@ namespace inventory.TestsV2
         [TestMethod]
         public void PatchInventoryTest_Succes(){
             //arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
             var inventory = new InventoryCS(){ Id = 1, item_id="ITEM321", total_on_hand= 100};
             _mockInventoryService.Setup(service => service.PatchInventory(1, inventory)).Returns(inventory);
 
@@ -299,6 +301,8 @@ namespace inventory.TestsV2
         [TestMethod]
         public void PatchInventoryTest_Fail(){
             //arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
             var inventory = new InventoryCS(){ Id = 1, item_id="ITEM321", total_on_hand= 100};
             _mockInventoryService.Setup(service => service.PatchInventory(1, inventory)).Returns((InventoryCS)null);
 

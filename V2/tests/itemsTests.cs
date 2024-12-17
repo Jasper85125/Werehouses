@@ -307,6 +307,8 @@ namespace item.TestsV2
         [TestMethod]
         public void PatchItem_Succes(){
             //Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
             var patcheditem = new ItemCS(){ uid="P000001", code="lol no"};
             _mockItemService.Setup(service=>service.PatchItem("P000001", "code", "lol no")).Returns(patcheditem);
             //Act

@@ -406,6 +406,8 @@ namespace TestsV2
         [TestMethod]
         public void PatchOrder_succes(){
             //Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
             var patchedorder = new OrderCS(){ Id = 1, Reference="lol, weirdo"};
             _mockOrderService.Setup(_=>_.PatchOrder(1, "Reference", "lol, weirdo")).Returns(patchedorder);
             //Act
