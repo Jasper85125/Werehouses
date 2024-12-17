@@ -15,13 +15,14 @@ namespace itemtype.TestsV2
         private Mock<IItemService> _mockItemService;
         private ItemTypeController _itemTypeController;
         private List<ItemTypeCS> _itemTypes;
-
+        private Mock<Iactionlogservice> _actionlogservice; 
         [TestInitialize]
         public void Setup()
         {
             _mockItemTypeService = new Mock<IItemtypeService>();
             _mockItemService = new Mock<IItemService>();
             _itemTypeController = new ItemTypeController(_mockItemTypeService.Object, _mockItemService.Object);
+            _actionlogservice = new Mock<Iactionlogservice>();
             _itemTypes = new List<ItemTypeCS>
             {
                 new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" },
@@ -166,13 +167,17 @@ namespace itemtype.TestsV2
         [TestMethod]
         public void PatchItemType_Succes(){
             //Arrange
-            var patcheditemtype = new ItemTypeCS(){ Id=1, Name="HAHA"};
-            _mockItemTypeService.Setup(service=>service.PatchItemType(1, "Name", "HAHA")).Returns(patcheditemtype);
+            var item_type = new ItemTypeCS(){Id=1 , Name="old name", description="old description"};
+            var patcheditemtype = new ItemTypeCS(){Id=1 , Name="new name", description="new description"};
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(item_type);
+            _mockItemTypeService.Setup(service=>service.PatchItemType(1, "description", "new description")).Returns(patcheditemtype);
             //Act
-            var result = _itemTypeController.PatchItemType(1, "Name", "HAHA");
+            var result = _itemTypeController.PatchItemType(1, "description", "new description");
             var resultok = result.Result as OkObjectResult;
             var value = resultok.Value as ItemTypeCS;
             //Assert
+            Assert.IsNotNull(item_type);
+            Assert.IsNotNull(patcheditemtype);
             Assert.IsNotNull(result);
             Assert.IsNotNull(resultok);
             Assert.IsNotNull(value);

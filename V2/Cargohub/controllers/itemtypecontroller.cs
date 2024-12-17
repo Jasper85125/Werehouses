@@ -236,6 +236,7 @@ public class ItemTypeController : ControllerBase
         if(int.IsNegative(id) || string.IsNullOrEmpty(property) || newvalue is null){
             return BadRequest("Errors in request");
         }
+
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
 

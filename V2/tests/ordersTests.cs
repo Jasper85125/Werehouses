@@ -281,7 +281,7 @@ namespace TestsV2
             var result = _orderController.DeleteOrder(1);
 
             //assert
-            Assert.IsInstanceOfType(result, typeof(OkResult));
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
 
         [TestMethod]
