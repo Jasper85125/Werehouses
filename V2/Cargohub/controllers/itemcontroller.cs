@@ -36,6 +36,30 @@ public class ItemController : ControllerBase
         return Ok(items);
     }
 
+    //GET: generate a report of a specific item by its uid it wil recieve a list of u and do it for all of the give items. it contains short_description unit_purchase_quantity unit_order_quantity created_at updated_at. it should save the report in a file.
+    [HttpGet("report")]
+    public ActionResult GenerateReport([FromBody] List<string> uids)
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics",
+                                                                   "Operative", "Supervisor" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        if (uids is null || uids.Count == 0)
+        {
+            return BadRequest("No items to generate report for.");
+        }
+        
+        _itemService.GenerateReport(uids);
+        return Ok();
+    }
+    
+
     // GET: items/5
     // Retrieves an item by its unique identifier (uid)
     [HttpGet("{uid}")]
