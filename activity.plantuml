@@ -1,0 +1,30 @@
+@startuml activity_diagram
+|User|
+start
+:Request data;
+:Provide API key;
+
+|Cargohub V1/V2|
+:Verify credentials;
+if (Credentials valid?) then (yes)
+    :Query item_lines;
+    :Query items;
+    :Query suppliers;
+    :Query warehouses;
+    :Query clients;
+    :Query item_groups;
+    :Query item_types;
+    :Query locations;
+    :Query orders;
+    :Query shipments;
+    :Query transfers;
+    :Query inventories;
+    :Return combined data;
+else (no)
+    :Return error;
+endif
+
+|User|
+:Receive result;
+stop
+@enduml

@@ -1,0 +1,147 @@
+@startuml sequenceDiagram
+actor User
+participant "Cargohub V1" as CargohubV1
+participant "Cargohub V2" as CargohubV2
+participant "Data" as DB
+
+User -> CargohubV1: API_key and Request data
+activate CargohubV1
+CargohubV1 -> DB: Verify credentials
+activate DB
+DB --> CargohubV1: Return verification result
+deactivate DB
+
+CargohubV1 -> DB: Query item_lines
+activate DB
+DB --> CargohubV1: Return item_lines
+deactivate DB
+
+CargohubV1 -> DB: Query items
+activate DB
+DB --> CargohubV1: Return items
+deactivate DB
+
+CargohubV1 -> DB: Query suppliers
+activate DB
+DB --> CargohubV1: Return suppliers
+deactivate DB
+
+CargohubV1 -> DB: Query warehouses
+activate DB
+DB --> CargohubV1: Return warehouses
+deactivate DB
+
+CargohubV1 -> DB: Query clients
+activate DB
+DB --> CargohubV1: Return clients
+deactivate DB
+
+CargohubV1 -> DB: Query item_groups
+activate DB
+DB --> CargohubV1: Return item_groups
+deactivate DB
+
+CargohubV1 -> DB: Query item_types
+activate DB
+DB --> CargohubV1: Return item_types
+deactivate DB
+
+CargohubV1 -> DB: Query locations
+activate DB
+DB --> CargohubV1: Return locations
+deactivate DB
+
+CargohubV1 -> DB: Query orders
+activate DB
+DB --> CargohubV1: Return orders
+deactivate DB
+
+CargohubV1 -> DB: Query shipments
+activate DB
+DB --> CargohubV1: Return shipments
+deactivate DB
+
+CargohubV1 -> DB: Query transfers
+activate DB
+DB --> CargohubV1: Return transfers
+deactivate DB
+
+CargohubV1 -> DB: Query inventories
+activate DB
+DB --> CargohubV1: Return inventories
+deactivate DB
+
+CargohubV1 --> User: Return combined data
+deactivate CargohubV1
+
+User -> CargohubV2: API_key and Request data
+activate CargohubV2
+CargohubV2 -> DB: Verify credentials
+activate DB
+DB --> CargohubV2: Return verification result
+deactivate DB
+
+CargohubV2 -> DB: Query item_lines
+activate DB
+DB --> CargohubV2: Return item_lines
+deactivate DB
+
+CargohubV2 -> DB: Query suppliers
+activate DB
+DB --> CargohubV2: Return suppliers
+deactivate DB
+
+CargohubV2 -> DB: Query warehouses
+activate DB
+DB --> CargohubV2: Return warehouses
+deactivate DB
+
+CargohubV2 -> DB: Query clients
+activate DB
+DB --> CargohubV2: Return clients
+deactivate DB
+
+CargohubV2 -> DB: Query item_groups
+activate DB
+DB --> CargohubV2: Return item_groups
+deactivate DB
+
+CargohubV2 -> DB: Query item_types
+activate DB
+DB --> CargohubV2: Return item_types
+deactivate DB
+
+CargohubV2 -> DB: Query locations
+activate DB
+DB --> CargohubV2: Return locations
+deactivate DB
+
+CargohubV2 -> DB: Query items
+activate DB
+DB --> CargohubV2: Return items
+deactivate DB
+
+CargohubV2 -> DB: Query orders
+activate DB
+DB --> CargohubV2: Return orders
+deactivate DB
+
+CargohubV2 -> DB: Query shipments
+activate DB
+DB --> CargohubV2: Return shipments
+deactivate DB
+
+CargohubV2 -> DB: Query transfers
+activate DB
+DB --> CargohubV2: Return transfers
+deactivate DB
+
+CargohubV2 -> DB: Query inventories
+activate DB
+DB --> CargohubV2: Return inventories
+deactivate DB
+
+CargohubV2 --> User: Return combined data
+deactivate CargohubV2
+
+@enduml

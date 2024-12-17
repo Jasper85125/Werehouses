@@ -1,0 +1,190 @@
+@startuml WarehouseDiagram
+
+class ClientCS {
+    +int Id
+    +string? Name
+    +string? Address
+    +string? City
+    +string? zip_code
+    +string? Province
+    +string? Country
+    +string? contact_name
+    +string? contact_phone
+    +string? contact_email
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class ItemCS {
+    +string uid
+    +string code
+    +string description
+    +string short_description
+    +string upc_code
+    +string model_number
+    +string commodity_code
+    +int item_line
+    +int item_group
+    +int item_type
+    +int unit_purchase_quantity
+    +int unit_order_quantity
+    +int pack_order_quantity
+    +int supplier_id
+    +string? supplier_code
+    +string? supplier_part_number
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class ItemLineCS {
+    +int Id
+    +string? Name
+    +string? Description
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class ItemTypeCS {
+    +int Id
+    +string Name
+    +string description
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class ItemGroupCS {
+    +int Id
+    +string? Name
+    +string? Description
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class LocationCS {
+    +int Id
+    +int warehouse_id
+    +string? code
+    +string? name
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class OrderCS {
+    +int Id
+    +int source_id
+    +string? order_date
+    +string? request_date
+    +string? Reference
+    +string? reference_extra
+    +string? order_status
+    +string? Notes
+    +string? shipping_notes
+    +string? picking_notes
+    +int? warehouse_id
+    +int? ship_to
+    +int? bill_to
+    +int? shipment_id
+    +double total_amount
+    +double total_discount
+    +double total_tax
+    +double total_surcharge
+    +DateTime created_at
+    +DateTime updated_at
+    +List<ItemCS> items
+    +List<int> amounts
+}
+
+class ShipmentCS {
+    +int Id
+    +int order_id
+    +int source_id
+    +DateTime order_date
+    +DateTime request_date
+    +DateTime shipment_date
+    +string? shipment_type
+    +string? shipment_status
+    +string? Notes
+    +string? carrier_code
+    +string? carrier_description
+    +string? service_code
+    +string? payment_type
+    +string? transfer_mode
+    +int total_package_count
+    +double total_package_weight
+    +List<ItemCS> Items
+    +List<int> amounts
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class SupplierCS {
+    +int Id
+    +string? Code
+    +string? Name
+    +string? Address
+    +string? address_extra
+    +string? City
+    +string? zip_code
+    +string? Province
+    +string? Country
+    +string? contact_name
+    +string? PhoneNumber
+    +string? Reference
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class TransferCS {
+    +int Id
+    +string? Reference
+    +int? transfer_from
+    +int? transfer_to
+    +string? transfer_status
+    +DateTime created_at
+    +DateTime updated_at
+    +List<ItemCS> Items
+    +List<int> amounts
+}
+
+class WarehouseCS {
+    +int Id
+    +string? Code
+    +string? Name
+    +string? Address
+    +string? Zip
+    +string? City
+    +string? Province
+    +string? Country
+    +Dictionary<string, string> Contact
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class InventoryCS {
+    +int Id
+    +string? item_id
+    +string description
+    +string item_reference
+    +List<int> Locations
+    +int total_on_hand
+    +int total_expected
+    +int total_ordered
+    +int total_allocated
+    +int total_available
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+ClientCS "1" --> "*" OrderCS : "places"
+OrderCS "1" --> "*" ShipmentCS : "contains"
+OrderCS "1" --> "*" ItemCS : "has"
+ShipmentCS "1" --> "*" ItemCS : "contains"
+ItemLineCS "1" --> "*" ItemCS : "contains"
+ItemTypeCS "1" --> "*" ItemCS : "categorizes"
+ItemGroupCS "1" --> "*" ItemCS : "groups"
+LocationCS "1" --> "*" InventoryCS : "stores"
+WarehouseCS "1" --> "*" LocationCS : "has"
+SupplierCS "1" --> "*" ItemCS : "supplies"
+TransferCS "1" --> "*" ItemCS : "transfers"
+
+@enduml
