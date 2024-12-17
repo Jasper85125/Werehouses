@@ -53,4 +53,31 @@ public class AdminController : ControllerBase
         }
     }
 
+    // a function that returns a requested file from the data folder
+    [HttpGet("GetData/{filename}")]
+    public IActionResult GetData(string filename)
+    {
+        // Allowed roles
+        List<string> listOfAllowedRoles = new List<string>() { "Admin"};
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        // Authorization check
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized("You are not authorized to download data.");
+        }
+
+        // Construct file path
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "Data", filename);
+
+        // Check if file exists
+        if (!System.IO.File.Exists(path))
+        {
+            return NotFound(new { error = "The requested file does not exist." });
+        }
+
+        // Return file directly with correct content disposition
+        var fileType = "application/octet-stream"; // Generic binary file type for downloads
+        return PhysicalFile(path, fileType, filename);
+    }
 }
