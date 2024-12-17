@@ -17,7 +17,37 @@ public class ItemController : ControllerBase
         _itemService = itemService;
         _inventoryService = inventoryService;
     }
+    //filter for get all items
+    [HttpGet("searchterm?={term}")]
+    public ActionResult<List<ItemCS>> Filter([FromRoute] string? searchterm){
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
 
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        if(!string.IsNullOrWhiteSpace(searchterm.ToString())){
+            List<ItemCS> items = _itemService.GetAllItems();
+            var filtered = items.Where(_=>_.code.Contains(searchterm.ToString())|| 
+            _.commodity_code.Contains(searchterm.ToString())|| 
+            // _.item_group == (int)searchterm ||
+            // _.item_line == (int)searchterm ||
+            // _.item_type == (int)searchterm ||
+            _.model_number.Contains(searchterm.ToString())||
+            // _.pack_order_quantity == (int)searchterm ||
+            _.supplier_code.Contains(searchterm.ToString())||
+            // _.supplier_id == (int)searchterm ||
+            _.supplier_part_number.Contains(searchterm.ToString())||
+            _.uid == searchterm.ToString() ||
+            // _.unit_order_quantity == (int)searchterm ||
+            // _.unit_purchase_quantity == (int)searchterm ||
+            _.upc_code.Contains(searchterm.ToString())).OrderBy(_=>_.updated_at).ToList();
+            return Ok(filtered);
+        }
+        return BadRequest();
+    }
     // GET: items
     // Retrieves all items
     [HttpGet()]
