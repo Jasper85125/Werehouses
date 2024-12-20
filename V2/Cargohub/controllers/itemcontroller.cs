@@ -17,9 +17,9 @@ public class ItemController : ControllerBase
         _itemService = itemService;
         _inventoryService = inventoryService;
     }
-    //filter for get all items
-    [HttpGet("searchterm?={term}")]
-    public ActionResult<List<ItemCS>> Filter([FromRoute] string? searchterm){
+    //Apply pageination to get allitems()
+    [HttpGet("pageinated")]
+    public ActionResult Pageination([FromQuery] string page, [FromQuery] string pageSize){
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
                                                                    "Floor Manager", "Sales", "Analyst", "Logistics" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
@@ -28,26 +28,29 @@ public class ItemController : ControllerBase
         {
             return Unauthorized();
         }
-        if(!string.IsNullOrWhiteSpace(searchterm.ToString())){
-            List<ItemCS> items = _itemService.GetAllItems();
-            var filtered = items.Where(_=>_.code.Contains(searchterm.ToString())|| 
-            _.commodity_code.Contains(searchterm.ToString())|| 
-            // _.item_group == (int)searchterm ||
-            // _.item_line == (int)searchterm ||
-            // _.item_type == (int)searchterm ||
-            _.model_number.Contains(searchterm.ToString())||
-            // _.pack_order_quantity == (int)searchterm ||
-            _.supplier_code.Contains(searchterm.ToString())||
-            // _.supplier_id == (int)searchterm ||
-            _.supplier_part_number.Contains(searchterm.ToString())||
-            _.uid == searchterm.ToString() ||
-            // _.unit_order_quantity == (int)searchterm ||
-            // _.unit_purchase_quantity == (int)searchterm ||
-            _.upc_code.Contains(searchterm.ToString())).OrderBy(_=>_.updated_at).ToList();
-            return Ok(filtered);
-        }
-        return BadRequest();
+
+        var items = _itemService.GetAllItems();
+
+        int pageInt = int.TryParse(page, out int result) ? result : 1;
+        int pageSizeInt = int.TryParse(pageSize, out int result1) ? result1 : 10;
+
+        var itemsCount = items.Count();
+        var totalpages = (int)Math.Ceiling(itemsCount / (double) pageSizeInt);
+
+        var index = (pageInt - 1) * pageSizeInt;
+        var pageItems = items.Skip(index).Take(pageSizeInt).ToList();
+
+        var result2 = new {
+            Page = pageInt,
+            pagesize = pageSizeInt,
+            TotalItems = itemsCount,
+            TotalPages = totalpages,
+            Data = pageItems
+        };
+
+        return Ok(result2);
     }
+    
     // GET: items
     // Retrieves all items
     [HttpGet()]
