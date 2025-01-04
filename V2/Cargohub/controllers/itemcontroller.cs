@@ -36,7 +36,7 @@ public class ItemController : ControllerBase
     // GET: items
     // Retrieves all items
     [HttpGet("page")]
-    public ActionResult<IEnumerable<ItemCS>> GetAllItems([FromQuery] itemFilter tofilter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public ActionResult<PaginationCS<ItemCS>> GetAllItems([FromQuery] itemFilter tofilter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         List<string> listOfAllowedRoles = new List<string>()
         { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
@@ -86,7 +86,7 @@ public class ItemController : ControllerBase
             var index1 = (page - 1) * pageSize;
             var filteredpageItems = itemsToFilter.Skip(index1).Take(pageSize).ToList();
 
-            var result1 = new PaginationCS(){ Page=page, PageSize=pageSize, TotItems=totalPages, Data=filteredpageItems};
+            var result1 = new PaginationCS<ItemCS>{ Page=page, TotalPages=totalPages, Data=filteredpageItems};
             return Ok(result1);
         }
         int itemsCount = items.Count();
@@ -94,11 +94,9 @@ public class ItemController : ControllerBase
 
         var index = (page - 1) * pageSize;
         var pageItems = itemsquery.Skip(index).Take(pageSize).ToList();
-        var result2 = new
+        var result2 = new PaginationCS<ItemCS>
         {
             Page = page,
-            PageSize = pageSize,
-            TotalItems = itemsCount,
             TotalPages = pagetotal,
             Data = pageItems
         };
