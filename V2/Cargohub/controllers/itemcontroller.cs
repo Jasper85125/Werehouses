@@ -104,7 +104,79 @@ public class ItemController : ControllerBase
         };
         return Ok(result2);
     }
+    /* 
+    ik wilde het als een normale httpget maar dat breekt dan de test voor gewoon getallitems endpoint (niet service) dus het is in httpget("page")
+    ik laat het hier just in case
+    [HttpGet("")]
+    public ActionResult<IEnumerable<ItemCS>> GetAllItems([FromQuery] itemFilter tofilter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        List<string> listOfAllowedRoles = new List<string>()
+        { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
 
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var items = _itemService.GetAllItems();
+        var itemsquery = items.AsQueryable();
+        if (tofilter.GetType().GetProperties().All(prop => prop.GetValue(tofilter) != null))
+        {
+            var itemsToFilter = items.AsQueryable();
+            if (!string.IsNullOrEmpty(tofilter.code))
+            {
+                itemsToFilter = itemsToFilter.Where(_ => _.code == tofilter.code);
+            }
+            if (!string.IsNullOrEmpty(tofilter.commodity_code))
+            {
+                itemsToFilter = itemsToFilter.Where(_ => _.commodity_code == tofilter.commodity_code);
+            }
+            if (!string.IsNullOrEmpty(tofilter.upc_code))
+            {
+                itemsToFilter = itemsToFilter.Where(_ => _.upc_code == tofilter.upc_code);
+            }
+            if (!string.IsNullOrEmpty(tofilter.model_number))
+            {
+                itemsToFilter = itemsToFilter.Where(_ => _.model_number == tofilter.model_number);
+            }
+            if (tofilter.item_line.HasValue && tofilter.item_line > 0)
+            {
+                itemsToFilter = itemsToFilter.Where(_ => _.item_line == tofilter.item_line);
+            }
+            if (tofilter.item_group.HasValue && tofilter.item_group > 0)
+            {
+                itemsToFilter = itemsToFilter.Where(_ => _.item_group == tofilter.item_group);
+            }
+            if (tofilter.item_type.HasValue && tofilter.item_type > 0)
+            {
+                itemsToFilter = itemsToFilter.Where(_ => _.item_type == tofilter.item_type);
+            }
+            var filtereditemsCount = itemsToFilter.Count();
+            int totalPages = (int)Math.Ceiling(filtereditemsCount / (double)pageSize);
+
+            var index1 = (page - 1) * pageSize;
+            var filteredpageItems = itemsToFilter.Skip(index1).Take(pageSize).ToList();
+
+            var result1 = new PageinationCS(){ Page=page, PageSize=pageSize, TotItems=totalPages, Data=filteredpageItems};
+            return Ok(result1);
+        }
+        int itemsCount = items.Count();
+        int pagetotal = (int)Math.Ceiling(itemsCount / (double)pageSize);
+
+        var index = (page - 1) * pageSize;
+        var pageItems = itemsquery.Skip(index).Take(pageSize).ToList();
+        var result2 = new
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItems = itemsCount,
+            TotalPages = pagetotal,
+            Data = pageItems
+        };
+        return Ok(result2);
+    }
+    */
     // GET: items
     // Retrieves all items
     [HttpGet()]
