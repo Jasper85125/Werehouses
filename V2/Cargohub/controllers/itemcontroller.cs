@@ -3,13 +3,7 @@ using System.Collections.Generic;
 using ServicesV2;
 
 namespace ControllersV2;
-public class Pageination()
-{
-    public int Page {get; set;}
-    public int PageSize {get;set;}
-    public int TotItems {get;set;}
-    public List<ItemCS>? Data {get; set;}
-}
+
 public class itemFilter()
 {
     public string? code { get; set; }
@@ -92,7 +86,7 @@ public class ItemController : ControllerBase
             var index1 = (page - 1) * pageSize;
             var filteredpageItems = itemsToFilter.Skip(index1).Take(pageSize).ToList();
 
-            var result1 = new Pageination(){ Page=page, PageSize=pageSize, TotItems=totalPages, Data=filteredpageItems};
+            var result1 = new PageinationCS(){ Page=page, PageSize=pageSize, TotItems=totalPages, Data=filteredpageItems};
             return Ok(result1);
         }
         int itemsCount = items.Count();
