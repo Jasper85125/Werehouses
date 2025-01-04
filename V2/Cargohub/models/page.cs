@@ -1,4 +1,4 @@
-public class PageinationCS()
+public class PaginationCS()
 {
     public int Page {get; set;}
     public int PageSize {get;set;}

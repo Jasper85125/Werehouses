@@ -86,7 +86,7 @@ public class ItemController : ControllerBase
             var index1 = (page - 1) * pageSize;
             var filteredpageItems = itemsToFilter.Skip(index1).Take(pageSize).ToList();
 
-            var result1 = new PageinationCS(){ Page=page, PageSize=pageSize, TotItems=totalPages, Data=filteredpageItems};
+            var result1 = new PaginationCS(){ Page=page, PageSize=pageSize, TotItems=totalPages, Data=filteredpageItems};
             return Ok(result1);
         }
         int itemsCount = items.Count();
