@@ -7,12 +7,62 @@ namespace ControllersV2
 {
     [ApiController]
     [Route("api/v2/orders")]
+    public class orderFilter()
+    {
+        public int Id { get; set; }
+        public int source_id { get; set; }
+        public string? order_date { get; set; }
+        public string? request_date { get; set; }
+        public string? order_status { get; set; }
+        public int? warehouse_id { get; set; }
+        public int? ship_to { get; set; }
+        public int? bill_to { get; set; }
+        public DateTime created_at { get; set; }
+        public DateTime updated_at { get; set; }
+        public List<ItemIdAndAmount> items { get; set; }
+    }
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
         public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
+        }
+        [HttpGet("page")]
+        public ActionResult<PaginationCS> GetAllOrders([FromQuery] orderFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+            var WarehouseIDFromKey = (int)HttpContext.Items["WarehouseID"];
+
+            var orders = _orderService.GetAllOrders();
+            var ordersQuery = orders.AsQueryable();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                if (userRole == "Operative" || userRole == "Supervisor")
+                {
+                    var ordersForWarehouse = _orderService.GetOrdersByWarehouse(WarehouseIDFromKey);
+                    return Ok(ordersForWarehouse);
+                }
+                return Unauthorized();
+            }
+            if (filter.GetType().GetProperties().All(_ => _.GetValue(filter) != null))
+            {
+                return Ok();
+            }
+            int ordersCount = orders.Count();
+            int totalPages = (int)Math.Ceiling(ordersCount / (double)pageSize);
+            var index = (page - 1) * pageSize;
+            var data = ordersQuery.Skip(index).Take(pageSize).ToList();
+            var result = new PaginationCS
+            {
+                Page = page,
+                TotalPages = totalPages,
+                Data = data
+            };
+            return Ok(result);
         }
 
         // GET: /orders
@@ -183,7 +233,7 @@ namespace ControllersV2
             {
                 return Unauthorized();
             }
-            
+
             var order = _orderService.GetOrderById(orderId);
             if (order == null)
             {
@@ -199,8 +249,10 @@ namespace ControllersV2
             return Ok(updatedOrder);
         }
         [HttpPatch("{id}/{property}")]
-        public ActionResult<OrderCS> PatchOrder([FromRoute]int id, [FromRoute]string property, [FromBody]object newvalue){
-            if(string.IsNullOrEmpty(property) || newvalue is null){
+        public ActionResult<OrderCS> PatchOrder([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue)
+        {
+            if (string.IsNullOrEmpty(property) || newvalue is null)
+            {
                 return BadRequest("Missing inputs in request");
             }
             var result = _orderService.PatchOrder(id, property, newvalue);
