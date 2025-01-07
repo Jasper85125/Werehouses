@@ -7,9 +7,6 @@ on:
   pull_request:
     branches:
       - '**'
-  release:
-    types:
-      - published
 
 jobs:
   csharp-build-and-test:
@@ -116,7 +113,7 @@ jobs:
 
     # Build and Publish for Linux (only for release events)
     - name: Build for Linux
-      if: github.event_name == 'release'
+      if: github.event_name == 'push'
       run: |
         dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
         dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
