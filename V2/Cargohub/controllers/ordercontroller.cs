@@ -9,17 +9,17 @@ namespace ControllersV2
     [Route("api/v2/orders")]
     public class orderFilter()
     {
-        public int Id { get; set; }
-        public int source_id { get; set; }
+        // public int Id { get; set; }
+        // public int source_id { get; set; }
         public string? order_date { get; set; }
         public string? request_date { get; set; }
         public string? order_status { get; set; }
         public int? warehouse_id { get; set; }
         public int? ship_to { get; set; }
         public int? bill_to { get; set; }
-        public DateTime created_at { get; set; }
-        public DateTime updated_at { get; set; }
-        public List<ItemIdAndAmount> items { get; set; }
+        // public DateTime created_at { get; set; }
+        // public DateTime updated_at { get; set; }
+        // public List<ItemIdAndAmount> items { get; set; }
     }
     public class OrderController : ControllerBase
     {
@@ -28,8 +28,11 @@ namespace ControllersV2
         {
             _orderService = orderService;
         }
+        /*
+        example route: /api/v2/orders/page?page=1&pageSize=10
+        */
         [HttpGet("page")]
-        public ActionResult<PaginationCS> GetAllOrders([FromQuery] orderFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
                                                                    "Floor Manager", "Sales", "Analyst", "Logistics" };
@@ -50,15 +53,49 @@ namespace ControllersV2
             }
             if (filter.GetType().GetProperties().All(_ => _.GetValue(filter) != null))
             {
-                return Ok();
+                /*
+                if (filter.Id != 0)
+                {
+                    ordersQuery = ordersQuery.Where(_ => _.Id == filter.Id);
+                }
+                if (filter.source_id != 0)
+                {
+                    ordersQuery = ordersQuery.Where(_ => _.source_id == filter.source_id);
+                }
+                */
+                if (filter.order_date != null)
+                {
+                    ordersQuery = ordersQuery.Where(_ => _.order_date == filter.order_date);
+                }
+                if (filter.request_date != null)
+                {
+                    ordersQuery = ordersQuery.Where(_ => _.request_date == filter.request_date);
+                }
+                if (filter.order_status != null)
+                {
+                    ordersQuery = ordersQuery.Where(_ => _.order_status == filter.order_status);
+                }
+                if (filter.warehouse_id.HasValue)
+                {
+                    ordersQuery = ordersQuery.Where(_ => _.warehouse_id == filter.warehouse_id);
+                }
+                if (filter.ship_to.HasValue)
+                {
+                    ordersQuery = ordersQuery.Where(_ => _.ship_to == filter.ship_to);
+                }
+                if (filter.bill_to.HasValue)
+                {
+                    ordersQuery = ordersQuery.Where(_ => _.bill_to == filter.bill_to);
+                }
             }
             int ordersCount = orders.Count();
             int totalPages = (int)Math.Ceiling(ordersCount / (double)pageSize);
             var index = (page - 1) * pageSize;
             var data = ordersQuery.Skip(index).Take(pageSize).ToList();
-            var result = new PaginationCS
+            var result = new PaginationCS<OrderCS>
             {
                 Page = page,
+                PageSize = pageSize,
                 TotalPages = totalPages,
                 Data = data
             };
