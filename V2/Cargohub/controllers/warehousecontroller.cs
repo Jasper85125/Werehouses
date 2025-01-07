@@ -50,7 +50,7 @@ public class WarehouseController : ControllerBase
         return Ok(warehouses);
     }
     [HttpGet("page")]
-    public ActionResult<PaginationCS<WarehouseCS>> GetAllItems(
+    public ActionResult<PaginationCS<WarehouseCS>> GetAllWarehouses(
         [FromQuery] warehouseFilter tofilter, 
         [FromQuery] int page = 1, 
         [FromQuery] int pageSize = 10)
