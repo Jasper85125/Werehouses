@@ -5,6 +5,21 @@ using ServicesV2;
 
 namespace ControllersV2;
 
+public class warehouseFilter
+{
+    public int Id { get; set; }
+    public string? Code { get; set; }
+    public string? Name { get; set; }
+    public string? Address { get; set; }
+    public string? Zip { get; set; }
+    public string? City { get; set; }
+    public string? Province { get; set; }
+    public string? Country { get; set; }
+    // public Dictionary<string, string> Contact { get; set; }
+    // public DateTime created_at { get; set; }
+    // public DateTime updated_at { get; set; }
+}
+
 [ApiController]
 [Route("api/v2/warehouses")]
 public class WarehouseController : ControllerBase
@@ -33,6 +48,72 @@ public class WarehouseController : ControllerBase
             return NotFound();
         }
         return Ok(warehouses);
+    }
+    [HttpGet("page")]
+    public ActionResult<PaginationCS<WarehouseCS>> GetAllItems(
+        [FromQuery] warehouseFilter tofilter, 
+        [FromQuery] int page = 1, 
+        [FromQuery] int pageSize = 10)
+    {
+        List<string> listOfAllowedRoles = new List<string>()
+        { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        // Filter logic
+        var warehouses = _warehouseService.GetAllWarehouses();
+        var query = warehouses.AsQueryable();
+        if (tofilter.Id != 0)
+        {
+            query = query.Where(x => x.Id == tofilter.Id);
+        }
+        if (tofilter.Code != null)
+        {
+            query = query.Where(x => x.Code == tofilter.Code);
+        }
+        if (tofilter.Name != null)
+        {
+            query = query.Where(x => x.Name == tofilter.Name);
+        }
+        if (tofilter.Address != null)
+        {
+            query = query.Where(x => x.Address == tofilter.Address);
+        }
+        if (tofilter.Zip != null)
+        {
+            query = query.Where(x => x.Zip == tofilter.Zip);
+        }
+        if (tofilter.City != null)
+        {
+            query = query.Where(x => x.City == tofilter.City);
+        }
+        if (tofilter.Province != null)
+        {
+            query = query.Where(x => x.Province == tofilter.Province);
+        }
+        if (tofilter.Country != null)
+        {
+            query = query.Where(x => x.Country == tofilter.Country);
+        }
+        var warehousesCount = query.Count();
+
+        // Pagination logic
+        int totalPages = (int)Math.Ceiling(warehousesCount / (double)pageSize);
+        var pagedWarehouses = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        // Return paginated and filtered result
+        var result = new PaginationCS<WarehouseCS>()
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalPages = totalPages,
+            Data = pagedWarehouses
+        };
+
+        return Ok(result);
     }
 
     // GET: /warehouses/{id}
