@@ -5,6 +5,21 @@ using ServicesV2;
 
 namespace ControllersV2
 {
+    public class orderFilter()
+    {
+        // public int Id { get; set; }
+        // public int source_id { get; set; }
+        public string? order_date { get; set; }
+        public string? request_date { get; set; }
+        public string? order_status { get; set; }
+        public int? warehouse_id { get; set; }
+        public int? ship_to { get; set; }
+        public int? bill_to { get; set; }
+        // public DateTime created_at { get; set; }
+        // public DateTime updated_at { get; set; }
+        // public List<ItemIdAndAmount> items { get; set; }
+    }
+
     [ApiController]
     [Route("api/v2/orders")]
     public class OrderController : ControllerBase
@@ -13,6 +28,66 @@ namespace ControllersV2
         public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
+        }
+        /*
+        example route: /api/v2/orders/page?page=1&pageSize=10
+        */
+        [HttpGet("page")]
+        public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+            var WarehouseIDFromKey = (int)HttpContext.Items["WarehouseID"];
+
+            var orders = _orderService.GetAllOrders();
+            var ordersQuery = orders.AsQueryable();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                if (userRole == "Operative" || userRole == "Supervisor")
+                {
+                    var ordersForWarehouse = _orderService.GetOrdersByWarehouse(WarehouseIDFromKey);
+                    return Ok(ordersForWarehouse);
+                }
+                return Unauthorized();
+            }
+            if (filter.order_date != null)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.order_date == filter.order_date);
+            }
+            if (filter.request_date != null)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.request_date == filter.request_date);
+            }
+            if (filter.order_status != null)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.order_status == filter.order_status);
+            }
+            if (filter.warehouse_id.HasValue)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.warehouse_id == filter.warehouse_id);
+            }
+            if (filter.ship_to.HasValue)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.ship_to == filter.ship_to);
+            }
+            if (filter.bill_to.HasValue)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.bill_to == filter.bill_to);
+            }
+            int ordersCount = orders.Count();
+            int totalPages = (int)Math.Ceiling(ordersCount / (double)pageSize);
+            var index = (page - 1) * pageSize;
+            var data = ordersQuery.Skip(index).Take(pageSize).ToList();
+            var result = new PaginationCS<OrderCS>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalPages = totalPages,
+                Data = data
+            };
+            return Ok(result);
         }
 
         // GET: /orders
@@ -183,7 +258,7 @@ namespace ControllersV2
             {
                 return Unauthorized();
             }
-            
+
             var order = _orderService.GetOrderById(orderId);
             if (order == null)
             {
@@ -199,8 +274,10 @@ namespace ControllersV2
             return Ok(updatedOrder);
         }
         [HttpPatch("{id}/{property}")]
-        public ActionResult<OrderCS> PatchOrder([FromRoute]int id, [FromRoute]string property, [FromBody]object newvalue){
-            if(string.IsNullOrEmpty(property) || newvalue is null){
+        public ActionResult<OrderCS> PatchOrder([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue)
+        {
+            if (string.IsNullOrEmpty(property) || newvalue is null)
+            {
                 return BadRequest("Missing inputs in request");
             }
             var result = _orderService.PatchOrder(id, property, newvalue);
