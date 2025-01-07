@@ -126,7 +126,9 @@ jobs:
         path: PythonTests/reports
 
     - name: Build for Linux
-      run: dotnet publish -c Release -r linux-x64 --self-contained false -o ./publish
+      run: |
+        dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
+        dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
 
     - name: Create ZIP package
       run: zip -r linux-release-v${{ github.ref_name }}.zip ./publish
