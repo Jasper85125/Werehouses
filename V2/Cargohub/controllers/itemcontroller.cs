@@ -18,6 +18,104 @@ public class ItemController : ControllerBase
         _inventoryService = inventoryService;
     }
 
+    public class itemFilter()
+    {
+        public string? code { get; set; }
+        public string? upc_code { get; set; }
+        public string? model_number { get; set; }
+        public string? commodity_code { get; set; }
+        public int? item_line { get; set; } // Changed to nullable
+        public int? item_type { get; set; } // Changed to nullable
+        public int? item_group { get; set; } // Changed to nullable
+        public int? unit_purchase_quantity { get; set; } // Changed to nullable
+        public int? unit_order_quantity { get; set; } // Changed to nullable
+        public int? pack_order_quantity { get; set; } // Changed to nullable
+        public int? supplier_id { get; set; } // Changed to nullable
+        public string? supplier_code { get; set; }
+    }
+
+    [HttpGet("/filter")]
+    public ActionResult FilterPage([FromQuery] itemFilter tofilter = null, [FromQuery] string page = null, [FromQuery] string pageSize = null)
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        var items = _itemService.GetAllItems();
+        if (!tofilter.GetType().GetProperties().All(prop => prop.GetValue(tofilter) == null))
+        {
+            var filtereditems = items.AsQueryable();
+            if (!string.IsNullOrEmpty(tofilter.code))
+            {
+                filtereditems = filtereditems.Where(_ => _.code == tofilter.code);
+            }
+            if (!string.IsNullOrEmpty(tofilter.commodity_code))
+            {
+                filtereditems = filtereditems.Where(_ => _.commodity_code == tofilter.commodity_code);
+            }
+            if (!string.IsNullOrEmpty(tofilter.model_number))
+            {
+                filtereditems = filtereditems.Where(_ => _.model_number == tofilter.model_number);
+            }
+            if (!string.IsNullOrEmpty(tofilter.upc_code))
+            {
+                filtereditems = filtereditems.Where(_ => _.upc_code == tofilter.upc_code);
+            }
+            if (tofilter.item_line.HasValue && tofilter.item_line.Value > 0)
+            {
+                filtereditems = filtereditems.Where(_ => _.item_line == tofilter.item_line.Value);
+            }
+            if (tofilter.item_type.HasValue && tofilter.item_type.Value > 0)
+            {
+                filtereditems = filtereditems.Where(_ => _.item_type == tofilter.item_type.Value);
+            }
+            int pageInt = int.TryParse(page, out int result) ? result : 1;
+            int pageSizeInt = int.TryParse(pageSize, out int result1) ? result1 : filtereditems.Count();
+
+            var filtereditemsCount = filtereditems.Count();
+            var totalpages = (int)Math.Ceiling(filtereditemsCount / (double)pageSizeInt);
+
+            var index = (pageInt - 1) * pageSizeInt;
+            var pageItems = filtereditems.Skip(index).Take(pageSizeInt).ToList();
+
+            var result2 = new
+            {
+                Page = pageInt,
+                pagesize = pageSizeInt,
+                TotalItems = filtereditemsCount,
+                TotalPages = totalpages,
+                Data = pageItems,
+            };
+            return Ok(result2);
+        }
+        else
+        {
+            int pageInt = int.TryParse(page, out int result) ? result : 1;
+            int pageSizeInt = int.TryParse(pageSize, out int result1) ? result1 : 10;
+
+            var itemsCount = items.Count();
+            var totalpages = (int)Math.Ceiling(itemsCount / (double)pageSizeInt);
+
+            var index = (pageInt - 1) * pageSizeInt;
+            var pageItems = items.Skip(index).Take(pageSizeInt).ToList();
+
+            var result2 = new
+            {
+                Page = pageInt,
+                pagesize = pageSizeInt,
+                TotalItems = itemsCount,
+                TotalPages = totalpages,
+                Data = pageItems,
+            };
+
+            return Ok(result2);
+            }
+    }
+
     // GET: items
     // Retrieves all items
     [HttpGet()]
@@ -50,7 +148,7 @@ public class ItemController : ControllerBase
         {
             return Unauthorized();
         }
-        
+
         var item = _itemService.GetItemById(uid);
         if (item == null)
         {
@@ -126,7 +224,7 @@ public class ItemController : ControllerBase
     [HttpPut("{uid}")]
     public ActionResult<ItemCS> UpdateItem(string uid, [FromBody] ItemCS updatedItem)
     {
-        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales"};
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
 
         if (userRole == null || !listOfAllowedRoles.Contains(userRole))
@@ -150,13 +248,15 @@ public class ItemController : ControllerBase
     }
     // change the value of one property in an item object
     [HttpPatch("{uid}/{property}")]
-    public ActionResult<ItemCS> PatchItem([FromRoute] string uid, [FromRoute] string property, [FromBody] object newvalue){
-        if(string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(property) || newvalue is null){
+    public ActionResult<ItemCS> PatchItem([FromRoute] string uid, [FromRoute] string property, [FromBody] object newvalue)
+    {
+        if (string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(property) || newvalue is null)
+        {
             return BadRequest("Error in request");
         }
         var result = _itemService.PatchItem(uid, property, newvalue);
         return Ok(result);
-    } 
+    }
     [HttpDelete("{uid}")]
     public ActionResult DeleteItem(string uid)
     {
@@ -198,5 +298,5 @@ public class ItemController : ControllerBase
 
         _itemService.DeleteItems(uids);
         return Ok();
-    } 
+    }
 }
