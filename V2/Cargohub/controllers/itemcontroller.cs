@@ -32,81 +32,90 @@ public class ItemController : ControllerBase
         _itemService = itemService;
         _inventoryService = inventoryService;
     }
-    
+
     // GET: items
     // Retrieves all items
-    [HttpGet("page")]
-    public ActionResult<PaginationCS<ItemCS>> GetAllItems([FromQuery] itemFilter tofilter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-    {
-        List<string> listOfAllowedRoles = new List<string>()
-        { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
-        var userRole = HttpContext.Items["UserRole"]?.ToString();
+    //example route:
+    //http://localhost:5002/api/v2/items/page?page=2&pageSize=1&item_line=21
+    // [HttpGet("page")]
+    // public ActionResult<PaginationCS<ItemCS>> GetAllItems([FromQuery] itemFilter tofilter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    // {
+    //     List<string> listOfAllowedRoles = new List<string>()
+    //     { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+    //     var userRole = HttpContext.Items["UserRole"]?.ToString();
 
-        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-        {
-            return Unauthorized();
-        }
+    //     if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+    //     {
+    //         return Unauthorized();
+    //     }
 
-        var items = _itemService.GetAllItems();
-        var itemsquery = items.AsQueryable();
-        if (tofilter.GetType().GetProperties().All(prop => prop.GetValue(tofilter) != null))
-        {
-            var itemsToFilter = items.AsQueryable();
-            if (!string.IsNullOrEmpty(tofilter.code))
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.code == tofilter.code);
-            }
-            if (!string.IsNullOrEmpty(tofilter.commodity_code))
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.commodity_code == tofilter.commodity_code);
-            }
-            if (!string.IsNullOrEmpty(tofilter.upc_code))
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.upc_code == tofilter.upc_code);
-            }
-            if (!string.IsNullOrEmpty(tofilter.model_number))
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.model_number == tofilter.model_number);
-            }
-            if (tofilter.item_line.HasValue && tofilter.item_line > 0)
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.item_line == tofilter.item_line);
-            }
-            if (tofilter.item_group.HasValue && tofilter.item_group > 0)
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.item_group == tofilter.item_group);
-            }
-            if (tofilter.item_type.HasValue && tofilter.item_type > 0)
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.item_type == tofilter.item_type);
-            }
-            var filtereditemsCount = itemsToFilter.Count();
-            int totalPages = (int)Math.Ceiling(filtereditemsCount / (double)pageSize);
+    //     var items = _itemService.GetAllItems();
+    //     var itemsquery = items.AsQueryable();
+    //     if (tofilter.GetType().GetProperties().All(prop => prop.GetValue(tofilter) != null))
+    //     {
+    //         var itemsToFilter = items.AsQueryable();
+    //         if (!string.IsNullOrEmpty(tofilter.code))
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.code == tofilter.code);
+    //         }
+    //         if (!string.IsNullOrEmpty(tofilter.commodity_code))
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.commodity_code == tofilter.commodity_code);
+    //         }
+    //         if (!string.IsNullOrEmpty(tofilter.upc_code))
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.upc_code == tofilter.upc_code);
+    //         }
+    //         if (!string.IsNullOrEmpty(tofilter.model_number))
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.model_number == tofilter.model_number);
+    //         }
+    //         if (tofilter.item_line.HasValue && tofilter.item_line > 0)
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.item_line == tofilter.item_line);
+    //         }
+    //         if (tofilter.item_group.HasValue && tofilter.item_group > 0)
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.item_group == tofilter.item_group);
+    //         }
+    //         if (tofilter.item_type.HasValue && tofilter.item_type > 0)
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.item_type == tofilter.item_type);
+    //         }
+    //         var filtereditemsCount = itemsToFilter.Count();
+    //         int totalPages = (int)Math.Ceiling(filtereditemsCount / (double)pageSize);
 
-            var index1 = (page - 1) * pageSize;
-            var filteredpageItems = itemsToFilter.Skip(index1).Take(pageSize).ToList();
+    //         var index1 = (page - 1) * pageSize;
+    //         var filteredpageItems = itemsToFilter.Skip(index1).Take(pageSize).ToList();
 
-            var result1 = new PaginationCS<ItemCS>{ Page=page, TotalPages=totalPages, Data=filteredpageItems};
-            return Ok(result1);
-        }
-        int itemsCount = items.Count();
-        int pagetotal = (int)Math.Ceiling(itemsCount / (double)pageSize);
+    //         var result1 = new PaginationCS<ItemCS>{ Page=page, TotalPages=totalPages, Data=filteredpageItems};
+    //         return Ok(result1);
+    //     }
+    //     int itemsCount = items.Count();
+    //     int pagetotal = (int)Math.Ceiling(itemsCount / (double)pageSize);
 
-        var index = (page - 1) * pageSize;
-        var pageItems = itemsquery.Skip(index).Take(pageSize).ToList();
-        var result2 = new PaginationCS<ItemCS>
-        {
-            Page = page,
-            TotalPages = pagetotal,
-            Data = pageItems
-        };
-        return Ok(result2);
-    }
+    //     var index = (page - 1) * pageSize;
+    //     var pageItems = itemsquery.Skip(index).Take(pageSize).ToList();
+    //     var result2 = new PaginationCS<ItemCS>
+    //     {
+    //         Page = page,
+    //         PageSize = pageSize,
+    //         TotalPages = pagetotal,
+    //         Data = pageItems
+    //     };
+    //     return Ok(result2);
+    // }
     /* 
     ik wilde het als een normale httpget maar dat breekt dan de test voor gewoon getallitems endpoint (niet service) dus het is in httpget("page")
     ik laat het hier just in case
-    [HttpGet("")]
-    public ActionResult<IEnumerable<ItemCS>> GetAllItems([FromQuery] itemFilter tofilter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    example route: filter can be doen without inputting which page you waant to be on and how big the page should be 
+    http://localhost:5002/api/v2/items/page?page=2&pageSize=1&item_line=21
+    */
+    [HttpGet()]
+    public ActionResult<PaginationCS<ItemCS>> GetAllItems(
+        [FromQuery] itemFilter tofilter, 
+        [FromQuery] int page = 1, 
+        [FromQuery] int pageSize = 10)
     {
         List<string> listOfAllowedRoles = new List<string>()
         { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
@@ -118,80 +127,73 @@ public class ItemController : ControllerBase
         }
 
         var items = _itemService.GetAllItems();
-        var itemsquery = items.AsQueryable();
-        if (tofilter.GetType().GetProperties().All(prop => prop.GetValue(tofilter) != null))
+        var query = items.AsQueryable();
+
+        // Apply filters
+        if (!string.IsNullOrEmpty(tofilter.code))
         {
-            var itemsToFilter = items.AsQueryable();
-            if (!string.IsNullOrEmpty(tofilter.code))
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.code == tofilter.code);
-            }
-            if (!string.IsNullOrEmpty(tofilter.commodity_code))
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.commodity_code == tofilter.commodity_code);
-            }
-            if (!string.IsNullOrEmpty(tofilter.upc_code))
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.upc_code == tofilter.upc_code);
-            }
-            if (!string.IsNullOrEmpty(tofilter.model_number))
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.model_number == tofilter.model_number);
-            }
-            if (tofilter.item_line.HasValue && tofilter.item_line > 0)
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.item_line == tofilter.item_line);
-            }
-            if (tofilter.item_group.HasValue && tofilter.item_group > 0)
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.item_group == tofilter.item_group);
-            }
-            if (tofilter.item_type.HasValue && tofilter.item_type > 0)
-            {
-                itemsToFilter = itemsToFilter.Where(_ => _.item_type == tofilter.item_type);
-            }
-            var filtereditemsCount = itemsToFilter.Count();
-            int totalPages = (int)Math.Ceiling(filtereditemsCount / (double)pageSize);
-
-            var index1 = (page - 1) * pageSize;
-            var filteredpageItems = itemsToFilter.Skip(index1).Take(pageSize).ToList();
-
-            var result1 = new PageinationCS(){ Page=page, PageSize=pageSize, TotItems=totalPages, Data=filteredpageItems};
-            return Ok(result1);
+            query = query.Where(item => item.code == tofilter.code);
         }
-        int itemsCount = items.Count();
-        int pagetotal = (int)Math.Ceiling(itemsCount / (double)pageSize);
+        if (!string.IsNullOrEmpty(tofilter.commodity_code))
+        {
+            query = query.Where(item => item.commodity_code == tofilter.commodity_code);
+        }
+        if (!string.IsNullOrEmpty(tofilter.upc_code))
+        {
+            query = query.Where(item => item.upc_code == tofilter.upc_code);
+        }
+        if (!string.IsNullOrEmpty(tofilter.model_number))
+        {
+            query = query.Where(item => item.model_number == tofilter.model_number);
+        }
+        if (tofilter.item_line.HasValue)
+        {
+            query = query.Where(item => item.item_line == tofilter.item_line.Value);
+        }
+        if (tofilter.item_group.HasValue)
+        {
+            query = query.Where(item => item.item_group == tofilter.item_group.Value);
+        }
+        if (tofilter.item_type.HasValue)
+        {
+            query = query.Where(item => item.item_type == tofilter.item_type.Value);
+        }
 
-        var index = (page - 1) * pageSize;
-        var pageItems = itemsquery.Skip(index).Take(pageSize).ToList();
-        var result2 = new
+        // Get the filtered count
+        int filteredItemsCount = query.Count();
+
+        // Pagination logic
+        int totalPages = (int)Math.Ceiling(filteredItemsCount / (double)pageSize);
+        var pagedItems = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        // Return paginated and filtered result
+        var result = new PaginationCS<ItemCS>()
         {
             Page = page,
             PageSize = pageSize,
-            TotalItems = itemsCount,
-            TotalPages = pagetotal,
-            Data = pageItems
+            TotalPages = totalPages,
+            Data = pagedItems
         };
-        return Ok(result2);
+
+        return Ok(result);
     }
-    */
     // GET: items
     // Retrieves all items
-    [HttpGet()]
-    public ActionResult<IEnumerable<ItemCS>> GetAllItems()
-    {
-        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
-        var userRole = HttpContext.Items["UserRole"]?.ToString();
+    // [HttpGet()]
+    // public ActionResult<IEnumerable<ItemCS>> GetAllItems()
+    // {
+    //     List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+    //                                                                "Floor Manager", "Sales", "Analyst", "Logistics" };
+    //     var userRole = HttpContext.Items["UserRole"]?.ToString();
 
-        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-        {
-            return Unauthorized();
-        }
+    //     if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+    //     {
+    //         return Unauthorized();
+    //     }
 
-        var items = _itemService.GetAllItems();
-        return Ok(items);
-    }
+    //     var items = _itemService.GetAllItems();
+    //     return Ok(items);
+    // }
 
     // GET: items/5
     // Retrieves an item by its unique identifier (uid)
