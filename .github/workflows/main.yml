@@ -113,22 +113,15 @@ jobs:
 
     # Build and Publish for Linux (only for release events)
     - name: Build for Linux
-      if: github.event_name == 'push'
       run: |
         dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
         dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
 
     - name: Create ZIP package
-      if: github.event_name == 'push'
-      run: zip -r linux-release-v${{ github.ref_name }}.zip ./publish
+      run: zip -r linux-release-v${{ github.run_number }}.zip ./publish
 
-    - name: Upload release artifact
-      if: github.event_name == 'push'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload ZIP artifact
+      uses: actions/upload-artifact@v4
       with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./linux-release-v${{ github.ref_name }}.zip
-        asset_name: linux-release-v${{ github.ref_name }}.zip
-        asset_content_type: application/zip
+        name: linux-release-v${{ github.run_number }}
+        path: linux-release-v${{ github.run_number }}.zip
