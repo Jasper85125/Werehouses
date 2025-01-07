@@ -5,7 +5,19 @@ using ServicesV2;
 using System.Reflection.Metadata.Ecma335;
 
 namespace ControllersV2;
-
+public class inventoryFilter
+{
+    public int Id { get; set; }
+    public string? item_id { get; set; }
+    public int LocationsCount {get; set;}
+    public int total_on_hand { get; set; }
+    public int total_expected { get; set; }
+    public int total_ordered { get; set; }
+    public int total_allocated { get; set; }
+    public int total_available { get; set; }
+    // public DateTime created_at { get; set; }
+    // public DateTime updated_at { get; set; }
+}
 [ApiController]
 [Route("api/v2/inventories")]
 public class InventoryController : ControllerBase
@@ -32,6 +44,78 @@ public class InventoryController : ControllerBase
 
         var inventories = _inventoryService.GetAllInventories();
         return Ok(inventories);
+    }
+
+    [HttpGet("page")]
+    public ActionResult<PaginationCS<InventoryCS>> GetAllItems(
+        [FromQuery] inventoryFilter tofilter, 
+        [FromQuery] int page = 1, 
+        [FromQuery] int pageSize = 10)
+    {
+        List<string> listOfAllowedRoles = new List<string>()
+        { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        // Get all inventories
+        var inventories = _inventoryService.GetAllInventories();
+        var query = inventories.AsQueryable();
+
+        //filter inventories
+        if (tofilter.Id != 0)
+        {
+            query = query.Where(x => x.Id == tofilter.Id);
+        }
+        if (tofilter.item_id != null)
+        {
+            query = query.Where(x => x.item_id == tofilter.item_id);
+        }
+        if (tofilter.LocationsCount != 0)
+        {
+            query = query.Where(x => x.Locations.Count >= tofilter.LocationsCount);
+        }
+        if (tofilter.total_on_hand != 0)
+        {
+            query = query.Where(x => x.total_on_hand == tofilter.total_on_hand);
+        }
+        if (tofilter.total_expected != 0)
+        {
+            query = query.Where(x => x.total_expected == tofilter.total_expected);
+        }
+        if (tofilter.total_ordered != 0)
+        {
+            query = query.Where(x => x.total_ordered == tofilter.total_ordered);
+        }
+        if (tofilter.total_allocated != 0)
+        {
+            query = query.Where(x => x.total_allocated == tofilter.total_allocated);
+        }
+        if (tofilter.total_available != 0)
+        {
+            query = query.Where(x => x.total_available == tofilter.total_available);
+        }
+
+        // Get the filtered count
+        int filteredInventoriesCount = query.Count();
+
+        // Pagination logic
+        int totalPages = (int)Math.Ceiling(filteredInventoriesCount / (double)pageSize);
+        var pagedInventories = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        // Return paginated and filtered result
+        var result = new PaginationCS<InventoryCS>()
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalPages = totalPages,
+            Data = pagedInventories
+        };
+
+        return Ok(result);
     }
 
     // GET: /inventories/{id}
