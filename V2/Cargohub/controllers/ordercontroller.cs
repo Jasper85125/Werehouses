@@ -5,8 +5,6 @@ using ServicesV2;
 
 namespace ControllersV2
 {
-    [ApiController]
-    [Route("api/v2/orders")]
     public class orderFilter()
     {
         // public int Id { get; set; }
@@ -21,6 +19,9 @@ namespace ControllersV2
         // public DateTime updated_at { get; set; }
         // public List<ItemIdAndAmount> items { get; set; }
     }
+
+    [ApiController]
+    [Route("api/v2/orders")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
@@ -51,42 +52,29 @@ namespace ControllersV2
                 }
                 return Unauthorized();
             }
-            if (filter.GetType().GetProperties().All(_ => _.GetValue(filter) != null))
+            if (filter.order_date != null)
             {
-                /*
-                if (filter.Id != 0)
-                {
-                    ordersQuery = ordersQuery.Where(_ => _.Id == filter.Id);
-                }
-                if (filter.source_id != 0)
-                {
-                    ordersQuery = ordersQuery.Where(_ => _.source_id == filter.source_id);
-                }
-                */
-                if (filter.order_date != null)
-                {
-                    ordersQuery = ordersQuery.Where(_ => _.order_date == filter.order_date);
-                }
-                if (filter.request_date != null)
-                {
-                    ordersQuery = ordersQuery.Where(_ => _.request_date == filter.request_date);
-                }
-                if (filter.order_status != null)
-                {
-                    ordersQuery = ordersQuery.Where(_ => _.order_status == filter.order_status);
-                }
-                if (filter.warehouse_id.HasValue)
-                {
-                    ordersQuery = ordersQuery.Where(_ => _.warehouse_id == filter.warehouse_id);
-                }
-                if (filter.ship_to.HasValue)
-                {
-                    ordersQuery = ordersQuery.Where(_ => _.ship_to == filter.ship_to);
-                }
-                if (filter.bill_to.HasValue)
-                {
-                    ordersQuery = ordersQuery.Where(_ => _.bill_to == filter.bill_to);
-                }
+                ordersQuery = ordersQuery.Where(_ => _.order_date == filter.order_date);
+            }
+            if (filter.request_date != null)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.request_date == filter.request_date);
+            }
+            if (filter.order_status != null)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.order_status == filter.order_status);
+            }
+            if (filter.warehouse_id.HasValue)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.warehouse_id == filter.warehouse_id);
+            }
+            if (filter.ship_to.HasValue)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.ship_to == filter.ship_to);
+            }
+            if (filter.bill_to.HasValue)
+            {
+                ordersQuery = ordersQuery.Where(_ => _.bill_to == filter.bill_to);
             }
             int ordersCount = orders.Count();
             int totalPages = (int)Math.Ceiling(ordersCount / (double)pageSize);
