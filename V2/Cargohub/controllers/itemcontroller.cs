@@ -111,7 +111,7 @@ public class ItemController : ControllerBase
     example route: filter can be doen without inputting which page you waant to be on and how big the page should be 
     http://localhost:5002/api/v2/items/page?page=2&pageSize=1&item_line=21
     */
-    [HttpGet()]
+    [HttpGet("page")]
     public ActionResult<PaginationCS<ItemCS>> GetAllItems(
         [FromQuery] itemFilter tofilter, 
         [FromQuery] int page = 1, 
@@ -179,21 +179,21 @@ public class ItemController : ControllerBase
     }
     // GET: items
     // Retrieves all items
-    // [HttpGet()]
-    // public ActionResult<IEnumerable<ItemCS>> GetAllItems()
-    // {
-    //     List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-    //                                                                "Floor Manager", "Sales", "Analyst", "Logistics" };
-    //     var userRole = HttpContext.Items["UserRole"]?.ToString();
+    [HttpGet()]
+    public ActionResult<IEnumerable<ItemCS>> GetAllItems()
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
 
-    //     if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-    //     {
-    //         return Unauthorized();
-    //     }
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
 
-    //     var items = _itemService.GetAllItems();
-    //     return Ok(items);
-    // }
+        var items = _itemService.GetAllItems();
+        return Ok(items);
+    }
 
     // GET: items/5
     // Retrieves an item by its unique identifier (uid)
