@@ -119,11 +119,11 @@ jobs:
         dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
 
     - name: Create ZIP package
-      if: github.event_name == 'release'
+      if: github.event_name == 'push'
       run: zip -r linux-release-v${{ github.ref_name }}.zip ./publish
 
     - name: Upload release artifact
-      if: github.event_name == 'release'
+      if: github.event_name == 'push'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
