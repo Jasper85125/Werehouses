@@ -38,13 +38,23 @@ class TestClass(unittest.TestCase):
         ]
         self.headers = {'Api-Key': 'AdminKey'}
 
-    def test_get_warehouses(self):
-        for version in self.versions:
+    def test_get_warehouses_v1(self):
+        for version in ["http://localhost:5001/api/v1"]:
             with self.subTest(version=version):
                 response = self.warehouse.get(
                     url=(version + "/warehouses"), headers=self.headers
                 )
                 self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), list)
+
+    def test_get_warehouses_v2(self):
+        for version in ["http://localhost:5002/api/v2"]:
+            with self.subTest(version=version):
+                response = self.warehouse.get(
+                    url=(version + "/warehouses"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), dict)
 
     def test_get_warehouse_id(self):
         for version in self.versions:
