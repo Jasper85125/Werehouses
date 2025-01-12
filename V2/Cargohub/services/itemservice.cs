@@ -48,6 +48,86 @@ public class ItemService : IItemService
         return itemTypeItems;
     }
 
+    // public void GenerateReport(List<string> uids)
+    // {
+    //     var items = GetAllItems();
+    //     var reportItems = new List<object>(); // Using a list of anonymous objects
+    //     foreach (var uid in uids)
+    //     {
+    //         var item = items.FirstOrDefault(i => i.uid == uid);
+    //         if (item != null)
+    //         {
+    //             reportItems.Add(new
+    //             {
+    //                 item.uid,
+    //                 item.short_description,
+    //                 item.unit_purchase_quantity,
+    //                 item.unit_order_quantity,
+    //                 item.created_at,
+    //                 item.updated_at
+    //             });
+    //         }
+    //     }
+
+    //     var directory = "reports";
+    //     var path = Path.Combine(directory, "report.json");
+
+    //     // Ensure the directory exists
+    //     if (!Directory.Exists(directory))
+    //     {
+    //         Directory.CreateDirectory(directory);
+    //     }
+    //     var updatedJsonData = JsonConvert.SerializeObject(reportItems, Formatting.Indented);
+    //     File.WriteAllText(path, updatedJsonData);
+    // }
+
+
+    public void GenerateReport(List<string> uids)
+    {
+        var items = GetAllItems();
+        List<string> reportStrings = new List<string>();
+
+        foreach (var uid in uids)
+        {
+            var item = items.FirstOrDefault(i => i.uid == uid);
+            if (item != null)
+            {
+                string itemReport = $"The item {item.uid} is a {item.short_description}. There have been {item.unit_order_quantity} orders. That is in total {item.unit_purchase_quantity}. The item was created at {item.created_at} and the last time it was updated was {item.updated_at}.";
+                reportStrings.Add(itemReport);
+            }
+        }
+
+        var directory = "reports";
+        var path = Path.Combine(directory, "report.txt");
+
+        // Ensure the directory exists
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }        
+        File.WriteAllLines(path, reportStrings); 
+
+    }
+
+
+    // public void GenerateReport(List<string> uids)
+    // {
+    //     var items = GetAllItems();
+    //     List<ItemCS> reportItems = new List<ItemCS>();
+    //     foreach (var uid in uids)
+    //     {
+    //         var item = items.FirstOrDefault(i => i.uid == uid);
+    //         if (item != null)
+    //         {
+    //             reportItems.Add(item);
+    //         }
+    //     }
+
+    //     var path = "data/report.json";
+    //     var updatedJsonData = JsonConvert.SerializeObject(reportItems, Formatting.Indented);
+    //     File.WriteAllText(path, updatedJsonData);
+    // }
+
     // Method to add a new item
     public ItemCS CreateItem(ItemCS item)
     {
