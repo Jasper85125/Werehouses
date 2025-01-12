@@ -4,6 +4,21 @@ using ServicesV2;
 
 namespace ControllersV2;
 
+public class itemFilter()
+{
+    public string? code { get; set; }
+    public string? upc_code { get; set; }
+    public string? model_number { get; set; }
+    public string? commodity_code { get; set; }
+    public int? item_line { get; set; } // Changed to nullable
+    public int? item_type { get; set; } // Changed to nullable
+    public int? item_group { get; set; } // Changed to nullable
+    public int? unit_purchase_quantity { get; set; } // Changed to nullable
+    public int? unit_order_quantity { get; set; } // Changed to nullable
+    public int? pack_order_quantity { get; set; } // Changed to nullable
+    public int? supplier_id { get; set; } // Changed to nullable
+    public string? supplier_code { get; set; }
+}
 [Route("api/v2/items")]
 [ApiController]
 public class ItemController : ControllerBase
@@ -18,6 +33,150 @@ public class ItemController : ControllerBase
         _inventoryService = inventoryService;
     }
 
+    // GET: items
+    // Retrieves all items
+    //example route:
+    //http://localhost:5002/api/v2/items/page?page=2&pageSize=1&item_line=21
+    // [HttpGet("page")]
+    // public ActionResult<PaginationCS<ItemCS>> GetAllItems([FromQuery] itemFilter tofilter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    // {
+    //     List<string> listOfAllowedRoles = new List<string>()
+    //     { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+    //     var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+    //     if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+    //     {
+    //         return Unauthorized();
+    //     }
+
+    //     var items = _itemService.GetAllItems();
+    //     var itemsquery = items.AsQueryable();
+    //     if (tofilter.GetType().GetProperties().All(prop => prop.GetValue(tofilter) != null))
+    //     {
+    //         var itemsToFilter = items.AsQueryable();
+    //         if (!string.IsNullOrEmpty(tofilter.code))
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.code == tofilter.code);
+    //         }
+    //         if (!string.IsNullOrEmpty(tofilter.commodity_code))
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.commodity_code == tofilter.commodity_code);
+    //         }
+    //         if (!string.IsNullOrEmpty(tofilter.upc_code))
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.upc_code == tofilter.upc_code);
+    //         }
+    //         if (!string.IsNullOrEmpty(tofilter.model_number))
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.model_number == tofilter.model_number);
+    //         }
+    //         if (tofilter.item_line.HasValue && tofilter.item_line > 0)
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.item_line == tofilter.item_line);
+    //         }
+    //         if (tofilter.item_group.HasValue && tofilter.item_group > 0)
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.item_group == tofilter.item_group);
+    //         }
+    //         if (tofilter.item_type.HasValue && tofilter.item_type > 0)
+    //         {
+    //             itemsToFilter = itemsToFilter.Where(_ => _.item_type == tofilter.item_type);
+    //         }
+    //         var filtereditemsCount = itemsToFilter.Count();
+    //         int totalPages = (int)Math.Ceiling(filtereditemsCount / (double)pageSize);
+
+    //         var index1 = (page - 1) * pageSize;
+    //         var filteredpageItems = itemsToFilter.Skip(index1).Take(pageSize).ToList();
+
+    //         var result1 = new PaginationCS<ItemCS>{ Page=page, TotalPages=totalPages, Data=filteredpageItems};
+    //         return Ok(result1);
+    //     }
+    //     int itemsCount = items.Count();
+    //     int pagetotal = (int)Math.Ceiling(itemsCount / (double)pageSize);
+
+    //     var index = (page - 1) * pageSize;
+    //     var pageItems = itemsquery.Skip(index).Take(pageSize).ToList();
+    //     var result2 = new PaginationCS<ItemCS>
+    //     {
+    //         Page = page,
+    //         PageSize = pageSize,
+    //         TotalPages = pagetotal,
+    //         Data = pageItems
+    //     };
+    //     return Ok(result2);
+    // }
+    /* 
+    ik wilde het als een normale httpget maar dat breekt dan de test voor gewoon getallitems endpoint (niet service) dus het is in httpget("page")
+    ik laat het hier just in case
+    example route: filter can be doen without inputting which page you waant to be on and how big the page should be 
+    http://localhost:5002/api/v2/items/page?page=2&pageSize=1&item_line=21
+    */
+    [HttpGet("page")]
+    public ActionResult<PaginationCS<ItemCS>> GetAllItems(
+        [FromQuery] itemFilter tofilter, 
+        [FromQuery] int page = 1, 
+        [FromQuery] int pageSize = 10)
+    {
+        List<string> listOfAllowedRoles = new List<string>()
+        { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        var items = _itemService.GetAllItems();
+        var query = items.AsQueryable();
+
+        // Apply filters
+        if (!string.IsNullOrEmpty(tofilter.code))
+        {
+            query = query.Where(item => item.code == tofilter.code);
+        }
+        if (!string.IsNullOrEmpty(tofilter.commodity_code))
+        {
+            query = query.Where(item => item.commodity_code == tofilter.commodity_code);
+        }
+        if (!string.IsNullOrEmpty(tofilter.upc_code))
+        {
+            query = query.Where(item => item.upc_code == tofilter.upc_code);
+        }
+        if (!string.IsNullOrEmpty(tofilter.model_number))
+        {
+            query = query.Where(item => item.model_number == tofilter.model_number);
+        }
+        if (tofilter.item_line.HasValue)
+        {
+            query = query.Where(item => item.item_line == tofilter.item_line.Value);
+        }
+        if (tofilter.item_group.HasValue)
+        {
+            query = query.Where(item => item.item_group == tofilter.item_group.Value);
+        }
+        if (tofilter.item_type.HasValue)
+        {
+            query = query.Where(item => item.item_type == tofilter.item_type.Value);
+        }
+
+        // Get the filtered count
+        int filteredItemsCount = query.Count();
+
+        // Pagination logic
+        int totalPages = (int)Math.Ceiling(filteredItemsCount / (double)pageSize);
+        var pagedItems = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        // Return paginated and filtered result
+        var result = new PaginationCS<ItemCS>()
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalPages = totalPages,
+            Data = pagedItems
+        };
+
+        return Ok(result);
+    }
     // GET: items
     // Retrieves all items
     [HttpGet()]
@@ -74,7 +233,7 @@ public class ItemController : ControllerBase
         {
             return Unauthorized();
         }
-        
+
         var item = _itemService.GetItemById(uid);
         if (item == null)
         {
@@ -150,7 +309,7 @@ public class ItemController : ControllerBase
     [HttpPut("{uid}")]
     public ActionResult<ItemCS> UpdateItem(string uid, [FromBody] ItemCS updatedItem)
     {
-        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales"};
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
 
         if (userRole == null || !listOfAllowedRoles.Contains(userRole))
@@ -174,13 +333,15 @@ public class ItemController : ControllerBase
     }
     // change the value of one property in an item object
     [HttpPatch("{uid}/{property}")]
-    public ActionResult<ItemCS> PatchItem([FromRoute] string uid, [FromRoute] string property, [FromBody] object newvalue){
-        if(string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(property) || newvalue is null){
+    public ActionResult<ItemCS> PatchItem([FromRoute] string uid, [FromRoute] string property, [FromBody] object newvalue)
+    {
+        if (string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(property) || newvalue is null)
+        {
             return BadRequest("Error in request");
         }
         var result = _itemService.PatchItem(uid, property, newvalue);
         return Ok(result);
-    } 
+    }
     [HttpDelete("{uid}")]
     public ActionResult DeleteItem(string uid)
     {
@@ -222,5 +383,5 @@ public class ItemController : ControllerBase
 
         _itemService.DeleteItems(uids);
         return Ok();
-    } 
+    }
 }
