@@ -31,25 +31,26 @@ public class WarehouseController : ControllerBase
     }
 
     // GET: /warehouses
+    // [HttpGet()]
+    // public ActionResult<IEnumerable<WarehouseCS>> GetAllWarehouses()
+    // {
+    //     List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Analyst", "Logistics" };
+    //     var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+    //     if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+    //     {
+    //         return Unauthorized();
+    //     }
+
+    //     var warehouses = _warehouseService.GetAllWarehouses();
+    //     if (warehouses is null)
+    //     {
+    //         return NotFound();
+    //     }
+    //     return Ok(warehouses);
+    // }
+    //example route /warehouses?City=Amsterdam
     [HttpGet()]
-    public ActionResult<IEnumerable<WarehouseCS>> GetAllWarehouses()
-    {
-        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Analyst", "Logistics" };
-        var userRole = HttpContext.Items["UserRole"]?.ToString();
-
-        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-        {
-            return Unauthorized();
-        }
-
-        var warehouses = _warehouseService.GetAllWarehouses();
-        if (warehouses is null)
-        {
-            return NotFound();
-        }
-        return Ok(warehouses);
-    }
-    [HttpGet("page")]
     public ActionResult<PaginationCS<WarehouseCS>> GetAllWarehouses(
         [FromQuery] warehouseFilter tofilter, 
         [FromQuery] int page = 1, 
@@ -64,6 +65,9 @@ public class WarehouseController : ControllerBase
             return Unauthorized();
         }
         // Filter logic
+        if(tofilter == null){
+            tofilter = new warehouseFilter();
+        }
         var warehouses = _warehouseService.GetAllWarehouses();
         var query = warehouses.AsQueryable();
         if (tofilter.Id != 0)

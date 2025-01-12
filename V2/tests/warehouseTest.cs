@@ -42,13 +42,13 @@ namespace TestsV2
             };
 
             // Act
-            var result = _warehouseController.GetAllWarehouses();
+            var result = _warehouseController.GetAllWarehouses(null, 1, 10);
 
             // Assert
             var okResult = result.Result as OkObjectResult;
-            var returnedItems = okResult.Value as IEnumerable<WarehouseCS>;
+            var returnedItems = okResult.Value as PaginationCS<WarehouseCS>;
             Assert.IsNotNull(okResult);
-            Assert.AreEqual(2, returnedItems.Count());
+            Assert.AreEqual(2, returnedItems.Data.Count());
         }
 
         [TestMethod]
