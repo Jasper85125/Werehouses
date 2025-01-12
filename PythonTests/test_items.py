@@ -19,13 +19,22 @@ class TestClass(unittest.TestCase):
                 self.assertEqual(type(response.json()), dict)
 
     def test_03_get_items(self):
-        for url in self.versions:
+        for url in ["http://localhost:5001/api/v1"]:
             with self.subTest(url=url):
                 response = self.client.get(
                     url=(url + "/items"), headers=self.headers
                 )
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(type(response.json()), list)
+
+    def test_03_get_items_v2(self):
+        for url in ["http://localhost:5002/api/v2"]:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/items"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), dict)
 
     def test_04_post_item(self):
         data = {

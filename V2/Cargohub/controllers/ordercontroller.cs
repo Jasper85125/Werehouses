@@ -7,17 +7,17 @@ namespace ControllersV2
 {
     public class orderFilter()
     {
-        // public int Id { get; set; }
-        // public int source_id { get; set; }
+        public int Id { get; set; }
+        public int source_id { get; set; }
         public string? order_date { get; set; }
         public string? request_date { get; set; }
         public string? order_status { get; set; }
         public int? warehouse_id { get; set; }
         public int? ship_to { get; set; }
         public int? bill_to { get; set; }
-        // public DateTime created_at { get; set; }
-        // public DateTime updated_at { get; set; }
-        // public List<ItemIdAndAmount> items { get; set; }
+        public DateTime created_at { get; set; }
+        public DateTime updated_at { get; set; }
+        public int itemsCount { get; set; }
     }
 
     [ApiController]
@@ -32,65 +32,63 @@ namespace ControllersV2
         /*
         example route: /api/v2/orders/page?page=1&pageSize=10
         */
-        [HttpGet("page")]
-        public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [HttpGet]
+public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+{
+    // Validation of inputs
+    if (page < 1) page = 1;
+    if (pageSize <= 0) pageSize = 10;
+
+    // Get UserRole and WarehouseID from HttpContext
+    var userRole = HttpContext.Items["UserRole"]?.ToString();
+    if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is int warehouseID))
+    {
+        return BadRequest("WarehouseID is missing or invalid.");
+    }
+
+    var allowedRoles = new List<string> { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+
+    if (string.IsNullOrEmpty(userRole) || !allowedRoles.Contains(userRole))
+    {
+        if (userRole == "Operative" || userRole == "Supervisor")
         {
-            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
-            var userRole = HttpContext.Items["UserRole"]?.ToString();
-            var WarehouseIDFromKey = (int)HttpContext.Items["WarehouseID"];
-
-            var orders = _orderService.GetAllOrders();
-            var ordersQuery = orders.AsQueryable();
-
-            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-            {
-                if (userRole == "Operative" || userRole == "Supervisor")
-                {
-                    var ordersForWarehouse = _orderService.GetOrdersByWarehouse(WarehouseIDFromKey);
-                    return Ok(ordersForWarehouse);
-                }
-                return Unauthorized();
-            }
-            if (filter.order_date != null)
-            {
-                ordersQuery = ordersQuery.Where(_ => _.order_date == filter.order_date);
-            }
-            if (filter.request_date != null)
-            {
-                ordersQuery = ordersQuery.Where(_ => _.request_date == filter.request_date);
-            }
-            if (filter.order_status != null)
-            {
-                ordersQuery = ordersQuery.Where(_ => _.order_status == filter.order_status);
-            }
-            if (filter.warehouse_id.HasValue)
-            {
-                ordersQuery = ordersQuery.Where(_ => _.warehouse_id == filter.warehouse_id);
-            }
-            if (filter.ship_to.HasValue)
-            {
-                ordersQuery = ordersQuery.Where(_ => _.ship_to == filter.ship_to);
-            }
-            if (filter.bill_to.HasValue)
-            {
-                ordersQuery = ordersQuery.Where(_ => _.bill_to == filter.bill_to);
-            }
-            int ordersCount = orders.Count();
-            int totalPages = (int)Math.Ceiling(ordersCount / (double)pageSize);
-            var index = (page - 1) * pageSize;
-            var data = ordersQuery.Skip(index).Take(pageSize).ToList();
-            var result = new PaginationCS<OrderCS>
-            {
-                Page = page,
-                PageSize = pageSize,
-                TotalPages = totalPages,
-                Data = data
-            };
-            return Ok(result);
+            var warehouseOrders = _orderService.GetOrdersByWarehouse(warehouseID);
+            return Ok(warehouseOrders);
         }
+        return Unauthorized();
+    }
+
+    // Apply filters
+    filter ??= new orderFilter();
+    var ordersQuery = _orderService.GetAllOrders().AsQueryable();
+
+    if (filter.Id > 0) ordersQuery = ordersQuery.Where(o => o.Id == filter.Id);
+    if (filter.source_id > 0) ordersQuery = ordersQuery.Where(o => o.source_id == filter.source_id);
+    if (!string.IsNullOrWhiteSpace(filter.order_date)) ordersQuery = ordersQuery.Where(o => o.order_date == filter.order_date);
+    if (!string.IsNullOrEmpty(filter.order_status)) ordersQuery = ordersQuery.Where(o => o.order_status == filter.order_status);
+    if (filter.warehouse_id > 0) ordersQuery = ordersQuery.Where(o => o.warehouse_id == filter.warehouse_id);
+    if (filter.ship_to > 0) ordersQuery = ordersQuery.Where(o => o.ship_to == filter.ship_to);
+    if (filter.bill_to > 0) ordersQuery = ordersQuery.Where(o => o.bill_to == filter.bill_to);
+    if (filter.itemsCount > 0) ordersQuery = ordersQuery.Where(o => o.items.Count() == filter.itemsCount);
+    // if (!string.IsNullOrWhiteSpace(filter.created_at.ToString())) ordersQuery = ordersQuery.Where(o => o.created_at == filter.created_at);
+    // if (!string.IsNullOrWhiteSpace(filter.updated_at.ToString())) ordersQuery = ordersQuery.Where(o => o.updated_at == filter.updated_at);
+
+    // Pagination
+    var ordersCount = ordersQuery.Count();
+    var totalPages = (int)Math.Ceiling(ordersCount / (double)pageSize);
+    var data = ordersQuery.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+    return Ok(new PaginationCS<OrderCS>
+    {
+        Page = page,
+        PageSize = pageSize,
+        TotalPages = totalPages,
+        Data = data
+    });
+}
 
         // GET: /orders
+        /*
         [HttpGet()]
         public ActionResult<IEnumerable<OrderCS>> GetAllOrders()
         {
@@ -112,7 +110,7 @@ namespace ControllersV2
             var orders = _orderService.GetAllOrders();
             return Ok(orders);
         }
-
+        */
         // GET: /orders/{id}
         [HttpGet("{id}")]
         public ActionResult<OrderCS> GetOrderById([FromRoute] int id)
