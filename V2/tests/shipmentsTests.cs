@@ -42,13 +42,13 @@ namespace TestsV2
             };
 
             //Act
-            var value = _shipmentController.GetAllShipments();
+            var value = _shipmentController.GetAllShipments(null, 1, 10);
             var okResult = value.Result as OkObjectResult;
-            var returnedItems = okResult.Value as IEnumerable<ShipmentCS>;
+            var returnedItems = okResult.Value as PaginationCS<ShipmentCS>;
 
             //Assert
             Assert.IsNotNull(okResult);
-            Assert.AreEqual(2, returnedItems.Count());
+            Assert.AreEqual(2, returnedItems.Data.Count());
         }
 
         [TestMethod]
