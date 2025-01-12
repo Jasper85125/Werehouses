@@ -7,14 +7,13 @@ public class AdminService : IAdminService
     public AdminService()
     {
     }
+
     public string AddData(IFormFile file)
     {
-        
         var path = Path.Combine(Directory.GetCurrentDirectory(), "Data", file.FileName);
 
         if (Path.GetExtension(file.FileName) == ".json")
         {
-
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 file.CopyTo(stream);
@@ -55,4 +54,57 @@ public class AdminService : IAdminService
         return saveFileName;
     }
 
+    public string GenerateReport()
+    {
+        var dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+
+        if (!Directory.Exists(dataDirectory))
+        {
+            throw new Exception("Data directory does not exist.");
+        }
+
+        var jsonFiles = Directory.GetFiles(dataDirectory, "*.json");
+
+        int totalClients = 0;
+        int totalProducts = 0;
+        int totalOrders = 0;
+        int ordersDelivered = 0;
+        int shipmentsPending = 0;
+
+        foreach (var file in jsonFiles)
+        {
+            var content = File.ReadAllText(file);
+
+            if (file.Contains("clients"))
+            {
+                var clients = JsonConvert.DeserializeObject<List<dynamic>>(content);
+                totalClients += clients?.Count ?? 0;
+            }
+            else if (file.Contains("inventories"))
+            {
+                var inventories = JsonConvert.DeserializeObject<List<dynamic>>(content);
+                totalProducts += inventories?.Count ?? 0;
+            }
+            else if (file.Contains("orders"))
+            {
+                var orders = JsonConvert.DeserializeObject<List<dynamic>>(content);
+                totalOrders += orders?.Count ?? 0;
+                ordersDelivered += orders?.Count(o => o.order_status == "Delivered") ?? 0;
+            }
+            else if (file.Contains("shipments"))
+            {
+                var shipments = JsonConvert.DeserializeObject<List<dynamic>>(content);
+                shipmentsPending += shipments?.Count(s => s.shipment_status == "Pending") ?? 0;
+            }
+        }
+
+        var report = $"Warehouse Report - {DateTime.Now:yyyy-MM-dd}\n\n" +
+                     $"Total Clients: {totalClients}\n" +
+                     $"Total Products: {totalProducts}\n" +
+                     $"Total Orders: {totalOrders}\n" +
+                     $"Orders Delivered: {ordersDelivered}\n" +
+                     $"Shipments Pending: {shipmentsPending}\n\n";
+
+        return report;
+    }
 }
