@@ -37,6 +37,7 @@ public class ShipmentController : ControllerBase
     }
 
     // GET: /shipments
+    /*
     [HttpGet()]
     public ActionResult<IEnumerable<ShipmentCS>> GetAllShipments()
     {
@@ -53,7 +54,9 @@ public class ShipmentController : ControllerBase
         var shipments = _shipmentService.GetAllShipments();
         return Ok(shipments);
     }
-    [HttpGet("page")]
+    */
+    //example route: /shipments?page=1&pageSize=10&order_id=1
+    [HttpGet()]
     public ActionResult<PaginationCS<ShipmentCS>> GetAllShipments(
         [FromQuery] shipmentFilter tofilter, 
         [FromQuery] int page = 1, 
@@ -67,7 +70,9 @@ public class ShipmentController : ControllerBase
         {
             return Unauthorized();
         }
-
+        if(tofilter == null){
+            tofilter = new shipmentFilter();
+        }
         var items = _shipmentService.GetAllShipments();
         var query = items.AsQueryable();
 

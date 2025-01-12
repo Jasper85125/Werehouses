@@ -9,8 +9,15 @@ class TestClass(unittest.TestCase):
                          "http://localhost:5002/api/v2"]
         self.headers = {'Api-Key': 'AdminKey'}
 
-    def test_get_shipments(self):
-        for version in self.versions:
+    def test_get_shipments_v1(self):
+        for version in ["http://localhost:5001/api/v1"]:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments"), headers=self.headers)
+                self.assertIn(response.status_code, [200, 204])
+
+    def test_get_shipments_v2(self):
+        for version in ["http://localhost:5002/api/v2"]:
             with self.subTest(version=version):
                 response = self.client.get(
                     url=(version + "/shipments"), headers=self.headers)

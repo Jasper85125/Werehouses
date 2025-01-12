@@ -47,15 +47,15 @@ namespace item.TestsV2
             };
 
             // Act
-            var result = _itemController.GetAllItems();
+            var result = _itemController.GetAllItems(null, 1, 10);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
             var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
-            Assert.IsInstanceOfType(okResult.Value, typeof(IEnumerable<ItemCS>));
-            var returnedItems = okResult.Value as IEnumerable<ItemCS>;
-            Assert.AreEqual(2, returnedItems.Count());
+            Assert.IsInstanceOfType(okResult.Value, typeof(PaginationCS<ItemCS>));
+            var returnedItems = okResult.Value as PaginationCS<ItemCS>;
+            Assert.AreEqual(2, returnedItems.Data.Count());
         }
 
         [TestMethod]
