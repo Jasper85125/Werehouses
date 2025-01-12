@@ -111,7 +111,7 @@ public class ItemController : ControllerBase
     example route: filter can be doen without inputting which page you waant to be on and how big the page should be 
     http://localhost:5002/api/v2/items/page?page=2&pageSize=1&item_line=21
     */
-    [HttpGet("page")]
+    [HttpGet()]
     public ActionResult<PaginationCS<ItemCS>> GetAllItems(
         [FromQuery] itemFilter tofilter, 
         [FromQuery] int page = 1, 
@@ -125,7 +125,10 @@ public class ItemController : ControllerBase
         {
             return Unauthorized();
         }
-
+        if (tofilter == null)
+        {
+            tofilter = new itemFilter();
+        }
         var items = _itemService.GetAllItems();
         var query = items.AsQueryable();
 
@@ -179,7 +182,7 @@ public class ItemController : ControllerBase
     }
     // GET: items
     // Retrieves all items
-    [HttpGet()]
+    /*[HttpGet()]
     public ActionResult<IEnumerable<ItemCS>> GetAllItems()
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
@@ -194,6 +197,7 @@ public class ItemController : ControllerBase
         var items = _itemService.GetAllItems();
         return Ok(items);
     }
+    */
 
     // GET: items/5
     // Retrieves an item by its unique identifier (uid)
