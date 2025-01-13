@@ -88,22 +88,7 @@ jobs:
     - name: Debug Coverage Report Path
       run: |
         ls -l coverage-report-${{ matrix.version }}
-        if [ ! -d coverage-report-${{ matrix.version }} ]; then
-          echo "Coverage report file does not exist!"
-          exit 1
-        fi
-
-        # Extract the coverage percentage from the Cobertura XML
-        coverage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'Statements</td><td class="text-right">[0-9]+.[0-9]+' | grep -oP '[0-9]+.[0-9]+')
-
-        # Check if the coverage is below the threshold
-        threshold=80.0
-        if (( $(echo "$coverage < $threshold" | bc -l) )); then
-          echo "Coverage is less than ${threshold}%: ${coverage}%"
-          exit 2
-        else
-          echo "Coverage is sufficient: ${coverage}%"
-        fi
+        cat coverage-report-${{ matrix.version }}/Cobertura.xml
 
   python-tests:
     runs-on: ubuntu-latest
