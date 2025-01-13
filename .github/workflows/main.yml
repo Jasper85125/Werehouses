@@ -92,12 +92,11 @@ jobs:
     - name: Enforce coverage threshold
       if: matrix.language == 'csharp'
       run: |
-        ls -R TestResults/coverage-results
-        # coverage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'd+(?=%)')
-        # if [$coverage -lt 80]; then
-        # echo "Coverage is less than 80% ($coverage%)"
-        # exit 1
-        # fi
+        coverage = cat coverage-report-${{ matrix.version }}/Coberatura.xml | grep -oP 'Statements</td><td class="text-right">[0-9]+.[0-9]+' | grep -oP '[0-9]+.[0-9]+'
+        if [ $coverage -lt 80 ]; then
+          echo "Coverage is less than 80%"
+          exit 1
+        fi
 
   python-tests:
     runs-on: ubuntu-latest
