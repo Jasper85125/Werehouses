@@ -6,6 +6,7 @@ using ServicesV1;
 public class ItemLineService : IItemLineService
 {
     // Constructor
+    private string path = "../../data/item_lines.json";
     public ItemLineService()
     {
         // Initialization code here
@@ -14,7 +15,6 @@ public class ItemLineService : IItemLineService
     // Method to get all items
     public List<ItemLineCS> GetAllItemlines()
     {
-        var path = "data/item_lines.json";
         if (!File.Exists(path))
         {
             return new List<ItemLineCS>();
@@ -25,7 +25,6 @@ public class ItemLineService : IItemLineService
         return items ?? new List<ItemLineCS>();
     }
 
-    // Method to get an item by ID
     public ItemLineCS GetItemLineById(int id)
     {
         var items = GetAllItemlines();
@@ -33,12 +32,10 @@ public class ItemLineService : IItemLineService
         return item;
     }
 
-    // Method to add a new item
     public async Task<ItemLineCS> AddItemLine(ItemLineCS newItemLine)
     {
         List<ItemLineCS> items = GetAllItemlines();
 
-        // Auto-increment ID
         if (items.Any())
         {
             newItemLine.Id = items.Max(i => i.Id) + 1;
@@ -51,12 +48,11 @@ public class ItemLineService : IItemLineService
         items.Add(newItemLine);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+        await File.WriteAllTextAsync(path, jsonData);
 
         return newItemLine;
     }
 
-    // Method to update an item
     public async Task<ItemLineCS> UpdateItemLine(int id, ItemLineCS itemLine)
     {
         List<ItemLineCS> items = GetAllItemlines();
@@ -66,10 +62,8 @@ public class ItemLineService : IItemLineService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         existingItem.Name = itemLine.Name;
@@ -77,14 +71,13 @@ public class ItemLineService : IItemLineService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+        await File.WriteAllTextAsync(path, jsonData);
 
         return existingItem;
     }
 
     public void DeleteItemLine(int id)
     {
-        var _path  = "data/item_lines.json";
         List<ItemLineCS> items = GetAllItemlines();
         var item = items.FirstOrDefault(i => i.Id == id);
         if (item == null)
@@ -95,7 +88,7 @@ public class ItemLineService : IItemLineService
         items.Remove(item);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText(_path, jsonData);
+        File.WriteAllText(path, jsonData);
     }
 
     public List<ItemCS> GetItemsByItemLineId(int itemlineId)

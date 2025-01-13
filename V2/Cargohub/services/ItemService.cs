@@ -7,6 +7,7 @@ namespace ServicesV2;
 public class ItemService : IItemService
 {
     // Constructor
+    private string path = "../../data/items.json";
     public ItemService()
     {
         // Initialization code here
@@ -15,7 +16,6 @@ public class ItemService : IItemService
     // Method to get all items
     public List<ItemCS> GetAllItems()
     {
-        var path = "data/items.json";
         if (!File.Exists(path))
         {
             return new List<ItemCS>();
@@ -48,40 +48,6 @@ public class ItemService : IItemService
         return itemTypeItems;
     }
 
-    // public void GenerateReport(List<string> uids)
-    // {
-    //     var items = GetAllItems();
-    //     var reportItems = new List<object>(); // Using a list of anonymous objects
-    //     foreach (var uid in uids)
-    //     {
-    //         var item = items.FirstOrDefault(i => i.uid == uid);
-    //         if (item != null)
-    //         {
-    //             reportItems.Add(new
-    //             {
-    //                 item.uid,
-    //                 item.short_description,
-    //                 item.unit_purchase_quantity,
-    //                 item.unit_order_quantity,
-    //                 item.created_at,
-    //                 item.updated_at
-    //             });
-    //         }
-    //     }
-
-    //     var directory = "reports";
-    //     var path = Path.Combine(directory, "report.json");
-
-    //     // Ensure the directory exists
-    //     if (!Directory.Exists(directory))
-    //     {
-    //         Directory.CreateDirectory(directory);
-    //     }
-    //     var updatedJsonData = JsonConvert.SerializeObject(reportItems, Formatting.Indented);
-    //     File.WriteAllText(path, updatedJsonData);
-    // }
-
-
     public void GenerateReport(List<string> uids)
     {
         var items = GetAllItems();
@@ -98,40 +64,19 @@ public class ItemService : IItemService
         }
 
         var directory = "reports";
-        var path = Path.Combine(directory, "report.txt");
+        var _path = Path.Combine(directory, "report.txt");
 
-        // Ensure the directory exists
         if (!Directory.Exists(directory))
         {
             Directory.CreateDirectory(directory);
         }        
-        File.WriteAllLines(path, reportStrings); 
+        File.WriteAllLines(_path, reportStrings); 
 
     }
 
 
-    // public void GenerateReport(List<string> uids)
-    // {
-    //     var items = GetAllItems();
-    //     List<ItemCS> reportItems = new List<ItemCS>();
-    //     foreach (var uid in uids)
-    //     {
-    //         var item = items.FirstOrDefault(i => i.uid == uid);
-    //         if (item != null)
-    //         {
-    //             reportItems.Add(item);
-    //         }
-    //     }
-
-    //     var path = "data/report.json";
-    //     var updatedJsonData = JsonConvert.SerializeObject(reportItems, Formatting.Indented);
-    //     File.WriteAllText(path, updatedJsonData);
-    // }
-
-    // Method to add a new item
-    public ItemCS CreateItem(ItemCS item)
+       public ItemCS CreateItem(ItemCS item)
     {
-        var path = "data/items.json";
         List<ItemCS> items;
 
         if (File.Exists(path))
@@ -144,17 +89,16 @@ public class ItemService : IItemService
             items = new List<ItemCS>();
         }
 
-        // Generate a new unique UID
         string newUid;
         if (items.Count > 0)
         {
             var maxUid = items.Max(i => i.uid);
-            var numericPart = int.Parse(maxUid.Substring(1)); // Extract numeric part
-            newUid = "P" + (numericPart + 1).ToString("D6"); // Increment and format back
+            var numericPart = int.Parse(maxUid.Substring(1)); 
+            newUid = "P" + (numericPart + 1).ToString("D6");
         }
         else
         {
-            newUid = "P000001"; // Starting UID
+            newUid = "P000001"; 
         }
         item.uid = newUid;
 
@@ -177,7 +121,6 @@ public class ItemService : IItemService
         return addedItem;
     }
 
-    // Method to update an existing item
     public ItemCS UpdateItem(string uid, ItemCS item)
     {
         var items = GetAllItems();
@@ -186,13 +129,10 @@ public class ItemService : IItemService
         {
             return null;
         }
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        // Update the properties of the existing item
         existingItem.code = item.code;
         existingItem.description = item.description;
         existingItem.short_description = item.short_description;
@@ -210,7 +150,6 @@ public class ItemService : IItemService
         existingItem.supplier_part_number = item.supplier_part_number;
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
-        var path = "data/items.json";
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText(path, updatedJsonData);
 
@@ -272,11 +211,9 @@ public class ItemService : IItemService
         }
         item.updated_at = DateTime.ParseExact(formattednow, "yyyy-MM-dd HH:mm:ss", null);
         var json = JsonConvert.SerializeObject(items, Formatting.Indented);
-        var path = "data/items.json";
         File.WriteAllText(path, json);
         return item;
     }
-    // Method to delete an item
     public void DeleteItem(string uid)
     {
         var items = GetAllItems();
@@ -288,12 +225,10 @@ public class ItemService : IItemService
 
         items.Remove(item);
 
-        var path = "data/items.json";
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText(path, updatedJsonData);
     }
 
-    // Method to delete multiple items
     public void DeleteItems(List<string> uids)
     {
         var items = GetAllItems();
@@ -306,7 +241,6 @@ public class ItemService : IItemService
             }
         }
 
-        var path = "data/items.json";
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText(path, updatedJsonData);
     }

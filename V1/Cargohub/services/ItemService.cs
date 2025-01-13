@@ -7,15 +7,14 @@ namespace ServicesV1;
 public class ItemService : IItemService
 {
     // Constructor
+    private string path = "../../data/items.json";
     public ItemService()
     {
         // Initialization code here
     }
 
-    // Method to get all items
     public List<ItemCS> GetAllItems()
     {
-        var path = "data/items.json";
         if (!File.Exists(path))
         {
             return new List<ItemCS>();
@@ -26,7 +25,6 @@ public class ItemService : IItemService
         return items ?? new List<ItemCS>();
     }
 
-    // Method to get an item by ID
     public ItemCS GetItemById(string uid)
     {
         var items = GetAllItems();
@@ -48,10 +46,8 @@ public class ItemService : IItemService
         return itemTypeItems;
     }
 
-    // Method to add a new item
     public ItemCS CreateItem(ItemCS item)
     {
-        var path = "data/items.json";
         List<ItemCS> items;
 
         if (File.Exists(path))
@@ -64,17 +60,16 @@ public class ItemService : IItemService
             items = new List<ItemCS>();
         }
 
-        // Generate a new unique UID
         string newUid;
         if (items.Count > 0)
         {
             var maxUid = items.Max(i => i.uid);
-            var numericPart = int.Parse(maxUid.Substring(1)); // Extract numeric part
-            newUid = "P" + (numericPart + 1).ToString("D6"); // Increment and format back
+            var numericPart = int.Parse(maxUid.Substring(1));
+            newUid = "P" + (numericPart + 1).ToString("D6"); 
         }
         else
         {
-            newUid = "P000001"; // Starting UID
+            newUid = "P000001"; 
         }
         item.uid = newUid;
 
@@ -86,7 +81,6 @@ public class ItemService : IItemService
         return item;
     }
 
-    // Method to update an existing item
     public ItemCS UpdateItem(string uid, ItemCS item)
     {
         var items = GetAllItems();
@@ -95,13 +89,10 @@ public class ItemService : IItemService
         {
             return null;
         }
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        // Update the properties of the existing item
         existingItem.code = item.code;
         existingItem.description = item.description;
         existingItem.short_description = item.short_description;
@@ -119,14 +110,12 @@ public class ItemService : IItemService
         existingItem.supplier_part_number = item.supplier_part_number;
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
-        var path = "data/items.json";
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText(path, updatedJsonData);
 
         return existingItem;
     }
 
-    // Method to delete an item
     public void DeleteItem(string uid)
     {
         var items = GetAllItems();
@@ -138,7 +127,6 @@ public class ItemService : IItemService
 
         items.Remove(item);
 
-        var path = "data/items.json";
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         File.WriteAllText(path, updatedJsonData);
     }

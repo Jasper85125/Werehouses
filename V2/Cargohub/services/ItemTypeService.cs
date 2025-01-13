@@ -7,11 +7,11 @@ namespace ServicesV2;
 
 public class ItemTypeService : IItemtypeService
 {
+    private string path = "../../data/item_types.json";
 
     // Method to get all item types
     public List<ItemTypeCS> GetAllItemtypes()
     {
-        var path = "data/item_types.json";
         if (!File.Exists(path))
         {
             return new List<ItemTypeCS>();
@@ -52,7 +52,7 @@ public class ItemTypeService : IItemtypeService
         items.Add(newItemType);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText("data/item_types.json", jsonData);
+        File.WriteAllText(path, jsonData);
 
         return newItemType;
     }
@@ -89,7 +89,7 @@ public class ItemTypeService : IItemtypeService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_types.json", jsonData);
+        await File.WriteAllTextAsync(path, jsonData);
 
         return existingItem;
     }
@@ -109,14 +109,12 @@ public class ItemTypeService : IItemtypeService
             break;
         }
         itemtype.updated_at = DateTime.ParseExact(formattednow, "yyyy-MM-dd HH:mm:ss", null);
-        var path = "data/item_types.json";
         var json = JsonConvert.SerializeObject(itemtypes, Formatting.Indented);
         File.WriteAllText(path, json);
         return itemtype;
     }
     public void DeleteItemType(int id)
     {
-        var path = "data/item_types.json";
         List<ItemTypeCS> items = GetAllItemtypes();
         var item = items.FirstOrDefault(i => i.Id == id);
         if (item == null)
@@ -137,7 +135,6 @@ public class ItemTypeService : IItemtypeService
                 item_types.Remove(item_type);
             }
         }
-        var path = "data/item_types.json";
         var json = JsonConvert.SerializeObject(item_types, Formatting.Indented);
         File.WriteAllText(path, json);
     }

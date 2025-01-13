@@ -4,7 +4,7 @@ namespace ServicesV1;
 
 public class ClientService : IClientService
 {
-    private string _path = "data/clients.json";
+    private string _path = "../../data/clients.json";
     public ClientService()
     {
 

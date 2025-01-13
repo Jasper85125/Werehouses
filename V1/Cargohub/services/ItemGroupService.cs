@@ -8,6 +8,7 @@ namespace ServicesV1;
 public class ItemGroupService : ItemService, IitemGroupService
 {
     // Constructor
+    private string Path = "../../data/item_groups.json";
     ItemService itemService;
     public ItemGroupService()
     {
@@ -18,18 +19,16 @@ public class ItemGroupService : ItemService, IitemGroupService
     // Method to get all Itemgroups
     public List<ItemGroupCS> GetAllItemGroups()
     {
-        var path = "data/item_groups.json";
-        if (!File.Exists(path))
+        if (!File.Exists(Path))
         {
             return new List<ItemGroupCS>();
         }
 
-        var jsonData = File.ReadAllText(path);
+        var jsonData = File.ReadAllText(Path);
         var Itemgroups = JsonConvert.DeserializeObject<List<ItemGroupCS>>(jsonData);
         return Itemgroups ?? new List<ItemGroupCS>();
     }
 
-    // Method to get an Itemgroup by ID
     public ItemGroupCS GetItemById(int id)
     {
         var Itemgroups = GetAllItemGroups();
@@ -45,12 +44,10 @@ public class ItemGroupService : ItemService, IitemGroupService
         return find;
     }
 
-    // Method to add a new Itemgroup
     public async Task<ItemGroupCS> CreateItemGroup(ItemGroupCS newItemType)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
 
-        // Auto-increment ID
         if (items.Any())
         {
             newItemType.Id = items.Max(i => i.Id) + 1;
@@ -63,7 +60,7 @@ public class ItemGroupService : ItemService, IitemGroupService
         items.Add(newItemType);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_groups.json", jsonData);
+        await File.WriteAllTextAsync(Path, jsonData);
 
         return newItemType;
     }
@@ -89,7 +86,7 @@ public class ItemGroupService : ItemService, IitemGroupService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+        await File.WriteAllTextAsync("../../data/item_lines.json", jsonData);
 
         return existingItem;
     }
@@ -97,7 +94,6 @@ public class ItemGroupService : ItemService, IitemGroupService
     // Method to delete an Itemgroup
     public void DeleteItemGroup(int id)
     {
-        var path = "data/item_groups.json";
         List<ItemGroupCS> items = GetAllItemGroups();
         var item = items.FirstOrDefault(i => i.Id == id);
         if (item == null)
@@ -108,6 +104,6 @@ public class ItemGroupService : ItemService, IitemGroupService
         items.Remove(item);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllTextAsync(path, jsonData);
+        File.WriteAllTextAsync(Path, jsonData);
     }
 }

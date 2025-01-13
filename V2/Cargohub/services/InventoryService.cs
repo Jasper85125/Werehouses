@@ -6,6 +6,7 @@ namespace ServicesV2;
 
 public class InventoryService : IInventoryService
 {
+    private string Path = "../../data/inventories.json";
     // Constructor
     public InventoryService()
     {
@@ -14,7 +15,6 @@ public class InventoryService : IInventoryService
 
     public List<InventoryCS> GetAllInventories()
     {
-        var Path = "data/inventories.json";
         if (!File.Exists(Path))
         {
             return new List<InventoryCS>();
@@ -47,7 +47,6 @@ public class InventoryService : IInventoryService
 
     public InventoryCS CreateInventory(InventoryCS newInventory)
     {
-        var path = "data/inventories.json";
 
         List<InventoryCS> inventories = GetAllInventories();
         var currentDateTime = DateTime.Now;
@@ -59,7 +58,7 @@ public class InventoryService : IInventoryService
         inventories.Add(newInventory);
 
         var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
-        File.WriteAllText(path, jsonData);
+        File.WriteAllText(Path, jsonData);
         return newInventory;
     }
 
@@ -76,7 +75,6 @@ public class InventoryService : IInventoryService
 
     public void DeleteInventory(int id)
     {
-        var path = "data/inventories.json";
         List<InventoryCS> inventories = GetAllInventories();
         InventoryCS inventory = inventories.FirstOrDefault(inv => inv.Id == id);
         if (inventory == null)
@@ -85,7 +83,7 @@ public class InventoryService : IInventoryService
         }
         inventories.Remove(inventory);
         var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
-        File.WriteAllText(path, jsonData);
+        File.WriteAllText(Path, jsonData);
     }
     public InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory)
     {
@@ -106,9 +104,8 @@ public class InventoryService : IInventoryService
         toUpdate.total_allocated = updatedinventory.total_allocated;
         toUpdate.total_available = updatedinventory.total_available;
         toUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
-        var path = "data/inventories.json";
         var json = JsonConvert.SerializeObject(inventories);
-        File.WriteAllText(path, json);
+        File.WriteAllText(Path, json);
         return toUpdate;
     }
 
@@ -119,9 +116,8 @@ public class InventoryService : IInventoryService
         {
             inventories.Remove(inventories.Find(_ => _.Id == id));
         }
-        var path = "data/inventories.json";
         var json = JsonConvert.SerializeObject(inventories, Formatting.Indented);
-        File.WriteAllText(path, json);
+        File.WriteAllText(Path, json);
     }
 
 
@@ -172,9 +168,8 @@ public class InventoryService : IInventoryService
 
         patchInventory.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
-        var path = "data/inventories.json";
         var json = JsonConvert.SerializeObject(inventories, Formatting.Indented);
-        File.WriteAllText(path, json);
+        File.WriteAllText(Path, json);
 
         return toPatch;
     }

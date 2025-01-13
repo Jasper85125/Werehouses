@@ -6,7 +6,7 @@ namespace ServicesV1;
 
 public class WarehouseService : IWarehouseService
 {
-    private string _path = "data/warehouses.json";
+    private string _path = "../../data/warehouses.json";
     public WarehouseService()
     {
         // Initialization code here
@@ -34,11 +34,9 @@ public class WarehouseService : IWarehouseService
     {
         List<WarehouseCS> warehouses = GetAllWarehouses();
 
-        // Add the new warehouse record to the list
         newWarehouse.Id = warehouses.Count > 0 ? warehouses.Max(w => w.Id) + 1 : 1;
         warehouses.Add(newWarehouse);
 
-        // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
         return newWarehouse;
@@ -62,10 +60,8 @@ public class WarehouseService : IWarehouseService
 
         if (warehouseToUpdate is not null)
         {
-            // Get the current date and time
             var currentDateTime = DateTime.Now;
 
-            // Format the date and time to the desired format
             var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
             warehouseToUpdate.Code = updateWarehouse.Code;

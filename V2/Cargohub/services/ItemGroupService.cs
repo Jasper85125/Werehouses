@@ -8,6 +8,7 @@ namespace ServicesV2;
 public class ItemGroupService : ItemService, IitemGroupService
 {
     // Constructor
+    private string Path = "../../data/item_groups.json";
     ItemService itemService;
     public ItemGroupService()
     {
@@ -18,13 +19,12 @@ public class ItemGroupService : ItemService, IitemGroupService
     // Method to get all Itemgroups
     public List<ItemGroupCS> GetAllItemGroups()
     {
-        var path = "data/item_groups.json";
-        if (!File.Exists(path))
+        if (!File.Exists(Path))
         {
             return new List<ItemGroupCS>();
         }
 
-        var jsonData = File.ReadAllText(path);
+        var jsonData = File.ReadAllText(Path);
         var Itemgroups = JsonConvert.DeserializeObject<List<ItemGroupCS>>(jsonData);
         return Itemgroups ?? new List<ItemGroupCS>();
     }
@@ -68,7 +68,7 @@ public class ItemGroupService : ItemService, IitemGroupService
         items.Add(newItemGroup);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText("data/item_groups.json", jsonData);
+        File.WriteAllText(Path, jsonData);
 
         return newItemGroup;
     }
@@ -105,7 +105,7 @@ public class ItemGroupService : ItemService, IitemGroupService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText("data/item_groups.json", jsonData);
+        File.WriteAllText(Path, jsonData);
 
         return existingItem;
     }
@@ -113,7 +113,6 @@ public class ItemGroupService : ItemService, IitemGroupService
     // Method to delete an Itemgroup
     public void DeleteItemGroup(int id)
     {
-        var path = "data/item_groups.json";
         List<ItemGroupCS> items = GetAllItemGroups();
         var item = items.FirstOrDefault(i => i.Id == id);
         if (item == null)
@@ -124,7 +123,7 @@ public class ItemGroupService : ItemService, IitemGroupService
         items.Remove(item);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText(path, jsonData);
+        File.WriteAllText(Path, jsonData);
     }
 
     public ItemGroupCS PatchItemGroup(int Id, ItemGroupCS itemGroup)
@@ -147,7 +146,7 @@ public class ItemGroupService : ItemService, IitemGroupService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText("data/item_groups.json", jsonData);
+        File.WriteAllText(Path, jsonData);
 
         return existingItem;
     }
@@ -163,8 +162,7 @@ public class ItemGroupService : ItemService, IitemGroupService
                 item_groups.Remove(item_group);
             }
         }
-        var path = "data/item_groups.json";
         var json = JsonConvert.SerializeObject(item_groups, Formatting.Indented);
-        File.WriteAllText(path, json);
+        File.WriteAllText(Path, json);
     }
 }

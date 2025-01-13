@@ -7,7 +7,7 @@ namespace ServicesV2;
 
 public class TransferService : ITransferService
 {
-    private string _path = "data/transfers.json";
+    private string _path = "../../data/transfers.json";
 
     public TransferService()
     {
@@ -47,13 +47,11 @@ public class TransferService : ITransferService
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        // Add the new transfer record to the list
         newTransfer.Id = transfers.Count > 0 ? transfers.Max(t => t.Id) + 1 : 1;
         newTransfer.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         newTransfer.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         transfers.Add(newTransfer);
 
-        // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(transfers, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
         return newTransfer;
@@ -77,10 +75,8 @@ public class TransferService : ITransferService
 
         if (transferToUpdate is not null)
         {
-            // Get the current date and time
             var currentDateTime = DateTime.Now;
 
-            // Format the date and time to the desired format
             var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
             transferToUpdate.Reference = updateTransfer.Reference;
@@ -135,18 +131,6 @@ public class TransferService : ITransferService
 
     public void DeleteTransfer(int id)
     {
-        /*
-        var path = "data/suppliers.json";
-        List<SupplierCS> suppliers = GetAllSuppliers();
-        SupplierCS supplier = suppliers.FirstOrDefault(supplier => supplier.Id == id);
-        if (supplier != null)
-        {
-            suppliers.Remove(supplier);
-            var jsonData = JsonConvert.SerializeObject(suppliers, Formatting.Indented);
-            File.WriteAllText(path, jsonData);
-        }
-        */
-        var Path = "data/transfers.json";
 
         List<TransferCS> transfers = GetAllTransfers();
         TransferCS transfer = transfers.FirstOrDefault(transfer => transfer.Id == id);
@@ -154,7 +138,7 @@ public class TransferService : ITransferService
         {
             transfers.Remove(transfer);
             var jsonData = JsonConvert.SerializeObject(transfers, Formatting.Indented);
-            File.WriteAllText(Path, jsonData);
+            File.WriteAllText(_path, jsonData);
         }
     }
     public void DeleteTransfers(List<int> ids){

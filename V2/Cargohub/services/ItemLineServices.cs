@@ -6,6 +6,7 @@ using ServicesV2;
 public class ItemLineService : IItemLineService
 {
     // Constructor
+    private string _path = "../../data/item_lines.json";
     public ItemLineService()
     {
         // Initialization code here
@@ -14,13 +15,12 @@ public class ItemLineService : IItemLineService
     // Method to get all items
     public List<ItemLineCS> GetAllItemlines()
     {
-        var path = "data/item_lines.json";
-        if (!File.Exists(path))
+        if (!File.Exists(_path))
         {
             return new List<ItemLineCS>();
         }
 
-        var jsonData = File.ReadAllText(path);
+        var jsonData = File.ReadAllText(_path);
         var items = JsonConvert.DeserializeObject<List<ItemLineCS>>(jsonData);
         return items ?? new List<ItemLineCS>();
     }
@@ -54,7 +54,7 @@ public class ItemLineService : IItemLineService
         items.Add(newItemLine);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText("data/item_lines.json", jsonData);
+        File.WriteAllText(_path, jsonData);
 
         return newItemLine;
     }
@@ -91,14 +91,13 @@ public class ItemLineService : IItemLineService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText("data/item_lines.json", jsonData);
+        File.WriteAllText(_path, jsonData);
 
         return existingItem;
     }
 
     public void DeleteItemLine(int id)
     {
-        var _path = "data/item_lines.json";
         List<ItemLineCS> items = GetAllItemlines();
         var item = items.FirstOrDefault(i => i.Id == id);
         if (item == null)
@@ -114,7 +113,7 @@ public class ItemLineService : IItemLineService
 
     public List<ItemCS> GetItemsByItemLineId(int itemlineId)
     {
-        var itemsPath = "data/items.json";
+        var itemsPath = "../../data/items.json";
         if (!File.Exists(itemsPath))
         {
             return new List<ItemCS>();
@@ -137,9 +136,8 @@ public class ItemLineService : IItemLineService
                 item_lines.Remove(item_line);
             }
         }
-        var path = "data/item_lines.json";
         var json = JsonConvert.SerializeObject(item_lines, Formatting.Indented);
-        File.WriteAllText(path, json);
+        File.WriteAllText(_path, json);
     }
 
     public ItemLineCS PatchItemLine(int id, ItemLineCS itemLine)
@@ -162,7 +160,7 @@ public class ItemLineService : IItemLineService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText("data/item_lines.json", jsonData);
+        File.WriteAllText(_path, jsonData);
 
         return existingItem;
     }

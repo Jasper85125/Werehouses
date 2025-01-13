@@ -8,10 +8,9 @@ namespace ServicesV1;
 public class ItemTypeService : IItemtypeService
 {
 
-    // Method to get all item types
+    private string path = "../../data/item_types.json";
     public List<ItemTypeCS> GetAllItemtypes()
     {
-        var path = "data/item_types.json";
         if (!File.Exists(path))
         {
             return new List<ItemTypeCS>();
@@ -22,7 +21,6 @@ public class ItemTypeService : IItemtypeService
         return items ?? new List<ItemTypeCS>();
     }
 
-    // Method to get an item type by ID
     public ItemTypeCS GetItemById(int id)
     {
         var items = GetAllItemtypes();
@@ -30,12 +28,10 @@ public class ItemTypeService : IItemtypeService
         return item;
     }
 
-    // Method to create a new item type
     public async Task<ItemTypeCS> CreateItemType(ItemTypeCS newItemType)
     {
         List<ItemTypeCS> items = GetAllItemtypes();
 
-        // Auto-increment ID
         if (items.Any())
         {
             newItemType.Id = items.Max(i => i.Id) + 1;
@@ -48,12 +44,11 @@ public class ItemTypeService : IItemtypeService
         items.Add(newItemType);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_types.json", jsonData);
+        await File.WriteAllTextAsync(path, jsonData);
 
         return newItemType;
     }
 
-    // Method to update an item type
     public async Task<ItemTypeCS> UpdateItemType(int id, ItemTypeCS itemType)
     {
         List<ItemTypeCS> items = GetAllItemtypes();
@@ -63,10 +58,8 @@ public class ItemTypeService : IItemtypeService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         existingItem.Name = itemType.Name;
@@ -81,7 +74,6 @@ public class ItemTypeService : IItemtypeService
 
     public void DeleteItemType(int id)
     {
-        var path = "data/item_types.json";
         List<ItemTypeCS> items = GetAllItemtypes();
         var item = items.FirstOrDefault(i => i.Id == id);
         if (item == null)

@@ -6,7 +6,7 @@ namespace ServicesV1;
 
 public class SupplierService : ISupplierService
 {
-    private string _path = "data/suppliers.json";
+    private string _path = "../../data/suppliers.json";
     // Constructor
     public SupplierService()
     {
@@ -50,10 +50,8 @@ public class SupplierService : ISupplierService
 
         if (supplierToUpdate is not null)
         {
-            // Get the current date and time
             var currentDateTime = DateTime.Now;
 
-            // Format the date and time to the desired format
             var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
             supplierToUpdate.Code = updateSupplier.Code;
@@ -79,14 +77,13 @@ public class SupplierService : ISupplierService
     public void DeleteSupplier(int id)
     {
 
-        var path = "data/suppliers.json";
         List<SupplierCS> suppliers = GetAllSuppliers();
         SupplierCS supplier = suppliers.FirstOrDefault(supplier => supplier.Id == id);
         if (supplier != null)
         {
             suppliers.Remove(supplier);
             var jsonData = JsonConvert.SerializeObject(suppliers, Formatting.Indented);
-            File.WriteAllText(path, jsonData);
+            File.WriteAllText(_path, jsonData);
         }
 
     }
