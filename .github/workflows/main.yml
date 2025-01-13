@@ -85,6 +85,16 @@ jobs:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
 
+    - name: Enforce coverage threshold
+      if: matrix.language == 'csharp'
+      run: |
+        coverage=$(cat TestResults/coverage-summary.txt | grep -oP 'd+(?=%)')
+        if [$coverage -lt 80]; then
+        echo "Coverage is less than 80% ($coverage%)"
+        exit 1
+        fi
+
+
   python-tests:
     runs-on: ubuntu-latest
     needs: csharp-build-and-test
