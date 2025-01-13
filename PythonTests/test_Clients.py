@@ -38,6 +38,37 @@ class TestClass(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
         self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
+    
+    # deze voegt een nieuwe warehouse object
+    def test_04_post_client(self):
+        for version in ["http://localhost:5001/api/v1",
+                        "http://localhost:5002/api/v2"]:
+            with self.subTest(version=version):
+                self.url = f"{version}"
+
+                data = {
+                    "name": "Test Client",
+                    "address": "123 Test Street",
+                    "zip_code": "12345",
+                    "city": "Test City",
+                    "province": "Test Province",
+                    "country": "Test Country",
+                    "contact_phone": "123-456-7890",
+                    "contact_email": "test@example.com",
+                    "created_at": "2023-01-01T00:00:00Z",
+                    "updated_at": "2023-01-01T00:00:00Z"
+                }
+
+                # Stuur de request
+                response = self.client.post(
+                    url=(self.url + "/clients"),
+                    headers=self.headers, json=data)
+
+                # Check de status code
+                self.assertEqual(
+                    response.status_code, 201,
+                    msg=f"Failed to create client: {response.content}"
+                )
 
     def test_01_get_clients(self):
         for version in ["http://localhost:5001/api/v1",
@@ -73,9 +104,20 @@ class TestClass(unittest.TestCase):
             with self.subTest(version=version):
                 self.url = f"{version}"
 
+                # Get the last client ID
+                response = self.client.get(
+                    url=(self.url + "/clients"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get clients: {response.content}"
+                )
+                clients = response.json()
+                last_client_id = clients[-1]["id"] if clients else 1
+
                 # Stuur de request
                 response = self.client.get(
-                    url=(self.url + "/clients/1"), headers=self.headers)
+                    url=(self.url + f"/clients/{last_client_id}"),
+                    headers=self.headers)           
 
                 # Check de status code
                 # Check dat de response een
@@ -94,38 +136,6 @@ class TestClass(unittest.TestCase):
                 # Check dat het client object de juiste properties heeft
                 self.assertTrue(checkClient(response.json()))
 
-    # deze voegt een nieuwe warehouse object
-    def test_04_post_client(self):
-        for version in ["http://localhost:5001/api/v1",
-                        "http://localhost:5002/api/v2"]:
-            with self.subTest(version=version):
-                self.url = f"{version}"
-
-                data = {
-                    "id": 99999,
-                    "name": "Test Client",
-                    "address": "123 Test Street",
-                    "zip_code": "12345",
-                    "city": "Test City",
-                    "province": "Test Province",
-                    "country": "Test Country",
-                    "contact_phone": "123-456-7890",
-                    "contact_email": "test@example.com",
-                    "created_at": "2023-01-01T00:00:00Z",
-                    "updated_at": "2023-01-01T00:00:00Z"
-                }
-
-                # Stuur de request
-                response = self.client.post(
-                    url=(self.url + "/clients"),
-                    headers=self.headers, json=data)
-
-                # Check de status code
-                self.assertEqual(
-                    response.status_code, 201,
-                    msg=f"Failed to create client: {response.content}"
-                )
-
     # Overschrijft een warehouse op basis van de opgegeven warehouse-id
     def test_05_put_client_id(self):
         for version in ["http://localhost:5001/api/v1",
@@ -141,7 +151,7 @@ class TestClass(unittest.TestCase):
                     msg=f"Failed to get clients: {response.content}"
                 )
                 clients = response.json()
-                last_client_id = clients[-1]["id"] if clients else 99999
+                last_client_id = clients[-1]["id"] if clients else 1
 
                 # Create the client if no clients exist
                 if not clients:
@@ -210,9 +220,20 @@ class TestClass(unittest.TestCase):
             with self.subTest(version=version):
                 self.url = f"{version}"
 
+                # Get the last client ID
+                response = self.client.get(
+                    url=(self.url + "/clients"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get clients: {response.content}"
+                )
+                clients = response.json()
+                last_client_id = clients[-1]["id"] if clients else 1
+
                 # Stuur de request
                 response = self.client.delete(
-                    url=(self.url + "/clients/1"), headers=self.headers)
+                    url=(self.url + f"/clients/{last_client_id}"),
+                    headers=self.headers)
 
                 # Check de status code
                 self.assertEqual(response.status_code, 200)
