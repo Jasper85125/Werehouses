@@ -91,7 +91,7 @@ jobs:
 
     - name: Enforce coverage threshold
       run: |
-        if [ ! -f coverage-report-${{ matrix.version }} ]; then
+        if [ ! -d coverage-report-${{ matrix.version }} ]; then
           echo "Coverage report file does not exist!"
           exit 1
         fi
