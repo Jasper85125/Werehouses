@@ -89,6 +89,8 @@ jobs:
       run: |
         ls -l coverage-report-${{ matrix.version }}
         cat coverage-report-${{ matrix.version }}/Cobertura.xml
+        percentage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'line-rate="[^"]+"' | grep -oP '[^"]+')
+        echo "Code coverage is $percentage"
 
   python-tests:
     runs-on: ubuntu-latest
