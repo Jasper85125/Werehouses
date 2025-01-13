@@ -87,11 +87,11 @@ jobs:
 
     - name: Debug Coverage Report Path
       run: |
-        ls -R coverage-report-${{ matrix.version }}
+        ls -R TestResult/coverage-report-${{ matrix.version }}
 
     - name: Enforce coverage threshold
       run: |
-        if [ ! -f coverage-report-${{ matrix.version }}/Cobertura.xml ]; then
+        if [ ! -f TestResult/coverage-report-${{ matrix.version }}/Cobertura.xml ]; then
           echo "Coverage report file does not exist!"
           exit 1
         fi
@@ -103,7 +103,7 @@ jobs:
         threshold=80.0
         if (( $(echo "$coverage < $threshold" | bc -l) )); then
           echo "Coverage is less than ${threshold}%: ${coverage}%"
-          exit 1
+          exit 2
         else
           echo "Coverage is sufficient: ${coverage}%"
         fi
