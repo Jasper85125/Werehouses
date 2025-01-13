@@ -89,10 +89,21 @@ jobs:
       run: |
         ls -R coverage-report-${{ matrix.version }}
       
+    - name: Download coverage report artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-report-${{ matrix.version }}  # Dynamically use matrix version
+        path: ./coverage-report-${{ matrix.version }}  # Dynamically specify where to save it locally
+
     - name: Enforce coverage threshold
-      if: matrix.language == 'csharp'
       run: |
-        coverage=$(cat coverage-report-${{ matrix.version }}/Coberutura.xml | grep -oP 'Statements</td><td class="text-right">[0-9]+.[0-9]+' | grep -oP '[0-9]+.[0-9]+')
+        if [ ! -f ./coverage-report-${{ matrix.version }}/Coberutura.xml ]; then
+        echo "Coverage report file does not exist!"
+        exit 1
+        fi
+
+        # Extract the coverage percentage from the Cobertura XML
+        coverage=$(cat ./coverage-report-${{ matrix.version }}/Coberutura.xml | grep -oP 'Statements</td><td class="text-right">[0-9]+.[0-9]+' | grep -oP '[0-9]+.[0-9]+')
 
         # Check if the coverage is below the threshold
         threshold=80.0
