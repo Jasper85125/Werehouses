@@ -40,7 +40,7 @@ class TestClass(unittest.TestCase):
         self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
     
     # deze voegt een nieuwe warehouse object
-    def test_04_post_client(self):
+    def test_01_post_client(self):
         for version in ["http://localhost:5001/api/v1",
                         "http://localhost:5002/api/v2"]:
             with self.subTest(version=version):
@@ -70,7 +70,7 @@ class TestClass(unittest.TestCase):
                     msg=f"Failed to create client: {response.content}"
                 )
 
-    def test_01_get_clients(self):
+    def test_02_get_clients(self):
         for version in ["http://localhost:5001/api/v1",
                         "http://localhost:5002/api/v2"]:
             with self.subTest(version=version):
@@ -98,7 +98,7 @@ class TestClass(unittest.TestCase):
                 # dus niet dat het een list van ints, strings etc. zijn
                 self.assertEqual(type(response.json()[0]), dict)
 
-    def test_02_get_client_id(self):
+    def test_03_get_client_id(self):
         for version in ["http://localhost:5001/api/v1",
                         "http://localhost:5002/api/v2"]:
             with self.subTest(version=version):
@@ -137,7 +137,7 @@ class TestClass(unittest.TestCase):
                 self.assertTrue(checkClient(response.json()))
 
     # Overschrijft een warehouse op basis van de opgegeven warehouse-id
-    def test_05_put_client_id(self):
+    def test_04_put_client_id(self):
         for version in ["http://localhost:5001/api/v1",
                         "http://localhost:5002/api/v2"]:
             with self.subTest(version=version):
@@ -214,7 +214,7 @@ class TestClass(unittest.TestCase):
                     )
 
     # deze delete een warehouse op basis van een id
-    def test_06_delete_client_id(self):
+    def test_05_delete_client_id(self):
         for version in ["http://localhost:5001/api/v1",
                         "http://localhost:5002/api/v2"]:
             with self.subTest(version=version):
