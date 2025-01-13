@@ -1,4 +1,4 @@
-name: CI
+name: CI and Release
 
 on:
   push:
@@ -30,7 +30,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Setup .NET
     - name: Setup .NET
       if: matrix.language == 'csharp'
       uses: actions/setup-dotnet@v3
@@ -38,12 +37,10 @@ jobs:
         dotnet-version: '8.0.x'
         install-dir: ${{ runner.temp }}/dotnet
 
-    # Restore dependencies
     - name: Restore dependencies
       if: matrix.language == 'csharp'
       run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
 
-    # Build the solution
     - name: Build solution
       if: matrix.language == 'csharp'
       run: |
@@ -57,7 +54,6 @@ jobs:
         rm -rf TestResults
         rm -rf coverage-report-${{ matrix.version }}
 
-    # Run MSTest with Coverage
     - name: Run MSTest with Coverage
       if: matrix.language == 'csharp'
       run: |
@@ -67,12 +63,10 @@ jobs:
           /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
       continue-on-error: true
 
-    # Install ReportGenerator
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
       run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
-    # Generate Coverage Report
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
       run: |
@@ -84,7 +78,6 @@ jobs:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
-    # Upload Coverage Report as an artifact
     - name: Upload Coverage Report
       if: matrix.language == 'csharp'
       uses: actions/upload-artifact@v4
@@ -92,42 +85,57 @@ jobs:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
 
-  # Job to run Python tests
   python-tests:
     runs-on: ubuntu-latest
-    needs: csharp-build-and-test  # Depends on the C# job
+    needs: csharp-build-and-test
     steps:
-    # Checkout the code
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Run application
     - name: Run application
       run: |
         dotnet build ./V1/Cargohub/Werehouses.csproj --configuration Release
         dotnet build ./V2/Cargohub/Werehouses.csproj --configuration Release
         dotnet run --configuration Release --project ./V1/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
         dotnet run --configuration Release --project ./V2/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
-            
-    # Setup Python
+
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'  # Specify the Python version you are using
+        python-version: '3.x'
 
-    # Install Python dependencies
     - name: Install Python dependencies
       run: pip install -r ./PythonTests/requirements.txt
 
-    # Run Python Tests and Generate Report
     - name: Run Python Tests
       run: |
         mkdir -p ./PythonTests/reports
         python -m xmlrunner discover -o PythonTests/reports
 
-    # Upload Python Test Reports
     - name: Upload Python Test Reports
       uses: actions/upload-artifact@v4
       with:
         name: python-test-reports
         path: PythonTests/reports
+
+    # Build and Publish for Linux (only for release events)
+  Deliver-Artifacts:
+    runs-on: ubuntu-latest
+    needs: csharp-build-and-test
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Build for Linux
+      run: |
+        dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
+        dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
+
+    - name: Create ZIP package
+      run: zip -r linux-release-v${{ github.run_number }}.zip ./publish
+
+    - name: Upload ZIP artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-release-v${{ github.run_number }}
+        path: linux-release-v${{ github.run_number }}.zip
