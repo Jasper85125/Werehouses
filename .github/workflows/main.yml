@@ -87,10 +87,7 @@ jobs:
 
     - name: Debug Coverage Report Path
       run: |
-        ls coverage-report-${{ matrix.version }}
-
-    - name: Enforce coverage threshold
-      run: |
+        ls -l coverage-report-${{ matrix.version }}
         if [ ! -d coverage-report-${{ matrix.version }} ]; then
           echo "Coverage report file does not exist!"
           exit 1
