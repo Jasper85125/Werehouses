@@ -88,7 +88,7 @@ jobs:
     - name: Enforce coverage threshold
       if: matrix.language == 'csharp'
       run: |
-        coverage=$(cat TestResults/coverage-report-${{matrix.version}}| grep -oP 'd+(?=%)')
+        coverage=$(cat TestResults/**/coverage.cobertura.xml| grep -oP 'd+(?=%)')
         if [$coverage -lt 80]; then
         echo "Coverage is less than 80% ($coverage%)"
         exit 1
