@@ -89,20 +89,14 @@ jobs:
       run: |
         ls -R coverage-report-${{ matrix.version }}
       
-    # - name: Enforce coverage threshold
-    #   if: matrix.language == 'csharp'
-    #   run: |
-    #     coverage=$(cat TestResults/**/coverage.cobertura.xml| grep -oP 'd+(?=%)')
-    #     if [ ! -s TestResults/coverage-summary.txt ]; then
-    #       echo "Coverage file is missing or empty"
-    #       exit 1
-    #     fi
-
-    #     if [$coverage -lt 80]; then
-    #     echo "Coverage is less than 80% ($coverage%)"
-    #     exit 1
-    #     fi
-
+    - name: Enforce coverage threshold
+      if: matrix.language == 'csharp'
+      run: |
+        coverage=$(cat TestResults/coverage-report- ${{ matrix.version }}/Cobertura.xml| grep -oP 'd+(?=%)')
+        if [$coverage -lt 80]; then
+        echo "Coverage is less than 80% ($coverage%)"
+        exit 1
+        fi
 
   python-tests:
     runs-on: ubuntu-latest
