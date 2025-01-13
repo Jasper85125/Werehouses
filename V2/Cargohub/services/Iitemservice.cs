@@ -12,5 +12,5 @@ public interface IItemService
     ItemCS PatchItem(string uid, string property, object newvalue);
     void DeleteItem(string uid);
     void DeleteItems(List<string> uids);
-
-}
+    void GenerateReport(List<string> uids);
+}   

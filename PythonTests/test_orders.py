@@ -49,13 +49,21 @@ class TestOrdersAPI(unittest.TestCase):
         self.client = httpx.Client()
         self.headers = {'Api-Key': 'AdminKey'}
 
-    def test_get_orders(self):
-        for version in ["http://localhost:5001/api/v1",
-                        "http://localhost:5002/api/v2"]:
+    def test_get_orders_v1(self):
+        for version in ["http://localhost:5001/api/v1"]:
             response = self.client.get(
                 url=(version + "/orders"), headers=self.headers)
 
             self.assertEqual(response.status_code, 200)
+            self.assertEqual(type(response.json()), list)
+
+    def test_get_orders_v2(self):
+        for version in ["http://localhost:5002/api/v2"]:
+            response = self.client.get(
+                url=(version + "/orders"), headers=self.headers)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(type(response.json()), dict)
 
     def test_get_orders_by_id(self):
         for version in ["http://localhost:5001/api/v1",
