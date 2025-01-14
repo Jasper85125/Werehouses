@@ -1,5 +1,8 @@
 name: Daily Maintenance
 on:
+    push:
+        branches:
+            '**'
     schedule:
         - cron: '0 3 * * *' #runs every day at 3:00\
 jobs:
