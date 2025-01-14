@@ -11,7 +11,6 @@ class TestClass(unittest.TestCase):
 
     def test_01_post_inventory(self):
         data = {
-            "id": 99999,
             "item_id": "ITEM123",
             "description": "Test description",
             "item_reference": "Test reference",
@@ -30,23 +29,31 @@ class TestClass(unittest.TestCase):
                                             headers=self.headers, json=data)
                 self.assertEqual(response.status_code, 201)
 
-    def test_get_inventories(self):
+    def test_02_get_inventories(self):
         for version in self.versions:
             with self.subTest(version=version):
                 response = self.client.get(url=(version + "/inventories"),
                                            headers=self.headers)
                 self.assertEqual(response.status_code, 200)
 
-    def test_get_inventory_id(self):
+    def test_03_get_inventory_id(self):
         for version in self.versions:
             with self.subTest(version=version):
-                response = self.client.get(url=(version + "/inventories/1"),
+                response = self.client.get(
+                    url=(version + "/inventories"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get inventories: {response.content}"
+                )
+                inventories = response.json()
+                last_inventory_id = inventories[-1]["id"] if inventories else 1
+
+                response = self.client.get(url=(
+                    version + f"/inventories/{last_inventory_id}"),
                                            headers=self.headers)
                 self.assertEqual(response.status_code, 200)
 
-    
-
-    def test_put_inventory_id(self):
+    def test_04_put_inventory_id(self):
         data = {
             "id": 1,
             "item_id": "ITEM123",
@@ -63,13 +70,33 @@ class TestClass(unittest.TestCase):
         }
         for version in self.versions:
             with self.subTest(version=version):
-                response = self.client.put(url=(version + "/inventories/1"),
+                response = self.client.get(
+                    url=(version + "/inventories"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get inventories: {response.content}"
+                )
+                inventories = response.json()
+                last_inventory_id = inventories[-1]["id"] if inventories else 1    
+
+                response = self.client.put(url=(
+                    version + f"/inventories/{last_inventory_id}"),
                                            headers=self.headers, json=data)
                 self.assertEqual(response.status_code, 200)
 
-    def test_delete_inventory_id(self):
+    def test_05_delete_inventory_id(self):
         for version in self.versions:
             with self.subTest(version=version):
-                response = self.client.delete(url=(version + "/inventories/5"),
+                response = self.client.get(
+                    url=(version + "/inventories"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get inventories: {response.content}"
+                )
+                inventories = response.json()
+                last_inventory_id = inventories[-1]["id"] if inventories else 1
+
+                response = self.client.delete(url=(
+                    version + f"/inventories/{last_inventory_id}"),
                                               headers=self.headers)
                 self.assertEqual(response.status_code, 200)
