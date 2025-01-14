@@ -85,7 +85,7 @@ jobs:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
 
-    - name: Debug Coverage Report Path
+    - name: Coverage Report Summary
       run: |
         ls -l coverage-report-${{ matrix.version }}
         # cat coverage-report-${{ matrix.version }}/Cobertura.xml
