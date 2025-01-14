@@ -34,6 +34,19 @@ jobs:
       if: matrix.language == 'csharp'
       run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
 
+    - name: Cache .Net depedencies
+      if: matrix.language == 'csharp'
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}--${{ hashFiles('./PythonTests/requirements.txt')}}
+
     - name: Build solution
       if: matrix.language == 'csharp'
       run: |
