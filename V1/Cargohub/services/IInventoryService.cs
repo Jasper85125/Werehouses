@@ -1,4 +1,4 @@
-namespace ServicesV2;
+namespace ServicesV1;
 
 public interface IInventoryService
 {
@@ -6,9 +6,6 @@ public interface IInventoryService
     InventoryCS GetInventoryById(int id);
     InventoryCS GetInventoriesForItem(string id);
     InventoryCS CreateInventory(InventoryCS inventory);
-    List<InventoryCS> CreateMultipleInventories(List<InventoryCS>newInventories);
     InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory);
     void DeleteInventory(int id);
-    void DeleteInventories(List<int> ids);
-    InventoryCS PatchInventory(int id, InventoryCS updatedInventory);
 }

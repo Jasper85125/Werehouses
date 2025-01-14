@@ -13,6 +13,12 @@ public class ApiKeyMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if (context.Request.Path.StartsWithSegments("/swagger"))
+        {
+            await _next(context);
+            return;
+        }
+        
         if (!context.Request.Headers.TryGetValue(AuthConstants.ApiKeyHeaderName, out
                 var extractedApiKey))
         {
