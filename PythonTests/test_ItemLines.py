@@ -113,12 +113,6 @@ class TestItemLines(unittest.TestCase):
                     json=data
                 )
 
-                # Debugging information
-                if response.status_code != 200:
-                    print(f"Failed to update item line. "
-                          f"Status code: {response.status_code}")
-                    print(f"Response content: {response.content}")
-
                 # Check the status code
                 self.assertEqual(response.status_code, 200)
 
@@ -133,6 +127,7 @@ class TestItemLines(unittest.TestCase):
                 )
                 items_line = response.json()
                 last_items_line_id = items_line[-1]['id']
+                print(last_items_line_id)
 
                 # Send the request to delete the last item line
                 response = self.client.delete(
