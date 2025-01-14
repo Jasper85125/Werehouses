@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace ControllersV2;
 
+[ApiExplorerSettings(IgnoreApi = true)]
 [ApiController]
 [Route("api/v2/admin")]
 public class AdminController : ControllerBase
