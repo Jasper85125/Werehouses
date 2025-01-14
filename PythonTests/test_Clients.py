@@ -38,7 +38,7 @@ class TestClass(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
         self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
-    
+
     # deze voegt een nieuwe warehouse object
     def test_01_post_client(self):
         for version in ["http://localhost:5001/api/v1",
@@ -117,7 +117,7 @@ class TestClass(unittest.TestCase):
                 # Stuur de request
                 response = self.client.get(
                     url=(self.url + f"/clients/{last_client_id}"),
-                    headers=self.headers)           
+                    headers=self.headers)       
 
                 # Check de status code
                 # Check dat de response een
