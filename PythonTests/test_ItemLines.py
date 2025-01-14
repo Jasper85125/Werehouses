@@ -23,9 +23,8 @@ class TestItemLines(unittest.TestCase):
             with self.subTest(version=version):
                 data = {
                     "name": "Tech Gadgets",
-                    "description": "cool gadgets",
-                    "created_at": "2022-08-18T07:05:25",
-                    "updated_at": "2023-05-15T15:44:28"
+                    "description": "cooler gadgets",
+                    "created_at": "2022-08-18T07:05:25"
                 }
 
                 # Send the request
