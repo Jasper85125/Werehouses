@@ -7,15 +7,8 @@ on:
   pull_request:
     branches:
       - '**'
-  schedule:
-    - cron: '0 3 * * *' # Run every day at 3:00 UTC
 
 jobs:
-  nightly-maintenance:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Remove old atrifacts
-        run: rm -rf ./artifacts
   csharp-build-and-test:
     runs-on: ubuntu-latest
     env:
