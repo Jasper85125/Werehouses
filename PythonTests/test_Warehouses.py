@@ -38,35 +38,8 @@ class TestClass(unittest.TestCase):
         ]
         self.headers = {'Api-Key': 'AdminKey'}
 
-    def test_get_warehouses_v1(self):
-        for version in ["http://localhost:5001/api/v1"]:
-            with self.subTest(version=version):
-                response = self.warehouse.get(
-                    url=(version + "/warehouses"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-                self.assertEqual(type(response.json()), list)
-
-    def test_get_warehouses_v2(self):
-        for version in ["http://localhost:5002/api/v2"]:
-            with self.subTest(version=version):
-                response = self.warehouse.get(
-                    url=(version + "/warehouses"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-                self.assertEqual(type(response.json()), dict)
-
-    def test_get_warehouse_id(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.warehouse.get(
-                    url=(version + "/warehouses/1"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-
-    def test_post_warehouse(self):
+    def test_01_post_warehouse(self):
         data = {
-            "id": 99999,
             "code": "WH99999",
             "name": "Warehouse 99999",
             "address": "1234 Test St",
@@ -88,9 +61,44 @@ class TestClass(unittest.TestCase):
                     url=(version + "/warehouses"),
                     headers=self.headers, json=data
                 )
-                self.assertEqual(response.status_code, 201)
+                # Stuur de request
+                response = self.client.post(
+                    url=(self.url + "/clients"),
+                    headers=self.headers, json=data)
 
-    def test_put_warehouse_id(self):
+                # Check de status code
+                self.assertEqual(
+                    response.status_code, 201,
+                    msg=f"Failed to create client: {response.content}"
+                )
+
+    def test_02_get_warehouses_v1(self):
+        for version in ["http://localhost:5001/api/v1"]:
+            with self.subTest(version=version):
+                response = self.warehouse.get(
+                    url=(version + "/warehouses"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), list)
+
+    def test_03_get_warehouses_v2(self):
+        for version in ["http://localhost:5002/api/v2"]:
+            with self.subTest(version=version):
+                response = self.warehouse.get(
+                    url=(version + "/warehouses"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), dict)
+
+    def test_04_get_warehouse_id(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.warehouse.get(
+                    url=(version + "/warehouses/1"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+
+    def test_05_put_warehouse_id(self):
         data = {
             "id": 2,
             "code": "AAAAAAA",
@@ -116,7 +124,7 @@ class TestClass(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 200)
 
-    def test_delete_warehouse_id(self):
+    def test_06_delete_warehouse_id(self):
         for version in self.versions:
             with self.subTest(version=version):
                 response = self.warehouse.delete(
