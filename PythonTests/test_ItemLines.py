@@ -18,7 +18,7 @@ class TestItemLines(unittest.TestCase):
                          "http://localhost:5002/api/v2"]
         self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
 
-    def test_post_item_line(self):
+    def test_01_post_item_line(self):
         for version in self.versions:
             with self.subTest(version=version):
                 data = {
@@ -37,7 +37,7 @@ class TestItemLines(unittest.TestCase):
                 # Check the status code
                 self.assertEqual(response.status_code, 201)
 
-    def test_get_item_line_id(self):
+    def test_02_get_item_line_id(self):
         for version in self.versions:
             with self.subTest(version=version):
                 # Send the request
@@ -54,7 +54,7 @@ class TestItemLines(unittest.TestCase):
                 # Check that the item line object has the correct properties
                 self.assertTrue(checkItemLine(response.json()))
 
-    def test_get_item_lines(self):
+    def test_03_get_item_lines(self):
         for version in self.versions:
             with self.subTest(version=version):
                 # Send the request
@@ -86,7 +86,7 @@ class TestItemLines(unittest.TestCase):
                     )
 
     # Overwrites an item line based on the given item line id
-    def test_put_item_line_id(self):
+    def test_04_put_item_line_id(self):
         for version in self.versions:
             with self.subTest(version=version):
 
@@ -117,7 +117,7 @@ class TestItemLines(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
 
     # This deletes an item line based on an id
-    def test_delete_item_line_id(self):
+    def test_05_delete_item_line_id(self):
         for version in self.versions:
             with self.subTest(version=version):
                 # Send the request to get the item lines
