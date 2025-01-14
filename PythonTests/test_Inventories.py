@@ -9,21 +9,7 @@ class TestClass(unittest.TestCase):
                          "http://localhost:5002/api/v2"]
         self.headers = {'Api-Key': 'AdminKey'}
 
-    def test_get_inventories(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(url=(version + "/inventories"),
-                                           headers=self.headers)
-                self.assertEqual(response.status_code, 200)
-
-    def test_get_inventory_id(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(url=(version + "/inventories/1"),
-                                           headers=self.headers)
-                self.assertEqual(response.status_code, 200)
-
-    def test_post_inventory(self):
+    def test_01_post_inventory(self):
         data = {
             "id": 99999,
             "item_id": "ITEM123",
@@ -43,6 +29,22 @@ class TestClass(unittest.TestCase):
                 response = self.client.post(url=(version + "/inventories"),
                                             headers=self.headers, json=data)
                 self.assertEqual(response.status_code, 201)
+
+    def test_get_inventories(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(url=(version + "/inventories"),
+                                           headers=self.headers)
+                self.assertEqual(response.status_code, 200)
+
+    def test_get_inventory_id(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(url=(version + "/inventories/1"),
+                                           headers=self.headers)
+                self.assertEqual(response.status_code, 200)
+
+    
 
     def test_put_inventory_id(self):
         data = {
