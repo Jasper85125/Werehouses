@@ -10,6 +10,7 @@ class TestClass(unittest.TestCase):
         self.headers = {'Api-Key': 'AdminKey'}
 
     def test_01_post_inventory(self):
+    def test_01_post_inventory(self):
         data = {
             "item_id": "ITEM123",
             "description": "Test description",
