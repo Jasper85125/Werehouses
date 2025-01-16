@@ -176,7 +176,7 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
             return Ok(items);
         }
 
-        [HttpPost("orders")]
+        [HttpPost()]
         public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
         {
             List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
@@ -199,7 +199,7 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
         }
 
         // POST: /orders/multiple
-        [HttpPost("orders/multiple")]
+        [HttpPost("multiple")]
         public ActionResult<IEnumerable<OrderCS>> CreateMultipleOrders([FromBody] List<OrderCS> newOrders)
         {
             List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };

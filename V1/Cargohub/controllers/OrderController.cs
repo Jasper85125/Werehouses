@@ -80,7 +80,7 @@ namespace ControllersV1
             return Ok();
         }
 
-        [HttpPost("orders")]
+        [HttpPost()]
         public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
         {
             if (order == null)
