@@ -4,15 +4,15 @@ namespace ServicesV2;
 
 public class ClientService : IClientService
 {
-    private string _path = "data/clients.json";
+    private string _path = "../../data/clients.json";
     public ClientService()
     {
-
+ 
     }
 
     public List<ClientCS> GetAllClients()
     {
-        if (!File.Exists(_path))
+        if (!File.Exists(_path)) 
         {
             return new List<ClientCS>();
         }
@@ -109,7 +109,7 @@ public class ClientService : IClientService
             }
         }
         var json = JsonConvert.SerializeObject(clients, Formatting.Indented);
-        File.WriteAllText("data/clients.json", json);
+        File.WriteAllText(_path, json);
     }
 
     public ClientCS PatchClient(int id, ClientCS updateClient)

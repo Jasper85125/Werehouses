@@ -117,16 +117,7 @@ class TestClass(unittest.TestCase):
                 # Stuur de request
                 response = self.client.get(
                     url=(self.url + f"/clients/{last_client_id}"),
-                    headers=self.headers)       
-
-                # Check de status code
-                # Check dat de response een
-                # dictionary is (representatief voor een
-                # enkel client object)
-
-                # Check dat de response
-                # een dictionary is (representatief voor een
-                # enkel client object)
+                    headers=self.headers)
                 self.assertEqual(response.status_code, 200,
                                  msg=f"Response content: {response.content}")
                 self.assertTrue(response.content,

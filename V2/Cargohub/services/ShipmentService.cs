@@ -7,6 +7,7 @@ namespace ServicesV2;
 public class ShipmentService : IShipmentService
 {
     // Constructor
+    private string path = "../../data/shipments.json";
     public ShipmentService()
     {
         // Initialization code here
@@ -14,12 +15,11 @@ public class ShipmentService : IShipmentService
 
     public List<ShipmentCS> GetAllShipments()
     {
-        var Path = "data/shipments.json";
-        if (!File.Exists(Path))
+        if (!File.Exists(path))
         {
             return new List<ShipmentCS>();
         }
-        var jsonData = File.ReadAllText(Path);
+        var jsonData = File.ReadAllText(path);
         List<ShipmentCS> shipments = JsonConvert.DeserializeObject<List<ShipmentCS>>(jsonData);
         return shipments ?? new List<ShipmentCS>();
     }
@@ -43,17 +43,14 @@ public class ShipmentService : IShipmentService
     }
     public ShipmentCS CreateShipment(ShipmentCS newShipment)
     {
-        var Path = "data/shipments.json";
 
         List<ShipmentCS> shipments = GetAllShipments();
 
-        // Add the new shipment record to the list
         newShipment.Id = shipments.Count > 0 ? shipments.Max(w => w.Id) + 1 : 1;
         shipments.Add(newShipment);
 
-        // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
-        File.WriteAllText(Path, jsonData);
+        File.WriteAllText(path, jsonData);
         return newShipment;
     }
 
@@ -68,7 +65,7 @@ public class ShipmentService : IShipmentService
         return addedShipments;
     }
 
-    public async Task<ShipmentCS> UpdateShipment(int id, ShipmentCS updateShipment)
+    public ShipmentCS UpdateShipment(int id, ShipmentCS updateShipment)
     {
         List<ShipmentCS> shipments = GetAllShipments();
         var existingShipment = shipments.FirstOrDefault(s => s.Id == id);
@@ -77,13 +74,10 @@ public class ShipmentService : IShipmentService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        // Update the existing shipment with new values
         existingShipment.order_id = updateShipment.order_id;
         existingShipment.source_id = updateShipment.source_id;
         existingShipment.order_date = updateShipment.order_date;
@@ -103,10 +97,11 @@ public class ShipmentService : IShipmentService
         existingShipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
-        await File.WriteAllTextAsync("data/shipments.json", jsonData);
+        File.WriteAllText(path, jsonData);
 
         return existingShipment;
     }
+
     public ShipmentCS UpdateItemsInShipment(int shipmentId, List<ItemIdAndAmount> items){
         var shipments = GetAllShipments();
         var updatedShipment = shipments.Find(_ => _.Id == shipmentId);
@@ -115,19 +110,17 @@ public class ShipmentService : IShipmentService
             return null;
         }
         updatedShipment.Items = items;
-        var path = "data/shipments.json";
         var json = JsonConvert.SerializeObject(shipments, Formatting.Indented);
         File.WriteAllText(path, json);
         return updatedShipment;
     }
+    
     public ShipmentCS PatchShipment(int id, string property, object newvalue){
         var shipments = GetAllShipments();
         var shipment = shipments.Find(_ => _.Id == id);
         if(shipment is not null){
-            // Get the current date and time
             var currentDateTime = DateTime.Now;
 
-            // Format the date and time to the desired format
             var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
             switch(property){
                 case"order_id":
@@ -180,7 +173,6 @@ public class ShipmentService : IShipmentService
                 break;
             }
             shipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
-            var path = "data/shipment.json";
             var json = JsonConvert.SerializeObject(shipments);
             File.WriteAllText(path, json);
             return shipment;
@@ -189,7 +181,6 @@ public class ShipmentService : IShipmentService
     }
     public void DeleteShipment(int id)
     {
-        var path = "data/shipments.json";
         List<ShipmentCS> shipments = GetAllShipments();
         var shipment = shipments.FirstOrDefault(s => s.Id == id);
         if (shipment != null)
@@ -201,7 +192,6 @@ public class ShipmentService : IShipmentService
     }
     public void DeleteItemFromShipment(int shipmentId, string itemId)
     {
-        var path = "data/shipments.json";
         List<ShipmentCS> shipments = GetAllShipments();
         var shipment = shipments.FirstOrDefault(s => s.Id == shipmentId);
         if (shipment != null)
@@ -223,7 +213,6 @@ public class ShipmentService : IShipmentService
                 shipments.Remove(shipment);
             }
         }
-        var path = "data/shipments.json";
         var json = JsonConvert.SerializeObject(shipments, Formatting.Indented);
         File.WriteAllText(path, json);
     }

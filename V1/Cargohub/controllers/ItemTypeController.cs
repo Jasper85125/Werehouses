@@ -68,11 +68,6 @@ public class ItemTypeController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<ItemTypeCS>> UpdateItemType(int id, [FromBody] ItemTypeCS itemType)
     {
-        if (id != itemType.Id)
-        {
-            return BadRequest();
-        }
-
         var existingItemLine = _itemtypeService.GetItemById(id);
         if (existingItemLine == null)
         {

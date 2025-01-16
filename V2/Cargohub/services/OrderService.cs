@@ -7,6 +7,7 @@ namespace ServicesV2;
 public class OrderService : IOrderService
 {
     // Constructor
+    private string path = "../../data/orders.json";
     public OrderService()
     {
         // Initialization code here
@@ -14,12 +15,11 @@ public class OrderService : IOrderService
 
     public List<OrderCS> GetAllOrders()
     {
-        var Path = "data/orders.json";
-        if (!File.Exists(Path))
+        if (!File.Exists(path))
         {
             return new List<OrderCS>();
         }
-        var jsonData = File.ReadAllText(Path);
+        var jsonData = File.ReadAllText(path);
         List<OrderCS> orders = JsonConvert.DeserializeObject<List<OrderCS>>(jsonData);
         return orders ?? new List<OrderCS>();
     }
@@ -44,7 +44,6 @@ public class OrderService : IOrderService
     }
     public OrderCS CreateOrder(OrderCS newOrder)
     {
-        var Path = "data/orders.json";
 
         List<OrderCS> orders = GetAllOrders();
         var currentDateTime = DateTime.Now;
@@ -58,7 +57,7 @@ public class OrderService : IOrderService
 
         // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
-        File.WriteAllText(Path, jsonData);
+        File.WriteAllText(path, jsonData);
         return newOrder;
     }
 
@@ -96,7 +95,7 @@ public class OrderService : IOrderService
         return warehouseOrders;
     }
 
-    public Task<OrderCS> UpdateOrder(int id, OrderCS updateOrder)
+    public OrderCS UpdateOrder(int id, OrderCS updateOrder)
     {
         List<OrderCS> orders = GetAllOrders();
         var existingOrder = orders.FirstOrDefault(o => o.Id == id);
@@ -105,13 +104,9 @@ public class OrderService : IOrderService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
-
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        // Update the existing order with new values
         existingOrder.source_id = updateOrder.source_id;
         existingOrder.order_date = updateOrder.order_date;
         existingOrder.request_date = updateOrder.request_date;
@@ -133,10 +128,11 @@ public class OrderService : IOrderService
         existingOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
-        File.WriteAllTextAsync("data/orders.json", jsonData);
+        File.WriteAllText(path, jsonData);
 
-        return Task.FromResult(existingOrder);
+        return existingOrder;
     }
+
     public OrderCS PatchOrder(int id, string property, object newvalue)
     {
         var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -201,25 +197,21 @@ public class OrderService : IOrderService
         }
         order.updated_at = DateTime.ParseExact(now, "yyyy-MM-dd HH:mm:ss", null);
         var json = JsonConvert.SerializeObject(orders, Formatting.Indented);
-        var path = "data/orders.json";
         File.WriteAllText(path, json);
         return order;
     }
     public void DeleteOrder(int id)
     {
-        var Path = "data/orders.json";
 
         List<OrderCS> orders = GetAllOrders();
 
-        // Remove the order record from the list
         OrderCS order = orders.FirstOrDefault(order => order.Id == id);
         if (order != null)
         {
             orders.Remove(order);
 
-            // Serialize the updated list back to the JSON file
             var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
-            File.WriteAllText(Path, jsonData);
+            File.WriteAllText(path, jsonData);
         }
     }
 
@@ -234,7 +226,7 @@ public class OrderService : IOrderService
         return order.items;
     }
 
-    public Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> items)
+    public OrderCS UpdateOrderItems(int orderId, List<ItemIdAndAmount> items)
     {
         List<OrderCS> orders = GetAllOrders();
         var existingOrder = orders.FirstOrDefault(o => o.Id == orderId);
@@ -243,23 +235,15 @@ public class OrderService : IOrderService
             return null;
         }
 
-        // Update the items in the existing order
         existingOrder.items = items;
-
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
-
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-
-        // Update the updated_at field
         existingOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
-
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
-        File.WriteAllTextAsync("data/orders.json", jsonData);
-
-        return Task.FromResult(existingOrder);
+        File.WriteAllText(path, jsonData);
+        return existingOrder;
     }
+
     public void DeleteOrders(List<int> ids)
     {
         var orders = GetAllOrders();
@@ -271,7 +255,6 @@ public class OrderService : IOrderService
                 orders.Remove(order);
             }
         }
-        var path = "data/orders.json";
         var json = JsonConvert.SerializeObject(orders, Formatting.Indented);
         File.WriteAllText(path, json);
     }

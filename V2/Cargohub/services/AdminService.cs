@@ -4,13 +4,14 @@ namespace ServicesV2;
 
 public class AdminService : IAdminService
 {
+    
     public AdminService()
     {
     }
 
     public string AddData(IFormFile file)
     {
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "Data", file.FileName);
+        var path = Path.Combine(Directory.GetCurrentDirectory(),"..","..", "data", file.FileName);
 
         if (Path.GetExtension(file.FileName) == ".json")
         {
@@ -49,14 +50,14 @@ public class AdminService : IAdminService
         });
 
         // Save as JSON file
-        var saveFileName = Path.Combine(Directory.GetCurrentDirectory(), "Data", Path.ChangeExtension(file.FileName, ".json"));
+        var saveFileName = Path.Combine(Directory.GetCurrentDirectory(),"..","..", "Data", Path.ChangeExtension(file.FileName, ".json"));
         System.IO.File.WriteAllText(saveFileName, jsonContent);
         return saveFileName;
     }
 
     public string GenerateReport()
     {
-        var dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+        var dataDirectory = Path.Combine(Directory.GetCurrentDirectory(),"..","..", "data");
 
         if (!Directory.Exists(dataDirectory))
         {

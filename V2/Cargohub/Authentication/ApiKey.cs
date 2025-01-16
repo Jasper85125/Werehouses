@@ -10,7 +10,7 @@ public class ApiKeyModel
 
 public class ApiKeyStorage
 {
-    private static string _path = "data/apikeys.json";
+    private static string _path = "../../data/apikeys.json";
     public static List<ApiKeyModel> GetApiKeys()
     {
         if (!File.Exists(_path))

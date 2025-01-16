@@ -9,7 +9,7 @@ class TestClass(unittest.TestCase):
                          "http://localhost:5002/api/v2"]
         self.headers = {'Api-Key': 'AdminKey'}
 
-    def test_create_location(self):
+    def test_01_create_location(self):
         data = {
             "id": 69696,
             "warehouse_id": 20,
@@ -24,7 +24,7 @@ class TestClass(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 201)
 
-    def test_get_locations(self):
+    def test_02_get_locations(self):
         for url in self.versions:
             with self.subTest(url=url):
                 response = self.client.get(
@@ -32,7 +32,7 @@ class TestClass(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 200)
 
-    def test_get_location_id(self):
+    def test_03_get_location_id(self):
         for url in self.versions:
             with self.subTest(url=url):
                 response = self.client.get(
@@ -50,7 +50,7 @@ class TestClass(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 200)
 
-    def test_update_location(self):
+    def test_04_update_location(self):
         data = {
             "id": 5,
             "warehouse_id": 20,
@@ -75,7 +75,7 @@ class TestClass(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 200)
 
-    def test_delete_location_id(self):
+    def test_05_delete_location_id(self):
         for url in self.versions:
             with self.subTest(url=url):
                 response = self.client.get(

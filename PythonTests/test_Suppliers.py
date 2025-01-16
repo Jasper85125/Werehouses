@@ -18,31 +18,7 @@ class TestClass(unittest.TestCase):
         self.versions = ["http://localhost:5001/api/v1",
                          "http://localhost:5002/api/v2"]
 
-    def test_get_suppliers(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=(version + "/suppliers"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-                response = self.client.get(
-                    url=(version + "/suppliers/1"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-
-    def test_get_supplier_id(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=(version + "/suppliers/1"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-                response = self.client.get(
-                    url=(version + "/suppliers/1/items"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-
-    def test_post_suppliers(self):
+    def test_01_post_suppliers(self):
         data = {
             "code": "12345",
             "name": "Test Supplier",
@@ -60,9 +36,51 @@ class TestClass(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 201)
 
-    def test_put_supplier_id(self):
+    def test_02_get_suppliers(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/suppliers"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+
+    def test_03_get_supplier_id(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/suppliers"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get clients: {response.content}"
+                )
+                clients = response.json()
+                last_supplier_id = clients[-1]["id"] if clients else 1
+                response = self.client.get(
+                    url=(version + f"/suppliers/{last_supplier_id}"),
+                    headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+
+    def test_04_get_supplier_id_items(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/suppliers"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get clients: {response.content}"
+                )
+                clients = response.json()
+                last_supplier_id = clients[-1]["id"] if clients else 1
+                response = self.client.get(
+                    url=(version + f"/suppliers/{last_supplier_id}/items"),
+                    headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+
+    def test_05_put_supplier_id(self):
         data = {
-            "code": "12345",
+            "code": "123456",
             "name": "Test Supplier",
             "address": "123 Test St",
             "province": "Test Province",
@@ -72,16 +90,33 @@ class TestClass(unittest.TestCase):
         }
         for version in self.versions:
             with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/suppliers"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get clients: {response.content}"
+                )
+                clients = response.json()
+                last_supplier_id = clients[-1]["id"] if clients else 1
                 response = self.client.put(
-                    url=(version + "/suppliers/2"),
+                    url=(version + f"/suppliers/{last_supplier_id}"),
                     headers=self.headers, json=data
                 )
                 self.assertEqual(response.status_code, 200)
 
-    def test_delete_supplier_id(self):
+    def test_06_delete_supplier_id(self):
         for version in self.versions:
             with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/suppliers"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get clients: {response.content}"
+                )
+                clients = response.json()
+                last_supplier_id = clients[-1]["id"] if clients else 1
                 response = self.client.delete(
-                    url=(version + "/suppliers/3"), headers=self.headers
+                    url=(version + f"/suppliers/{last_supplier_id}"),
+                    headers=self.headers
                 )
                 self.assertEqual(response.status_code, 200)

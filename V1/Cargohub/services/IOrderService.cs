@@ -7,8 +7,8 @@ public interface IOrderService
     List<OrderCS> GetOrdersByClient(int client_id);
     List<OrderCS> GetOrdersByShipmentId(int shipmentId);
     OrderCS CreateOrder(OrderCS newOrder);
-    Task<OrderCS> UpdateOrder(int id, OrderCS updateOrder);
+    OrderCS UpdateOrder(int id, OrderCS updateOrder);
     void DeleteOrder(int id);
     List<ItemIdAndAmount> GetItemsByOrderId(int orderId);
-    Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> items);
+    OrderCS UpdateOrderItems(int orderId, List<ItemIdAndAmount> items);
 }
