@@ -65,34 +65,26 @@ jobs:
     - name: Run Tests with Coverage
   run: dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
 
-- name: Verify Coverage File
-  run: ls -l TestResults
-
-- name: Install ReportGenerator
-  run: dotnet tool install -g dotnet-reportgenerator-globaltool
-  env:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-    DOTNET_CLI_TELEMETRY_OPTOUT: 1
-
-- name: Generate Coverage Report
-  if: matrix.language == 'csharp'
-  run: |
-    reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" \
-                    -targetdir:"coverage-report-${{ matrix.version }}" \
-                    -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-  env:
-    PATH: $PATH:/home/runner/.dotnet/tools
-
-- name: Debug Coverage Report Directory
-  run: ls -l coverage-report-${{ matrix.version }}
-
-    - name: Upload Coverage Report
+    - name: Verify Coverage File
+      run: ls -l TestResults
+    
+    - name: Install ReportGenerator
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool
+      env:
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    
+    - name: Generate Coverage Report
       if: matrix.language == 'csharp'
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report-${{ matrix.version }}
-        path: coverage-report-${{ matrix.version }}
-
+      run: |
+        reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" \
+                        -targetdir:"coverage-report-${{ matrix.version }}" \
+                        -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+      env:
+        PATH: $PATH:/home/runner/.dotnet/tools
+    
+    - name: Debug Coverage Report Directory
+      run: ls -l coverage-report-${{ matrix.version }}
     - name: Coverage Report Summary
       run: |
         ls -l coverage-report-${{ matrix.version }}
