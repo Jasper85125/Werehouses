@@ -1,6 +1,6 @@
 import unittest
 import httpx
-from rich import _console
+# from rich import _console
 
 
 def checkWarehouse(warehouse):
@@ -93,90 +93,66 @@ class TestClass(unittest.TestCase):
                 response = self.warehouse.get(
                     version + "/warehouses",
                     headers=self.headers)
-                self.assertEqual(response.status_code, 200)
                 warehouses = response.json()
-                print(warehouses[-1].get("id"))
+                if version == "http://localhost:5001/api/v1":
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(type(warehouses), list)
+                    self.assertTrue(checkWarehouse(warehouses[-1]))
+                else:
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(type(warehouses['data']), list)
+                    self.assertTrue(checkWarehouse(warehouses['data'][-1]))
 
     def test_05_put_warehouse_id(self):
+        data = {
+            "code": "AAAAAAA",
+            "name": "Updated Warehouse",
+            "address": "Updated Address",
+            "zip": "54321",
+            "city": "Updated City",
+            "province": "Updated Province",
+            "country": "Updated Country",
+            "contact": {
+                "name": "Jane Doe",
+                "phone": "123-456-7890",
+                "email": "janedoe@example.com"
+            },
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z"
+        }
         for version in self.versions:
             with self.subTest(version=version):
-                self.url = f"{version}"
+                # Get the last client ID
                 response = self.warehouse.get(
-                    url=(version + "/warehouses/{last_warehouse_id}"),
-                    headers=self.headers)
-                # self.assertEqual(response.status_code, 200)
+                    url=(version + "/warehouses"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get clients: {response.content}"
+                )
                 warehouses = response.json()
-                last_warehouse_id = warehouses['data'][-1] if warehouses else 1
-                if not warehouses:
-                    data = {
-                        "id": last_warehouse_id,
-                        "code": "AAAAAAA",
-                        "name": "Warehouse",
-                        "address": "1234 Test St",
-                        "zip": "12345",
-                        "city": "Test City",
-                        "province": "Test Province",
-                        "country": "Test Country",
-                        "contact": {
-                            "name": "John Doe",
-                            "phone": "123-456-7890",
-                            "email": "test@example.com"
-                        },
-                        "created_at": "2023-01-01T00:00:00Z",
-                        "updated_at": "2023-01-01T00:00:00Z"
-                    }
-                    response = self.warehouse.post(
-                        url=(self.url + "/warehouses"),
-                        headers=self.headers, json=data
-                    )
-                    self.assertEqual(response.status_code, 201)
-                response = self.warehouse.get(
-                    url=(self.url + "/warehouses/{last_warehouse_id}"),
-                    headers=self.headers)
-                self.assertEqual(response.status_code, 200)
-
-                data = {
-                    "code": "AAAAAAA",
-                    "name": "Updated Warehouse",
-                    "address": "Updated Address",
-                    "zip": "54321",
-                    "city": "Updated City",
-                    "province": "Updated Province",
-                    "country": "Updated Country",
-                    "contact": {
-                        "name": "Jane Doe",
-                        "phone": "123-456-7890",
-                        "email": "test@example.com"
-                    },
-                    "created_at": "2023-01-01T00:00:00Z",
-                    "updated_at": "2023-01-01T00:00:00Z"
-                }
+                if version == 'http://localhost:5001/api/v1':
+                    last_warehouse_id = warehouses[-1]["id"] if warehouses \
+                        else 1
+                    # print(last_warehouse_id)
+                else:
+                    response = self.warehouse.get(
+                        url=(version + "/warehouses?page=0"),
+                        headers=self.headers)
+                    warehouses = response.json()
+                    last_warehouse_id = warehouses['data'][-1]["id"] \
+                        if warehouses else 1
+                    # print(last_warehouse_id)
                 response = self.warehouse.put(
-                    url=(self.url + "/warehouses/{last_warehouse_id}"),
+                    url=(version + f"/warehouses/{last_warehouse_id}"),
                     headers=self.headers, json=data
                 )
-                if response.status_code == 500:
-                    self.fail(f"server error: {response.content}")
+                self.assertEqual(response.status_code, 200)
+                if version == 'http://localhost:5001/api/v1':
+                    self.assertEqual(type(response.json()), dict)
+                    self.assertTrue(checkWarehouse(warehouses[-1]))
                 else:
-                    self.assertEqual(response.status_code, 200,
-                                     msg="Response content:" +
-                                     f"{response.content}")
-        # data = {
-        #     "code": "AAAAAAA",
-        #     "name": "Updated Warehouse",
-        #     "address": "Updated Address",
-        #     "zip": "54321",
-        #     "city": "Updated City",
-        #     "province": "Updated Province",
-        #     "country": "Updated Country",
-        #     "contact": {
-        #         "name": "Jane Doe",
-        #         "phone": "123-456-7890",
-        #         "email": "janedoe@example.com"
-        #     },
-        #     "created_at": "2023-01-01T00:00:00Z",
-        #     "updated_at": "2023-01-01T00:00:00Z"
-        # }
+                    self.assertEqual(type(response.json()), dict)
+                    self.assertTrue(checkWarehouse(warehouses['data'][-1]))
 
     def test_06_delete_warehouse_id(self):
         for version in self.versions:
@@ -185,9 +161,18 @@ class TestClass(unittest.TestCase):
                     url=(version + "/warehouses"), headers=self.headers)
                 self.assertEqual(response.status_code, 200,
                                  msg=f"Response content: {response.content}")
-                # warehouses = response.json()
-                # last_warehouse_id = warehouses['data'][-1] if warehouses else 1
-                # response = self.warehouse.delete(
-                    # url=(version + f"/warehouses/{last_warehouse_id}"),
-                    # headers=self.headers)
+                warehouses = response.json()
+                if version == 'http://localhost:5001/api/v1':
+                    last_warehouse_id = warehouses[-1]["id"] if warehouses \
+                        else 1
+                else:
+                    response = self.warehouse.get(
+                        url=(version + "/warehouses?page=0"),
+                        headers=self.headers)
+                    warehouses = response.json()
+                    last_warehouse_id = warehouses['data'][-1]["id"] \
+                        if warehouses else 1
+                response = self.warehouse.delete(
+                    url=(version + f"/warehouses/{last_warehouse_id}"),
+                    headers=self.headers)
                 self.assertEqual(response.status_code, 200)
