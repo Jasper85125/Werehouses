@@ -104,31 +104,95 @@ class TestOrdersAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(type(response.json()), dict)
 
-    def test_04_get_orders_by_id(self):
-        for version in self.versions:
-            response = self.client.get(url=(version + "/orders"),
-                                       headers=self.headers)
-        order = response.json()
-        if version == "http://localhost:5001/api/v1":
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(type(order), list)
-        else:
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(type(order['data']), list)
+    def test_04_get_order_id_v1(self):
+        for url in ["http://localhost:5001/api/v1"]:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/orders"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get orders: {response.content}"
+                )
+                orders = response.json()
+                last_order_id = orders[-1]["id"] if orders else 1
 
-    def test_05_get_orders_by_id_items(self):
-        for version in self.versions:
+                response = self.client.get(
+                    url=(url + f"/orders/{last_order_id}"),
+                    headers=self.headers
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), dict)
+
+    def test_04_get_order_id_v2(self):
+        for url in ["http://localhost:5002/api/v2"]:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/orders?page=0"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get orders: {response.content}"
+                )
+                orders = response.json()
+                last_order_id = (
+                    next(reversed(orders.values()))[-1]["id"] if orders else 1
+                )
+
+                response = self.client.get(
+                    url=(url + f"/orders/{last_order_id}"),
+                    headers=self.headers
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), dict)
+
+    def test_05_get_orders_by_id_items_v2(self):
+        for url in ["http://localhost:5002/api/v2"]:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/orders?page=0"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get orders: {response.content}"
+                )
+                orders = response.json()
+                last_order_id = (
+                    next(reversed(orders.values()))[-1]["id"] if orders else 1
+                )
+
+                response = self.client.get(
+                    url=(url + f"/orders/{last_order_id}/items"),
+                    headers=self.headers
+                )
+
+            self.assertEqual(response.status_code, 200)
+
+    def test_05_get_orders_by_id_items_v1(self):
+        for url in ["http://localhost:5001/api/v1"]:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/orders"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get orders: {response.content}"
+                )
+                orders = response.json()
+                last_order_id = orders[-1]["id"] if orders else 1
+
+                response = self.client.get(
+                    url=(url + f"/orders/{last_order_id}/items"),
+                    headers=self.headers
+                )
+
+            self.assertEqual(response.status_code, 200)
+
+    def test_06_get_orders_by_id_shipments(self):
+        for url in self.versions:
             response = self.client.get(
-                url=(version + "/orders/10/items"), headers=self.headers)
+                url=(url + "/orders/1/shipments"),
+                headers=self.headers)
 
-            self.assertEqual(response.status_code, 200)
-
-    # def test_06_get_orders_by_id_shipments(self):
-    #     response = self.client.get(
-    #         url=(self.versions[1] + "/orders/10/shipments"),
-    #         headers=self.headers)
-
-    #     self.assertIn(response.status_code, [200, 405])
+        self.assertEqual(response.status_code, 200)
 
     # def test_07_put_order_id(self):
     #     # Get the last order ID

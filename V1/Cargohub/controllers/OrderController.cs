@@ -105,6 +105,17 @@ namespace ControllersV1
             return Ok(items);
         }
 
+        [HttpGet("{shipmentId}/shipments")]
+        public ActionResult<List<ItemIdAndAmount>> GetOrdersByShipmentId([FromRoute] int shipmentId)
+        {
+            var orders = _orderService.GetOrdersByShipmentId(shipmentId);
+            if (orders == null)
+            {
+                return NotFound();
+            }
+            return Ok(orders);
+        }
+
         [HttpPut("{orderId}/items")]
         public async Task<ActionResult<OrderCS>> UpdateOrderItems(int orderId, [FromBody] List<ItemIdAndAmount> items)
         {

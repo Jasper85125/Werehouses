@@ -176,6 +176,17 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
             return Ok(items);
         }
 
+        [HttpGet("{shipmentId}/shipments")]
+        public ActionResult<List<ItemIdAndAmount>> GetOrdersByShipmentId([FromRoute] int shipmentId)
+        {
+            var orders = _orderService.GetOrdersByShipmentId(shipmentId);
+            if (orders == null)
+            {
+                return NotFound();
+            }
+            return Ok(orders);
+        }
+
         [HttpPost()]
         public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
         {
