@@ -68,9 +68,10 @@ jobs:
 
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
-      run: cat coverage-report-${{ matrix.version }}
+      run: ls -l coverage-report
+      # cat coverage-report-${{ matrix.version }} bestaat niet
       # run: |
-      #   reportgenerator -reports:"TestResults/*/coverage.cobertura.xml" \
+      #   reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" \
       #                   -targetdir:"coverage-report-${{ matrix.version }}" \
       #                   -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
       # env:
