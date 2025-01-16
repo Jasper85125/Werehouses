@@ -13,6 +13,7 @@ namespace item.TestsV2
         private Mock<IItemService> _mockItemService;
         private Mock<IInventoryService> _mockInventoryService;
         private Mock<IItemtypeService> _mockItemTypeService;
+        private Mock<ILocationService> _mockLocationService;
         private ItemController _itemController;
         private ItemTypeController _itemTypeController;
 
@@ -22,7 +23,8 @@ namespace item.TestsV2
             _mockItemService = new Mock<IItemService>();
             _mockItemTypeService = new Mock<IItemtypeService>();
             _mockInventoryService = new Mock<IInventoryService>();
-            _itemController = new ItemController(_mockItemService.Object, _mockInventoryService.Object);
+            _mockLocationService = new Mock<ILocationService>();
+            _itemController = new ItemController(_mockItemService.Object, _mockInventoryService.Object, _mockLocationService.Object);
             _itemTypeController = new ItemTypeController(_mockItemTypeService.Object, _mockItemService.Object);
         }
 
@@ -39,6 +41,7 @@ namespace item.TestsV2
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["WarehouseID"] = "1,2,3,4";
 
             // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
