@@ -189,18 +189,18 @@ class TestClass(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(type(response.json()), dict)
 
-    # def test_07_delete_shipment_by_id(self):
-    #     for version in self.versions:
-    #         with self.subTest(version=version):
-    #             # Get the ID of the last created shipment
-    #             response = self.client.get(
-    #                 url=(version + "/shipments"), headers=self.headers)
-    #             self.assertEqual(response.status_code, 200)
-    #             shipments = response.json()
-    #             last_shipment_id = shipments[-1]['id']
+    def test_07_delete_shipment_by_id(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                # Get the ID of the last created shipment
+                response = self.client.get(
+                    url=(version + "/shipments"), headers=self.headers)
+                self.assertEqual(response.status_code, 200)
+                shipments = response.json()
+                last_shipment_id = shipments[-1]['id']
 
-    #             # Delete the last created shipment
-    #             response = self.client.delete(
-    #                 url=(version + f"/shipments/{last_shipment_id}"),
-    #                 headers=self.headers)
-    #             self.assertEqual(response.status_code, 200)
+                # Delete the last created shipment
+                response = self.client.delete(
+                    url=(version + f"/shipments/{last_shipment_id}"),
+                    headers=self.headers)
+                self.assertEqual(response.status_code, 200)
