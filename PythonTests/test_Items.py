@@ -9,7 +9,7 @@ class TestClass(unittest.TestCase):
                          "http://localhost:5002/api/v2"]
         self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
 
-    def test_04_post_item(self):
+    def test_01_post_item(self):
         data = {
             "uid": "",
             "item_line": 3,
@@ -34,7 +34,7 @@ class TestClass(unittest.TestCase):
                     msg=f"Failed to create item: {response.content}"
                 )
 
-    def test_03_get_items(self):
+    def test_02_get_items(self):
         for url in ["http://localhost:5001/api/v1"]:
             with self.subTest(url=url):
                 response = self.client.get(
@@ -52,25 +52,83 @@ class TestClass(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(type(response.json()), dict)
 
-    def test_02_get_item_id(self):
-        for url in self.versions:
+    def test_04_get_item_id_v1(self):
+        for url in ["http://localhost:5001/api/v1"]:
             with self.subTest(url=url):
                 response = self.client.get(
-                    url=(url + "/items"), headers=self.headers
+                    url=(url + "/items"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get items: {response.content}"
                 )
-                self.assertEqual(response.status_code, 200)
                 items = response.json()
-                if items:
-                    response = self.client.get(
-                        url=(url + "/items/P000001"),
-                        headers=self.headers
-                    )
-                    self.assertEqual(response.status_code, 200)
-                    self.assertEqual(type(response.json()), dict)
-                else:
-                    self.fail("No items found in the response")
+                last_item_id = items[-1]["uid"] if items else 1
 
-    def test_05_put_item_id(self):
+                response = self.client.get(
+                    url=(url + f"/items/{last_item_id}"),
+                    headers=self.headers
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), dict)
+
+    def test_04_get_item_id_v2(self):
+        for url in ["http://localhost:5002/api/v2"]:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/items?page=0"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get items: {response.content}"
+                )
+                items = response.json()
+                last_item_id = (
+                    next(reversed(items.values()))[-1]["uid"] if items else 1
+                )
+                print(last_item_id)
+
+                response = self.client.get(
+                    url=(url + f"/items/{last_item_id}"),
+                    headers=self.headers
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), dict)
+
+    def test_05_put_item_id_v1(self):
+        data = {
+            "uid": "P000003",
+            "item_line": 1,
+            "item_group": 1,
+            "item_type": 1,
+            "supplier_id": 1,
+            "name": "Updated Test Item",
+            "description": "This is an updated test item",
+            "code": "ITEM003",
+            "upc_code": "123456789013",
+            "model_number": "MODEL003",
+            "commodity_code": "COMM003",
+            "short_description": "Updated short description"
+        }
+        for url in ["http://localhost:5001/api/v1"]:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/items"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get items: {response.content}"
+                )
+                items = response.json()
+                last_item_id = items[-1]["uid"] if items else 1
+
+                response = self.client.put(
+                    url=(url + f"/items/{last_item_id}"),
+                    headers=self.headers, json=data
+                )
+
+                self.assertEqual(response.status_code, 200)
+
+    def test_05_put_item_id_v2(self):
         data = {
             "uid": "P000001",
             "item_line": 1,
@@ -85,40 +143,60 @@ class TestClass(unittest.TestCase):
             "commodity_code": "COMM003",
             "short_description": "Updated short description"
         }
-        for url in self.versions:
+        for url in ["http://localhost:5002/api/v2"]:
             with self.subTest(url=url):
                 response = self.client.get(
-                    url=(url + "/items"), headers=self.headers
+                    url=(url + "/items?page=0"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get items: {response.content}"
                 )
-                self.assertEqual(response.status_code, 200)
                 items = response.json()
-                if items:
-                    last_item_uid = items[-1]['uid']
-                    response = self.client.put(
-                        url=(url + f"/items/{last_item_uid}"),
-                        headers=self.headers, json=data
-                    )
-                    self.assertEqual(response.status_code, 200)
-                else:
-                    self.fail("No items found in the response")
+                last_item_id = (
+                    next(reversed(items.values()))[-1]["uid"] if items else 1
+                )
+                response = self.client.put(
+                    url=(url + f"/items/{last_item_id}"),
+                    headers=self.headers, json=data
+                )
 
-    def test_06_delete_item_id(self):
-        for url in self.versions:
+                self.assertEqual(response.status_code, 200)
+
+    def test_06_delete_item_id_v1(self):
+        for url in ["http://localhost:5001/api/v1"]:
             with self.subTest(url=url):
                 response = self.client.get(
-                    url=(url + "/items"), headers=self.headers
+                    url=(url + "/items"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get items: {response.content}"
+                )
+                items = response.json()
+                last_item_id = items[-1]["uid"] if items else 1
+
+                response = self.client.delete(
+                    url=(url + f"/items/{last_item_id}"),
+                    headers=self.headers
                 )
                 self.assertEqual(response.status_code, 200)
-                items = response.json()
-                if items:
-                    last_item_uid = items[-1]['uid']
-                    response = self.client.delete(
-                        url=(url + f"/items/{last_item_uid}"),
-                        headers=self.headers
-                    )
-                    self.assertEqual(response.status_code, 200)
-                else:
-                    self.fail("No items found in the response")
 
+    def test_06_delete_item_id_v2(self):
+        for url in ["http://localhost:5002/api/v2"]:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/items?page=0"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get items: {response.content}"
+                )
+                items = response.json()
+                last_item_id = (
+                    next(reversed(items.values()))[-1]["uid"] if items else 1
+                )
+                response = self.client.delete(
+                    url=(url + f"/items/{last_item_id}"),
+                    headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
 
 # to run the file: python -m unittest test_items.py
