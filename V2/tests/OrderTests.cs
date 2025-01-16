@@ -34,7 +34,7 @@ namespace TestsV2
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
-            httpContext.Items["WarehouseID"] = 0;
+            httpContext.Items["WarehouseID"] = "1,2,3,4";
 
             // Assign HttpContext to the controller
             _orderController.ControllerContext = new ControllerContext

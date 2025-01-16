@@ -5,7 +5,7 @@ public class ApiKeyModel
 {
     public string Key {get; set;}
     public string Role {get; set;}
-    public int WarehouseID {get; set;}
+    public string WarehouseID {get; set;}
 }
 
 public class ApiKeyStorage

@@ -37,7 +37,7 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
 {
     // Get UserRole and WarehouseID from HttpContext
     var userRole = HttpContext.Items["UserRole"]?.ToString();
-    if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is int warehouseID))
+    if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is string warehouseID))
     {
         return BadRequest("WarehouseID is missing or invalid.");
     }
@@ -48,8 +48,14 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
     {
         if (userRole == "Operative" || userRole == "Supervisor")
         {
-            var warehouseOrders = _orderService.GetOrdersByWarehouse(warehouseID);
-            return Ok(warehouseOrders);
+            var warehouseid = warehouseID.Split(',').Select(int.Parse).ToList();
+            var warehouseOrderslist = new List<List<OrderCS>>();
+            foreach (var id in warehouseid)
+            {
+                var warehouseOrders = _orderService.GetOrdersByWarehouse(id);
+                warehouseOrderslist.Add(warehouseOrders);
+            }
+            return Ok(warehouseOrderslist);
         }
         return Unauthorized();
     }
