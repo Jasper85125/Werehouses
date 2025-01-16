@@ -128,8 +128,9 @@ class TestOrdersAPI(unittest.TestCase):
             response = self.client.get(
                 url=(version + "/orders"), headers=self.headers)
             orders = response.json()
-            last_order_id = orders[-1]["id"] if orders else 1
-
+            last_order_id = (
+                    next(reversed(orders.values()))[-1]["uid"] if orders else 1
+            )
             data = {
                 "id": last_order_id,
                 "client_id": 1,
@@ -172,8 +173,9 @@ class TestOrdersAPI(unittest.TestCase):
             response = self.client.get(
                 url=(version + "/orders"), headers=self.headers)
             orders = response.json()
-            last_order_id = orders[-1]["id"] if orders else 1
-
+            last_order_id = (
+                    next(reversed(orders.values()))[-1]["uid"] if orders else 1
+            )
             response = self.client.delete(
                 url=(version + f"/orders/{last_order_id}"),
                 headers=self.headers)
