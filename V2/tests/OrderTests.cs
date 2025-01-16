@@ -170,7 +170,7 @@ namespace TestsV2
         public void CreateMultipleOrders_ReturnsCreatedResult_WithNewOrders()
         {
             // Arrange
-            var orders = new List<OrderCS> 
+            var orders = new List<OrderCS>
             {
                 new OrderCS { Id = 1, source_id = 24, order_date = "2019-04-03T11:33:15Z", request_date = "2019-04-07T11:33:15Z",
                                       order_status = "Delivered", warehouse_id = 1, ship_to = 1, bill_to = 3, shipment_id = 5, total_amount = 909,
@@ -189,13 +189,13 @@ namespace TestsV2
             {
                 HttpContext = httpContext
             };
-            
+
             // Act
             var result = _orderController.CreateMultipleOrders(orders);
             var createdResult = result.Result as ObjectResult;
             var returnedItems = createdResult.Value as List<OrderCS>;
             var firstOrder = returnedItems[0];
-            
+
             // Assert
             Assert.IsNotNull(createdResult);
             Assert.IsNotNull(returnedItems);
@@ -208,7 +208,7 @@ namespace TestsV2
         {
             // Arrange
             var updatedOrder = new OrderCS { Id = 1, source_id = 24, order_status = "Shipped" };
-            _mockOrderService.Setup(service => service.UpdateOrder(1, updatedOrder)).Returns(Task.FromResult(updatedOrder));
+            _mockOrderService.Setup(service => service.UpdateOrder(1, updatedOrder)).Returns(updatedOrder);  // Return updatedOrder directly
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(updatedOrder);
 
             var httpContext = new DefaultHttpContext();
@@ -224,8 +224,8 @@ namespace TestsV2
             var result = _orderController.UpdateOrder(1, updatedOrder);
 
             // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(ActionResult<OrderCS>));
-            var okResult = result.Result.Result as OkObjectResult;
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(OrderCS));
             var returnedOrder = okResult.Value as OrderCS;
@@ -233,12 +233,14 @@ namespace TestsV2
             Assert.AreEqual(updatedOrder.order_status, returnedOrder.order_status);
         }
 
+
         [TestMethod]
         public void UpdateOrderTest_Failed()
         {
             // Arrange
             var updatedOrder = new OrderCS { Id = 1, source_id = 24, order_status = "Shipped" };
-            _mockOrderService.Setup(service => service.UpdateOrder(1, updatedOrder)).Returns(Task.FromResult((OrderCS)null));
+            _mockOrderService.Setup(service => service.UpdateOrder(1, updatedOrder)).Returns((OrderCS)null);  // Return null directly
+            _mockOrderService.Setup(service => service.GetOrderById(1)).Returns((OrderCS)null);  // Return null for GetOrderById as well
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -253,8 +255,8 @@ namespace TestsV2
             var result = _orderController.UpdateOrder(1, updatedOrder);
 
             // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(ActionResult<OrderCS>));
-            var notFoundResult = result.Result.Result as NotFoundResult;
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+            var notFoundResult = result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
         }
 
@@ -263,9 +265,22 @@ namespace TestsV2
         public void DeleteOrderTest_Exist()
         {
             //arrange
-            var order = new OrderCS { Id = 1, source_id = 24, order_date = "2019-04-03T11:33:15Z", request_date = "2019-04-07T11:33:15Z",
-                                      order_status = "Delivered", warehouse_id = 1, ship_to = 1, bill_to = 3, shipment_id = 5, total_amount = 909,
-                                      total_discount = 30, total_tax = 100, total_surcharge = 78 };
+            var order = new OrderCS
+            {
+                Id = 1,
+                source_id = 24,
+                order_date = "2019-04-03T11:33:15Z",
+                request_date = "2019-04-07T11:33:15Z",
+                order_status = "Delivered",
+                warehouse_id = 1,
+                ship_to = 1,
+                bill_to = 3,
+                shipment_id = 5,
+                total_amount = 909,
+                total_discount = 30,
+                total_tax = 100,
+                total_surcharge = 78
+            };
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(order);
 
             var httpContext = new DefaultHttpContext();
@@ -341,12 +356,12 @@ namespace TestsV2
         {
             // Arrange
             var items = new List<ItemIdAndAmount>
-            {
-                new ItemIdAndAmount { item_id = "ITEM1", amount = 10 },
-                new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
-            };
+    {
+        new ItemIdAndAmount { item_id = "ITEM1", amount = 10 },
+        new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
+    };
             var updatedOrder = new OrderCS { Id = 1, items = items };
-            _mockOrderService.Setup(service => service.UpdateOrderItems(1, items)).Returns(Task.FromResult(updatedOrder));
+            _mockOrderService.Setup(service => service.UpdateOrderItems(1, items)).Returns(updatedOrder);  // Return updatedOrder directly
             _mockOrderService.Setup(service => service.GetOrderById(1)).Returns(updatedOrder);
 
             var httpContext = new DefaultHttpContext();
@@ -362,8 +377,8 @@ namespace TestsV2
             var result = _orderController.UpdateOrderItems(1, items);
 
             // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(ActionResult<OrderCS>));
-            var okResult = result.Result.Result as OkObjectResult;
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(OrderCS));
             var returnedOrder = okResult.Value as OrderCS;
@@ -374,16 +389,18 @@ namespace TestsV2
             Assert.AreEqual(5, returnedOrder.items[1].amount);
         }
 
+
         [TestMethod]
         public void UpdateOrderItemsTest_Failed()
         {
             // Arrange
             var items = new List<ItemIdAndAmount>
-            {
-                new ItemIdAndAmount { item_id = "ITEM1", amount = 10 },
-                new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
-            };
-            _mockOrderService.Setup(service => service.UpdateOrderItems(1, items)).Returns(Task.FromResult((OrderCS)null));
+    {
+        new ItemIdAndAmount { item_id = "ITEM1", amount = 10 },
+        new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
+    };
+            _mockOrderService.Setup(service => service.UpdateOrderItems(1, items)).Returns((OrderCS)null);  // Return null directly
+            _mockOrderService.Setup(service => service.GetOrderById(1)).Returns((OrderCS)null);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -398,16 +415,18 @@ namespace TestsV2
             var result = _orderController.UpdateOrderItems(1, items);
 
             // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(ActionResult<OrderCS>));
-            var notFoundResult = result.Result.Result as NotFoundResult;
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+            var notFoundResult = result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
         }
 
+
         [TestMethod]
-        public void PatchOrder_succes(){
+        public void PatchOrder_succes()
+        {
             //Arrange
-            var patchedorder = new OrderCS(){ Id = 1, Reference="lol, weirdo"};
-            _mockOrderService.Setup(_=>_.PatchOrder(1, "Reference", "lol, weirdo")).Returns(patchedorder);
+            var patchedorder = new OrderCS() { Id = 1, Reference = "lol, weirdo" };
+            _mockOrderService.Setup(_ => _.PatchOrder(1, "Reference", "lol, weirdo")).Returns(patchedorder);
             //Act
             var result = _orderController.PatchOrder(1, "Reference", "lol, weirdo");
             var resultok = result.Result as OkObjectResult;
@@ -420,9 +439,10 @@ namespace TestsV2
             Assert.AreEqual(value.Reference, patchedorder.Reference);
         }
         [TestMethod]
-        public void DeleteOrdersTest_Succes(){
+        public void DeleteOrdersTest_Succes()
+        {
             //Arrange
-            var ordersToDelete = new List<int>(){1,2,3};
+            var ordersToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
