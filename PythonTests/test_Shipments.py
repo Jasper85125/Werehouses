@@ -189,18 +189,40 @@ class TestClass(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(type(response.json()), dict)
 
-    def test_07_delete_shipment_by_id(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                # Get the ID of the last created shipment
-                response = self.client.get(
-                    url=(version + "/shipments"), headers=self.headers)
-                self.assertEqual(response.status_code, 200)
-                shipments = response.json()
-                last_shipment_id = shipments[-1]['id']
+    def test_08_delete_shipment_by_id_v1(self):
+        version = "http://localhost:5001/api/v1"
+        with self.subTest(version=version):
+            response = self.client.get(
+                url=(version + "/shipments"), headers=self.headers)
+            self.assertEqual(
+                response.status_code, 200,
+                msg=f"Failed to get shipments: {response.content}"
+            )
+            shipments = response.json()
+            last_shipment_id = shipments[-1]["id"] if shipments else 1
 
-                # Delete the last created shipment
-                response = self.client.delete(
-                    url=(version + f"/shipments/{last_shipment_id}"),
-                    headers=self.headers)
-                self.assertEqual(response.status_code, 200)
+            response = self.client.delete(
+                url=(version + f"/shipments/{last_shipment_id}"),
+                headers=self.headers
+            )
+            self.assertEqual(response.status_code, 200)
+
+    def test_09_delete_shipment_by_id_v2(self):
+        version = "http://localhost:5002/api/v2"
+        with self.subTest(version=version):
+            response = self.client.get(
+                url=(version + "/shipments?page=0"), headers=self.headers)
+            self.assertEqual(
+                response.status_code, 200,
+                msg=f"Failed to get shipments: {response.content}"
+            )
+            shipments = response.json()
+            last_shipment_id = (
+                shipments['data'][-1]["id"] if shipments['data'] else 1
+            )
+
+            response = self.client.delete(
+                url=(version + f"/shipments/{last_shipment_id}"),
+                headers=self.headers
+            )
+            self.assertEqual(response.status_code, 200)
