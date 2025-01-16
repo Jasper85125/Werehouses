@@ -11,4 +11,5 @@ public interface IInventoryService
     void DeleteInventory(int id);
     void DeleteInventories(List<int> ids);
     InventoryCS PatchInventory(int id, InventoryCS updatedInventory);
+    List<InventoryCS> GetInventoriesByLocationId(List<int> location);
 }

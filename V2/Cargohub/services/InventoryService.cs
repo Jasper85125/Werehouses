@@ -45,6 +45,14 @@ public class InventoryService : IInventoryService
 
     }
 
+    public List<InventoryCS> GetInventoriesByLocationId(List<int> location){{
+        List<InventoryCS> inventories = GetAllInventories();
+        return inventories.Where(inventory => inventory.Locations.Any(locationId => location.Contains(locationId))).ToList();
+    }
+    }
+
+    
+
     public InventoryCS CreateInventory(InventoryCS newInventory)
     {
 

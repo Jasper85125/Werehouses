@@ -15,35 +15,67 @@ public class inventoryFilter
     public int total_ordered { get; set; }
     public int total_allocated { get; set; }
     public int total_available { get; set; }
-    // public DateTime created_at { get; set; }
-    // public DateTime updated_at { get; set; }
 }
 [ApiController]
 [Route("api/v2/inventories")]
 public class InventoryController : ControllerBase
 {
     private readonly IInventoryService _inventoryService;
-    public InventoryController(IInventoryService inventoryService)
+    private readonly ILocationService _locationService;
+    public InventoryController(IInventoryService inventoryService, ILocationService locationService)
     {
         _inventoryService = inventoryService;
+        _locationService = locationService;
     }
+    
 
     // GET: /inventories
     [HttpGet()]
     public ActionResult<IEnumerable<InventoryCS>> GetAllInventories()
     {
-        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-                                                                   "Floor Manager", "Sales", "Analyst", "Logistics",
-                                                                   "Operative", "Supervisor" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
-
-        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is string warehouseID))
         {
-            return Unauthorized();
+            return BadRequest("WarehouseID is missing or invalid.");
         }
 
-        var inventories = _inventoryService.GetAllInventories();
-        return Ok(inventories);
+        var allowedRoles = new List<string> { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+        if (string.IsNullOrEmpty(userRole) || !allowedRoles.Contains(userRole))
+        {
+            if (userRole == "Operative" || userRole == "Supervisor")
+            {
+
+                var warehouseid = warehouseID.Split(',').Select(int.Parse).ToList();
+                // get location from the inventories and then look in the location for the warehouse_id
+                // location can be found in the data/locations.json file and the location variable is the same as the id in the json file. the file has a variable called warehouse id
+                // use the locationservice to get all the locations and then filter the locations
+                
+                var locations = _locationService.GetAllLocations();
+                var filteredLocations = locations.Where(location => warehouseid.Contains(location.warehouse_id)).ToList();
+
+
+                var locationsByWarehouse = filteredLocations.GroupBy(location => location.warehouse_id);
+
+                var locationIds = filteredLocations.Select(location => location.Id).ToList();
+
+                var inventoriesByLocation = _inventoryService.GetInventoriesByLocationId(locationIds);
+
+                var warehouseInventoryList = locationsByWarehouse
+                    .Select(group => group
+                        .SelectMany(location => inventoriesByLocation
+                            .Where(inventory => inventory.Locations.Any(loc => loc == location.Id)))
+                        .ToList())
+                    .ToList();
+
+                return Ok(warehouseInventoryList);
+            }
+            else
+            {
+                return Unauthorized(userRole);
+            }
+        }
+        var inventoriesall = _inventoryService.GetAllInventories();
+        return Ok(inventoriesall);
     }
 
     [HttpGet("page")]

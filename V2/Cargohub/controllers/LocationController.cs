@@ -22,13 +22,26 @@ namespace ControllersV2
             List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Analyst",
                                                                    "Logistics", "Sales" };
             var userRole = HttpContext.Items["UserRole"]?.ToString();
-            var WarehouseIDFromKey = (int)HttpContext.Items["WarehouseID"];
+            if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is string warehouseID))
+        {
+            return BadRequest("WarehouseID is missing or invalid.");
+        }
+
+            //warehouse id is list<string> so we need to convert it to string and split it to get the warehouse id
+            var WarehouseIDFromKey = warehouseID.Split(',').Select(int.Parse).ToList();
+
 
             if (userRole == null || !listOfAllowedRoles.Contains(userRole))
             {
                 if (userRole == "Operative" || userRole == "Supervisor" || userRole == "Floor Manager" || userRole == "Inventory Manager")
                 {
-                    var LocationsForWarehouse = _locationService.GetLocationsByWarehouseId(WarehouseIDFromKey);
+                    List<List<LocationCS>> LocationsForWarehouse = new List<List<LocationCS>>();
+                    foreach (var id in WarehouseIDFromKey)
+                    {
+                        LocationsForWarehouse.Add(_locationService.GetLocationsByWarehouseId(id));
+
+                    }
+
                     return Ok(LocationsForWarehouse);
                 }
                 return Unauthorized();

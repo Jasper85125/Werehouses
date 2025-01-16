@@ -5,6 +5,7 @@ public interface IOrderService
     List<OrderCS> GetAllOrders();
     OrderCS GetOrderById(int id);
     List<OrderCS> GetOrdersByClient(int client_id);
+    List<OrderCS> GetOrdersByShipmentId(int shipmentId);
     OrderCS CreateOrder(OrderCS newOrder);
     Task<OrderCS> UpdateOrder(int id, OrderCS updateOrder);
     void DeleteOrder(int id);

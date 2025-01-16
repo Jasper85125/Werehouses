@@ -85,20 +85,35 @@ class TestItemGroups(unittest.TestCase):
 
     # Overwrites an item group based on the given item group-id
     def test_05_put_item_group_id(self):
-        data = {
-            "id": 1,
-            "name": "Updated Group",
-            "description": "This is an updated item group."
-        }
-
         for version in self.versions:
             with self.subTest(version=version):
                 # Send the request
-                response = self.client.put(
-                    url=(version + "/itemgroups/1"),
-                    headers=self.headers,
-                    json=data
+                # Get the list of item groups
+                get_response = self.client.get(
+                    url=(version + "/itemgroups"),
+                    headers=self.headers
                 )
+                self.assertEqual(get_response.status_code, 200)
+                item_groups = get_response.json()
+
+                # Get the id of the last item group
+                if item_groups:
+                    last_item_group_id = item_groups[-1]["id"]
+
+                    data = {
+                        "id": last_item_group_id,
+                        "name": "Updated Group",
+                        "description": "This is an updated item group."
+                    }
+
+                    # Send the request to update the last item group
+                    response = self.client.put(
+                        url=(version + f"/itemgroups/{last_item_group_id}"),
+                        headers=self.headers,
+                        json=data
+                    )
+                else:
+                    self.fail("No item groups available to update.")
 
                 # Check the status code
                 self.assertEqual(response.status_code, 200)
@@ -107,10 +122,25 @@ class TestItemGroups(unittest.TestCase):
     def test_06_delete_item_group_id(self):
         for version in self.versions:
             with self.subTest(version=version):
-                # Send the request
-                response = self.client.delete(
-                    url=(version + "/itemgroups/19"), headers=self.headers
+                # Get the list of item groups
+                get_response = self.client.get(
+                    url=(version + "/itemgroups"),
+                    headers=self.headers
                 )
+                self.assertEqual(get_response.status_code, 200)
+                item_groups = get_response.json()
+
+                # Get the id of the last item group
+                if item_groups:
+                    last_item_group_id = item_groups[-1]["id"]
+
+                    # Send the request to delete the last item group
+                    response = self.client.delete(
+                        url=(version + f"/itemgroups/{last_item_group_id}"),
+                        headers=self.headers
+                    )
+                else:
+                    self.fail("No item groups available to delete.")
 
                 # Check the status code
                 self.assertEqual(response.status_code, 200)
