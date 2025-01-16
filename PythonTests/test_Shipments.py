@@ -9,34 +9,6 @@ class TestClass(unittest.TestCase):
                          "http://localhost:5002/api/v2"]
         self.headers = {'Api-Key': 'AdminKey'}
 
-    def test_get_shipments_v1(self):
-        for version in ["http://localhost:5001/api/v1"]:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=(version + "/shipments"), headers=self.headers)
-                self.assertIn(response.status_code, [200, 204])
-
-    def test_get_shipments_v2(self):
-        for version in ["http://localhost:5002/api/v2"]:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=(version + "/shipments"), headers=self.headers)
-                self.assertIn(response.status_code, [200, 204])
-
-    def test_get_shipments_by_id(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=(version + "/shipments/1"), headers=self.headers)
-                self.assertEqual(response.status_code, 200)
-
-    def test_get_shipments_by_id_items(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=(version + "/shipments/1/items"), headers=self.headers)
-                self.assertEqual(response.status_code, 200)
-
     def test_post_shipment(self):
         data = {
             "order_id": 1,
@@ -78,6 +50,34 @@ class TestClass(unittest.TestCase):
                     url=(version + "/shipments"),
                     headers=self.headers, json=data)
                 self.assertEqual(response.status_code, 201)
+
+    def test_get_shipments_v1(self):
+        for version in ["http://localhost:5001/api/v1"]:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments"), headers=self.headers)
+                self.assertIn(response.status_code, [200, 204])
+
+    def test_get_shipments_v2(self):
+        for version in ["http://localhost:5002/api/v2"]:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments"), headers=self.headers)
+                self.assertIn(response.status_code, [200, 204])
+
+    def test_get_shipments_by_id(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments/1"), headers=self.headers)
+                self.assertEqual(response.status_code, 200)
+
+    def test_get_shipments_by_id_items(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments/1/items"), headers=self.headers)
+                self.assertEqual(response.status_code, 200)
 
     def test_delete_shipment_by_id(self):
         for version in self.versions:
