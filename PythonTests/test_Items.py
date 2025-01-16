@@ -85,7 +85,6 @@ class TestClass(unittest.TestCase):
                 last_item_id = (
                     next(reversed(items.values()))[-1]["uid"] if items else 1
                 )
-                print(last_item_id)
 
                 response = self.client.get(
                     url=(url + f"/items/{last_item_id}"),

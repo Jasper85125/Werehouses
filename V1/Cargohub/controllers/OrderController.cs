@@ -52,19 +52,14 @@ namespace ControllersV1
         [HttpPut("{id}")]
         public async Task<ActionResult<OrderCS>> UpdateOrder(int id, [FromBody] OrderCS updateOrder)
         {
-            if (id != updateOrder.Id)
-            {
-                return BadRequest();
-            }
-
-            var existingItemLine = _orderService.GetOrderById(id);
-            if (existingItemLine == null)
+            var existingOrder = _orderService.GetOrderById(id);
+            if (existingOrder == null)
             {
                 return NotFound();
             }
 
-            var updatedItemLine = await _orderService.UpdateOrder(id, updateOrder);
-            return Ok(updatedItemLine);
+            var updatedOrder = await _orderService.UpdateOrder(id, updateOrder);
+            return Ok(updatedOrder);
         }
 
         // DELETE: api/warehouse/5
@@ -80,7 +75,7 @@ namespace ControllersV1
             return Ok();
         }
 
-        [HttpPost("orders")]
+        [HttpPost()]
         public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
         {
             if (order == null)
@@ -103,6 +98,17 @@ namespace ControllersV1
                 return NotFound();
             }
             return Ok(items);
+        }
+
+        [HttpGet("{shipmentId}/shipments")]
+        public ActionResult<List<ItemIdAndAmount>> GetOrdersByShipmentId([FromRoute] int shipmentId)
+        {
+            var orders = _orderService.GetOrdersByShipmentId(shipmentId);
+            if (orders == null)
+            {
+                return NotFound();
+            }
+            return Ok(orders);
         }
 
         [HttpPut("{orderId}/items")]

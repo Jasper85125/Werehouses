@@ -35,10 +35,6 @@ namespace ControllersV2
         [HttpGet]
 public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
 {
-    // Validation of inputs
-    if (page < 1) page = 1;
-    if (pageSize <= 0) pageSize = 10;
-
     // Get UserRole and WarehouseID from HttpContext
     var userRole = HttpContext.Items["UserRole"]?.ToString();
     if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is string warehouseID))
@@ -82,6 +78,12 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
     // Pagination
     var ordersCount = ordersQuery.Count();
     var totalPages = (int)Math.Ceiling(ordersCount / (double)pageSize);
+    if (page == 0)
+    {
+        page = totalPages;
+    }
+    page = Math.Max(1, Math.Min(page, totalPages));
+
     var data = ordersQuery.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
     return Ok(new PaginationCS<OrderCS>
@@ -182,7 +184,18 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
             return Ok(items);
         }
 
-        [HttpPost("orders")]
+        [HttpGet("{shipmentId}/shipments")]
+        public ActionResult<List<ItemIdAndAmount>> GetOrdersByShipmentId([FromRoute] int shipmentId)
+        {
+            var orders = _orderService.GetOrdersByShipmentId(shipmentId);
+            if (orders == null)
+            {
+                return NotFound();
+            }
+            return Ok(orders);
+        }
+
+        [HttpPost()]
         public ActionResult<OrderCS> CreateOrder([FromBody] OrderCS order)
         {
             List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
@@ -205,7 +218,7 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
         }
 
         // POST: /orders/multiple
-        [HttpPost("orders/multiple")]
+        [HttpPost("multiple")]
         public ActionResult<IEnumerable<OrderCS>> CreateMultipleOrders([FromBody] List<OrderCS> newOrders)
         {
             List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
@@ -235,11 +248,6 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
             if (userRole == null || !listOfAllowedRoles.Contains(userRole))
             {
                 return Unauthorized();
-            }
-
-            if (id != updateOrder.Id)
-            {
-                return BadRequest();
             }
 
             var existingItemLine = _orderService.GetOrderById(id);
