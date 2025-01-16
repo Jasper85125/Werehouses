@@ -87,10 +87,11 @@ public class ShipmentService : IShipmentService
         existingShipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
-        await File.WriteAllTextAsync(Path, jsonData);
+        File.WriteAllText(Path, jsonData);
 
         return existingShipment;
     }
+
 
     public ShipmentCS UpdateItemsInShipment(int shipmentId, List<ItemIdAndAmount> items)
     {

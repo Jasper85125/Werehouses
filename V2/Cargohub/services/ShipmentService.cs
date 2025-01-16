@@ -97,7 +97,7 @@ public class ShipmentService : IShipmentService
         existingShipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
-        await File.WriteAllTextAsync(path, jsonData);
+        File.WriteAllText(path, jsonData);
 
         return existingShipment;
     }
