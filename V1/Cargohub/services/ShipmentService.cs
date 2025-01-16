@@ -57,7 +57,7 @@ public class ShipmentService : IShipmentService
         return newShipment;
     }
 
-    public async Task<ShipmentCS> UpdateShipment(int id, ShipmentCS updateShipment)
+    public ShipmentCS UpdateShipment(int id, ShipmentCS updateShipment)
     {
         List<ShipmentCS> shipments = GetAllShipments();
         var existingShipment = shipments.FirstOrDefault(s => s.Id == id);
@@ -89,7 +89,7 @@ public class ShipmentService : IShipmentService
         existingShipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);
-        await File.WriteAllTextAsync("data/shipments.json", jsonData);
+        File.WriteAllText("data/shipments.json", jsonData);
 
         return existingShipment;
     }
