@@ -89,7 +89,7 @@ public class ItemGroupService : ItemService, IitemGroupService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("data/item_lines.json", jsonData);
+        await File.WriteAllTextAsync("data/item_groups.json", jsonData);
 
         return existingItem;
     }

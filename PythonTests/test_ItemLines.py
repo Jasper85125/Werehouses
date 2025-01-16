@@ -18,7 +18,26 @@ class TestItemLines(unittest.TestCase):
                          "http://localhost:5002/api/v2"]
         self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
 
-    def test_get_item_line_id(self):
+    def test_01_post_item_line(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                data = {
+                    "name": "Tech Gadgets",
+                    "description": "cooler gadgets",
+                    "created_at": "2022-08-18T07:05:25"
+                }
+
+                # Send the request
+                response = self.client.post(
+                    url=(version + "/itemlines"),
+                    headers=self.headers,
+                    json=data
+                )
+
+                # Check the status code
+                self.assertEqual(response.status_code, 201)
+
+    def test_02_get_item_line_id(self):
         for version in self.versions:
             with self.subTest(version=version):
                 # Send the request
@@ -35,7 +54,7 @@ class TestItemLines(unittest.TestCase):
                 # Check that the item line object has the correct properties
                 self.assertTrue(checkItemLine(response.json()))
 
-    def test_get_item_lines(self):
+    def test_03_get_item_lines(self):
         for version in self.versions:
             with self.subTest(version=version):
                 # Send the request
@@ -67,20 +86,29 @@ class TestItemLines(unittest.TestCase):
                     )
 
     # Overwrites an item line based on the given item line id
-    def test_put_item_line_id(self):
+    def test_04_put_item_line_id(self):
         for version in self.versions:
             with self.subTest(version=version):
+
+                # Send the request to get the item lines
+                response = self.client.get(
+                    url=(version + "/itemlines"),
+                    headers=self.headers
+                )
+                items_line = response.json()
+                last_items_line_id = items_line[-1]['id']
+
                 data = {
-                    "id": 5,
+                    "id": last_items_line_id,
                     "name": "Tech Gadgets",
                     "description": "cool gadgets",
                     "created_at": "2022-08-18T07:05:25",
                     "updated_at": "2023-05-15T15:44:28"
                 }
 
-                # Send the request
+                # Send the request to update the last item line
                 response = self.client.put(
-                    url=(version + "/itemlines/5"),
+                    url=(version + f"/itemlines/{last_items_line_id}"),
                     headers=self.headers,
                     json=data
                 )
@@ -89,12 +117,22 @@ class TestItemLines(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
 
     # This deletes an item line based on an id
-    def test_delete_item_line_id(self):
+    def test_05_delete_item_line_id(self):
         for version in self.versions:
             with self.subTest(version=version):
-                # Send the request
+                # Send the request to get the item lines
+                response = self.client.get(
+                    url=(version + "/itemlines"),
+                    headers=self.headers
+                )
+                items_line = response.json()
+                last_items_line_id = items_line[-1]['id']
+                print(last_items_line_id)
+
+                # Send the request to delete the last item line
                 response = self.client.delete(
-                    url=(version + "/itemlines/20"), headers=self.headers
+                    url=(version + f"/itemlines/{last_items_line_id}"),
+                    headers=self.headers
                 )
 
                 # Check the status code

@@ -7,15 +7,8 @@ on:
   pull_request:
     branches:
       - '**'
-  schedule:
-    - cron: '0 3 * * *' # Run every day at 3:00 UTC
 
 jobs:
-  nightly-maintenance:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Remove old atrifacts
-        run: rm -rf ./artifacts
   csharp-build-and-test:
     runs-on: ubuntu-latest
     env:
@@ -37,9 +30,19 @@ jobs:
         dotnet-version: '8.0.x'
         install-dir: ${{ runner.temp }}/dotnet
 
+    - name: Cache .Net depedencies
+      if: matrix.language == 'csharp'
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
     - name: Restore dependencies
       if: matrix.language == 'csharp'
       run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
+
 
     - name: Build solution
       if: matrix.language == 'csharp'
@@ -85,6 +88,31 @@ jobs:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
 
+    - name: Coverage Report Summary
+      run: |
+        ls -l coverage-report-${{ matrix.version }}
+        # cat coverage-report-${{ matrix.version }}/Cobertura.xml
+        # percentage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'line-rate="[^"]+"' | grep -oP '[^"]+')
+        # echo "Code coverage is $percentage"
+        # Extract all 'line-rate' values
+        percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
+
+        # Add all the line-rate values to compute the total
+        total_coverage=0
+        count=0
+        while read -r line; do
+            total_coverage=$(echo "$total_coverage + $line" | bc)
+            count=$((count + 1))
+        done <<< "$percentages"
+
+        # Calculate the average (total percentage coverage)
+        if [[ $count -gt 0 ]]; then
+            total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
+            echo "Total Percentage Covered: $total_percentage%"
+        else
+            echo "No coverage data found."
+        fi
+
   python-tests:
     runs-on: ubuntu-latest
     needs: csharp-build-and-test
@@ -103,6 +131,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
+    
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('PythonTests/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Install Python dependencies
       run: pip install -r ./PythonTests/requirements.txt

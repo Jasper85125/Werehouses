@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 builder.Services.AddTransient<IItemService,ItemService>();
@@ -23,6 +24,10 @@ builder.Services.AddTransient<ITransferService, TransferService>();
 builder.Services.AddTransient<IOrderService, OrderService>();
 
 var app = builder.Build();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.Urls.Add("http://localhost:5001");
 app.MapControllers();
 
