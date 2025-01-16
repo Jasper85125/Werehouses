@@ -68,7 +68,8 @@ jobs:
 
     - name: Generate Coverage Report
       if: matrix.language == 'csharp'
-      run: ls -l coverage-report
+      run: ls -l TestResults
+      # ls -l coverage-report
       # cat coverage-report-${{ matrix.version }} bestaat niet
       # run: |
       #   reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" \
