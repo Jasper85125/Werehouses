@@ -126,7 +126,7 @@ class TestOrdersAPI(unittest.TestCase):
         # Get the last order ID
         for version in self.versions:
             response = self.client.get(
-                url=(self.versions + "/orders"), headers=self.headers)
+                url=(version + "/orders"), headers=self.headers)
             orders = response.json()
             last_order_id = orders[-1]["id"] if orders else 1
 
@@ -166,11 +166,11 @@ class TestOrdersAPI(unittest.TestCase):
 
             self.assertEqual(response.status_code, 200)
 
-    def test_07_delete_order_id(self):
+    def test_08_delete_order_id(self):
         # Get the last order ID
         for version in self.versions:
             response = self.client.get(
-                url=(self.versions + "/orders"), headers=self.headers)
+                url=(version + "/orders"), headers=self.headers)
             orders = response.json()
             last_order_id = orders[-1]["id"] if orders else 1
 
