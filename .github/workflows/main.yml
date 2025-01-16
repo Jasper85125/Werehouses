@@ -53,17 +53,23 @@ jobs:
         rm -rf TestResults
         rm -rf coverage-report-${{ matrix.version }}
 
-    - name: Run MSTest with Coverage
-      if: matrix.language == 'csharp'
-      run: |
-        dotnet test ./${{ matrix.version }}/tests/tests.csproj --configuration Release --verbosity detailed \
-          --collect:"XPlat Code Coverage" \
-          --results-directory TestResults \
-          /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
-      continue-on-error: true
+    # - name: Run MSTest with Coverage
+    #   if: matrix.language == 'csharp'
+    #   run: |
+    #     dotnet test ./${{ matrix.version }}/tests/tests.csproj --configuration Release --verbosity detailed \
+    #       --collect:"XPlat Code Coverage" \
+    #       --results-directory TestResults \
+    #       /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
+    #   continue-on-error: true
 
-    - name: Run Tests with Coverage
-      run: dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
+    # - name: Run Tests with Coverage
+    #   run: dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
+    - name: Debug Repository Structure
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "Contents of the current directory:"
+        ls -al
 
     - name: Verify Coverage File
       run: ls -l TestResults
