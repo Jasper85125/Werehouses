@@ -106,6 +106,10 @@ public class WarehouseController : ControllerBase
 
         // Pagination logic
         int totalPages = (int)Math.Ceiling(warehousesCount / (double)pageSize);
+        if (page <= 0){
+            page = totalPages;
+        }
+        page = Math.Max(1, Math.Min(page, totalPages));
         var pagedWarehouses = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         // Return paginated and filtered result
