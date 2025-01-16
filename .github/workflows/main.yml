@@ -63,7 +63,7 @@ jobs:
       continue-on-error: true
 
     - name: Run Tests with Coverage
-  run: dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
+      run: dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
 
     - name: Verify Coverage File
       run: ls -l TestResults
