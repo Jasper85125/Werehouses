@@ -18,6 +18,26 @@ class TestItemTypesAPI(unittest.TestCase):
         self.versions = ["http://localhost:5001/api/v1",
                          "http://localhost:5002/api/v2"]
 
+    def test_01_post_item_type(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                data = {
+                    "name": "New Item Type",
+                    "description": "A new item type",
+                    "created_at": "2023-10-01T00:00:00",
+                    "updated_at": "2023-10-01T00:00:00",
+                }
+
+                # Send the request
+                response = self.client.post(
+                    url=(version + "/itemtypes"),
+                    headers=self.headers,
+                    json=data
+                )
+
+                # Check the status code
+                self.assertEqual(response.status_code, 201)
+
     def test_02_get_item_type_id(self):
         for version in self.versions:
             with self.subTest(version=version):
@@ -65,27 +85,7 @@ class TestItemTypesAPI(unittest.TestCase):
                         )
                     )
 
-    def test_04_post_item_type(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                data = {
-                    "name": "New Item Type",
-                    "description": "A new item type",
-                    "created_at": "2023-10-01T00:00:00",
-                    "updated_at": "2023-10-01T00:00:00",
-                }
-
-                # Send the request
-                response = self.client.post(
-                    url=(version + "/itemtypes"),
-                    headers=self.headers,
-                    json=data
-                )
-
-                # Check the status code
-                self.assertEqual(response.status_code, 201)
-
-    def test_05_put_item_type_id(self):
+    def test_04_put_item_type_id(self):
         for version in self.versions:
             with self.subTest(version=version):
                 # Get the list of item types to find the last one
@@ -114,7 +114,7 @@ class TestItemTypesAPI(unittest.TestCase):
                 # Check the status code
                 self.assertEqual(response.status_code, 200)
 
-    def test_06_delete_item_type_id(self):
+    def test_05_delete_item_type_id(self):
         for version in self.versions:
             with self.subTest(version=version):
                 # Get the list of item types to find the last one
