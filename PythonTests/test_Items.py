@@ -130,7 +130,7 @@ class TestClass(unittest.TestCase):
 
     def test_05_put_item_id_v2(self):
         data = {
-            "uid": "P000003",
+            "uid": "P000001",
             "item_line": 1,
             "item_group": 1,
             "item_type": 1,
