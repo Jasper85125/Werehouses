@@ -37,8 +37,8 @@ public class ItemController : ControllerBase
 
     [HttpGet()]
     public ActionResult<PaginationCS<ItemCS>> GetAllItems(
-        [FromQuery] itemFilter tofilter, 
-        [FromQuery] int page = 1, 
+        [FromQuery] itemFilter tofilter,
+        [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
         var userRole = HttpContext.Items["UserRole"]?.ToString();
@@ -94,10 +94,12 @@ public class ItemController : ControllerBase
                 return Unauthorized();
             }
         }
+
         if (tofilter == null)
         {
             tofilter = new itemFilter();
         }
+
         var items = _itemService.GetAllItems();
         var query = items.AsQueryable();
 
@@ -134,11 +136,19 @@ public class ItemController : ControllerBase
         // Get the filtered count
         int filteredItemsCount = query.Count();
 
-        // Pagination logic
+        // Calculate the total number of pages
         int totalPages = (int)Math.Ceiling(filteredItemsCount / (double)pageSize);
+
+        if (page == 0)
+        {
+            page = totalPages;
+        }
+        page = Math.Max(1, Math.Min(page, totalPages));
+
+        // Fetch the items for the requested page
         var pagedItems = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-        // Return paginated and filtered result
+        // Return the paginated and filtered result
         var result = new PaginationCS<ItemCS>()
         {
             Page = page,
@@ -169,11 +179,11 @@ public class ItemController : ControllerBase
         {
             return BadRequest("No items to generate report for.");
         }
-        
+
         _itemService.GenerateReport(uids);
         return Ok();
     }
-    
+
 
     // GET: items/5
     // Retrieves an item by its unique identifier (uid)

@@ -9,22 +9,6 @@ class TestClass(unittest.TestCase):
                          "http://localhost:5002/api/v2"]
         self.headers = {'Api-Key': 'AdminKey'}
 
-    def test_get_location_id(self):
-        for url in self.versions:
-            with self.subTest(url=url):
-                response = self.client.get(
-                    url=(url + "/locations/1"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-
-    def test_get_locations(self):
-        for url in self.versions:
-            with self.subTest(url=url):
-                response = self.client.get(
-                    url=(url + "/locations"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-
     def test_create_location(self):
         data = {
             "id": 69696,
@@ -40,6 +24,32 @@ class TestClass(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 201)
 
+    def test_get_locations(self):
+        for url in self.versions:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/locations"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+
+    def test_get_location_id(self):
+        for url in self.versions:
+            with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/locations"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get locations: {response.content}"
+                )
+                locations = response.json()
+                last_location_id = locations[-1]["id"] if locations else 1
+
+                response = self.client.get(
+                    url=(url + f"/locations/{last_location_id}"),
+                    headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+
     def test_update_location(self):
         data = {
             "id": 5,
@@ -50,16 +60,36 @@ class TestClass(unittest.TestCase):
         }
         for url in self.versions:
             with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/locations"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get locations: {response.content}"
+                )
+                locations = response.json()
+                last_location_id = locations[-1]["id"] if locations else 1
+
                 response = self.client.put(
-                    url=(url + "/locations/5"), headers=self.headers, json=data
+                    url=(url + f"/locations/{last_location_id}"),
+                    headers=self.headers, json=data
                 )
                 self.assertEqual(response.status_code, 200)
 
     def test_delete_location_id(self):
         for url in self.versions:
             with self.subTest(url=url):
+                response = self.client.get(
+                    url=(url + "/locations"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get locations: {response.content}"
+                )
+                locations = response.json()
+                last_location_id = locations[-1]["id"] if locations else 1
+
                 response = self.client.delete(
-                    url=(url + "/locations/2"), headers=self.headers
+                    url=(url + f"/locations/{last_location_id}"),
+                    headers=self.headers
                 )
                 self.assertEqual(response.status_code, 200)
 

@@ -1,0 +1,10 @@
+name: Daily Maintenance
+on:
+    schedule:
+        - cron: '0 3 * * *' #runs every day at 3:00\
+jobs:
+    nightly-maintenance:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Remove old artifacts
+              run: rm -rf ./artifacts
