@@ -143,7 +143,9 @@ class TestClass(unittest.TestCase):
                 msg=f"Failed to get shipments: {response.content}"
             )
             shipments = response.json()
-            last_shipment_id = shipments['data'][-1]["id"] if shipments['data'] else 1
+            last_shipment_id = (
+                shipments['data'][-1]["id"] if shipments['data'] else 1
+            )
 
             data = {
                 "id": last_shipment_id,
