@@ -65,7 +65,7 @@ public class ShipmentService : IShipmentService
         return addedShipments;
     }
 
-    public async Task<ShipmentCS> UpdateShipment(int id, ShipmentCS updateShipment)
+    public ShipmentCS UpdateShipment(int id, ShipmentCS updateShipment)
     {
         List<ShipmentCS> shipments = GetAllShipments();
         var existingShipment = shipments.FirstOrDefault(s => s.Id == id);
@@ -101,6 +101,7 @@ public class ShipmentService : IShipmentService
 
         return existingShipment;
     }
+
     public ShipmentCS UpdateItemsInShipment(int shipmentId, List<ItemIdAndAmount> items){
         var shipments = GetAllShipments();
         var updatedShipment = shipments.Find(_ => _.Id == shipmentId);
@@ -113,6 +114,7 @@ public class ShipmentService : IShipmentService
         File.WriteAllText(path, json);
         return updatedShipment;
     }
+    
     public ShipmentCS PatchShipment(int id, string property, object newvalue){
         var shipments = GetAllShipments();
         var shipment = shipments.Find(_ => _.Id == id);

@@ -56,7 +56,7 @@ public class ShipmentService : IShipmentService
         return newShipment;
     }
 
-    public async Task<ShipmentCS> UpdateShipment(int id, ShipmentCS updateShipment)
+    public ShipmentCS UpdateShipment(int id, ShipmentCS updateShipment)
     {
         List<ShipmentCS> shipments = GetAllShipments();
         var existingShipment = shipments.FirstOrDefault(s => s.Id == id);
@@ -66,7 +66,6 @@ public class ShipmentService : IShipmentService
         }
 
         var currentDateTime = DateTime.Now;
-
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         existingShipment.order_id = updateShipment.order_id;
@@ -92,10 +91,12 @@ public class ShipmentService : IShipmentService
 
         return existingShipment;
     }
-    public ShipmentCS UpdateItemsInShipment(int shipmentId, List<ItemIdAndAmount> items){
+
+    public ShipmentCS UpdateItemsInShipment(int shipmentId, List<ItemIdAndAmount> items)
+    {
         var shipments = GetAllShipments();
         var updatedShipment = shipments.Find(_ => _.Id == shipmentId);
-        if(updatedShipment is null)
+        if (updatedShipment is null)
         {
             return null;
         }

@@ -19,45 +19,7 @@ class TestClass(unittest.TestCase):
         ]
         self.headers = httpx.Headers({'Api-Key': 'AdminKey'})
 
-    def test_01_get_transfers(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=(version + "/transfers"), headers=self.headers)
-                self.assertEqual(
-                    response.status_code, 200,
-                    msg=f"Response content: {response.content}"
-                )
-                self.assertEqual(type(response.json()), list)
-                if response.json():
-                    self.assertEqual(type(response.json()[0]), dict)
-
-    def test_02_get_transfer_id(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=(version + "/transfers/1"), headers=self.headers)
-                self.assertEqual(
-                    response.status_code, 200,
-                    msg=f"Response content: {response.content}"
-                )
-                self.assertEqual(type(response.json()), dict)
-                self.assertTrue(checkTransfer(response.json()))
-
-    def test_03_get_items_in_transfer(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.client.get(
-                    url=version + "/transfers/1/items", headers=self.headers)
-                self.assertEqual(
-                    response.status_code, 200,
-                    msg=f"Response content: {response.content}"
-                )
-                self.assertEqual(type(response.json()), list)
-                if response.json():
-                    self.assertEqual(type(response.json()[0]), dict)
-
-    def test_04_post_transfer(self):
+    def test_01_post_transfer(self):
         for version in self.versions:
             with self.subTest(version=version):
                 data = {
@@ -78,6 +40,64 @@ class TestClass(unittest.TestCase):
                     response.status_code, 201,
                     msg=f"Failed to create transfer: {response.content}"
                 )
+
+    def test_02_get_transfers(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/transfers"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Response content: {response.content}"
+                )
+                self.assertEqual(type(response.json()), list)
+                if response.json():
+                    self.assertEqual(type(response.json()[0]), dict)
+
+    def test_03_get_transfer_id(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/transfers"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get transfers: {response.content}"
+                )
+                transfers = response.json()
+                last_transfer_id = transfers[-1]["id"] if transfers else 1
+
+                response = self.client.get(
+                    url=(version + f"/transfers/{last_transfer_id}"),
+                    headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Response content: {response.content}"
+                )
+                self.assertEqual(type(response.json()), dict)
+                self.assertTrue(checkTransfer(response.json()))
+
+    def test_04_get_items_in_transfer(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/transfers"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get transfers: {response.content}"
+                )
+                transfers = response.json()
+                last_transfer_id = transfers[-1]["id"] if transfers else 1
+
+                response = self.client.get(
+                    url=(version + f"/transfers/{last_transfer_id}/items"),
+                    headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Response content: {response.content}"
+                )
+                self.assertEqual(type(response.json()), list)
+                if response.json():
+                    self.assertEqual(type(response.json()[0]), dict)
 
     def test_05_put_transfer_id(self):
         for version in self.versions:
@@ -143,6 +163,19 @@ class TestClass(unittest.TestCase):
     def test_06_delete_transfer_id(self):
         for version in self.versions:
             with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/transfers"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get transfers: {response.content}"
+                )
+                transfers = response.json()
+                last_transfer_id = transfers[-1]["id"] if transfers else 1
+
                 response = self.client.delete(
-                    url=(version + "/transfers/15"), headers=self.headers)
-                self.assertEqual(response.status_code, 200)
+                    url=(version + f"/transfers/{last_transfer_id}"),
+                    headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to delete transfer: {response.content}"
+                )
