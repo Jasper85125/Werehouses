@@ -116,13 +116,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Run application
-      run: |
-        dotnet build ./V1/Cargohub/Werehouses.csproj --configuration Release
-        dotnet build ./V2/Cargohub/Werehouses.csproj --configuration Release
-        dotnet run --configuration Release --project ./V1/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
-        dotnet run --configuration Release --project ./V2/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
-
     - name: Cache Python dependencies
       uses: actions/cache@v3
       with:
@@ -135,6 +128,13 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
+
+    - name: Run application
+      run: |
+        dotnet build ./V1/Cargohub/Werehouses.csproj --configuration Release
+        dotnet build ./V2/Cargohub/Werehouses.csproj --configuration Release
+        dotnet run --configuration Release --project ./V1/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
+        dotnet run --configuration Release --project ./V2/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
 
     - name: Install Python dependencies
       run: pip install -r ./PythonTests/requirements.txt
