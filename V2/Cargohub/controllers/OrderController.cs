@@ -35,10 +35,6 @@ namespace ControllersV2
         [HttpGet]
 public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
 {
-    // Validation of inputs
-    if (page < 1) page = 1;
-    if (pageSize <= 0) pageSize = 10;
-
     // Get UserRole and WarehouseID from HttpContext
     var userRole = HttpContext.Items["UserRole"]?.ToString();
     if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is int warehouseID))
@@ -76,6 +72,12 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
     // Pagination
     var ordersCount = ordersQuery.Count();
     var totalPages = (int)Math.Ceiling(ordersCount / (double)pageSize);
+    if (page == 0)
+    {
+        page = totalPages;
+    }
+    page = Math.Max(1, Math.Min(page, totalPages));
+
     var data = ordersQuery.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
     return Ok(new PaginationCS<OrderCS>
@@ -240,11 +242,6 @@ public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter 
             if (userRole == null || !listOfAllowedRoles.Contains(userRole))
             {
                 return Unauthorized();
-            }
-
-            if (id != updateOrder.Id)
-            {
-                return BadRequest();
             }
 
             var existingItemLine = _orderService.GetOrderById(id);

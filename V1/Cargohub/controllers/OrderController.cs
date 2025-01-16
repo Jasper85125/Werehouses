@@ -52,19 +52,14 @@ namespace ControllersV1
         [HttpPut("{id}")]
         public async Task<ActionResult<OrderCS>> UpdateOrder(int id, [FromBody] OrderCS updateOrder)
         {
-            if (id != updateOrder.Id)
-            {
-                return BadRequest();
-            }
-
-            var existingItemLine = _orderService.GetOrderById(id);
-            if (existingItemLine == null)
+            var existingOrder = _orderService.GetOrderById(id);
+            if (existingOrder == null)
             {
                 return NotFound();
             }
 
-            var updatedItemLine = await _orderService.UpdateOrder(id, updateOrder);
-            return Ok(updatedItemLine);
+            var updatedOrder = await _orderService.UpdateOrder(id, updateOrder);
+            return Ok(updatedOrder);
         }
 
         // DELETE: api/warehouse/5
