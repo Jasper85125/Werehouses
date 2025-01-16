@@ -25,105 +25,74 @@ public class ItemController : ControllerBase
 {
     private readonly IItemService _itemService;
     private readonly IInventoryService _inventoryService;
+    private readonly ILocationService _locationService;
 
     // Constructor to initialize the ItemController with an IItemService instance
-    public ItemController(IItemService itemService, IInventoryService inventoryService)
+    public ItemController(IItemService itemService, IInventoryService inventoryService, ILocationService locationService)
     {
         _itemService = itemService;
         _inventoryService = inventoryService;
+        _locationService = locationService;
     }
 
-    // GET: items
-    // Retrieves all items
-    //example route:
-    //http://localhost:5002/api/v2/items/page?page=2&pageSize=1&item_line=21
-    // [HttpGet("page")]
-    // public ActionResult<PaginationCS<ItemCS>> GetAllItems([FromQuery] itemFilter tofilter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-    // {
-    //     List<string> listOfAllowedRoles = new List<string>()
-    //     { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
-    //     var userRole = HttpContext.Items["UserRole"]?.ToString();
-
-    //     if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-    //     {
-    //         return Unauthorized();
-    //     }
-
-    //     var items = _itemService.GetAllItems();
-    //     var itemsquery = items.AsQueryable();
-    //     if (tofilter.GetType().GetProperties().All(prop => prop.GetValue(tofilter) != null))
-    //     {
-    //         var itemsToFilter = items.AsQueryable();
-    //         if (!string.IsNullOrEmpty(tofilter.code))
-    //         {
-    //             itemsToFilter = itemsToFilter.Where(_ => _.code == tofilter.code);
-    //         }
-    //         if (!string.IsNullOrEmpty(tofilter.commodity_code))
-    //         {
-    //             itemsToFilter = itemsToFilter.Where(_ => _.commodity_code == tofilter.commodity_code);
-    //         }
-    //         if (!string.IsNullOrEmpty(tofilter.upc_code))
-    //         {
-    //             itemsToFilter = itemsToFilter.Where(_ => _.upc_code == tofilter.upc_code);
-    //         }
-    //         if (!string.IsNullOrEmpty(tofilter.model_number))
-    //         {
-    //             itemsToFilter = itemsToFilter.Where(_ => _.model_number == tofilter.model_number);
-    //         }
-    //         if (tofilter.item_line.HasValue && tofilter.item_line > 0)
-    //         {
-    //             itemsToFilter = itemsToFilter.Where(_ => _.item_line == tofilter.item_line);
-    //         }
-    //         if (tofilter.item_group.HasValue && tofilter.item_group > 0)
-    //         {
-    //             itemsToFilter = itemsToFilter.Where(_ => _.item_group == tofilter.item_group);
-    //         }
-    //         if (tofilter.item_type.HasValue && tofilter.item_type > 0)
-    //         {
-    //             itemsToFilter = itemsToFilter.Where(_ => _.item_type == tofilter.item_type);
-    //         }
-    //         var filtereditemsCount = itemsToFilter.Count();
-    //         int totalPages = (int)Math.Ceiling(filtereditemsCount / (double)pageSize);
-
-    //         var index1 = (page - 1) * pageSize;
-    //         var filteredpageItems = itemsToFilter.Skip(index1).Take(pageSize).ToList();
-
-    //         var result1 = new PaginationCS<ItemCS>{ Page=page, TotalPages=totalPages, Data=filteredpageItems};
-    //         return Ok(result1);
-    //     }
-    //     int itemsCount = items.Count();
-    //     int pagetotal = (int)Math.Ceiling(itemsCount / (double)pageSize);
-
-    //     var index = (page - 1) * pageSize;
-    //     var pageItems = itemsquery.Skip(index).Take(pageSize).ToList();
-    //     var result2 = new PaginationCS<ItemCS>
-    //     {
-    //         Page = page,
-    //         PageSize = pageSize,
-    //         TotalPages = pagetotal,
-    //         Data = pageItems
-    //     };
-    //     return Ok(result2);
-    // }
-    /* 
-    ik wilde het als een normale httpget maar dat breekt dan de test voor gewoon getallitems endpoint (niet service) dus het is in httpget("page")
-    ik laat het hier just in case
-    example route: filter can be doen without inputting which page you waant to be on and how big the page should be 
-    http://localhost:5002/api/v2/items/page?page=2&pageSize=1&item_line=21
-    */
     [HttpGet()]
     public ActionResult<PaginationCS<ItemCS>> GetAllItems(
         [FromQuery] itemFilter tofilter, 
         [FromQuery] int page = 1, 
         [FromQuery] int pageSize = 10)
     {
-        List<string> listOfAllowedRoles = new List<string>()
-        { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
-
-        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is string warehouseID))
         {
-            return Unauthorized();
+            return BadRequest("WarehouseID is missing or invalid.");
+        }
+
+        var allowedRoles = new List<string> { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
+        if (string.IsNullOrEmpty(userRole) || !allowedRoles.Contains(userRole))
+        {
+            if (userRole == "Operative" || userRole == "Supervisor")
+            {
+                // Parse the warehouse IDs from the input
+                var warehouseIds = warehouseID.Split(',').Select(int.Parse).ToList();
+
+                // Get all locations connected to the user's warehouses
+                var locations = _locationService.GetAllLocations();
+                var filteredLocations = locations.Where(location => warehouseIds.Contains(location.warehouse_id)).ToList();
+
+                if (!filteredLocations.Any())
+                {
+                    return NotFound("No locations found for the specified warehouses.");
+                }
+
+                // Extract location IDs for inventory lookup
+                var locationIds = filteredLocations.Select(location => location.Id).ToList();
+
+                // Get all inventories connected to the filtered locations
+                var inventoriesByLocation = _inventoryService.GetInventoriesByLocationId(locationIds);
+
+                if (!inventoriesByLocation.Any())
+                {
+                    return NotFound("No inventories found for the specified locations.");
+                }
+
+                // Get all items
+                var allItems = _itemService.GetAllItems();
+
+                // Filter items that exist in the inventories connected to the user's warehouses
+                var filteredItems = allItems.Where(item => inventoriesByLocation.Any(inventory => inventory.item_id == item.uid)).ToList();
+
+                if (!filteredItems.Any())
+                {
+                    return NotFound("No items found for the specified warehouses.");
+                }
+
+                return Ok(filteredItems);
+            }
+            
+            else
+            {
+                return Unauthorized();
+            }
         }
         if (tofilter == null)
         {
@@ -180,24 +149,7 @@ public class ItemController : ControllerBase
 
         return Ok(result);
     }
-    // GET: items
-    // Retrieves all items
-    /*[HttpGet()]
-    public ActionResult<IEnumerable<ItemCS>> GetAllItems()
-    {
-        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
-        var userRole = HttpContext.Items["UserRole"]?.ToString();
-
-        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-        {
-            return Unauthorized();
-        }
-
-        var items = _itemService.GetAllItems();
-        return Ok(items);
-    }
-    */
+    
 
     //GET: generate a report of a specific item by its uid it wil recieve a list of u and do it for all of the give items. it contains short_description unit_purchase_quantity unit_order_quantity created_at updated_at. it should save the report in a file.
     [HttpGet("report")]
