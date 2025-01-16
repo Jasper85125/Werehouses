@@ -58,8 +58,8 @@ public class ShipmentController : ControllerBase
     //example route: /shipments?page=1&pageSize=10&order_id=1
     [HttpGet()]
     public ActionResult<PaginationCS<ShipmentCS>> GetAllShipments(
-        [FromQuery] shipmentFilter tofilter, 
-        [FromQuery] int page = 1, 
+        [FromQuery] shipmentFilter tofilter,
+        [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
         List<string> listOfAllowedRoles = new List<string>()
@@ -70,7 +70,8 @@ public class ShipmentController : ControllerBase
         {
             return Unauthorized();
         }
-        if(tofilter == null){
+        if (tofilter == null)
+        {
             tofilter = new shipmentFilter();
         }
         var items = _shipmentService.GetAllShipments();
@@ -293,7 +294,7 @@ public class ShipmentController : ControllerBase
         {
             return Unauthorized();
         }
-        
+
         if (property is null || newvalue is null)
         {
             return BadRequest("invalid request");
