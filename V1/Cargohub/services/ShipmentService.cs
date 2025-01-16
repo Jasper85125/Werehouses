@@ -66,10 +66,7 @@ public class ShipmentService : IShipmentService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
-
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Update the existing shipment with new values
@@ -96,10 +93,12 @@ public class ShipmentService : IShipmentService
 
         return existingShipment;
     }
-    public ShipmentCS UpdateItemsInShipment(int shipmentId, List<ItemIdAndAmount> items){
+
+    public ShipmentCS UpdateItemsInShipment(int shipmentId, List<ItemIdAndAmount> items)
+    {
         var shipments = GetAllShipments();
         var updatedShipment = shipments.Find(_ => _.Id == shipmentId);
-        if(updatedShipment is null)
+        if (updatedShipment is null)
         {
             return null;
         }
