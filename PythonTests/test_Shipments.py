@@ -80,42 +80,52 @@ class TestClass(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
 
     def test_06_put_shipment_by_id(self):
-        data = {
-            "order_id": 1,
-            "source_id": 1,
-            "order_date": "2023-01-01T00:00:00Z",
-            "request_date": "2023-01-01T00:00:00Z",
-            "shipment_date": "2023-01-01T00:00:00Z",
-            "shipment_type": "TypeA",
-            "shipment_status": "Pending",
-            "notes": "Updated test shipment",
-            "carrier_code": "CARRIER123",
-            "carrier_description": "Updated Carrier Description",
-            "service_code": "SERVICE123",
-            "payment_type": "Prepaid",
-            "transfer_mode": "Air",
-            "total_package_count": 3,
-            "total_package_weight": 10.5,
-            "created_at": "2023-01-01T00:00:00Z",
-            "updated_at": "2023-01-01T00:00:00Z",
-            "items": [
-                {
-                    "item_id": "P000002",
-                    "amount": 2
-                },
-                {
-                    "item_id": "P000004",
-                    "amount": 1
-                },
-                {
-                    "item_id": "P000006",
-                    "amount": 5
-                }
-            ]
-        }
-
         for version in self.versions:
             with self.subTest(version=version):
+                response = self.client.get(
+                    url=(version + "/shipments"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get clients: {response.content}"
+                )
+                shipments = response.json()
+                last_shipment_id = shipments[-1]["id"]
+
+                data = {
+                    "id": last_shipment_id,
+                    "order_id": 1,
+                    "source_id": 1,
+                    "order_date": "2023-01-01T00:00:00Z",
+                    "request_date": "2023-01-01T00:00:00Z",
+                    "shipment_date": "2023-01-01T00:00:00Z",
+                    "shipment_type": "TypeA",
+                    "shipment_status": "Pending",
+                    "notes": "Updated test shipment",
+                    "carrier_code": "CARRIER123",
+                    "carrier_description": "Updated Carrier Description",
+                    "service_code": "SERVICE123",
+                    "payment_type": "Prepaid",
+                    "transfer_mode": "Air",
+                    "total_package_count": 3,
+                    "total_package_weight": 10.5,
+                    "created_at": "2023-01-01T00:00:00Z",
+                    "updated_at": "2023-01-01T00:00:00Z",
+                    "items": [
+                        {
+                            "item_id": "P000002",
+                            "amount": 2
+                        },
+                        {
+                            "item_id": "P000004",
+                            "amount": 1
+                        },
+                        {
+                            "item_id": "P000006",
+                            "amount": 5
+                        }
+                    ]
+                }
+                
                 # Get the last client ID
                 response = self.client.get(
                     url=(version + "/shipments"), headers=self.headers)

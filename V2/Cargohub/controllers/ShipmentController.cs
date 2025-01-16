@@ -236,29 +236,29 @@ public class ShipmentController : ControllerBase
 
     // PUT: api/warehouse/5
     [HttpPut("{id}")]
-    public Task<ActionResult<ShipmentCS>> UpdateShipment(int id, [FromBody] ShipmentCS updateShipment)
+    public ActionResult<ShipmentCS> UpdateShipment([FromRoute] int id, [FromBody] ShipmentCS updateShipment)
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Logistics" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
 
         if (userRole == null || !listOfAllowedRoles.Contains(userRole))
         {
-            return Task.FromResult<ActionResult<ShipmentCS>>(Unauthorized());
+            return Unauthorized();
         }
 
         if (id != updateShipment.Id)
         {
-            return Task.FromResult<ActionResult<ShipmentCS>>(BadRequest());
+            return BadRequest();
         }
 
         var existingItemLine = _shipmentService.GetShipmentById(id);
         if (existingItemLine == null)
         {
-            return Task.FromResult<ActionResult<ShipmentCS>>(NotFound());
+            return NotFound();
         }
 
         var updatedItemLine = _shipmentService.UpdateShipment(id, updateShipment);
-        return Task.FromResult<ActionResult<ShipmentCS>>(Ok(updatedItemLine));
+        return Ok(updatedItemLine);
     }
 
     [HttpPut("{shipmentId}/items")]
