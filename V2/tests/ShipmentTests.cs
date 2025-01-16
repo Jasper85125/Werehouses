@@ -203,7 +203,7 @@ namespace TestsV2
         {
             // Arrange
             var updatedShipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24 };
-            _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).ReturnsAsync(updatedShipment);
+            _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).Returns(updatedShipment);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -215,7 +215,7 @@ namespace TestsV2
             };
 
             // Act
-            var result = await _shipmentController.UpdateShipment(1, updatedShipment);
+            var result = _shipmentController.UpdateShipment(1, updatedShipment);
             var okResult = result.Result as OkObjectResult;
             var returnedShipment = okResult.Value as ShipmentCS;
 
@@ -291,7 +291,7 @@ namespace TestsV2
         {
             // Arrange
             var updatedShipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24 };
-            _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).ReturnsAsync((ShipmentCS)null);
+            _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).Returns((ShipmentCS)null);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -303,7 +303,7 @@ namespace TestsV2
             };
 
             // Act
-            var result = await _shipmentController.UpdateShipment(1, updatedShipment);
+            var result = _shipmentController.UpdateShipment(1, updatedShipment);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));

@@ -119,10 +119,10 @@ namespace TestsV1
         {
             // Arrange
             var updatedShipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24 };
-            _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).ReturnsAsync(updatedShipment);
+            _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).Returns(updatedShipment);
 
             // Act
-            var result = await _shipmentController.UpdateShipment(1, updatedShipment);
+            var result = _shipmentController.UpdateShipment(1, updatedShipment);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -172,10 +172,10 @@ namespace TestsV1
         {
             // Arrange
             var updatedShipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24 };
-            _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).ReturnsAsync((ShipmentCS)null);
+            _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).Returns((ShipmentCS)null);
 
             // Act
-            var result = await _shipmentController.UpdateShipment(1, updatedShipment);
+            var result = _shipmentController.UpdateShipment(1, updatedShipment);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
