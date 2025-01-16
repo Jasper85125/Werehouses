@@ -1,5 +1,6 @@
 import unittest
 import httpx
+# from rich import _console
 
 
 def checkWarehouse(warehouse):
@@ -38,35 +39,8 @@ class TestClass(unittest.TestCase):
         ]
         self.headers = {'Api-Key': 'AdminKey'}
 
-    def test_get_warehouses_v1(self):
-        for version in ["http://localhost:5001/api/v1"]:
-            with self.subTest(version=version):
-                response = self.warehouse.get(
-                    url=(version + "/warehouses"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-                self.assertEqual(type(response.json()), list)
-
-    def test_get_warehouses_v2(self):
-        for version in ["http://localhost:5002/api/v2"]:
-            with self.subTest(version=version):
-                response = self.warehouse.get(
-                    url=(version + "/warehouses"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-                self.assertEqual(type(response.json()), dict)
-
-    def test_get_warehouse_id(self):
-        for version in self.versions:
-            with self.subTest(version=version):
-                response = self.warehouse.get(
-                    url=(version + "/warehouses/1"), headers=self.headers
-                )
-                self.assertEqual(response.status_code, 200)
-
-    def test_post_warehouse(self):
+    def test_01_post_warehouse(self):
         data = {
-            "id": 99999,
             "code": "WH99999",
             "name": "Warehouse 99999",
             "address": "1234 Test St",
@@ -88,11 +62,49 @@ class TestClass(unittest.TestCase):
                     url=(version + "/warehouses"),
                     headers=self.headers, json=data
                 )
+                # Check de status code
                 self.assertEqual(response.status_code, 201)
 
-    def test_put_warehouse_id(self):
+    def test_02_get_warehouses_v1(self):
+        for version in ["http://localhost:5001/api/v1"]:
+            with self.subTest(version=version):
+                response = self.warehouse.get(
+                    url=(version + "/warehouses"), headers=self.headers
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(type(response.json()), list)
+
+    def test_03_get_warehouses_v2(self):
+        for version in ["http://localhost:5002/api/v2"]:
+            with self.subTest(version=version):
+                response = self.warehouse.get(
+                    url=(version + "/warehouses"),
+                    headers=self.headers)
+                # Check de status code
+                self.assertEqual(response.status_code, 200)
+                # check the type of the response
+                self.assertEqual(type(response.json()), dict)
+                # check if the response is a dictionary
+                self.assertEqual(type(response.json()['data'][1]), dict)
+
+    def test_04_get_warehouse_id(self):
+        for version in self.versions:
+            with self.subTest(version=version):
+                response = self.warehouse.get(
+                    version + "/warehouses",
+                    headers=self.headers)
+                warehouses = response.json()
+                if version == "http://localhost:5001/api/v1":
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(type(warehouses), list)
+                    self.assertTrue(checkWarehouse(warehouses[-1]))
+                else:
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(type(warehouses['data']), list)
+                    self.assertTrue(checkWarehouse(warehouses['data'][-1]))
+
+    def test_05_put_warehouse_id(self):
         data = {
-            "id": 2,
             "code": "AAAAAAA",
             "name": "Updated Warehouse",
             "address": "Updated Address",
@@ -110,16 +122,57 @@ class TestClass(unittest.TestCase):
         }
         for version in self.versions:
             with self.subTest(version=version):
+                # Get the last client ID
+                response = self.warehouse.get(
+                    url=(version + "/warehouses"), headers=self.headers)
+                self.assertEqual(
+                    response.status_code, 200,
+                    msg=f"Failed to get clients: {response.content}"
+                )
+                warehouses = response.json()
+                if version == 'http://localhost:5001/api/v1':
+                    last_warehouse_id = warehouses[-1]["id"] if warehouses \
+                        else 1
+                    # print(last_warehouse_id)
+                else:
+                    response = self.warehouse.get(
+                        url=(version + "/warehouses?page=0"),
+                        headers=self.headers)
+                    warehouses = response.json()
+                    last_warehouse_id = warehouses['data'][-1]["id"] \
+                        if warehouses else 1
+                    # print(last_warehouse_id)
                 response = self.warehouse.put(
-                    url=(version + "/warehouses/2"),
+                    url=(version + f"/warehouses/{last_warehouse_id}"),
                     headers=self.headers, json=data
                 )
                 self.assertEqual(response.status_code, 200)
+                if version == 'http://localhost:5001/api/v1':
+                    self.assertEqual(type(response.json()), dict)
+                    self.assertTrue(checkWarehouse(warehouses[-1]))
+                else:
+                    self.assertEqual(type(response.json()), dict)
+                    self.assertTrue(checkWarehouse(warehouses['data'][-1]))
 
-    def test_delete_warehouse_id(self):
+    def test_06_delete_warehouse_id(self):
         for version in self.versions:
             with self.subTest(version=version):
+                response = self.warehouse.get(
+                    url=(version + "/warehouses"), headers=self.headers)
+                self.assertEqual(response.status_code, 200,
+                                 msg=f"Response content: {response.content}")
+                warehouses = response.json()
+                if version == 'http://localhost:5001/api/v1':
+                    last_warehouse_id = warehouses[-1]["id"] if warehouses \
+                        else 1
+                else:
+                    response = self.warehouse.get(
+                        url=(version + "/warehouses?page=0"),
+                        headers=self.headers)
+                    warehouses = response.json()
+                    last_warehouse_id = warehouses['data'][-1]["id"] \
+                        if warehouses else 1
                 response = self.warehouse.delete(
-                    url=(version + "/warehouses/3"), headers=self.headers
-                )
+                    url=(version + f"/warehouses/{last_warehouse_id}"),
+                    headers=self.headers)
                 self.assertEqual(response.status_code, 200)
