@@ -34,7 +34,7 @@ namespace ControllersV1
             }
             return Ok(orders);
         }
-        
+
         //get orders for clients using the shipp_to and bill_to fields
         [HttpGet("clients/{client_id}")]
         public ActionResult<IEnumerable<OrderCS>> GetOrdersByClient([FromRoute] int client_id)
@@ -46,11 +46,11 @@ namespace ControllersV1
             }
             return Ok(orders);
         }
-        
+
 
         // PUT: api/warehouse/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<OrderCS>> UpdateOrder(int id, [FromBody] OrderCS updateOrder)
+        public ActionResult<OrderCS> UpdateOrder(int id, [FromBody] OrderCS updateOrder)
         {
             var existingOrder = _orderService.GetOrderById(id);
             if (existingOrder == null)
@@ -58,7 +58,7 @@ namespace ControllersV1
                 return NotFound();
             }
 
-            var updatedOrder = await _orderService.UpdateOrder(id, updateOrder);
+            var updatedOrder = _orderService.UpdateOrder(id, updateOrder);
             return Ok(updatedOrder);
         }
 
@@ -112,7 +112,7 @@ namespace ControllersV1
         }
 
         [HttpPut("{orderId}/items")]
-        public async Task<ActionResult<OrderCS>> UpdateOrderItems(int orderId, [FromBody] List<ItemIdAndAmount> items)
+        public ActionResult<OrderCS> UpdateOrderItems(int orderId, [FromBody] List<ItemIdAndAmount> items)
         {
             var order = _orderService.GetOrderById(orderId);
             if (order == null)
@@ -125,7 +125,7 @@ namespace ControllersV1
                 return BadRequest("The item field is required.");
             }
 
-            var updatedOrder = await _orderService.UpdateOrderItems(orderId, items);
+            var updatedOrder = _orderService.UpdateOrderItems(orderId, items);
             return Ok(updatedOrder);
         }
 

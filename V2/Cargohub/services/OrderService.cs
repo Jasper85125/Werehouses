@@ -95,7 +95,7 @@ public class OrderService : IOrderService
         return warehouseOrders;
     }
 
-    public Task<OrderCS> UpdateOrder(int id, OrderCS updateOrder)
+    public OrderCS UpdateOrder(int id, OrderCS updateOrder)
     {
         List<OrderCS> orders = GetAllOrders();
         var existingOrder = orders.FirstOrDefault(o => o.Id == id);
@@ -105,7 +105,6 @@ public class OrderService : IOrderService
         }
 
         var currentDateTime = DateTime.Now;
-
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         existingOrder.source_id = updateOrder.source_id;
@@ -129,10 +128,11 @@ public class OrderService : IOrderService
         existingOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
-        File.WriteAllTextAsync(path, jsonData);
+        File.WriteAllText(path, jsonData);
 
-        return Task.FromResult(existingOrder);
+        return existingOrder;
     }
+
     public OrderCS PatchOrder(int id, string property, object newvalue)
     {
         var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -226,7 +226,7 @@ public class OrderService : IOrderService
         return order.items;
     }
 
-    public Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> items)
+    public OrderCS UpdateOrderItems(int orderId, List<ItemIdAndAmount> items)
     {
         List<OrderCS> orders = GetAllOrders();
         var existingOrder = orders.FirstOrDefault(o => o.Id == orderId);
@@ -236,18 +236,14 @@ public class OrderService : IOrderService
         }
 
         existingOrder.items = items;
-
         var currentDateTime = DateTime.Now;
-
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-
         existingOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
-
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
-        File.WriteAllTextAsync(path, jsonData);
-
-        return Task.FromResult(existingOrder);
+        File.WriteAllText(path, jsonData);
+        return existingOrder;
     }
+
     public void DeleteOrders(List<int> ids)
     {
         var orders = GetAllOrders();

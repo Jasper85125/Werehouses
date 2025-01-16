@@ -9,10 +9,10 @@ public interface IOrderService
     List<OrderCS> GetOrdersByShipmentId(int shipmentId);
     OrderCS CreateOrder(OrderCS newOrder);
     List<OrderCS> CreateMultipleOrders(List<OrderCS> orders);
-    Task<OrderCS> UpdateOrder(int id, OrderCS updateOrder);
+    OrderCS UpdateOrder(int id, OrderCS updateOrder);
     OrderCS PatchOrder(int id, string property, object newvalue);
     void DeleteOrder(int id);
     void DeleteOrders(List<int> ids);
     List<ItemIdAndAmount> GetItemsByOrderId(int orderId);
-    Task<OrderCS> UpdateOrderItems(int orderId, List<ItemIdAndAmount> items);
+    OrderCS UpdateOrderItems(int orderId, List<ItemIdAndAmount> items);
 }

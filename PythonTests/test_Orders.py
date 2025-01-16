@@ -277,8 +277,8 @@ class TestOrdersAPI(unittest.TestCase):
                     orders = response.json()
                     last_order_id = orders['data'][-1]["id"] \
                         if orders else 1
-            response = self.client.delete(
-                url=(version + f"/orders/{last_order_id}"),
-                headers=self.headers)
+                response = self.client.delete(
+                    url=(version + f"/orders/{last_order_id}"),
+                    headers=self.headers)
 
             self.assertEqual(response.status_code, 200)
