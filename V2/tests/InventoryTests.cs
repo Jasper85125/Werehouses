@@ -14,12 +14,14 @@ namespace inventory.TestsV2
     {
         private Mock<IInventoryService> _mockInventoryService;
         private InventoryController _inventoryController;
+        private Mock<ILocationService> _mockLocationService;
 
         [TestInitialize]
         public void Setup()
         {
             _mockInventoryService = new Mock<IInventoryService>();
-            _inventoryController = new InventoryController(_mockInventoryService.Object);
+            _mockLocationService = new Mock<ILocationService>();
+            _inventoryController = new InventoryController(_mockInventoryService.Object, _mockLocationService.Object);
         }
 
         [TestMethod]
@@ -35,6 +37,7 @@ namespace inventory.TestsV2
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["WarehouseID"] = "1,2,3,4";
 
             // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
