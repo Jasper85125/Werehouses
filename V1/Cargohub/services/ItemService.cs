@@ -49,6 +49,8 @@ public class ItemService : IItemService
     public ItemCS CreateItem(ItemCS item)
     {
         List<ItemCS> items;
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         if (File.Exists(path))
         {
@@ -65,14 +67,15 @@ public class ItemService : IItemService
         {
             var maxUid = items.Max(i => i.uid);
             var numericPart = int.Parse(maxUid.Substring(1));
-            newUid = "P" + (numericPart + 1).ToString("D6"); 
+            newUid = "P" + (numericPart + 1).ToString("D6");
         }
         else
         {
-            newUid = "P000001"; 
+            newUid = "P000001";
         }
         item.uid = newUid;
-
+        item.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        item.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         items.Add(item);
 
         var updatedJsonData = JsonConvert.SerializeObject(items, Formatting.Indented);

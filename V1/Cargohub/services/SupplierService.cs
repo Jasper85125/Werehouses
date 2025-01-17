@@ -34,8 +34,13 @@ public class SupplierService : ISupplierService
     public SupplierCS CreateSupplier(SupplierCS newSupplier)
     {
         List<SupplierCS> suppliers = GetAllSuppliers();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         newSupplier.Id = suppliers.Count > 0 ? suppliers.Max(o => o.Id) + 1 : 1;
+
+        newSupplier.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newSupplier.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         suppliers.Add(newSupplier);
 
         var jsonData = JsonConvert.SerializeObject(suppliers, Formatting.Indented);

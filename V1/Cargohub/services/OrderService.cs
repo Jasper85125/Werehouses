@@ -32,12 +32,17 @@ public class OrderService : IOrderService
     }
     public OrderCS CreateOrder(OrderCS newOrder)
     {
-
         List<OrderCS> orders = GetAllOrders();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
+        // Add the new order record to the list
         newOrder.Id = orders.Count > 0 ? orders.Max(o => o.Id) + 1 : 1;
+        newOrder.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         orders.Add(newOrder);
 
+        // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
         File.WriteAllText(path, jsonData);
         return newOrder;

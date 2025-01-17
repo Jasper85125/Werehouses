@@ -31,6 +31,8 @@ public class ItemTypeService : IItemtypeService
     public async Task<ItemTypeCS> CreateItemType(ItemTypeCS newItemType)
     {
         List<ItemTypeCS> items = GetAllItemtypes();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         if (items.Any())
         {
@@ -40,7 +42,8 @@ public class ItemTypeService : IItemtypeService
         {
             newItemType.Id = 1;
         }
-
+        newItemType.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newItemType.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         items.Add(newItemType);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
