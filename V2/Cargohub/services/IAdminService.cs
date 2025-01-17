@@ -4,4 +4,5 @@ public interface IAdminService
 {
     string AddData(IFormFile file);
     string GenerateReport();
+    ApiKeyModel UpdateAPIKeys(string ApiKey, ApiKeyModel NewApiKey);
 }

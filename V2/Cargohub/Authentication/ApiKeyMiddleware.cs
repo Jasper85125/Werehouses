@@ -1,14 +1,17 @@
-namespace ApiKeyAuthentication.Authentication;
+namespace ServicesV2;
 
 public class ApiKeyMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IConfiguration _configuration;
+    private readonly ApiKeyStorage _apiKeyStorage; 
+
 
     public ApiKeyMiddleware(RequestDelegate next, IConfiguration configuration)
     {
         _next = next;
         _configuration = configuration;
+        _apiKeyStorage = new ApiKeyStorage();
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -27,7 +30,7 @@ public class ApiKeyMiddleware
             return;
         }
 
-        var apiKey = ApiKeyStorage.GetApiKeys().FirstOrDefault(k => k.Key == extractedApiKey);
+        var apiKey = _apiKeyStorage.GetApiKeys().FirstOrDefault(k => k.Key == extractedApiKey);
         
         if (apiKey == null)
         {

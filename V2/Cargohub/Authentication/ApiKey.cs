@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace ApiKeyAuthentication.Authentication;
+namespace ServicesV2;
 public class ApiKeyModel
 {
     public string Key {get; set;}
@@ -11,7 +11,7 @@ public class ApiKeyModel
 public class ApiKeyStorage
 {
     private static string _path = "../../data/apikeys.json";
-    public static List<ApiKeyModel> GetApiKeys()
+    public List<ApiKeyModel> GetApiKeys()
     {
         if (!File.Exists(_path))
         {
@@ -22,7 +22,7 @@ public class ApiKeyStorage
         return apikeys ?? new List<ApiKeyModel>();
     }
 
-    public static void UpdateApiKey(List<ApiKeyModel> apikeys)
+    public void UpdateApiKey(List<ApiKeyModel> apikeys)
     {
         var jsonData = JsonConvert.SerializeObject(apikeys, Formatting.Indented);
         File.WriteAllText(_path, jsonData);

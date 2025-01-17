@@ -4,15 +4,18 @@ using System.Linq;
 
 namespace ControllersV2;
 
+
 [ApiExplorerSettings(IgnoreApi = true)]
 [ApiController]
 [Route("api/v2/admin")]
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminservice;
+    ApiKeyStorage _apikeystorage;
     public AdminController(IAdminService adminservice)
     {
         _adminservice = adminservice;
+        _apikeystorage = new ApiKeyStorage();
     }
 
     // POST: /AddData. this is a function that is used to add data to the data folder. it can recieve either be a .json or .csv file. but when the function is going to save the file, it will save it as a .json file.
@@ -109,6 +112,31 @@ public class AdminController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { error = "An error occurred while generating the report.", details = ex.Message });
+        }
+    }
+
+    // put request to update the API keys
+    [HttpPut("UpdateAPIKeys")]
+    public IActionResult UpdateAPIKeys([FromQuery]string ApiKey,[FromBody]ApiKeyModel NewApiKey)
+    {
+        // Allowed roles
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        // Authorization check
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized("You are not authorized to update API keys.");
+        }
+
+        try
+        {
+            var newKey = _adminservice.UpdateAPIKeys(ApiKey, NewApiKey);
+            return Ok(newKey);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(400, new { error = "An error occurred while updating the API keys.", details = ex.Message });
         }
     }
 }
