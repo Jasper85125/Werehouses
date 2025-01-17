@@ -13,5 +13,5 @@ public interface IItemLineService
     void DeleteItemLine(int id);
     List<ItemCS> GetItemsByItemLineId(int itemlineId);
     void DeleteItemLines(List<int> ids);
-    ItemLineCS PatchItemLine(int id, ItemLineCS itemLine);
+    ItemLineCS PatchItemLine(int id, string property, object newvalue);
 }
