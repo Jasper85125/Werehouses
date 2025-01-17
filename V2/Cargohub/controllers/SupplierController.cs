@@ -147,7 +147,7 @@ public class SupplierController : ControllerBase
     }
   
     [HttpPatch("{id}")]
-    public ActionResult<SupplierCS> PatchSupplier([FromRoute] int id, [FromBody] SupplierCS patch)
+    public ActionResult<SupplierCS> PatchSupplier([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue)
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
@@ -163,7 +163,7 @@ public class SupplierController : ControllerBase
             return NotFound();
         }
 
-        var updatedSupplier = _supplierService.PatchSupplier(id, patch);
+        var updatedSupplier = _supplierService.PatchSupplier(id, property, newvalue);
         if (updatedSupplier is null)
         {
             return BadRequest("Failed to patch supplier.");

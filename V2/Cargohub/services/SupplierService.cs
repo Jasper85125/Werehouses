@@ -117,28 +117,53 @@ public class SupplierService : ISupplierService
         return items?.Where(item => item.supplier_id == supplierId).ToList() ?? new List<ItemCS>();
     }
 
-    public SupplierCS PatchSupplier(int id, SupplierCS updateSupplier)
+    public SupplierCS PatchSupplier(int id, string property, object newvalue)
     {
         var allSuppliers = GetAllSuppliers();
-        var supplierToUpdate = allSuppliers.Single(supplier => supplier.Id == id);
+        var supplierToUpdate = allSuppliers.Find(_ => _.Id == id);
 
         if (supplierToUpdate is not null)
         {
             var currentDateTime = DateTime.Now;
 
             var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-
-            supplierToUpdate.Code = updateSupplier.Code ?? supplierToUpdate.Code;
-            supplierToUpdate.Name = updateSupplier.Name ?? supplierToUpdate.Name;
-            supplierToUpdate.Address = updateSupplier.Address ?? supplierToUpdate.Address;
-            supplierToUpdate.address_extra = updateSupplier.address_extra ?? supplierToUpdate.address_extra;
-            supplierToUpdate.City = updateSupplier.City ?? supplierToUpdate.City;
-            supplierToUpdate.zip_code = updateSupplier.zip_code ?? supplierToUpdate.zip_code;
-            supplierToUpdate.Province = updateSupplier.Province ?? supplierToUpdate.Province;
-            supplierToUpdate.Country = updateSupplier.Country ?? supplierToUpdate.Country;
-            supplierToUpdate.contact_name = updateSupplier.contact_name ?? supplierToUpdate.contact_name;
-            supplierToUpdate.PhoneNumber = updateSupplier.PhoneNumber ?? supplierToUpdate.PhoneNumber;
-            supplierToUpdate.Reference = updateSupplier.Reference ?? supplierToUpdate.Reference;
+            switch(property){
+                case "Code":
+                    supplierToUpdate.Code = newvalue.ToString();
+                    break;
+                case "Name":
+                    supplierToUpdate.Name = newvalue.ToString();
+                    break;
+                case "Address":
+                    supplierToUpdate.Address = newvalue.ToString();
+                    break;
+                case "address_extra":
+                    supplierToUpdate.address_extra = newvalue.ToString();
+                    break;
+                case "City":
+                    supplierToUpdate.City = newvalue.ToString();
+                    break;
+                case "zip_code":
+                    supplierToUpdate.zip_code = newvalue.ToString();
+                    break;
+                case "Province":
+                    supplierToUpdate.Province = newvalue.ToString();
+                    break;
+                case "Country":
+                    supplierToUpdate.Country = newvalue.ToString();
+                    break;
+                case "contact_name":
+                    supplierToUpdate.contact_name = newvalue.ToString();
+                    break;
+                case "PhoneNumber":
+                    supplierToUpdate.PhoneNumber = newvalue.ToString();
+                    break;
+                case "Reference":
+                    supplierToUpdate.Reference = newvalue.ToString();
+                    break;
+                default:
+                    break;
+            }
             supplierToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
             var jsonData = JsonConvert.SerializeObject(allSuppliers, Formatting.Indented);
