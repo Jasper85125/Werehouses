@@ -130,4 +130,19 @@ public class AdminService : IAdminService
         return key;
     }
 
+    public ApiKeyModel DeleteAPIKeys(string ApiKey)
+    {
+        var apiKeysPath = Path.Combine(Directory.GetCurrentDirectory(),"..","..", "apikeys.json");
+        // Get all the apikeys
+        var ListApiKeys = _apikeystorage.GetApiKeys();
+        // find where the apisecret is stored and then change the apikeys
+        var key = ListApiKeys.FirstOrDefault(k => k.Key == ApiKey);
+        if (key == null)
+        {
+            throw new Exception("API Key not found.");
+        }
+        ListApiKeys.Remove(key);
+        _apikeystorage.UpdateApiKey(ListApiKeys);
+        return key;
+    }
 }

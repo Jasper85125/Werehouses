@@ -143,4 +143,35 @@ public class AdminController : ControllerBase
             return StatusCode(400, new { error = "An error occurred while updating the API keys.", details = ex.Message });
         }
     }
+
+    // Delete request to delete the API keys
+    [HttpDelete("DeleteAPIKeys")]
+    public IActionResult DeleteAPIKeys([FromQuery]string ApiKey)
+    {
+        // Allowed roles
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        // Authorization check
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized("You are not authorized to delete API keys.");
+        }
+
+        try
+        {
+            var deletedKey = _adminservice.DeleteAPIKeys(ApiKey);
+            if (deletedKey == null)
+            {
+                return BadRequest(new { error = "API Key deletion failed" });
+            }
+            return Ok(new { message = "API Key deleted successfully", deletedKey });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(400, new { error = "An error occurred while deleting the API keys.", details = ex.Message });
+        }
+    }
+
+
 }
