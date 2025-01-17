@@ -94,52 +94,51 @@ class TestClass(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
 
     def test_06_create_in_v1_get_and_delete_in_v2(self):
+        # Create location in v1
         data = {
-            "id": 12345,
-            "warehouse_id": 20,
-            "code": "A.D.1",
-            "name": "Cross Version Location"
+            "id": 34534,
+            "warehouse_id": 21,
+            "code": "B.D.1",
+            "name": "Cross Version Location",
         }
-
-        # Create in v1
         response = self.client.post(
-            url=(self.versions[0] + "/locations"),
+            url="http://localhost:5001/api/v1/locations",
             headers=self.headers, json=data
         )
         self.assertEqual(response.status_code, 201)
+        created_location = response.json()
+        created_location_id = created_location['id']
 
-        # Get in v2
+        # Get location in v2
         response = self.client.get(
-            url=(self.versions[1] + "/locations"),
-            headers=self.headers
+            url="http://localhost:5002/api/v2/locations", headers=self.headers
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Failed to get locations: {response.content}"
+        )
         locations = response.json()
-        location_id = next(
-            (loc["id"] for loc in locations if loc["id"] == data["id"]),
+        created_location = next(
+            (loc for loc in locations if loc["id"] == created_location_id),
             None
         )
-        self.assertIsNotNone(location_id)
+        self.assertIsNotNone(
+            created_location, "Created location not found in v2"
+        )
 
         # Check all data in the get
-        response = self.client.get(
-            url=(self.versions[1] + f"/locations/{location_id}"),
-            headers=self.headers
-        )
-        self.assertEqual(response.status_code, 200)
-        location = response.json()
-        self.assertEqual(location["id"], data["id"])
-        self.assertEqual(location["warehouse_id"], data["warehouse_id"])
-        self.assertEqual(location["code"], data["code"])
-        self.assertEqual(location["name"], data["name"])
+        self.assertEqual(created_location["id"], data["id"])
+        self.assertEqual(created_location["warehouse_id"],
+                         data["warehouse_id"])
+        self.assertEqual(created_location["code"], data["code"])
+        self.assertEqual(created_location["name"], data["name"])
 
-        # Delete in v2
+        # Delete location in v2
         response = self.client.delete(
-            url=(self.versions[1] + f"/locations/{location_id}"),
+            url=(
+                f"http://localhost:5002/api/v2/locations/"
+                f"{created_location_id}"
+            ),
             headers=self.headers
         )
         self.assertEqual(response.status_code, 200)
-
-
-if __name__ == "__main__":
-    unittest.main()
