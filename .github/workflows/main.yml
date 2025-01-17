@@ -103,26 +103,24 @@ jobs:
             echo "No coverage data found." > coverage-summary.txt
         fi
 
-    - name: Update Workflow Summary
+    - name: Add Coverage Summary to Workflow Summary
       if: matrix.language == 'csharp'
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const fs = require('fs');
-          const coverageSummary = fs.readFileSync('coverage-summary.txt', 'utf8');
-          const coverageText = `
-          ## Coverage Summary for Version ${{ matrix.version }}
-          ${coverageSummary}
-          `;
-          github.rest.checks.update({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            check_run_id: context.runId,
-            output: {
-              title: 'Coverage Summary',
-              summary: coverageText
-            }
-          });
+      run: |
+        percentages=$(grep -oP 'line-rate="[^"]+"' TestResults/**/coverage.cobertura.xml | grep -oP '[0-9.]+')
+        total_coverage=0
+        count=0
+        while read -r line; do
+            total_coverage=$(echo "$total_coverage + $line" | bc)
+            count=$((count + 1))
+        done <<< "$percentages"
+    
+        if [[ $count -gt 0 ]]; then
+            total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
+            echo "## Coverage Summary for Version ${{ matrix.version }}" >> $GITHUB_STEP_SUMMARY
+            echo "Total Percentage Covered: $total_percentage%" >> $GITHUB_STEP_SUMMARY
+        else
+            echo "No coverage data found." >> $GITHUB_STEP_SUMMARY
+
 
     - name: Run Python Tests
       run: |
