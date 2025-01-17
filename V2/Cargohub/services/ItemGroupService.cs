@@ -126,10 +126,10 @@ public class ItemGroupService : ItemService, IitemGroupService
         File.WriteAllText(Path, jsonData);
     }
 
-    public ItemGroupCS PatchItemGroup(int Id, ItemGroupCS itemGroup)
+    public ItemGroupCS PatchItemGroup(int Id, string property, object newvalue)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
-        var existingItem = items.FirstOrDefault(i => i.Id == Id);
+        var existingItem = items.Find(i => i.Id == Id);
         if (existingItem == null)
         {
             return null;
@@ -140,9 +140,17 @@ public class ItemGroupService : ItemService, IitemGroupService
 
         // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+        switch(property){
+            case "Name":
+                existingItem.Name = newvalue.ToString();
+                break;
+            case "Description":
+                existingItem.Description = newvalue.ToString();
+                break;
+            default:
+                return null;
+        }
 
-        existingItem.Name = itemGroup.Name ?? existingItem.Name;
-        existingItem.Description = itemGroup.Description ?? existingItem.Description;
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
