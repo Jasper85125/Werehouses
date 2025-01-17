@@ -286,8 +286,8 @@ namespace ControllersV2
             return Ok(updatedOrder);
         }
         
-        [HttpPatch("{id}/{property}")]
-        public ActionResult<OrderCS> PatchOrder([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue)
+        [HttpPatch("{id}")]
+        public ActionResult<OrderCS> PatchOrder([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue)
         {
             if (string.IsNullOrEmpty(property) || newvalue is null)
             {
