@@ -134,5 +134,38 @@ class TestItemTypesAPI(unittest.TestCase):
                 # Check the status code
                 self.assertEqual(response.status_code, 200)
 
+    def test_06_create_in_v1_get_and_delete_in_v2(self):
+        # Create in v1
+        data = {
+            "name": "Cross Version Item Type",
+            "description": "An item type created in v1 and accessed in v2",
+            "created_at": "2023-10-01T00:00:00",
+            "updated_at": "2023-10-01T00:00:00",
+        }
+
+        response = self.client.post(
+            url="http://localhost:5001/api/v1/itemtypes",
+            headers=self.headers,
+            json=data
+        )
+        self.assertEqual(response.status_code, 201)
+        created_item = response.json()
+        created_item_id = created_item['id']
+
+        # Get in v2
+        response = self.client.get(
+            url=f"http://localhost:5002/api/v2/itemtypes/{created_item_id}",
+            headers=self.headers
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+        self.assertTrue(checkItemType(response.json()))
+
+        # Delete in v2
+        response = self.client.delete(
+            url=f"http://localhost:5002/api/v2/itemtypes/{created_item_id}",
+            headers=self.headers
+        )
+        self.assertEqual(response.status_code, 200)
 
 # to run the file: python -m unittest test_item_types.py
