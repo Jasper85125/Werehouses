@@ -173,7 +173,7 @@ public class TransferController : ControllerBase
             return Unauthorized();
         }
 
-        if(int.IsNegative(id) || string.IsNullOrEmpty(property) || newvalue is null){
+        if(string.IsNullOrEmpty(property) || newvalue is null){
             return BadRequest("Invalid input");
         }
         var patched = _transferService.PatchTransfer(id, property, newvalue);
