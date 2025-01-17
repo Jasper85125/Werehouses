@@ -115,6 +115,35 @@ public class AdminController : ControllerBase
         }
     }
 
+    // post request to add API keys
+    [HttpPost("AddAPIKeys")]
+    public IActionResult AddAPIKeys([FromBody]ApiKeyModel ApiKey)
+    {
+        // Allowed roles
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        // Authorization check
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized("You are not authorized to add API keys.");
+        }
+
+        try
+        {
+            var newKey = _adminservice.AddAPIKeys(ApiKey);
+            if (newKey == null)
+            {
+                return BadRequest(new { error = "API Key addition failed" });
+            }
+            return Ok(newKey);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(400, new { error = "An error occurred while adding the API keys.", details = ex.Message });
+        }
+    }
+
     // put request to update the API keys
     [HttpPut("UpdateAPIKeys")]
     public IActionResult UpdateAPIKeys([FromQuery]string ApiKey,[FromBody]ApiKeyModel NewApiKey)
