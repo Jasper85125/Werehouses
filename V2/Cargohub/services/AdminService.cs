@@ -111,6 +111,16 @@ public class AdminService : IAdminService
 
         return report;
     }
+    public ApiKeyModel AddAPIKeys(ApiKeyModel ApiKey)
+    {
+        var apiKeysPath = Path.Combine(Directory.GetCurrentDirectory(),"..","..", "apikeys.json");
+        // Get all the apikeys
+        var ListApiKeys = _apikeystorage.GetApiKeys();
+        // Add the new apikey
+        ListApiKeys.Add(ApiKey);
+        _apikeystorage.UpdateApiKey(ListApiKeys);
+        return ApiKey;
+    }
 
     public ApiKeyModel UpdateAPIKeys(string OldApiKey, ApiKeyModel NewApiKey)
     {

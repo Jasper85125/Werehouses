@@ -85,7 +85,70 @@ namespace clients.TestsV2
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         }
+        
+        [TestMethod]
+        public void TestAddAPIKeys_Success()
+        {
+            // Arrange
+            var newApiKey = new ApiKeyModel
+            {
+                Key = "AnalystKey",
+                Role = "Analyst",
+                WarehouseID = "1,2,3"
+            };
 
+            _mockAdminService
+                .Setup(service => service.AddAPIKeys(newApiKey))
+                .Returns(newApiKey); // Set up the mock service behavior
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _adminController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _adminController.AddAPIKeys(newApiKey);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            _mockAdminService.Verify(service => service.AddAPIKeys(newApiKey), Times.Once);
+        }
+
+        [TestMethod]
+        public void TestAddAPIKeys_Failed()
+        {
+            // Arrange
+            var newApiKey = new ApiKeyModel
+            {
+                Key = "AnalystKey",
+                Role = "Analyst",
+                WarehouseID = "1,2,3"
+            };
+
+            // Mock the AddAPIKeys method to simulate failure
+            _mockAdminService
+                .Setup(service => service.AddAPIKeys(newApiKey))
+                .Returns((ApiKeyModel)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin"; // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _adminController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _adminController.AddAPIKeys(newApiKey);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
 
     }
 }
