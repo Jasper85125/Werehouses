@@ -176,3 +176,36 @@ class TestClass(unittest.TestCase):
                     url=(version + f"/warehouses/{last_warehouse_id}"),
                     headers=self.headers)
                 self.assertEqual(response.status_code, 200)
+
+    def test_07_create_in_v1_delete_in_v2(self):
+        version1 = "http://localhost:5001/api/v1"
+        data = {
+            "code": "AAAAAAA",
+            "name": "Updated Warehouse",
+            "address": "Updated Address",
+            "zip": "54321",
+            "city": "Updated City",
+            "province": "Updated Province",
+            "country": "Updated Country",
+            "contact": {
+                "name": "Jane Doe",
+                "phone": "123-456-7890",
+                "email": "janedoe@example.com"
+            },
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z"
+        }
+        response = self.warehouse.post(url=(version1 + "/warehouses"),
+                                       headers=self.headers, json=data)
+        self.assertEqual(response.status_code, 201)
+        last_warehouse_id = response.json()["id"]
+        version2 = "http://localhost:5002/api/v2"
+        response = self.warehouse.get(
+            url=(version2 + f"/warehouses/{last_warehouse_id}"),
+            headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(checkWarehouse(response.json()), True)
+        response = self.warehouse.delete(
+            url=(version2 + f"/warehouses/{last_warehouse_id}"),
+            headers=self.headers)
+        self.assertEqual(response.status_code, 200)
