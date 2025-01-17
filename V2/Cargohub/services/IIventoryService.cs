@@ -10,6 +10,6 @@ public interface IInventoryService
     InventoryCS UpdateInventoryById(int id, InventoryCS updatedinventory);
     void DeleteInventory(int id);
     void DeleteInventories(List<int> ids);
-    InventoryCS PatchInventory(int id, InventoryCS updatedInventory);
+    InventoryCS PatchInventory(int id, string property, object newvalue);
     List<InventoryCS> GetInventoriesByLocationId(List<int> location);
 }
