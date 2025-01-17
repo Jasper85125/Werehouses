@@ -253,7 +253,7 @@ class TestClass(unittest.TestCase):
             msg=f"Failed to create client: {response.content}"
         )
 
-        url2 = "http://localhost:5001/api/v1"
+        url2 = "http://localhost:5002/api/v2"
         response = self.client.get(
             url=(url2 + "/clients"), headers=self.headers)
         self.assertEqual(
