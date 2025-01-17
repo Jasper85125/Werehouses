@@ -93,6 +93,53 @@ class TestClass(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 200)
 
+    def test_06_create_in_v1_get_and_delete_in_v2(self):
+        data = {
+            "id": 12345,
+            "warehouse_id": 20,
+            "code": "A.D.1",
+            "name": "Cross Version Location"
+        }
+
+        # Create in v1
+        response = self.client.post(
+            url=(self.versions[0] + "/locations"),
+            headers=self.headers, json=data
+        )
+        self.assertEqual(response.status_code, 201)
+
+        # Get in v2
+        response = self.client.get(
+            url=(self.versions[1] + "/locations"),
+            headers=self.headers
+        )
+        self.assertEqual(response.status_code, 200)
+        locations = response.json()
+        location_id = next(
+            (loc["id"] for loc in locations if loc["id"] == data["id"]),
+            None
+        )
+        self.assertIsNotNone(location_id)
+
+        # Check all data in the get
+        response = self.client.get(
+            url=(self.versions[1] + f"/locations/{location_id}"),
+            headers=self.headers
+        )
+        self.assertEqual(response.status_code, 200)
+        location = response.json()
+        self.assertEqual(location["id"], data["id"])
+        self.assertEqual(location["warehouse_id"], data["warehouse_id"])
+        self.assertEqual(location["code"], data["code"])
+        self.assertEqual(location["name"], data["name"])
+
+        # Delete in v2
+        response = self.client.delete(
+            url=(self.versions[1] + f"/locations/{location_id}"),
+            headers=self.headers
+        )
+        self.assertEqual(response.status_code, 200)
+
 
 if __name__ == "__main__":
     unittest.main()
