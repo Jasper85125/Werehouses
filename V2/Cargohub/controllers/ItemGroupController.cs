@@ -141,7 +141,7 @@ public class ItemGroupController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public ActionResult<ItemGroupCS> PatchItemGroup([FromRoute] int id, [FromBody] ItemGroupCS itemGroup)
+    public ActionResult<ItemGroupCS> PatchItemGroup([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue)
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
@@ -150,17 +150,19 @@ public class ItemGroupController : ControllerBase
         {
             return Unauthorized();
         }
-        
+
         var existingItemGroup = _itemgroupService.GetItemById(id);
         if (existingItemGroup == null)
         {
             return NotFound();
         }
 
-        itemGroup.Id = id;
-        var updatedItemGroup = _itemgroupService.PatchItemGroup(id, itemGroup);
-
-        return Ok(updatedItemGroup);
+        if(property == null || newvalue == null)
+        {
+            return BadRequest();
+        }
+        var patched = _itemgroupService.PatchItemGroup(id, property, newvalue);
+        return Ok(patched);
     }
 
     [HttpDelete("{id}")]
