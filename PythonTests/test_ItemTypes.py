@@ -161,6 +161,11 @@ class TestItemTypesAPI(unittest.TestCase):
         self.assertEqual(type(response.json()), dict)
         self.assertTrue(checkItemType(response.json()))
 
+        self.assertEqual(response.json()['name'], data['name'])
+        self.assertEqual(response.json()['description'], data['description'])
+        self.assertEqual(response.json()['created_at'], data['created_at'])
+        self.assertEqual(response.json()['updated_at'], data['updated_at'])
+
         # Delete in v2
         response = self.client.delete(
             url=f"http://localhost:5002/api/v2/itemtypes/{created_item_id}",
