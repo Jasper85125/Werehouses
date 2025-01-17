@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ApiKeyAuthentication.Authentication;
 using Newtonsoft.Json;
 
 namespace ServicesV2;
