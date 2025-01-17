@@ -219,7 +219,6 @@ class TestClass(unittest.TestCase):
             last_shipment_id = (
                 shipments['data'][-1]["id"] if shipments['data'] else 1
             )
-            print(last_shipment_id)
             response = self.client.delete(
                 url=(version + f"/shipments/{last_shipment_id}"),
                 headers=self.headers
