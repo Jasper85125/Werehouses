@@ -140,10 +140,10 @@ public class ItemLineService : IItemLineService
         File.WriteAllText(_path, json);
     }
 
-    public ItemLineCS PatchItemLine(int id, ItemLineCS itemLine)
+    public ItemLineCS PatchItemLine(int id, string property, object newvalue)
     {
         List<ItemLineCS> items = GetAllItemlines();
-        var existingItem = items.FirstOrDefault(i => i.Id == id);
+        var existingItem = items.Find(i => i.Id == id);
         if (existingItem == null)
         {
             return null;
@@ -154,9 +154,17 @@ public class ItemLineService : IItemLineService
 
         // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-
-        existingItem.Name = itemLine.Name ?? existingItem.Name;
-        existingItem.Description = itemLine.Description ?? existingItem.Description;
+        switch (property)
+        {
+            case "Name":
+                existingItem.Name = newvalue.ToString();
+                break;
+            case "Description":
+                existingItem.Description = newvalue.ToString();
+                break;
+            default:
+                break;
+        }
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);

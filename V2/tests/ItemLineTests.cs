@@ -367,7 +367,7 @@ public class ItemLineTests
         var patchItemLine = new ItemLineCS { Description = "Updated Description" };
 
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(existingItemLine);
-        _mockItemLineService.Setup(service => service.PatchItemLine(1, patchItemLine)).Returns(patchItemLine);
+        _mockItemLineService.Setup(service => service.PatchItemLine(1, "Description", "Updated Description")).Returns(patchItemLine);
 
         var httpContext = new DefaultHttpContext();
         httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -379,7 +379,7 @@ public class ItemLineTests
         };
 
         // Act
-        var result = _itemLineController.PatchItemLine(1, patchItemLine);
+        var result = _itemLineController.PatchItemLine(1, "Description", "Updated Description");
         var okResult = result.Result as OkObjectResult;
         var returnedItemLine = okResult.Value as ItemLineCS;
 
@@ -408,7 +408,7 @@ public class ItemLineTests
         };
 
         // Act
-        var result = _itemLineController.PatchItemLine(1, patchItemLine);
+        var result = _itemLineController.PatchItemLine(1, "Description", "Updated Description");
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
