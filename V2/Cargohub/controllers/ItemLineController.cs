@@ -189,7 +189,7 @@ public class ItemLineController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public ActionResult<ItemLineCS> PatchItemLine([FromRoute] int id, [FromBody] ItemLineCS itemLine)
+    public ActionResult<ItemLineCS> PatchItemLine([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue)
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
@@ -198,11 +198,9 @@ public class ItemLineController : ControllerBase
         {
             return Unauthorized();
         }
-
-        itemLine.Id = id;
-        if (id != itemLine.Id)
+        if(property == null || newvalue == null)
         {
-            return BadRequest();
+            return BadRequest("Property or new value is null");
         }
 
         var existingItemLine = _itemLineService.GetItemLineById(id);
@@ -211,7 +209,7 @@ public class ItemLineController : ControllerBase
             return NotFound();
         }
 
-        var updatedItemLine = _itemLineService.PatchItemLine(id, itemLine);
+        var updatedItemLine = _itemLineService.PatchItemLine(id, property, newvalue);
         return Ok(updatedItemLine);
     }
 }

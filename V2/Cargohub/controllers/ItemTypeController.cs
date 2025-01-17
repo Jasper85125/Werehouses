@@ -147,8 +147,8 @@ public class ItemTypeController : ControllerBase
         return Ok(updatedItemLine);
     }
     //zet een nieuwe value in een property van een item_type object 
-    [HttpPatch("{id}/{property}")]
-    public ActionResult<ItemTypeCS> PatchItemType([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue){
+    [HttpPatch("{id}")]
+    public ActionResult<ItemTypeCS> PatchItemType([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue){
         if(int.IsNegative(id) || string.IsNullOrEmpty(property) || newvalue is null){
             return BadRequest("Errors in request");
         }
