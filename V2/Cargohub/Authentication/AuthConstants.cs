@@ -1,4 +1,4 @@
-namespace ApiKeyAuthentication.Authentication;
+namespace ServicesV2;
 
 public static class AuthConstants
 {

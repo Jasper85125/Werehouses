@@ -1,13 +1,16 @@
 using Newtonsoft.Json;
-
+using System;
 namespace ServicesV2;
 
 public class AdminService : IAdminService
 {
+    ApiKeyStorage _apikeystorage;
     
     public AdminService()
     {
+        _apikeystorage = new ApiKeyStorage();
     }
+    
 
     public string AddData(IFormFile file)
     {
@@ -108,4 +111,23 @@ public class AdminService : IAdminService
 
         return report;
     }
+
+    public ApiKeyModel UpdateAPIKeys(string OldApiKey, ApiKeyModel NewApiKey)
+    {
+        var apiKeysPath = Path.Combine(Directory.GetCurrentDirectory(),"..","..", "apikeys.json");
+        // Get all the apikeys
+        var ListApiKeys = _apikeystorage.GetApiKeys();
+        // find where the apisecret is stored and then change the apikeys
+        var key = ListApiKeys.FirstOrDefault(k => k.Key == OldApiKey);
+        if (key == null)
+        {
+            throw new Exception("API Key not found.");
+        }
+        key.Key = NewApiKey.Key;
+        key.Role = NewApiKey.Role;
+        key.WarehouseID = NewApiKey.WarehouseID;
+        _apikeystorage.UpdateApiKey(ListApiKeys);
+        return key;
+    }
+
 }
