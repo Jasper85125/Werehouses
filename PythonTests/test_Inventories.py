@@ -123,19 +123,12 @@ class TestClass(unittest.TestCase):
             response.status_code, 201,
             msg=f"Failed to create client: {response.content}"
         )
+        created_inventory = response.json()
+        created_inventory_id = created_inventory['id']
 
         url2 = "http://localhost:5002/api/v2"
-        response = self.client.get(
-            url=(url2 + "/inventories"), headers=self.headers)
-        self.assertEqual(
-            response.status_code, 200,
-            msg=f"Failed to get inventories: {response.content}"
-        )
-        inventories = response.json()
-        last_inventory_id = inventories[-1]["id"] if inventories else 1
-
         response = self.client.get(url=(
-            url2 + f"/inventories/{last_inventory_id}"),
+            url2 + f"/inventories/{created_inventory_id}"),
                                     headers=self.headers)
         self.assertEqual(response.status_code, 200)
 
@@ -155,6 +148,6 @@ class TestClass(unittest.TestCase):
                          data["total_available"])
 
         response = self.client.delete(url=(
-            url2 + f"/inventories/{last_inventory_id}"),
+            url2 + f"/inventories/{created_inventory_id}"),
                                     headers=self.headers)
         self.assertEqual(response.status_code, 200)
