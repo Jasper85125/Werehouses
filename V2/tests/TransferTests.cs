@@ -289,6 +289,29 @@ namespace TestsV2
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
             Assert.IsNull(returnedTransfer);
         }
+        [TestMethod]
+        public void PatchTransfer_succes(){
+            //Arrange
+            var data = new TransferCS { Id = 1, Reference = "WWWWWW", transfer_from = null, transfer_to = 9292, transfer_status = "Completed" };
+            _mockTransferService.Setup(service => service.PatchTransfer(1, "Reference", "WWWWWW")).Returns(data);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            // Assign HttpContext to the controller
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var result = _transferController.PatchTransfer(1, "Reference", "WWWWWW");
+            var resultOk = result.Result as OkObjectResult;
+            var value = resultOk.Value as TransferCS;
+            //Assert
+            Assert.AreEqual(resultOk.StatusCode, 200);
+            Assert.AreEqual(typeof(TransferCS), value.GetType());
+            Assert.AreEqual(value.Reference, "WWWWWW");
+        }
 
         [TestMethod]
         public void UpdateTransferCommitTest()
