@@ -161,7 +161,8 @@ public class TransferController : ControllerBase
         }
         return Ok(updatedAction);
     }
-    [HttpPatch("id")]
+    //http://localhost:5002/api/v2/transfers/1?property=Reference
+    [HttpPatch("{id}")]
     public ActionResult<TransferCS> PatchTransfer([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue){
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
                                                                    "Floor Manager", "Supervisor", "Operative" };

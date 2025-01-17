@@ -153,6 +153,8 @@ public class TransferService : ITransferService
         if(transfer == transfers[id]){
             return null;
         }
+        var json = JsonConvert.SerializeObject(transfers, Formatting.Indented);
+        File.WriteAllText(_path, json);
         return transfer;
     }
 
