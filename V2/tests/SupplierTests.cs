@@ -375,7 +375,7 @@ namespace TestsV2
             };
 
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(existingSupplier);
-            _mockSupplierService.Setup(service => service.PatchSupplier(1, patchSupplier)).Returns(patchSupplier);
+            _mockSupplierService.Setup(service => service.PatchSupplier(1, "Name", "Supp & liers")).Returns(patchSupplier);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -387,7 +387,7 @@ namespace TestsV2
             };
 
             // Act
-            var result = _supplierController.PatchSupplier(1, patchSupplier);
+            var result = _supplierController.PatchSupplier(1, "Name", "Supp & liers");
             var okResult = result.Result as OkObjectResult;
             var returnedSupplier = okResult.Value as SupplierCS;
 
@@ -432,7 +432,7 @@ namespace TestsV2
             };
 
             // Act
-            var result = _supplierController.PatchSupplier(1, patchSupplier);
+            var result = _supplierController.PatchSupplier(1, "Name", "Supp & liers");
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
