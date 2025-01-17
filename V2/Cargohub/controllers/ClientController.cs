@@ -152,22 +152,28 @@ public class ClientController : ControllerBase
 
     //PATCH: /clients/{id}
     [HttpPatch("{id}")]
-    public ActionResult<ClientCS> PatchClient([FromRoute] int id, [FromBody] ClientCS patch)
+    public ActionResult<ClientCS> PatchClient([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
         var client = _clientservice.GetClientById(id);
         if (client is null)
         {
             return NotFound();
         }
 
-        var updatedClient = _clientservice.PatchClient(id, patch);
+        var updatedClient = _clientservice.PatchClient(id, property, newvalue);
         if (updatedClient is null)
         {
             return BadRequest("Failed to patch client.");
         }
 
         return Ok(updatedClient);
-    }
-
-    
+    }    
 }
