@@ -361,12 +361,17 @@ namespace TestsV2
 
             var existingSupplier = new SupplierCS
             {
-                Id = 1,
-                Code = "OLD123",
-                Name = "Old Supplier",
-                Address = "Old Address",
-                City = "Old City",
-                Country = "Old Country"
+                Code = "SUP0373",
+                Name = "dag & nacht",
+                Address = "Wall Street 181",
+                address_extra = "Apt. 6996",
+                City = "Houston",
+                zip_code = "4002 AZ",
+                Province = "Texas",
+                Country = "USA",
+                contact_name = "Fem Keijzer",
+                PhoneNumber = "(078) 0013363",
+                Reference = "LPaJ-SUP0001"
             };
 
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(existingSupplier);
