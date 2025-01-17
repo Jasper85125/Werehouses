@@ -145,6 +145,46 @@ class TestItemGroups(unittest.TestCase):
                 # Check the status code
                 self.assertEqual(response.status_code, 200)
 
+    def test_07_create_in_v1_get_and_delete_in_v2(self):
+        # Create in v1
+        data = {
+            "name": "Cross Version Group",
+            "description": "Item group is created in v1 and accessed in v2."
+        }
+        create_response = self.client.post(
+            url="http://localhost:5001/api/v1/itemgroups",
+            headers=self.headers,
+            json=data
+        )
+        self.assertEqual(create_response.status_code, 201)
+        created_item_group = create_response.json()
+        created_item_group_id = created_item_group["id"]
+
+        # Get in v2
+        get_response = self.client.get(
+            url=(
+                f"http://localhost:5002/api/v2/itemgroups/"
+                f"{created_item_group_id}"
+            ),
+            headers=self.headers
+        )
+        self.assertEqual(get_response.status_code, 200)
+        self.assertEqual(type(get_response.json()), dict)
+        self.assertTrue(checkItemGroup(get_response.json()))
+
+        self.assertEqual(get_response.json()["name"], data["name"])
+        self.assertEqual(get_response.json()["description"],
+                         data["description"])
+
+        # Delete in v2
+        delete_response = self.client.delete(
+            url=(
+                f"http://localhost:5002/api/v2/itemgroups/"
+                f"{created_item_group_id}"
+            ),
+            headers=self.headers
+        )
+        self.assertEqual(delete_response.status_code, 200)
 
 # to run the file: python -m unittest test_item_groups.py
 # # git checkout . -f
