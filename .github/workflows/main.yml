@@ -7,6 +7,8 @@ on:
   push:
     branches:
       -  '**'
+permissions:
+  checks: write
 
 jobs:
   csharp-build-and-test:
