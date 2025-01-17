@@ -128,10 +128,38 @@ public class TransferService : ITransferService
         TransferCS updatedTransfer = UpdateTransfer(transfer.Id, transfer);
         return updatedTransfer;
     }
+    public TransferCS PatchTransfer(int id, string property, object newvalue){
+        var transfers = GetAllTransfers();
+        var transfer = transfers.Find(_=>_.Id == id);
+        switch(property){
+            case "Reference":
+                transfer.Reference = newvalue.ToString();
+                break;
+            case "transfer_from":
+                transfer.transfer_from = (int)newvalue;
+                break;
+            case "transfer_to":
+                transfer.transfer_to = (int)newvalue;
+                break;
+            case "transfer_status":
+                transfer.transfer_status = newvalue.ToString();
+                break;
+            case "Items":
+                transfer.Items = (List<ItemIdAndAmount>)newvalue;
+                break;
+            default:
+                return null;
+        }
+        if(transfer == transfers[id]){
+            return null;
+        }
+        var json = JsonConvert.SerializeObject(transfers, Formatting.Indented);
+        File.WriteAllText(_path, json);
+        return transfer;
+    }
 
     public void DeleteTransfer(int id)
     {
-
         List<TransferCS> transfers = GetAllTransfers();
         TransferCS transfer = transfers.FirstOrDefault(transfer => transfer.Id == id);
         if (transfer != null)

@@ -161,7 +161,28 @@ public class TransferController : ControllerBase
         }
         return Ok(updatedAction);
     }
+    //http://localhost:5002/api/v2/transfers/1?property=Reference
+    [HttpPatch("{id}")]
+    public ActionResult<TransferCS> PatchTransfer([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue){
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
+                                                                   "Floor Manager", "Supervisor", "Operative" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
 
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+
+        if(string.IsNullOrEmpty(property) || newvalue is null){
+            return BadRequest("Invalid input");
+        }
+        var patched = _transferService.PatchTransfer(id, property, newvalue);
+        if(patched is null){
+            return NotFound("No transfer found with the given id.");
+        }
+        return Ok(patched);
+
+    }
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
     public ActionResult DeleteTransfer(int id)
