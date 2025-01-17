@@ -263,9 +263,10 @@ public class InventoryController : ControllerBase
         {
             return BadRequest("request is invalid/contains invalid values");
         }
-        var patchedinventory = _inventoryService.UpdateInventoryById(id, value);
-        return Ok(patchedinventory);
+        var inventory = _inventoryService.UpdateInventoryById(id, value);
+        return Ok(inventory);
     }
+    
 
     // DELETE: api/warehouse/5
     [HttpDelete("{id}")]
@@ -308,13 +309,21 @@ public class InventoryController : ControllerBase
 
     //PATCH: /inventories/{id}
     [HttpPatch("{id}")]
-    public ActionResult<InventoryCS> PatchInventory(int id, [FromBody] InventoryCS patch)
+    public ActionResult<InventoryCS> PatchInventory(int id, [FromQuery] string property, [FromBody] object newvalue)
     {
-        if (patch is null)
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager", "Logistics" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
         {
-            return BadRequest("patch document is null");
+            return Unauthorized();
         }
-        var patchedInventory = _inventoryService.PatchInventory(id, patch);
+
+        if (property is null || newvalue is null)
+        {
+            return BadRequest("property or new value is null");
+        }
+        var patchedInventory = _inventoryService.PatchInventory(id, property, newvalue);
         return Ok(patchedInventory);
     }
 }

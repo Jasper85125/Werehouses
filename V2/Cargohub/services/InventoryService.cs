@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -50,8 +51,6 @@ public class InventoryService : IInventoryService
         return inventories.Where(inventory => inventory.Locations.Any(locationId => location.Contains(locationId))).ToList();
     }
     }
-
-    
 
     public InventoryCS CreateInventory(InventoryCS newInventory)
     {
@@ -127,57 +126,50 @@ public class InventoryService : IInventoryService
         File.WriteAllText(Path, json);
     }
 
-
-
-    public InventoryCS PatchInventory(int id, InventoryCS patchInventory)
+    public InventoryCS PatchInventory(int id, string property, object newvalue)
     {
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         var inventories = GetAllInventories();
-        var toPatch = inventories.Find(_ => _.Id == id);
-        if (toPatch is null)
+        var inventory = inventories.FirstOrDefault(_=>_.Id == id);
+
+        if (inventory is null)
         {
             return null;
         }
-
-        if (patchInventory.description != null)
-        {
-            toPatch.description = patchInventory.description;
+        switch(property){
+            case "description":
+                inventory.description = newvalue.ToString();
+                break;
+            case "item_reference":
+                inventory.item_reference = newvalue.ToString();
+                break;
+            case "Locations":
+                var patchvalue = JsonConvert.DeserializeObject<List<int>>(newvalue.ToString()).ToList();
+                inventory.Locations = patchvalue;
+                break;
+            case "total_on_hand":
+                inventory.total_on_hand = Convert.ToInt32(newvalue.ToString());
+                break;
+            case "total_expected":
+                inventory.total_expected = Convert.ToInt32(newvalue.ToString());
+                break;
+            case "total_ordered":
+                inventory.total_ordered = Convert.ToInt32(newvalue.ToString());
+                break;
+            case "total_allocated":
+                inventory.total_allocated = Convert.ToInt32(newvalue.ToString());
+                break;
+            case "total_available":
+                inventory.total_available = Convert.ToInt32(newvalue.ToString());
+                break;
         }
-        if (patchInventory.item_reference != null)
-        {
-            toPatch.item_reference = patchInventory.item_reference;
-        }
-        if (patchInventory.Locations != null)
-        {
-            toPatch.Locations = patchInventory.Locations;
-        }
-        if (patchInventory.total_on_hand != 0)
-        {
-            toPatch.total_on_hand = patchInventory.total_on_hand;
-        }
-        if (patchInventory.total_expected != 0)
-        {
-            toPatch.total_expected = patchInventory.total_expected;
-        }
-        if (patchInventory.total_ordered != 0)
-        {
-            toPatch.total_ordered = patchInventory.total_ordered;
-        }
-        if (patchInventory.total_allocated != 0)
-        {
-            toPatch.total_allocated = patchInventory.total_allocated;
-        }
-        if (patchInventory.total_available != 0)
-        {
-            toPatch.total_available = patchInventory.total_available;
-        }
-
-        patchInventory.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        
+        inventory.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var json = JsonConvert.SerializeObject(inventories, Formatting.Indented);
         File.WriteAllText(Path, json);
 
-        return toPatch;
+        return inventory;
     }
 }

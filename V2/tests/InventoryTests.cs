@@ -281,32 +281,50 @@ namespace inventory.TestsV2
 
         [TestMethod]
         public void PatchInventoryTest_Succes(){
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            
             //arrange
             var inventory = new InventoryCS(){ Id = 1, item_id="ITEM321", total_on_hand= 100};
-            _mockInventoryService.Setup(service => service.PatchInventory(1, inventory)).Returns(inventory);
+            _mockInventoryService.Setup(service => service.PatchInventory(1, "total_on_hand", 100)).Returns(inventory);
 
             //Act
-            var result = _inventoryController.PatchInventory(1, inventory);
+            var result = _inventoryController.PatchInventory(1, "total_on_hand", 100);
             var resultOk = result.Result as OkObjectResult;
             var patchedinventory = resultOk.Value as InventoryCS;
 
             //Assert
-            Assert.AreEqual(resultOk.StatusCode, 200);
+            Assert.IsNotNull(result);
             Assert.IsNotNull(resultOk);
             Assert.IsNotNull(patchedinventory);
-            Assert.AreEqual(patchedinventory.Id, inventory.Id);
-            Assert.AreEqual(patchedinventory.item_id, inventory.item_id);
+            Assert.AreEqual(resultOk.StatusCode, 200);
+            Assert.AreEqual(typeof(InventoryCS), patchedinventory.GetType());
             Assert.AreEqual(patchedinventory.total_on_hand, inventory.total_on_hand);
         }
 
         [TestMethod]
         public void PatchInventoryTest_Fail(){
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //arrange
             var inventory = new InventoryCS(){ Id = 1, item_id="ITEM321", total_on_hand= 100};
-            _mockInventoryService.Setup(service => service.PatchInventory(1, inventory)).Returns((InventoryCS)null);
+            _mockInventoryService.Setup(service => service.PatchInventory(1, "total_on_hand", 100)).Returns((InventoryCS)null);
 
             //Act
-            var result = _inventoryController.PatchInventory(1, inventory);
+            var result = _inventoryController.PatchInventory(1, "total_on_hand", 100);
             var resultOk = result.Result as OkObjectResult;
             var patchedinventory = resultOk.Value as InventoryCS;
 
