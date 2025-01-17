@@ -180,7 +180,7 @@ class TestClass(unittest.TestCase):
                     msg=f"Failed to delete transfer: {response.content}"
                 )
 
-    def test_10_create_in_v1_get_and_delete_in_v2(self):
+    def test_07_create_in_v1_get_and_delete_in_v2(self):
         url1 = "http://localhost:5001/api/v1"
         data = {
                 "reference": "Test Reference",
