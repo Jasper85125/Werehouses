@@ -252,19 +252,12 @@ class TestClass(unittest.TestCase):
             response.status_code, 201,
             msg=f"Failed to create client: {response.content}"
         )
+        created_clients = response.json()
+        created_client_id = created_clients['id']
 
         url2 = "http://localhost:5002/api/v2"
         response = self.client.get(
-            url=(url2 + "/clients"), headers=self.headers)
-        self.assertEqual(
-            response.status_code, 200,
-            msg=f"Failed to get clients: {response.content}"
-        )
-        clients = response.json()
-        last_client_id = clients[-1]["id"] if clients else 1
-
-        response = self.client.get(
-            url=(url2 + f"/clients/{last_client_id}"),
+            url=(url2 + f"/clients/{created_client_id}"),
             headers=self.headers)
         self.assertEqual(response.status_code, 200)
 
@@ -279,7 +272,7 @@ class TestClass(unittest.TestCase):
         self.assertEqual(response_data["contact_email"], data["contact_email"])
 
         response = self.client.delete(
-            url=(url2 + f"/clients/{last_client_id}"),
+            url=(url2 + f"/clients/{created_client_id}"),
             headers=self.headers)
 
         # Check de status code
