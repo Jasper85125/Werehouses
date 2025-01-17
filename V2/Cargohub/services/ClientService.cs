@@ -112,29 +112,46 @@ public class ClientService : IClientService
         File.WriteAllText(_path, json);
     }
 
-    public ClientCS PatchClient(int id, ClientCS updateClient)
+    public ClientCS PatchClient(int id, string property, object newValue)
     {
         var allClients = GetAllClients();
-        var clientToUpdate = allClients.SingleOrDefault(client => client.Id == id);
+        var clientToUpdate = allClients.Find(_ => _.Id == id);
 
         if (clientToUpdate is not null)
         {
-            // Get the current date and time
             var currentDateTime = DateTime.Now;
 
-            // Format the date and time to the desired format
             var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-
-            clientToUpdate.Name = updateClient.Name ?? clientToUpdate.Name;
-            clientToUpdate.Address = updateClient.Address ?? clientToUpdate.Address;
-            clientToUpdate.City = updateClient.City ?? clientToUpdate.City;
-            clientToUpdate.zip_code = updateClient.zip_code ?? clientToUpdate.zip_code;
-            clientToUpdate.Province = updateClient.Province ?? clientToUpdate.Province;
-            clientToUpdate.Country = updateClient.Country ?? clientToUpdate.Country;
-            clientToUpdate.contact_name = updateClient.contact_name ?? clientToUpdate.contact_name;
-            clientToUpdate.contact_phone = updateClient.contact_phone ?? clientToUpdate.contact_phone;
-            clientToUpdate.contact_email = updateClient.contact_email ?? clientToUpdate.contact_email;
-
+            switch(property)
+            {
+                case "name":
+                    clientToUpdate.Name = newValue.ToString();
+                    break;
+                case "address":
+                    clientToUpdate.Address = newValue.ToString();
+                    break;
+                case "city":
+                    clientToUpdate.City = newValue.ToString();
+                    break;
+                case "zip_code":
+                    clientToUpdate.zip_code = newValue.ToString();
+                    break;
+                case "province":
+                    clientToUpdate.Province = newValue.ToString();
+                    break;
+                case "country":
+                    clientToUpdate.Country = newValue.ToString();
+                    break;
+                case "contact_name":
+                    clientToUpdate.contact_name = newValue.ToString();
+                    break;
+                case "contact_phone":
+                    clientToUpdate.contact_phone = newValue.ToString();
+                    break;
+                case "contact_email":
+                    clientToUpdate.contact_email = newValue.ToString();
+                    break;
+            }
             clientToUpdate.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
             var jsonData = JsonConvert.SerializeObject(allClients, Formatting.Indented);
