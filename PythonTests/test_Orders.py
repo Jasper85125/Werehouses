@@ -2,48 +2,6 @@ import unittest
 import httpx
 
 
-def checkOrder(order):
-    if len(order) != 18:
-        return False
-
-    if order.get("id") is None:
-        return False
-    if order.get("client_id") is None:
-        return False
-    if order.get("order_date") is None:
-        return False
-    if order.get("request_date") is None:
-        return False
-    if order.get("shipment_date") is None:
-        return False
-    if order.get("shipment_type") is None:
-        return False
-    if order.get("shipment_status") is None:
-        return False
-    if order.get("notes") is None:
-        return False
-    if order.get("carrier_code") is None:
-        return False
-    if order.get("carrier_description") is None:
-        return False
-    if order.get("service_code") is None:
-        return False
-    if order.get("payment_type") is None:
-        return False
-    if order.get("transfer_mode") is None:
-        return False
-    if order.get("total_package_count") is None:
-        return False
-    if order.get("total_package_weight") is None:
-        return False
-    if order.get("created_at") is None:
-        return False
-    if order.get("updated_at") is None:
-        return False
-
-    return True
-
-
 class TestOrdersAPI(unittest.TestCase):
     def setUp(self):
         self.client = httpx.Client()
@@ -282,3 +240,65 @@ class TestOrdersAPI(unittest.TestCase):
                     headers=self.headers)
 
             self.assertEqual(response.status_code, 200)
+
+    def test_09_create_in_v1_get_and_delete_in_v2(self):
+        # Create order in v1
+        data = {
+                "source_id": 33,
+                "order_date": "2019-04-03T11:33:15Z",
+                "request_date": "2019-04-07T11:33:15Z",
+                "reference": "ORD00001",
+                "reference_extra": "Bedreven arm straffen bureau.",
+                "order_status": "Delivered",
+                "notes": "Voedsel vijf vork heel.",
+                "shipping_notes": "Buurman betalen plaats bewolkt.",
+                "picking_notes": "Volgorde scherp aardappel op leren.",
+                "warehouse_id": 18,
+                "ship_to": 4562,
+                "bill_to": 7863,
+                "shipment_id": 1,
+                "total_amount": 9905.13,
+                "total_discount": 150.77,
+                "total_tax": 372.72,
+                "total_surcharge": 77.6,
+                "created_at": "2019-04-03T11:33:15Z",
+                "updated_at": "2019-04-05T07:33:15Z",
+                "items": [
+                    {
+                        "item_id": "P000002",
+                        "amount": 2
+                    },
+                    {
+                        "item_id": "P000004",
+                        "amount": 1
+                    }
+                ]
+        }
+        response = self.client.post(
+            url=(self.versions[0] + "/orders"), headers=self.headers,
+            json=data)
+        self.assertIn(response.status_code, [201, 405])
+        created_order = response.json()
+        created_order_id = created_order['id']
+
+        # Get the order in v2 using created_order_id
+        response = self.client.get(
+            url=(self.versions[1] + f"/orders/{created_order_id}"),
+            headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+
+        # Check all the data in the get response
+        get_order = response.json()
+        for key in data:
+            if key != "items":
+                self.assertEqual(get_order[key], data[key])
+            else:
+                for item in data["items"]:
+                    self.assertIn(item, get_order["items"])
+
+        # Delete the order in v2 using created_order_id
+        response = self.client.delete(
+            url=(self.versions[1] + f"/orders/{created_order_id}"),
+            headers=self.headers)
+        self.assertEqual(response.status_code, 200)
