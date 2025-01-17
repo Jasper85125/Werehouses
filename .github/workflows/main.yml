@@ -20,12 +20,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Cache .Net depedencies
+    - name: Cache .Net dependencies
       if: matrix.language == 'csharp'
       uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
+        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
 
@@ -44,7 +44,6 @@ jobs:
       if: matrix.language == 'csharp'
       run: |
         dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore
-      continue-on-error: true
 
     - name: Clean Up Old Test and Coverage Results
       if: matrix.language == 'csharp'
@@ -60,7 +59,6 @@ jobs:
           --collect:"XPlat Code Coverage" \
           --results-directory TestResults \
           /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
-      continue-on-error: true
 
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
@@ -74,8 +72,6 @@ jobs:
                         -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
       env:
         PATH: $PATH:/home/runner/.dotnet/tools
-        DOTNET_CLI_TELEMETRY_OPTOUT: 1
-        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
     - name: Upload Coverage Report
       if: matrix.language == 'csharp'
@@ -84,16 +80,10 @@ jobs:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
 
-    - name: Coverage Report Summary
+    - name: Calculate and Add Coverage to Summary
+      if: matrix.language == 'csharp'
       run: |
-        ls -l coverage-report-${{ matrix.version }}
-        # cat coverage-report-${{ matrix.version }}/Cobertura.xml
-        # percentage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'line-rate="[^"]+"' | grep -oP '[^"]+')
-        # echo "Code coverage is $percentage"
-        # Extract all 'line-rate' values
-        percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
-
-        # Add all the line-rate values to compute the total
+        percentages=$(grep -oP 'line-rate="[^"]+"' TestResults/**/coverage.cobertura.xml | grep -oP '[0-9.]+')
         total_coverage=0
         count=0
         while read -r line; do
@@ -101,43 +91,33 @@ jobs:
             count=$((count + 1))
         done <<< "$percentages"
 
-        # Calculate the average (total percentage coverage)
         if [[ $count -gt 0 ]]; then
             total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
-            echo "Total Percentage Covered: $total_percentage%"
+            echo "Total Percentage Covered: $total_percentage%" > coverage-summary.txt
         else
-            echo "No coverage data found."
+            echo "No coverage data found." > coverage-summary.txt
         fi
 
-  python-tests:
-    runs-on: ubuntu-latest
-    needs: csharp-build-and-test
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Cache Python dependencies
-      uses: actions/cache@v3
+    - name: Update Workflow Summary
+      if: matrix.language == 'csharp'
+      uses: actions/github-script@v6
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('PythonTests/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install Python dependencies
-      run: pip install -r ./PythonTests/requirements.txt
-
-    - name: Run application
-      run: |
-        dotnet build ./V1/Cargohub/Werehouses.csproj --configuration Release
-        dotnet build ./V2/Cargohub/Werehouses.csproj --configuration Release
-        dotnet run --configuration Release --project ./V1/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
-        dotnet run --configuration Release --project ./V2/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
+        script: |
+          const fs = require('fs');
+          const coverageSummary = fs.readFileSync('coverage-summary.txt', 'utf8');
+          const coverageText = `
+          ## Coverage Summary for Version ${{ matrix.version }}
+          ${coverageSummary}
+          `;
+          github.rest.checks.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            check_run_id: context.runId,
+            output: {
+              title: 'Coverage Summary',
+              summary: coverageText
+            }
+          });
 
     - name: Run Python Tests
       run: |
