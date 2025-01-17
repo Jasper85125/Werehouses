@@ -43,10 +43,13 @@ public class ShipmentService : IShipmentService
     }
     public ShipmentCS CreateShipment(ShipmentCS newShipment)
     {
-
         List<ShipmentCS> shipments = GetAllShipments();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         newShipment.Id = shipments.Count > 0 ? shipments.Max(w => w.Id) + 1 : 1;
+        newShipment.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newShipment.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         shipments.Add(newShipment);
 
         var jsonData = JsonConvert.SerializeObject(shipments, Formatting.Indented);

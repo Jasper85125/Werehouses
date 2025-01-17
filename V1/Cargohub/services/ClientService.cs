@@ -31,8 +31,12 @@ public class ClientService : IClientService
     public ClientCS CreateClient(ClientCS newClient)
     {
         List<ClientCS> clients = GetAllClients();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         newClient.Id = clients.Count > 0 ? clients.Max(c => c.Id) + 1 : 1;
+        newClient.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newClient.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         clients.Add(newClient);
 
         var jsonData = JsonConvert.SerializeObject(clients, Formatting.Indented);

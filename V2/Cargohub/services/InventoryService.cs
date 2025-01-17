@@ -55,7 +55,6 @@ public class InventoryService : IInventoryService
 
     public InventoryCS CreateInventory(InventoryCS newInventory)
     {
-
         List<InventoryCS> inventories = GetAllInventories();
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");

@@ -44,7 +44,6 @@ public class OrderService : IOrderService
     }
     public OrderCS CreateOrder(OrderCS newOrder)
     {
-
         List<OrderCS> orders = GetAllOrders();
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
