@@ -179,3 +179,47 @@ class TestClass(unittest.TestCase):
                     response.status_code, 200,
                     msg=f"Failed to delete transfer: {response.content}"
                 )
+
+    def test_07_create_in_v1_get_and_delete_in_v2(self):
+        url1 = "http://localhost:5001/api/v1"
+        data = {
+                "reference": "Test Reference",
+                "transfer_from": 1,
+                "transfer_to": 2,
+                "transfer_status": "Pending",
+                "items": [
+                    {
+                        "item_id": "P007435",
+                        "amount": 1
+                    }
+                ]
+                }
+        response = self.client.post(
+            url=(url1 + "/transfers"),
+            headers=self.headers, json=data)
+
+        self.assertEqual(
+            response.status_code, 201,
+            msg=f"Failed to create transfer: {response.content}"
+        )
+        created_transfer_id = response.json()['id']
+        url2 = "http://localhost:5002/api/v2"
+        response = self.client.get(
+            url=(url2 + f"/transfers/{created_transfer_id}"),
+            headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = response.json()
+        self.assertEqual(response_data["reference"], data["reference"])
+        self.assertEqual(response_data["transfer_from"], data["transfer_from"])
+        self.assertEqual(response_data["transfer_to"], data["transfer_to"])
+        self.assertEqual(response_data["transfer_status"],
+                         data["transfer_status"])
+        self.assertEqual(response_data["items"], data["items"])
+
+        response = self.client.delete(
+            url=(url2 + f"/transfers/{created_transfer_id}"),
+            headers=self.headers)
+
+        # Check de status code
+        self.assertEqual(response.status_code, 200)
