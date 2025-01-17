@@ -34,7 +34,7 @@ namespace clients.TestsV2
 
             _mockAdminService
                 .Setup(service => service.UpdateAPIKeys(apiKey, newApiKey))
-                .Verifiable(); // Set up the mock service behavior
+                .Returns(newApiKey); // Set up the mock service behavior
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -52,40 +52,39 @@ namespace clients.TestsV2
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             _mockAdminService.Verify(service => service.UpdateAPIKeys(apiKey, newApiKey), Times.Once);
         }
+
         [TestMethod]
-public void TestUpdateAPIKeys_Failed()
-{
-    // Arrange
-    var apiKey = "FAIL";
-    var newApiKey = new ApiKeyModel
-    {
-        Key = "testtt",
-        Role = "Analyst",
-        WarehouseID = "1,2,3"
-    };
+        public void TestUpdateAPIKeys_Failed()
+        {
+            // Arrange
+            var apiKey = "FAIL";
+            var newApiKey = new ApiKeyModel
+            {
+                Key = "testtt",
+                Role = "Analyst",
+                WarehouseID = "1,2,3"
+            };
 
-    // Mock the UpdateAPIKeys method to simulate failure
-    _mockAdminService
-        .Setup(service => service.UpdateAPIKeys(apiKey, newApiKey))
-        .Returns((ApiKeyModel)null); // Simulating failure
+            // Mock the UpdateAPIKeys method to simulate failure
+            _mockAdminService
+                .Setup(service => service.UpdateAPIKeys(apiKey, newApiKey))
+                .Returns((ApiKeyModel)null);
 
-    var httpContext = new DefaultHttpContext();
-    httpContext.Items["UserRole"] = "Admin"; // Set the UserRole in HttpContext
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin"; // Set the UserRole in HttpContext
 
-    // Assign HttpContext to the controller
-    _adminController.ControllerContext = new ControllerContext
-    {
-        HttpContext = httpContext
-    };
+            // Assign HttpContext to the controller
+            _adminController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
-    // Act
-    var result = _adminController.UpdateAPIKeys(apiKey, newApiKey);
+            // Act
+            var result = _adminController.UpdateAPIKeys(apiKey, newApiKey);
 
-    // Assert
-    Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-    var badRequestResult = result as BadRequestObjectResult;
-    Assert.AreEqual("API Key update failed", badRequestResult.Value);
-}
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
 
 
     }

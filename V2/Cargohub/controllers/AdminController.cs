@@ -132,6 +132,10 @@ public class AdminController : ControllerBase
         try
         {
             var newKey = _adminservice.UpdateAPIKeys(ApiKey, NewApiKey);
+            if (newKey == null)
+            {
+                return BadRequest(new { error = "API Key update failed" });
+            }
             return Ok(newKey);
         }
         catch (Exception ex)
