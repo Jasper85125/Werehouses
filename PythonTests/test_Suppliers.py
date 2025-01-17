@@ -120,3 +120,42 @@ class TestClass(unittest.TestCase):
                     headers=self.headers
                 )
                 self.assertEqual(response.status_code, 200)
+
+    def test_07_create_in_v1_get_and_delete_in_v2(self):
+        data = {
+            "code": "12345",
+            "name": "Test Supplier",
+            "address": "123 Test St",
+            "province": "Test Province",
+            "country": "Test Country",
+            "contact_name": "Test Contact",
+            "reference": "Test Reference"
+        }
+
+        # Create supplier in v1
+        response = self.client.post(
+            url="http://localhost:5001/api/v1/suppliers",
+            headers=self.headers, json=data
+        )
+        self.assertEqual(response.status_code, 201)
+        supplier_id = response.json()["id"]
+
+        # Get supplier in v2
+        response = self.client.get(
+            url=f"http://localhost:5002/api/v2/suppliers/{supplier_id}",
+            headers=self.headers
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # Check supplier data in v2
+        supplier_data = response.json()
+        self.assertTrue(checkSupplier(supplier_data))
+        for key, value in data.items():
+            self.assertEqual(supplier_data[key], value)
+
+        # Delete supplier in v2
+        response = self.client.delete(
+            url=f"http://localhost:5002/api/v2/suppliers/{supplier_id}",
+            headers=self.headers
+        )
+        self.assertEqual(response.status_code, 200)
