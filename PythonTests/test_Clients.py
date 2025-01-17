@@ -228,3 +228,59 @@ class TestClass(unittest.TestCase):
 
                 # Check de status code
                 self.assertEqual(response.status_code, 200)
+
+    def test_06_createV1_getV2_test(self):
+        url1 = "http://localhost:5001/api/v1"
+
+        data = {
+            "name": "Test Client",
+            "address": "123 Test Street",
+            "zip_code": "12345",
+            "city": "Test City",
+            "province": "Test Province",
+            "country": "Test Country",
+            "contact_phone": "123-456-7890",
+            "contact_email": "test@example.com",
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z"
+        }
+        response = self.client.post(
+            url=(url1 + "/clients"),
+            headers=self.headers, json=data)
+
+        self.assertEqual(
+            response.status_code, 201,
+            msg=f"Failed to create client: {response.content}"
+        )
+
+        url2 = "http://localhost:5002/api/v2"
+        response = self.client.get(
+            url=(url2 + "/clients"), headers=self.headers)
+        self.assertEqual(
+            response.status_code, 200,
+            msg=f"Failed to get clients: {response.content}"
+        )
+        clients = response.json()
+        last_client_id = clients[-1]["id"] if clients else 1
+
+        response = self.client.get(
+            url=(url2 + f"/clients/{last_client_id}"),
+            headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = response.json()
+        self.assertEqual(response_data["name"], data["name"])
+        self.assertEqual(response_data["address"], data["address"])
+        self.assertEqual(response_data["zip_code"], data["zip_code"])
+        self.assertEqual(response_data["city"], data["city"])
+        self.assertEqual(response_data["province"], data["province"])
+        self.assertEqual(response_data["country"], data["country"])
+        self.assertEqual(response_data["contact_phone"], data["contact_phone"])
+        self.assertEqual(response_data["contact_email"], data["contact_email"])
+
+        response = self.client.delete(
+            url=(url2 + f"/clients/{last_client_id}"),
+            headers=self.headers)
+
+        # Check de status code
+        self.assertEqual(response.status_code, 200)
