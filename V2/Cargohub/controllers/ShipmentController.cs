@@ -136,7 +136,8 @@ public class ShipmentController : ControllerBase
 
         // Pagination logic
         int totalPages = (int)Math.Ceiling(filteredShipmentsCount / (double)pageSize);
-        if (page <= 0){
+        if (page <= 0)
+        {
             page = totalPages;
         }
         page = Math.Max(1, Math.Min(page, totalPages));
