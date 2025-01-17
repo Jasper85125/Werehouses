@@ -138,5 +138,48 @@ class TestItemLines(unittest.TestCase):
                 # Check the status code
                 self.assertEqual(response.status_code, 200)
 
+    def test_06_create_in_v1_get_and_delete_in_v2(self):
+        # Create in v1
+        data = {
+            "name": "Tech Gadgets",
+            "description": "cooler gadgets",
+        }
+        response = self.client.post(
+            url="http://localhost:5001/api/v1/itemlines",
+            headers=self.headers,
+            json=data
+        )
+        self.assertEqual(response.status_code, 201)
+        created_item_line = response.json()
+        created_item_line_id = created_item_line['id']
+
+        # Get in v2
+        response = self.client.get(
+            url=(
+                (
+                    f"http://localhost:5002/api/v2/itemlines/"
+                    f"{created_item_line_id}"
+                )
+            ),
+            headers=self.headers
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.json()), dict)
+        self.assertTrue(checkItemLine(response.json()))
+
+        self.assertEqual(response.json()['name'], data['name'])
+        self.assertEqual(response.json()['description'], data['description'])
+
+        # Delete in v2
+        response = self.client.delete(
+            url=(
+                (
+                    f"http://localhost:5002/api/v2/itemlines/"
+                    f"{created_item_line_id}"
+                )
+            ),
+            headers=self.headers
+        )
+        self.assertEqual(response.status_code, 200)
 
 # to run the file: python -m unittest test_item_lines.py
