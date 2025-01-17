@@ -143,7 +143,6 @@ class TestItemLines(unittest.TestCase):
         data = {
             "name": "Tech Gadgets",
             "description": "cooler gadgets",
-            "created_at": "2022-08-18T07:05:25"
         }
         response = self.client.post(
             url="http://localhost:5001/api/v1/itemlines",
@@ -170,7 +169,6 @@ class TestItemLines(unittest.TestCase):
 
         self.assertEqual(response.json()['name'], data['name'])
         self.assertEqual(response.json()['description'], data['description'])
-        self.assertEqual(response.json()['created_at'], data['created_at'])
 
         # Delete in v2
         response = self.client.delete(
