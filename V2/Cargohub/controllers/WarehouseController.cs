@@ -212,8 +212,8 @@ public class WarehouseController : ControllerBase
     }
     //PATCH: Warehouse/{id}/{property_to_change}
     //''   :     ''   /  ''/      contact == werkt niet
-    [HttpPatch("{id}/{property}")]
-    public ActionResult<WarehouseCS> PatchWarehouse([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue){
+    [HttpPatch("{id}")]
+    public ActionResult<WarehouseCS> PatchWarehouse([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue){
         if(newvalue is null){
             return NotFound("Erhm what?");
         }
