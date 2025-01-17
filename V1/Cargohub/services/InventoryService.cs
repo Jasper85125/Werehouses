@@ -47,13 +47,14 @@ public class InventoryService : IInventoryService
 
     public InventoryCS CreateInventory(InventoryCS newInventory)
     {
-
         List<InventoryCS> inventories = GetAllInventories();
-
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         newInventory.Id = inventories.Count > 0 ? inventories.Max(i => i.Id) + 1 : 1;
+        newInventory.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newInventory.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         inventories.Add(newInventory);
-
 
         var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
         File.WriteAllText(Path, jsonData);

@@ -35,6 +35,8 @@ public class ItemLineService : IItemLineService
     public async Task<ItemLineCS> AddItemLine(ItemLineCS newItemLine)
     {
         List<ItemLineCS> items = GetAllItemlines();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         if (items.Any())
         {
@@ -44,7 +46,8 @@ public class ItemLineService : IItemLineService
         {
             newItemLine.Id = 1;
         }
-
+        newItemLine.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newItemLine.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         items.Add(newItemLine);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);

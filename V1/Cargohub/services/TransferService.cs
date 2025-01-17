@@ -44,8 +44,12 @@ public class TransferService : ITransferService
     public TransferCS CreateTransfer(TransferCS newTransfer)
     {
         List<TransferCS> transfers = GetAllTransfers();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         newTransfer.Id = transfers.Count > 0 ? transfers.Max(t => t.Id) + 1 : 1;
+        newTransfer.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newTransfer.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         transfers.Add(newTransfer);
 
         var jsonData = JsonConvert.SerializeObject(transfers, Formatting.Indented);
