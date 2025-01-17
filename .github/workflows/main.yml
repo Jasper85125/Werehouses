@@ -150,24 +150,4 @@ jobs:
         name: python-test-reports
         path: PythonTests/reports
 
-    # Build and Publish for Linux (only for release events)
-  Deliver-Artifacts:
-    runs-on: ubuntu-latest
-    needs: csharp-build-and-test
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Build for Linux
-      run: |
-        dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
-        dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
-
-    - name: Create ZIP package
-      run: zip -r linux-release-v${{ github.run_number }}.zip ./publish
-
-    - name: Upload ZIP artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux-release-v${{ github.run_number }}
-        path: linux-release-v${{ github.run_number }}.zip
+  
