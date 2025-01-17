@@ -333,11 +333,11 @@ namespace itemgroup.TestsV2
         public void PatchItemGroupTest_Success()
         {
             // Arrange
-            var existingItemGroup = new ItemGroupCS { Id = 1, Name = "Group 1", Description = "Existing Description" };
-            var patchItemGroup = new ItemGroupCS { Name = "Updated Group", Description = "Updated Description" };
+            var existingItemGroup = new ItemGroupCS { Id = 1, Name = "Group 1"  };
+            var patchItemGroup = new ItemGroupCS { Name = "Updated Group" };
 
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(existingItemGroup);
-            _mockItemGroupService.Setup(service => service.PatchItemGroup(1, patchItemGroup)).Returns(patchItemGroup);
+            _mockItemGroupService.Setup(service => service.PatchItemGroup(1, "Name", "Updated Group")).Returns(patchItemGroup);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
@@ -349,7 +349,7 @@ namespace itemgroup.TestsV2
             };
 
             // Act
-            var result = _itemGroupController.PatchItemGroup(1, patchItemGroup);
+            var result = _itemGroupController.PatchItemGroup(1, "Name", "Updated Group");
             var okResult = result.Result as OkObjectResult;
             var returnedItemGroup = okResult.Value as ItemGroupCS;
 
@@ -358,7 +358,6 @@ namespace itemgroup.TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(ItemGroupCS));
             Assert.AreEqual(patchItemGroup.Name, returnedItemGroup.Name);
-            Assert.AreEqual(patchItemGroup.Description, returnedItemGroup.Description);
         }
 
         [TestMethod]
@@ -379,7 +378,7 @@ namespace itemgroup.TestsV2
             };
 
             // Act
-            var result = _itemGroupController.PatchItemGroup(1, patchItemGroup);
+            var result = _itemGroupController.PatchItemGroup(1, "Name", "Updated Group");
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));

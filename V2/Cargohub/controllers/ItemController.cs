@@ -298,8 +298,8 @@ public class ItemController : ControllerBase
         return Ok(updatedItemResult);
     }
     // change the value of one property in an item object
-    [HttpPatch("{uid}/{property}")]
-    public ActionResult<ItemCS> PatchItem([FromRoute] string uid, [FromRoute] string property, [FromBody] object newvalue)
+    [HttpPatch("{uid}")]
+    public ActionResult<ItemCS> PatchItem([FromRoute] string uid, [FromQuery] string property, [FromBody] object newvalue)
     {
         if (string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(property) || newvalue is null)
         {

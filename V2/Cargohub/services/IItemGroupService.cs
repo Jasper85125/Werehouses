@@ -13,5 +13,5 @@ public interface IitemGroupService
     List<ItemCS> ItemsFromItemGroupId(int itemgroup_id);
     void DeleteItemGroup(int id);
     void DeleteItemGroups(List<int> ids);
-    ItemGroupCS PatchItemGroup(int Id, ItemGroupCS itemGroup);
+    ItemGroupCS PatchItemGroup(int Id, string property, object newvalue);
 }

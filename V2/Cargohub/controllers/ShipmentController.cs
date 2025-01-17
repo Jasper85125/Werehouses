@@ -136,7 +136,8 @@ public class ShipmentController : ControllerBase
 
         // Pagination logic
         int totalPages = (int)Math.Ceiling(filteredShipmentsCount / (double)pageSize);
-        if (page <= 0){
+        if (page <= 0)
+        {
             page = totalPages;
         }
         page = Math.Max(1, Math.Min(page, totalPages));
@@ -288,8 +289,8 @@ public class ShipmentController : ControllerBase
         }
         return Ok(updated);
     }
-    [HttpPatch("{id}/{property}")]
-    public ActionResult<ShipmentCS> PatchShipment([FromRoute] int id, [FromRoute] string property, [FromBody] object newvalue)
+    [HttpPatch("{id}")]
+    public ActionResult<ShipmentCS> PatchShipment([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue)
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Logistics" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
