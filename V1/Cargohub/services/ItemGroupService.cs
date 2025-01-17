@@ -44,25 +44,28 @@ public class ItemGroupService : ItemService, IitemGroupService
         return find;
     }
 
-    public async Task<ItemGroupCS> CreateItemGroup(ItemGroupCS newItemType)
+    public async Task<ItemGroupCS> CreateItemGroup(ItemGroupCS newItemGroup)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         if (items.Any())
         {
-            newItemType.Id = items.Max(i => i.Id) + 1;
+            newItemGroup.Id = items.Max(i => i.Id) + 1;
         }
         else
         {
-            newItemType.Id = 1;
+            newItemGroup.Id = 1;
         }
-
-        items.Add(newItemType);
+        newItemGroup.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newItemGroup.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        items.Add(newItemGroup);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
         await File.WriteAllTextAsync(Path, jsonData);
 
-        return newItemType;
+        return newItemGroup;
     }
 
     // Method to update an existing Itemgroup

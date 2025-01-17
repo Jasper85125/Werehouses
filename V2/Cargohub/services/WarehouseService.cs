@@ -34,8 +34,12 @@ public class WarehouseService : IWarehouseService
     public WarehouseCS CreateWarehouse(WarehouseCS newWarehouse)
     {
         List<WarehouseCS> warehouses = GetAllWarehouses();
+        var currentDateTime = DateTime.Now;
+        var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         newWarehouse.Id = warehouses.Count > 0 ? warehouses.Max(w => w.Id) + 1 : 1;
+        newWarehouse.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
+        newWarehouse.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         warehouses.Add(newWarehouse);
         
         // Serialize the updated list back to the JSON file

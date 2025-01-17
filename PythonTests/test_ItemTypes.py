@@ -138,9 +138,7 @@ class TestItemTypesAPI(unittest.TestCase):
         # Create in v1
         data = {
             "name": "Cross Version Item Type",
-            "description": "An item type created in v1 and accessed in v2",
-            "created_at": "2023-10-01T00:00:00",
-            "updated_at": "2023-10-01T00:00:00",
+            "description": "An item type created in v1 and accessed in v2"
         }
 
         response = self.client.post(
@@ -163,8 +161,6 @@ class TestItemTypesAPI(unittest.TestCase):
 
         self.assertEqual(response.json()['name'], data['name'])
         self.assertEqual(response.json()['description'], data['description'])
-        self.assertEqual(response.json()['created_at'], data['created_at'])
-        self.assertEqual(response.json()['updated_at'], data['updated_at'])
 
         # Delete in v2
         response = self.client.delete(
