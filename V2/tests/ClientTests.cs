@@ -301,7 +301,7 @@ namespace clients.TestsV2
             };
             result = _clientController.DeleteClient(1);
 
-            var unauthorizedResult = result.Result as UnauthorizedResult;
+            var unauthorizedResult = result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
@@ -337,10 +337,9 @@ namespace clients.TestsV2
             {
                 HttpContext = httpContext
             };
-            result = _clientController.DeleteClients(clientsToDelete);
+            var resultUn = _clientController.DeleteClients(clientsToDelete);
 
-            var unauthorizedResult = result.Result as UnauthorizedResult;
-            Assert.IsNotNull(unauthorizedResult);
+            var unauthorizedResult = resultUn as UnauthorizedResult;
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
