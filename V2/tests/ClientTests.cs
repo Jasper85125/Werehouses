@@ -49,6 +49,20 @@ namespace clients.TestsV2
             var returnedItems = okResult.Value as IEnumerable<ClientCS>;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "Operative";
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _clientController.GetAllClients();
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -74,7 +88,25 @@ namespace clients.TestsV2
             var resultok = result.Result as OkObjectResult;
             Assert.IsNotNull(resultok);
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+
+            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _clientController.GetClientById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        
 
         [TestMethod]
         public void CreateClient_ReturnsCreatedResult_WithNewClient()
@@ -104,6 +136,19 @@ namespace clients.TestsV2
             Assert.IsNotNull(returnedClients);
             Assert.AreEqual(client.Address, returnedClients.Address);
             Assert.AreEqual(client.City, returnedClients.City);
+
+            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _clientController.CreateClient(client);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -140,6 +185,19 @@ namespace clients.TestsV2
             Assert.AreEqual(clients[0].Address, firstClient.Address);
             Assert.AreEqual(clients[0].contact_phone, firstClient.contact_phone);
             Assert.AreEqual(clients[0].contact_name, firstClient.contact_name);
+
+            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _clientController.CreateMultipleClients(clients);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -170,6 +228,19 @@ namespace clients.TestsV2
             var returnedClient = createdResult.Value as ClientCS;
             Assert.AreEqual(updatedClient.City, returnedClient.City);
             Assert.AreEqual(updatedClient.Address, returnedClient.Address);
+
+            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _clientController.UpdateClient(1, updatedClient);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -220,6 +291,19 @@ namespace clients.TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _clientController.DeleteClient(1);
+
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
 
@@ -245,6 +329,18 @@ namespace clients.TestsV2
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultOK.StatusCode, 200);
+
+            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            var resultUn = _clientController.DeleteClients(clientsToDelete);
+
+            var unauthorizedResult = resultUn as UnauthorizedResult;
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -277,6 +373,19 @@ namespace clients.TestsV2
             Assert.IsNotNull(returnedClient);
             Assert.AreEqual(patchClient.Address, returnedClient.Address);
             Assert.AreEqual(patchClient.City, returnedClient.City);
+
+            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _clientController.PatchClient(1, "address", "new street");
+            
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]

@@ -142,8 +142,18 @@ public class ClientController : ControllerBase
     }
 
     [HttpDelete("batch")]
-    public ActionResult DeleteClients ([FromBody] List<int> ids){
-        if(ids is null){
+    public ActionResult DeleteClients([FromBody] List<int> ids)
+    {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        
+        if (ids is null)
+        {
             return BadRequest("error in request");
         }
         _clientservice.DeleteClients(ids);
@@ -175,5 +185,5 @@ public class ClientController : ControllerBase
         }
 
         return Ok(updatedClient);
-    }    
+    }
 }
