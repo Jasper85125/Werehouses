@@ -88,17 +88,23 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    - name: Build for Windows
+  
+    - name: Build V1 for Windows
+      run: dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r win-x64 --self-contained false -o ./publish/V1
+  
+    - name: Build V2 for Windows
+      run: dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r win-x64 --self-contained false -o ./publish/V2
+  
+    - name: Combine V1 and V2 into one ZIP
       run: |
-        dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r win-x64 --self-contained false -o ./publish
-        dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r win-x64 --self-contained false -o ./publish
-
-    - name: Create ZIP package
-      run: zip -r windows-release-v${{ github.run_number }}.zip ./publish
-
-    - name: Upload ZIP artifact
+        mkdir -p combined-release
+        mv ./publish/V1 combined-release/V1
+        mv ./publish/V2 combined-release/V2
+        zip -r combined-windows-release-v${{ github.run_number }}.zip combined-release
+  
+    - name: Upload Combined ZIP artifact
       uses: actions/upload-artifact@v4
       with:
-        name: windows-release-v${{ github.run_number }}
-        path: windows-release-v${{ github.run_number }}.zip
+        name: combined-windows-release-v${{ github.run_number }}
+        path: combined-windows-release-v${{ github.run_number }}.zip
+
