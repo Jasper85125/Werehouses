@@ -155,17 +155,19 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    - name: Build for Linux
-      run: |
-        dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
-        dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish
-
+  
+    - name: Build V1 for Linux
+      run: dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish/V1
+  
+    - name: Build V2 for Linux
+      run: dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish/V2
+  
     - name: Create ZIP package
       run: zip -r linux-release-v${{ github.run_number }}.zip ./publish
-
+  
     - name: Upload ZIP artifact
       uses: actions/upload-artifact@v4
       with:
         name: linux-release-v${{ github.run_number }}
         path: linux-release-v${{ github.run_number }}.zip
+
