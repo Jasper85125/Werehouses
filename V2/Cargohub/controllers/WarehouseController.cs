@@ -214,6 +214,13 @@ public class WarehouseController : ControllerBase
     //''   :     ''   /  ''/      contact == werkt niet
     [HttpPatch("{id}")]
     public ActionResult<WarehouseCS> PatchWarehouse([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue){
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
         if(newvalue is null){
             return NotFound("Erhm what?");
         }
