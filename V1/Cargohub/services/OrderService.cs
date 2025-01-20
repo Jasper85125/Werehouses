@@ -6,11 +6,9 @@ namespace ServicesV1;
 
 public class OrderService : IOrderService
 {
-    // Constructor
     private string path = "../../data/orders.json";
     public OrderService()
     {
-        // Initialization code here
     }
 
     public List<OrderCS> GetAllOrders()
@@ -50,7 +48,6 @@ public class OrderService : IOrderService
 
     public List<OrderCS> GetOrdersByClient(int client_id)
     {
-        // the client_id is not a field in the Order class but there are two fields that could be used to identify the client the shipp_to and bill_to fields
         List<OrderCS> orders = GetAllOrders();
         List<OrderCS> clientOrders = orders.Where(order => order.ship_to == client_id || order.bill_to == client_id).ToList();
         if (clientOrders == null)
@@ -62,7 +59,6 @@ public class OrderService : IOrderService
 
     public List<OrderCS> GetOrdersByShipmentId(int shipmentId)
     {
-        // the client_id is not a field in the Order class but there are two fields that could be used to identify the client the shipp_to and bill_to fields
         List<OrderCS> orders = GetAllOrders();
         List<OrderCS> shipmentOrders = orders.Where(order => order.shipment_id == shipmentId).ToList();
         if (shipmentOrders == null)

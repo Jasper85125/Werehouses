@@ -11,7 +11,6 @@ public class ItemController : ControllerBase
     private readonly IItemService _itemService;
     private readonly IInventoryService _inventoryService;
 
-    // Constructor to initialize the ItemController with an IItemService instance
     public ItemController(IItemService itemService, IInventoryService inventoryService)
     {
         _itemService = itemService;
@@ -19,7 +18,6 @@ public class ItemController : ControllerBase
     }
 
     // GET: items
-    // Retrieves all items
     [HttpGet()]
     public ActionResult<IEnumerable<ItemCS>> GetAllItems()
     {
@@ -28,7 +26,6 @@ public class ItemController : ControllerBase
     }
 
     // GET: items/5
-    // Retrieves an item by its unique identifier (uid)
     [HttpGet("{uid}")]
     public ActionResult<ItemCS> GetByUid(string uid)
     {

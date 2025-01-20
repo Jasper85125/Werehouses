@@ -11,14 +11,12 @@ public class ItemLineController : ControllerBase
 {
     private readonly IItemLineService _itemLineService;
 
-    // Constructor to initialize the ItemController with an IItemService instance
     public ItemLineController(IItemLineService itemLineService)
     {
         _itemLineService = itemLineService;
     }
 
     // GET: api/items
-    // Retrieves all items
     [HttpGet()]
     public ActionResult<IEnumerable<ItemCS>> GetAllItemLines()
     {
