@@ -53,6 +53,20 @@ namespace inventory.TestsV2
             var returnedItems = okResult.Value as IEnumerable<InventoryCS>;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _inventoryController.GetAllInventories();
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -84,6 +98,20 @@ namespace inventory.TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(inventories[0].item_id, returnedItems.item_id);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _inventoryController.GetInventoryById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -107,6 +135,7 @@ namespace inventory.TestsV2
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
+
         [TestMethod]
         public void GetInventoryTotalByItemIdTest_Exists()
         {
@@ -134,6 +163,20 @@ namespace inventory.TestsV2
 
             // Verify the total_on_hand + total_allocated calculation
             Assert.AreEqual(60, okResult.Value, "The total of total_on_hand and total_allocated did not match the expected value.");
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _inventoryController.GetInventoryByItemId("P01");
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
 
@@ -164,6 +207,20 @@ namespace inventory.TestsV2
             Assert.AreEqual(1, returnedInventory.Id);  // Verify that the returned object has the expected ID
             Assert.AreEqual("ITEM123", returnedInventory.item_id);  // Verify that the returned object has the expected ItemId
             Assert.AreEqual(50, returnedInventory.total_on_hand);  // Verify that the returned object has the expected Quantity
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _inventoryController.CreateInventory(inventory);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -200,6 +257,20 @@ namespace inventory.TestsV2
             Assert.AreEqual(inventories[0].total_on_hand, firstInventory.total_on_hand);
             Assert.AreEqual(inventories[0].total_allocated, firstInventory.total_allocated);
             Assert.AreEqual(inventories[0].total_available, firstInventory.total_available);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _inventoryController.CreateMultipleInventories(inventories);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -230,6 +301,20 @@ namespace inventory.TestsV2
             Assert.AreEqual(patchedinventory.Id, inventory.Id);
             Assert.AreEqual(patchedinventory.item_id, inventory.item_id);
             Assert.AreEqual(patchedinventory.total_on_hand, inventory.total_on_hand);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _inventoryController.UpdateInventoryById(1, inventory);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -253,7 +338,22 @@ namespace inventory.TestsV2
 
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _inventoryController.DeleteInventory(1);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
         [TestMethod]
         public void DeleteInventoriesTest_Succes()
         {
@@ -277,6 +377,20 @@ namespace inventory.TestsV2
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(reslutok.StatusCode, 200);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _inventoryController.DeleteInventories(inventoriesToDelete);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -306,6 +420,20 @@ namespace inventory.TestsV2
             Assert.AreEqual(resultOk.StatusCode, 200);
             Assert.AreEqual(typeof(InventoryCS), patchedinventory.GetType());
             Assert.AreEqual(patchedinventory.total_on_hand, inventory.total_on_hand);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _inventoryController.PatchInventory(1, "total_on_hand", 100);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]

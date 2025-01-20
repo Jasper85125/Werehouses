@@ -71,7 +71,7 @@ public class InventoryController : ControllerBase
             }
             else
             {
-                return Unauthorized(userRole);
+                return Unauthorized();
             }
         }
         var inventoriesall = _inventoryService.GetAllInventories();
