@@ -19,6 +19,7 @@ public class AdminController : ControllerBase
     }
 
     // POST: 
+    [HttpPost("AddData")]
     public IActionResult AddData([FromForm] IFormFile file)
     {
         // Allowed roles
