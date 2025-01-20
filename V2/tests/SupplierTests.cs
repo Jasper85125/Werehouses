@@ -33,9 +33,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.GetAllSuppliers()).Returns(suppliers);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -78,9 +77,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(suppliers[0]);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -118,9 +116,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns((SupplierCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -154,13 +151,11 @@ namespace TestsV2
             var newSupplier = new SupplierCS { Id = 1, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404" };
             var createdSupplier = new SupplierCS { Id = 2, Code = "H1M12", Name = "Joseph", Address = "Lissabon 402" };
 
-            // Set up the mock service to return the created order
             _mockSupplierService.Setup(service => service.CreateSupplier(newSupplier)).Returns(createdSupplier);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -208,9 +203,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.CreateMultipleSuppliers(suppliers)).Returns(suppliers);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -266,9 +260,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.UpdateSupplier(1, updatedSupplier)).Returns(updatedSupplier);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";  
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -326,9 +319,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.UpdateSupplier(0, updatedSupplier)).Returns((SupplierCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";  
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -366,9 +358,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(supplier);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -398,8 +389,8 @@ namespace TestsV2
         [TestMethod]
         public void GetItemsBySupplierId_ExistingId()
         {
-            // Arrange: Mock the service responses to ensure the controller returns the expected items
-            var supplier = new SupplierCS { Id = 1 };  // Create a mock supplier
+            // Arrange
+            var supplier = new SupplierCS { Id = 1 };
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(supplier);
 
             var items = new List<ItemCS>
@@ -410,20 +401,19 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.GetItemsBySupplierId(1)).Returns(items);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
 
-            // Act: Call the controller method
+            // Act
             var result = _supplierController.GetItemsBySupplierId(1);
             var okResult = result.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<ItemCS>;
 
-            // Assert: Verify the result
+            // Assert
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult, "Expected OkObjectResult, but got null.");
             Assert.IsNotNull(returnedItems, "Expected returnedItems to be non-null.");
@@ -451,9 +441,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.GetItemsBySupplierId(1)).Returns((List<ItemCS>)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -518,9 +507,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.PatchSupplier(1, "Name", "Supp & liers")).Returns(patchSupplier);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -577,9 +565,8 @@ namespace TestsV2
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns((SupplierCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -612,9 +599,8 @@ namespace TestsV2
             var suppliersToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
              _supplierController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

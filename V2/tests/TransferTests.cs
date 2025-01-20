@@ -33,9 +33,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.GetAllTransfers()).Returns(transfers);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -63,9 +62,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.GetTransferById(1)).Returns(transfers[0]);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -103,9 +101,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.GetTransferById(1)).Returns((TransferCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";  
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -132,28 +129,6 @@ namespace TestsV2
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
-        /*
-[TestMethod]
-        public void GetItemsInShipmentTest_Exists()
-        {
-            //arrange
-            var items = new List<ItemIdAndAmount>
-            {
-                new ItemIdAndAmount { item_id = "P01", amount = 23 },
-                new ItemIdAndAmount { item_id = "P02", amount = 12 },
-            };
-            _mockShipmentService.Setup(service => service.GetItemsInShipment(1)).Returns(items);
-
-            //Act
-            var value = _shipmentController.GetItemsInShipment(1);
-
-            //Assert
-            var okResult = value.Result as OkObjectResult;
-            var returnedItems = okResult.Value as IEnumerable<ItemIdAndAmount>;
-            Assert.IsNotNull(okResult);
-            Assert.AreEqual(2, returnedItems.Count());
-        }
-        */
         [TestMethod]
         public void GetItemsInTransferTest_Exists()
         {
@@ -166,9 +141,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.GetItemsInTransfer(1)).Returns(items);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -197,6 +171,7 @@ namespace TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
         [TestMethod]
         public void CreateTransfer_ReturnsCreatedAtActionResult_WithNewTransfer()
         {
@@ -213,9 +188,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.CreateTransfer(transfer)).Returns(transfer);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -260,9 +234,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.CreateMultipleTransfers(transfers)).Returns(transfers);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -312,9 +285,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.UpdateTransfer(1, updatedTransfer)).Returns(updatedTransfer);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -356,9 +328,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.UpdateTransfer(0, updatedTransfer)).Returns((TransferCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -394,8 +365,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.PatchTransfer(1, "Reference", "WWWWWW")).Returns(data);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
-            // Assign HttpContext to the controller
+            httpContext.Items["UserRole"] = "Admin";
+
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -451,9 +422,8 @@ namespace TestsV2
             _mockTransferService.Setup(service => service.CommitTransfer(transfer.Id)).Returns(transferCommitted);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -493,28 +463,13 @@ namespace TestsV2
         [TestMethod]
         public void DeleteTransferTest_Exist()
         {
-            /*
-public void DeleteWarehouseTest_Success()
-        {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
-            
-            // Act
-            var result = _warehouseController.DeleteWarehouse(1);
-            
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(OkResult));
-        }
-            */
             //arrange
             var transfers = new TransferCS { Id = 1, Reference = "JoJo", transfer_from = 9292, transfer_to = null, transfer_status = "completed", created_at = default, updated_at = default, Items = new List<ItemIdAndAmount>() };
             _mockTransferService.Setup(service => service.GetTransferById(1)).Returns(transfers);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -548,9 +503,8 @@ public void DeleteWarehouseTest_Success()
             var transfersToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -591,9 +545,8 @@ public void DeleteWarehouseTest_Success()
             _mockTransferService.Setup(service => service.GetLatestTransfers(5)).Returns(transfers);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";  
 
-            // Assign HttpContext to the controller
             _transferController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

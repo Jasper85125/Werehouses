@@ -88,7 +88,7 @@ namespace TestsV1
             var result = _warehouseController.CreateWarehouse(warehouse);
             
             // Assert
-            var createdResult = result.Result as CreatedAtActionResult;  // Use CreatedAtActionResult here
+            var createdResult = result.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdResult);
             
             var returnedItems = createdResult.Value as WarehouseCS;

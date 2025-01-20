@@ -35,10 +35,10 @@ namespace TestsV1
 
             // Act
             var result = _itemGroupController.GetAllItemGroups();
-
-            // Assert
             var okResult = result.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<ItemGroupCS>;
+
+            // Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
@@ -52,10 +52,10 @@ namespace TestsV1
 
             // Act
             var result = _itemGroupController.GetItemById(1);
-
-            // Assert
             var okResult = result.Result as OkObjectResult;
             var returnedItem = okResult.Value as ItemGroupCS;
+
+            // Assert
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(itemGroup.Name, returnedItem.Name);
@@ -83,10 +83,10 @@ namespace TestsV1
 
             // Act
             var result = _itemGroupController.CreateItemGroup(newItemGroup);
-
-            // Assert
             var createdResult = result.Result as CreatedAtActionResult;
             var returnedItem = createdResult.Value as ItemGroupCS;
+
+            // Assert
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(newItemGroup.Name, returnedItem.Name);
         }
@@ -102,10 +102,10 @@ namespace TestsV1
 
             // Act
             var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
-
-            // Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItem = okResult.Value as ItemGroupCS;
+
+            // Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(updatedItemGroup.Description, returnedItem.Description);
         }
@@ -142,30 +142,45 @@ namespace TestsV1
         {
             // Arrange
             var itemGroup = new ItemGroupCS { Id = 1, Name = "Group 1" };
-            _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(itemGroup); 
+            _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(itemGroup);
+
             // Act
             var result = _itemGroupController.DeleteItemGroup(1);
+
             //assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
-            
         }
+
         [TestMethod]
-        public void ItemsFromItemGroupId_Succes(){
+        public void ItemsFromItemGroupId_Succes()
+        {
             //Arrange
-            var testResult = new ItemCS(){ uid= "P000084", code= "xQk78654R",
-            description= "Open-architected tertiary contingency",
-            short_description= "throughout", upc_code= "6240362357099",
-            model_number= "81-buCQA7M", commodity_code= "hV-9935",
-            item_line= 67, item_group= 1, item_type= 17,unit_purchase_quantity= 18,
-            unit_order_quantity= 17, pack_order_quantity= 13, supplier_id= 27,
-            supplier_code= "SUP545", supplier_part_number= "f-768-s2A",
-            // created_at= "1995-09-07T07:15:07", updated_at= "1996-09-16T17:31:21"
+            var testResult = new ItemCS()
+            {
+                uid = "P000084",
+                code = "xQk78654R",
+                description = "Open-architected tertiary contingency",
+                short_description = "throughout",
+                upc_code = "6240362357099",
+                model_number = "81-buCQA7M",
+                commodity_code = "hV-9935",
+                item_line = 67,
+                item_group = 1,
+                item_type = 17,
+                unit_purchase_quantity = 18,
+                unit_order_quantity = 17,
+                pack_order_quantity = 13,
+                supplier_id = 27,
+                supplier_code = "SUP545",
+                supplier_part_number = "f-768-s2A",
             };
-            _mockItemGroupService.Setup(service => service.ItemsFromItemGroupId(1)).Returns(new List<ItemCS>(){testResult});
+            _mockItemGroupService.Setup(service => service.ItemsFromItemGroupId(1)).Returns(new List<ItemCS>() { testResult });
+            
             //Act
             var result = _itemGroupController.GetAllItemsFromItemGroupId(1);
             var resultOK = result.Result as OkObjectResult;
             var value = resultOK.Value as List<ItemCS>;
+            
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotNull(resultOK);

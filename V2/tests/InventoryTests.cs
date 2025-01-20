@@ -36,10 +36,9 @@ namespace inventory.TestsV2
             _mockInventoryService.Setup(service => service.GetAllInventories()).Returns(inventories);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
             httpContext.Items["WarehouseID"] = "1,2,3,4";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -81,9 +80,8 @@ namespace inventory.TestsV2
             _mockInventoryService.Setup(service => service.GetInventoryById(1)).Returns(inventories[0]);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -121,9 +119,8 @@ namespace inventory.TestsV2
             _mockInventoryService.Setup(service => service.GetInventoryById(1)).Returns((InventoryCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -139,29 +136,25 @@ namespace inventory.TestsV2
         [TestMethod]
         public void GetInventoryTotalByItemIdTest_Exists()
         {
-            // Arrange: Mock returns a single InventoryCS item (assuming the service does not return a list)
+            // Arrange
             var inventoryItem = new InventoryCS { Id = 1, item_id = "P01", total_on_hand = 50, total_allocated = 10 };
             _mockInventoryService.Setup(service => service.GetInventoriesForItem("P01")).Returns(inventoryItem);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
 
-            // Act: Call the controller method
+            // Act
             var result = _inventoryController.GetInventoryByItemId("P01");
 
-            // Assert: Check if the result is as expected
+            // Assert
             var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult, "Expected OkObjectResult, but got null.");
-
             Assert.IsNotNull(okResult.Value, "Expected a single InventoryCS item to be returned.");
-
-            // Verify the total_on_hand + total_allocated calculation
             Assert.AreEqual(60, okResult.Value, "The total of total_on_hand and total_allocated did not match the expected value.");
 
             httpContext.Items["UserRole"] = "NoRole";
@@ -188,9 +181,8 @@ namespace inventory.TestsV2
             _mockInventoryService.Setup(service => service.CreateInventory(inventory)).Returns(inventory);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -202,11 +194,11 @@ namespace inventory.TestsV2
             var returnedInventory = createdAtActionResult.Value as InventoryCS;
 
             // Assert
-            Assert.IsNotNull(createdAtActionResult);  // Verify that the result is CreatedAtActionResult
-            Assert.IsNotNull(returnedInventory);  // Verify that the returned object is not null
-            Assert.AreEqual(1, returnedInventory.Id);  // Verify that the returned object has the expected ID
-            Assert.AreEqual("ITEM123", returnedInventory.item_id);  // Verify that the returned object has the expected ItemId
-            Assert.AreEqual(50, returnedInventory.total_on_hand);  // Verify that the returned object has the expected Quantity
+            Assert.IsNotNull(createdAtActionResult);  
+            Assert.IsNotNull(returnedInventory);  
+            Assert.AreEqual(1, returnedInventory.Id);  
+            Assert.AreEqual("ITEM123", returnedInventory.item_id);  
+            Assert.AreEqual(50, returnedInventory.total_on_hand);
 
             httpContext.Items["UserRole"] = "NoRole";
             _inventoryController.ControllerContext = new ControllerContext
@@ -237,9 +229,8 @@ namespace inventory.TestsV2
             _mockInventoryService.Setup(service => service.CreateMultipleInventories(inventories)).Returns(inventories);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -281,9 +272,8 @@ namespace inventory.TestsV2
             _mockInventoryService.Setup(service => service.UpdateInventoryById(1, inventory)).Returns(inventory);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -325,9 +315,8 @@ namespace inventory.TestsV2
             _mockInventoryService.Setup(service => service.GetInventoryById(1)).Returns(inventory);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -361,9 +350,8 @@ namespace inventory.TestsV2
             var inventoriesToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -372,7 +360,6 @@ namespace inventory.TestsV2
             //Arrange
             var result = _inventoryController.DeleteInventories(inventoriesToDelete);
             var reslutok = result as OkObjectResult;
-            // var reslutok = result as OkResult;
 
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
@@ -396,9 +383,8 @@ namespace inventory.TestsV2
         [TestMethod]
         public void PatchInventoryTest_Succes(){
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -439,9 +425,8 @@ namespace inventory.TestsV2
         [TestMethod]
         public void PatchInventoryTest_Fail(){
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

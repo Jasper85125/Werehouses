@@ -33,9 +33,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.GetAllShipments()).Returns(shipments);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -77,9 +76,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipments[0]);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -117,9 +115,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns((ShipmentCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -131,7 +128,7 @@ namespace TestsV2
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
-        //GetItemsInShipment test
+        
         [TestMethod]
         public void GetItemsInShipmentTest_Exists()
         {
@@ -144,9 +141,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.GetItemsInShipment(1)).Returns(items);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -184,9 +180,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.CreateShipment(shipment)).Returns(shipment);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -196,7 +191,7 @@ namespace TestsV2
             var value = _shipmentController.CreateShipment(shipment);
 
             // Assert
-            var createdResult = value.Result as CreatedAtActionResult;  // Use CreatedAtActionResult
+            var createdResult = value.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdResult);
 
             var returnedItems = createdResult.Value as ShipmentCS;
@@ -234,9 +229,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.CreateMultipleShipments(shipments)).Returns(shipments);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -276,9 +270,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).Returns(updatedShipment);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -347,9 +340,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.UpdateItemsInShipment(1, newItemsAndAmounts)).Returns(testshipment);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -392,9 +384,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.UpdateShipment(1, updatedShipment)).Returns((ShipmentCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -429,9 +420,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.PatchShipment(1, "Notes", "EW")).Returns(patchedshipment);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -472,9 +462,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipment);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -509,9 +498,8 @@ namespace TestsV2
             _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipment);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -545,9 +533,8 @@ namespace TestsV2
             var shipmentsToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _shipmentController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

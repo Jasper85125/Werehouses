@@ -17,7 +17,7 @@ namespace clients.TestsV2
         public void Setup()
         {
             _mockAdminService = new Mock<IAdminService>();
-            _adminController = new AdminController(_mockAdminService.Object); // Corrected capitalization
+            _adminController = new AdminController(_mockAdminService.Object);
         }
 
         [TestMethod]
@@ -34,12 +34,11 @@ namespace clients.TestsV2
 
             _mockAdminService
                 .Setup(service => service.UpdateAPIKeys(apiKey, newApiKey))
-                .Returns(newApiKey); // Set up the mock service behavior
+                .Returns(newApiKey); 
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _adminController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -65,15 +64,13 @@ namespace clients.TestsV2
                 WarehouseID = "1,2,3"
             };
 
-            // Mock the UpdateAPIKeys method to simulate failure
             _mockAdminService
                 .Setup(service => service.UpdateAPIKeys(apiKey, newApiKey))
                 .Returns((ApiKeyModel)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin"; // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _adminController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -99,12 +96,11 @@ namespace clients.TestsV2
 
             _mockAdminService
                 .Setup(service => service.AddAPIKeys(newApiKey))
-                .Returns(newApiKey); // Set up the mock service behavior
+                .Returns(newApiKey);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _adminController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -129,15 +125,13 @@ namespace clients.TestsV2
                 WarehouseID = "1,2,3"
             };
 
-            // Mock the AddAPIKeys method to simulate failure
             _mockAdminService
                 .Setup(service => service.AddAPIKeys(newApiKey))
                 .Returns((ApiKeyModel)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin"; // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _adminController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -149,6 +143,7 @@ namespace clients.TestsV2
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         }
+
         [TestMethod]
         public void TestDeleteAPIKeys_Success()
         {
@@ -165,9 +160,8 @@ namespace clients.TestsV2
                 });
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin"; // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _adminController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -186,9 +180,8 @@ namespace clients.TestsV2
         {
             // Arrange
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin"; // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _adminController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

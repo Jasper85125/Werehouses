@@ -33,10 +33,9 @@ namespace TestsV2
             _mockLocationService.Setup(service => service.GetAllLocations()).Returns(locations);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
             httpContext.Items["WarehouseID"] = "1,2,3,4";
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -78,9 +77,8 @@ namespace TestsV2
             _mockLocationService.Setup(service => service.GetLocationById(1)).Returns(locations[0]);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -118,9 +116,8 @@ namespace TestsV2
             _mockLocationService.Setup(service => service.GetLocationById(1)).Returns((LocationCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -146,9 +143,7 @@ namespace TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
-
-        // GET: /locations/warehouse/{warehouse_id}
-        //GetLocationsByWarehouseId  
+  
         [TestMethod]
         public void GetLocationsByWarehouseIdTest_Exists()
         {
@@ -161,9 +156,8 @@ namespace TestsV2
             _mockLocationService.Setup(service => service.GetLocationsByWarehouseId(1)).Returns(locations);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -199,13 +193,11 @@ namespace TestsV2
             // Arrange
             var createdLocation = new LocationCS { Id = 2, warehouse_id = 5, code = "C.3.2" };
 
-            // Set up the mock service to return the created order
             _mockLocationService.Setup(service => service.CreateLocation(createdLocation)).Returns(createdLocation);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -250,9 +242,8 @@ namespace TestsV2
             _mockLocationService.Setup(service => service.CreateMultipleLocations(locations)).Returns(locations);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -291,13 +282,11 @@ namespace TestsV2
             // Arrange
             var updatedLocation = new LocationCS { Id = 1, warehouse_id = 5, code = "C.3.2" };
 
-            // Set up the mock service to return the created order
             _mockLocationService.Setup(service => service.UpdateLocation(updatedLocation, 1)).Returns(updatedLocation);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -336,13 +325,11 @@ namespace TestsV2
             // Arrange
             var updatedLocation = new LocationCS { Id = 1, warehouse_id = 5, code = "C.3.2" };
 
-            // Set up the mock service to return the created order
             _mockLocationService.Setup(service => service.UpdateLocation(updatedLocation, 0)).Returns((LocationCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -379,9 +366,8 @@ namespace TestsV2
             _mockLocationService.Setup(_ => _.PatchLocation(1, "name", "ASS")).Returns(patchedlocation);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -422,9 +408,8 @@ namespace TestsV2
             _mockLocationService.Setup(service => service.GetLocationById(1)).Returns(location);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -458,9 +443,8 @@ namespace TestsV2
             var locationsToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _locationController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

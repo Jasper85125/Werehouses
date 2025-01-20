@@ -40,10 +40,9 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.GetAllItems()).Returns(items);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";  
             httpContext.Items["WarehouseID"] = "1,2,3,4";
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -60,9 +59,8 @@ namespace item.TestsV2
             var returnedItems = okResult.Value as PaginationCS<ItemCS>;
             Assert.AreEqual(2, returnedItems.Data.Count());
 
-            httpContext.Items["UserRole"] = "NoRole";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "NoRole";  
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -82,9 +80,8 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.GetItemById("1")).Returns(item);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -102,9 +99,8 @@ namespace item.TestsV2
             Assert.AreEqual("1", returnedItem.uid);
             Assert.AreEqual("Item1", returnedItem.code);
 
-            httpContext.Items["UserRole"] = "NoRole";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "NoRole";
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -123,9 +119,8 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.GetItemById("1")).Returns((ItemCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -158,9 +153,8 @@ namespace item.TestsV2
             _mockInventoryService.Setup(service => service.GetInventoriesForItem("P000003")).Returns(inventory);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";  
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -179,9 +173,8 @@ namespace item.TestsV2
             Assert.AreEqual(24, returnedItem.total_on_hand);
             Assert.AreEqual(68, returnedItem.total_allocated);
 
-            httpContext.Items["UserRole"] = "NoRole";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "NoRole";
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -210,9 +203,8 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.GetAllItemsInItemType(1)).Returns(items);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -255,9 +247,8 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.CreateItem(newItem)).Returns(createdItem);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -304,9 +295,8 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.CreateMultipleItems(items)).Returns(items);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -348,9 +338,8 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.UpdateItem("P000001", updatedItem)).Returns(updatedItem);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -389,9 +378,8 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.GetItemById("P000001")).Returns((ItemCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -411,9 +399,8 @@ namespace item.TestsV2
             var patcheditem = new ItemCS() { uid = "P000001", code = "lol no" };
             _mockItemService.Setup(service => service.PatchItem("P000001", "code", "lol no")).Returns(patcheditem);
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";  
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -452,9 +439,8 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.GetItemById("P000001")).Returns(existingItem);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -491,9 +477,8 @@ namespace item.TestsV2
             _mockItemService.Setup(service => service.GetAllItems()).Returns(existingItems);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

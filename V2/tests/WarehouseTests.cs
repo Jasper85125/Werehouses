@@ -33,9 +33,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.GetAllWarehouses()).Returns(warehouses);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -51,9 +50,8 @@ namespace TestsV2
             Assert.AreEqual(2, returnedItems.Data.Count());
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -78,9 +76,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouses[0]);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -96,9 +93,8 @@ namespace TestsV2
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(warehouses[0].Address, returnedItems.Address);
                         httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -118,9 +114,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns((WarehouseCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -133,9 +128,8 @@ namespace TestsV2
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
 
                         httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -157,9 +151,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.CreateWarehouse(warehouse)).Returns(warehouse);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -169,7 +162,7 @@ namespace TestsV2
             var result = _warehouseController.CreateWarehouse(warehouse);
 
             // Assert
-            var createdResult = result.Result as CreatedAtActionResult;  // Use CreatedAtActionResult here
+            var createdResult = result.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdResult);
 
             var returnedItems = createdResult.Value as WarehouseCS;
@@ -177,9 +170,8 @@ namespace TestsV2
             Assert.AreEqual(warehouse.Address, returnedItems.Address);
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -208,9 +200,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.CreateMultipleWarehouse(warehouses)).Returns(warehouses);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -229,9 +220,8 @@ namespace TestsV2
             Assert.AreEqual(warehouses[0].Contact, firstWarehouse.Contact);
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -264,9 +254,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.UpdateWarehouse(1, updatedWarehouse)).Returns(updatedWarehouse);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -285,9 +274,8 @@ namespace TestsV2
             Assert.AreEqual(updatedWarehouse.Address, returnedWarehouse.Address);
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -320,9 +308,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.UpdateWarehouse(0, updatedWarehouse)).Returns((WarehouseCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -338,9 +325,8 @@ namespace TestsV2
             Assert.IsNull(returnedWarehouse);
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -356,9 +342,8 @@ namespace TestsV2
         [TestMethod]
         public void PatchWarehouse_Succes(){
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -369,7 +354,6 @@ namespace TestsV2
             _mockWarehouseService.Setup(service=>service.PatchWarehouse(1, "Name", "KOPLER")).Returns(warehouse);
             //Act
             var result1 = _warehouseController.PatchWarehouse(1, "Code", "LOLJK");
-            //ik wilde ook Name testen, result2*
             var result2 = _warehouseController.PatchWarehouse(1, "Name", "KOPLER");
             var result1ok = result1.Result as OkObjectResult;
             var result2ok = result2.Result as OkObjectResult;
@@ -388,9 +372,8 @@ namespace TestsV2
             Assert.AreEqual(result2value.Name, warehouse.Name);
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -410,9 +393,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -425,9 +407,8 @@ namespace TestsV2
             Assert.IsInstanceOfType(result, typeof(OkResult));
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -446,9 +427,8 @@ namespace TestsV2
             var idsToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -463,9 +443,8 @@ namespace TestsV2
             Assert.AreEqual(resultok.StatusCode, 200);
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -486,9 +465,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.GetLatestUpdatedWarehouse(It.IsAny<int>())).Returns(new List<WarehouseCS> { warehouse });
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -505,9 +483,8 @@ namespace TestsV2
             Assert.AreEqual(warehouse.Address, returnedItems.Address);
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -527,9 +504,8 @@ namespace TestsV2
             _mockWarehouseService.Setup(service => service.GetLatestUpdatedWarehouse(It.IsAny<int>())).Returns((List<WarehouseCS>)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -542,9 +518,8 @@ namespace TestsV2
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
 
             httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Client";
 
-            // Assign HttpContext to the controller
             _warehouseController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

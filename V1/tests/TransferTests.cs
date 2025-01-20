@@ -30,10 +30,10 @@ namespace TestsV1
                 new TransferCS { Id = 2, Reference = "JoJo part 2", transfer_from = null, transfer_to = 1, transfer_status = "processing", created_at = default, updated_at = default, Items = new List<ItemIdAndAmount> ()}
             };
             _mockTransferService.Setup(service => service.GetAllTransfers()).Returns(transfers);
-            
+
             //Act
             var value = _transferController.GetAllTransfers();
-            
+
             //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<TransferCS>;
@@ -51,10 +51,10 @@ namespace TestsV1
                 new TransferCS { Id = 2, Reference = "JoJo part 2", transfer_from = null, transfer_to = 1, transfer_status = "processing", created_at = default, updated_at = default, Items = new List<ItemIdAndAmount> ()}
             };
             _mockTransferService.Setup(service => service.GetTransferById(1)).Returns(transfers[0]);
-            
+
             //Act
             var value = _transferController.GetTransferById(1);
-            
+
             //Assert
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as TransferCS;
@@ -68,36 +68,14 @@ namespace TestsV1
         {
             //arrange
             _mockTransferService.Setup(service => service.GetTransferById(1)).Returns((TransferCS)null);
-            
+
             //Act
             var value = _transferController.GetTransferById(1);
-            
+
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
 
-        /*
-[TestMethod]
-        public void GetItemsInShipmentTest_Exists()
-        {
-            //arrange
-            var items = new List<ItemIdAndAmount>
-            {
-                new ItemIdAndAmount { item_id = "P01", amount = 23 },
-                new ItemIdAndAmount { item_id = "P02", amount = 12 },
-            };
-            _mockShipmentService.Setup(service => service.GetItemsInShipment(1)).Returns(items);
-
-            //Act
-            var value = _shipmentController.GetItemsInShipment(1);
-
-            //Assert
-            var okResult = value.Result as OkObjectResult;
-            var returnedItems = okResult.Value as IEnumerable<ItemIdAndAmount>;
-            Assert.IsNotNull(okResult);
-            Assert.AreEqual(2, returnedItems.Count());
-        }
-        */
         [TestMethod]
         public void GetItemsInTransferTest_Exists()
         {
@@ -118,12 +96,20 @@ namespace TestsV1
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
+
         [TestMethod]
         public void CreateTransfer_ReturnsCreatedAtActionResult_WithNewTransfer()
         {
             // Arrange
-            var transfer = new TransferCS { Id= 1, Reference= "X", transfer_from= 5050, transfer_to= 9292, transfer_status= "Completed",
-                                            Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 }}};
+            var transfer = new TransferCS
+            {
+                Id = 1,
+                Reference = "X",
+                transfer_from = 5050,
+                transfer_to = 9292,
+                transfer_status = "Completed",
+                Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 } }
+            };
             _mockTransferService.Setup(service => service.CreateTransfer(transfer)).Returns(transfer);
 
             // Act
@@ -141,10 +127,17 @@ namespace TestsV1
         public void UpdatedTransferTest_Success()
         {
             // Arrange
-            var updatedTransfer = new TransferCS { Id= 1, Reference= "X", transfer_from= 5050, transfer_to= 9292, transfer_status= "Completed",
-                                                   Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 }}};
+            var updatedTransfer = new TransferCS
+            {
+                Id = 1,
+                Reference = "X",
+                transfer_from = 5050,
+                transfer_to = 9292,
+                transfer_status = "Completed",
+                Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 } }
+            };
 
-             _mockTransferService.Setup(service => service.UpdateTransfer(1, updatedTransfer)).Returns(updatedTransfer);
+            _mockTransferService.Setup(service => service.UpdateTransfer(1, updatedTransfer)).Returns(updatedTransfer);
 
             // Act
             var result = _transferController.UpdateTransfer(1, updatedTransfer);
@@ -163,9 +156,9 @@ namespace TestsV1
         public void UpdatedTransferTest_Failed()
         {
             // Arrange
-            var updatedTransfer = new TransferCS { Id= 1, Reference= "X", transfer_from= 5050, transfer_to= 9292, transfer_status= "Completed"};
+            var updatedTransfer = new TransferCS { Id = 1, Reference = "X", transfer_from = 5050, transfer_to = 9292, transfer_status = "Completed" };
 
-             _mockTransferService.Setup(service => service.UpdateTransfer(0, updatedTransfer)).Returns((TransferCS)null);
+            _mockTransferService.Setup(service => service.UpdateTransfer(0, updatedTransfer)).Returns((TransferCS)null);
 
             // Act
             var result = _transferController.UpdateTransfer(0, updatedTransfer);
@@ -181,10 +174,24 @@ namespace TestsV1
         public void UpdateTransferCommitTest()
         {
             // Arrange
-            var transfer = new TransferCS { Id= 119241, Reference= "X", transfer_from = 100, transfer_to = null, transfer_status= "Completed",
-                                            Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 }}};
-            var transferCommitted = new TransferCS { Id= 119241, Reference= "X", transfer_from = 100, transfer_to = null, transfer_status= "Processed",
-                                            Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 }}};
+            var transfer = new TransferCS
+            {
+                Id = 119241,
+                Reference = "X",
+                transfer_from = 100,
+                transfer_to = null,
+                transfer_status = "Completed",
+                Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 } }
+            };
+            var transferCommitted = new TransferCS
+            {
+                Id = 119241,
+                Reference = "X",
+                transfer_from = 100,
+                transfer_to = null,
+                transfer_status = "Processed",
+                Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P007435", amount = 23 } }
+            };
             _mockTransferService.Setup(service => service.CreateTransfer(transfer)).Returns(transfer);
             _mockTransferService.Setup(service => service.CommitTransfer(transfer.Id)).Returns(transferCommitted);
 
@@ -202,23 +209,10 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public void DeleteTransferTest_Exist(){
-            /*
-public void DeleteWarehouseTest_Success()
+        public void DeleteTransferTest_Exist()
         {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
-            
-            // Act
-            var result = _warehouseController.DeleteWarehouse(1);
-            
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(OkResult));
-        }
-            */
             //arrange
-            var transfers = new TransferCS { Id = 1, Reference = "JoJo", transfer_from = 9292, transfer_to = null, transfer_status = "completed", created_at = default, updated_at = default, Items = new List<ItemIdAndAmount> ()};
+            var transfers = new TransferCS { Id = 1, Reference = "JoJo", transfer_from = 9292, transfer_to = null, transfer_status = "completed", created_at = default, updated_at = default, Items = new List<ItemIdAndAmount>() };
             _mockTransferService.Setup(service => service.GetTransferById(1)).Returns(transfers);
 
             // Act

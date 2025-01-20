@@ -33,9 +33,8 @@ namespace clients.TestsV2
             _mockClientService.Setup(_ => _.GetAllClients()).Returns(listofclients);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -73,9 +72,8 @@ namespace clients.TestsV2
             _mockClientService.Setup(_ => _.GetClientById(client.Id)).Returns(client);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";  
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -89,9 +87,8 @@ namespace clients.TestsV2
             Assert.IsNotNull(resultok);
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
 
-            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Operative"; 
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -117,9 +114,8 @@ namespace clients.TestsV2
             _mockClientService.Setup(service => service.CreateClient(client)).Returns(client);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -129,7 +125,7 @@ namespace clients.TestsV2
             var result = _clientController.CreateClient(client);
 
             // Assert
-            var createdResult = result.Result as CreatedAtActionResult;  // Use CreatedAtActionResult here
+            var createdResult = result.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdResult);
 
             var returnedClients = createdResult.Value as ClientCS;
@@ -137,9 +133,8 @@ namespace clients.TestsV2
             Assert.AreEqual(client.Address, returnedClients.Address);
             Assert.AreEqual(client.City, returnedClients.City);
 
-            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Operative";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -165,9 +160,8 @@ namespace clients.TestsV2
             _mockClientService.Setup(service => service.CreateMultipleClients(clients)).Returns(clients);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -186,9 +180,8 @@ namespace clients.TestsV2
             Assert.AreEqual(clients[0].contact_phone, firstClient.contact_phone);
             Assert.AreEqual(clients[0].contact_name, firstClient.contact_name);
 
-            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Operative";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -209,9 +202,8 @@ namespace clients.TestsV2
             _mockClientService.Setup(service => service.UpdateClient(1, updatedClient)).Returns(updatedClient);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -229,9 +221,8 @@ namespace clients.TestsV2
             Assert.AreEqual(updatedClient.City, returnedClient.City);
             Assert.AreEqual(updatedClient.Address, returnedClient.Address);
 
-            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Operative";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -252,9 +243,8 @@ namespace clients.TestsV2
             _mockClientService.Setup(service => service.UpdateClient(0, updatedClient)).Returns((ClientCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -278,9 +268,8 @@ namespace clients.TestsV2
             _mockClientService.Setup(service => service.GetClientById(1)).Returns(existingClient);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -292,9 +281,8 @@ namespace clients.TestsV2
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
 
-            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Operative";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -314,9 +302,8 @@ namespace clients.TestsV2
             var clientsToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -330,9 +317,8 @@ namespace clients.TestsV2
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultOK.StatusCode, 200);
 
-            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Operative";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -354,9 +340,8 @@ namespace clients.TestsV2
             _mockClientService.Setup(service => service.PatchClient(1, "address", "new street")).Returns(patchClient);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -374,9 +359,8 @@ namespace clients.TestsV2
             Assert.AreEqual(patchClient.Address, returnedClient.Address);
             Assert.AreEqual(patchClient.City, returnedClient.City);
 
-            httpContext.Items["UserRole"] = "Operative";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Operative";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -397,9 +381,8 @@ namespace clients.TestsV2
             _mockClientService.Setup(service => service.GetClientById(1)).Returns((ClientCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _clientController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
