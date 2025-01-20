@@ -62,6 +62,18 @@ jobs:
           /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
       continue-on-error: true
 
+    - name: Run Tests with Coverage
+      run: |
+        cd "Tests/V2/Integration Tests"
+        dotnet test --collect:"XPlat Code Coverage" --verbosity normal
+        reportgenerator \
+          -reports:TestResults/**/coverage.cobertura.xml \
+          -targetdir:coveragereport \
+          -reporttypes:Html
+        echo "## Coverage Report Summary" >> $GITHUB_STEP_SUMMARY
+        cat coveragereport/Summary.txt >> $GITHUB_STEP_SUMMARY
+      continue-on-error: true
+
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
       run: dotnet tool install --global dotnet-reportgenerator-globaltool
