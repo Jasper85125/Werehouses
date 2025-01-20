@@ -50,6 +50,20 @@ namespace itemgroup.TestsV2
             // Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _itemGroupController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _itemGroupController.GetAllItemGroups();
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -77,6 +91,20 @@ namespace itemgroup.TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(itemGroup.Name, returnedItem.Name);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _itemGroupController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _itemGroupController.GetItemById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -125,6 +153,20 @@ namespace itemgroup.TestsV2
             // Assert
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(newItemGroup.Name, returnedItem.Name);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _itemGroupController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var value = _itemGroupController.GetItemById(1);
+
+            //assert
+            var unauthorizedResult = value.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -158,6 +200,20 @@ namespace itemgroup.TestsV2
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(itemGroups[0].Name, firstItemGroup.Name);
             Assert.AreEqual(itemGroups[0].Description, firstItemGroup.Description);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _itemGroupController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _itemGroupController.CreateMultipleItemGroups(itemGroups);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -186,6 +242,20 @@ namespace itemgroup.TestsV2
             // Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(updatedItemGroup.Description, returnedItem.Description);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _itemGroupController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -255,6 +325,20 @@ namespace itemgroup.TestsV2
             //assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
 
+            httpContext.Items["UserRole"] = "NoRole";
+            _itemGroupController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _itemGroupController.DeleteItemGroup(1);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+
         }
 
         [TestMethod]
@@ -303,6 +387,20 @@ namespace itemgroup.TestsV2
             Assert.IsNotNull(value);
             Assert.IsInstanceOfType(value, typeof(List<ItemCS>));
             Assert.AreEqual(value[0].item_group, 1);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _itemGroupController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var unAuth = _itemGroupController.GetAllItemsFromItemGroupId(1);
+
+            //assert
+            var unauthorizedResult = unAuth.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -327,6 +425,20 @@ namespace itemgroup.TestsV2
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _itemGroupController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var value = _itemGroupController.DeleteItemGroups(itemgroupsToDelete);
+
+            //assert
+            var unauthorizedResult = value as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -358,6 +470,20 @@ namespace itemgroup.TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(ItemGroupCS));
             Assert.AreEqual(patchItemGroup.Name, returnedItemGroup.Name);
+
+            httpContext.Items["UserRole"] = "NoRole";
+            _itemGroupController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var value = _itemGroupController.PatchItemGroup(1, "Name", "Updated Group");
+
+            //assert
+            var unauthorizedResult = value.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
