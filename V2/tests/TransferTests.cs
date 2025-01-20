@@ -80,6 +80,20 @@ namespace TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(transfers[0].transfer_from, returnedItems.transfer_from);
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _transferController.GetAllTransfers();
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -102,6 +116,20 @@ namespace TestsV2
 
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _transferController.GetTransferById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         /*
@@ -154,6 +182,20 @@ namespace TestsV2
             //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _transferController.GetItemsInTransfer(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
         [TestMethod]
         public void CreateTransfer_ReturnsCreatedAtActionResult_WithNewTransfer()
@@ -188,6 +230,20 @@ namespace TestsV2
             Assert.IsNotNull(createdAtActionResult);
             Assert.IsNotNull(returnedTransfer);
             Assert.AreEqual(1, returnedTransfer.Id);
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _transferController.CreateTransfer(transfer);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -223,6 +279,20 @@ namespace TestsV2
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(transfers[0].transfer_from, firstTransfer.transfer_from);
             Assert.AreEqual(transfers[0].transfer_to, firstTransfer.transfer_to);
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _transferController.CreateMultipleTransfers(transfers);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -261,6 +331,20 @@ namespace TestsV2
             Assert.IsInstanceOfType(createdResult.Value, typeof(TransferCS));
             Assert.AreEqual(updatedTransfer.Reference, returnedTransfer.Reference);
             Assert.AreEqual(updatedTransfer.transfer_status, returnedTransfer.transfer_status);
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _transferController.UpdateTransfer(1, updatedTransfer);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -288,6 +372,20 @@ namespace TestsV2
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
             Assert.IsNull(returnedTransfer);
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _transferController.UpdateTransfer(1, updatedTransfer);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
         [TestMethod]
         public void PatchTransfer_succes(){
@@ -311,6 +409,20 @@ namespace TestsV2
             Assert.AreEqual(resultOk.StatusCode, 200);
             Assert.AreEqual(typeof(TransferCS), value.GetType());
             Assert.AreEqual(value.Reference, "WWWWWW");
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _transferController.PatchTransfer(1, "Reference", "WWWWWW");
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -358,6 +470,24 @@ namespace TestsV2
             Assert.IsNotNull(createdResult2);
             Assert.IsInstanceOfType(createdResult2.Value, typeof(TransferCS));
             Assert.AreEqual(transferCommitted.transfer_status, returnedTransfer2.transfer_status);
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _transferController.CreateTransfer(transfer);
+            var result1 = _transferController.CommitTransfer(119241);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+            var unauthorizedResult1 = result1.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult1);
+            Assert.AreEqual(401, unauthorizedResult1.StatusCode);
         }
 
         [TestMethod]
@@ -395,6 +525,20 @@ public void DeleteWarehouseTest_Success()
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _transferController.DeleteTransfer(1);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -419,6 +563,20 @@ public void DeleteWarehouseTest_Success()
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _transferController.DeleteTransfers(transfersToDelete);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -449,6 +607,20 @@ public void DeleteWarehouseTest_Success()
             //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "User";
+            _transferController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _transferController.GetLatestTransfers();
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
     }
 }
