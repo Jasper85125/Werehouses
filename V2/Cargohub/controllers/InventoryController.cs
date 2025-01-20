@@ -27,56 +27,6 @@ public class InventoryController : ControllerBase
         _inventoryService = inventoryService;
         _locationService = locationService;
     }
-    
-
-    // GET: /inventories
-    // [HttpGet()]
-    // public ActionResult<IEnumerable<InventoryCS>> GetAllInventories()
-    // {
-    //     var userRole = HttpContext.Items["UserRole"]?.ToString();
-    //     if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is string warehouseID))
-    //     {
-    //         return BadRequest("WarehouseID is missing or invalid.");
-    //     }
-
-    //     var allowedRoles = new List<string> { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
-    //     if (string.IsNullOrEmpty(userRole) || !allowedRoles.Contains(userRole))
-    //     {
-    //         if (userRole == "Operative" || userRole == "Supervisor")
-    //         {
-
-    //             var warehouseid = warehouseID.Split(',').Select(int.Parse).ToList();
-    //             // get location from the inventories and then look in the location for the warehouse_id
-    //             // location can be found in the data/locations.json file and the location variable is the same as the id in the json file. the file has a variable called warehouse id
-    //             // use the locationservice to get all the locations and then filter the locations
-                
-    //             var locations = _locationService.GetAllLocations();
-    //             var filteredLocations = locations.Where(location => warehouseid.Contains(location.warehouse_id)).ToList();
-
-
-    //             var locationsByWarehouse = filteredLocations.GroupBy(location => location.warehouse_id);
-
-    //             var locationIds = filteredLocations.Select(location => location.Id).ToList();
-
-    //             var inventoriesByLocation = _inventoryService.GetInventoriesByLocationId(locationIds);
-
-    //             var warehouseInventoryList = locationsByWarehouse
-    //                 .Select(group => group
-    //                     .SelectMany(location => inventoriesByLocation
-    //                         .Where(inventory => inventory.Locations.Any(loc => loc == location.Id)))
-    //                     .ToList())
-    //                 .ToList();
-
-    //             return Ok(warehouseInventoryList);
-    //         }
-    //         else
-    //         {
-    //             return Unauthorized();
-    //         }
-    //     }
-    //     var inventoriesall = _inventoryService.GetAllInventories();
-    //     return Ok(inventoriesall);
-    // }
 
     [HttpGet()]
     public ActionResult<PaginationCS<InventoryCS>> GetAllInventories(
@@ -140,6 +90,11 @@ public class InventoryController : ControllerBase
 
         // Pagination logic
         int totalPages = (int)Math.Ceiling(filteredInventoriesCount / (double)pageSize);
+        if (page <= 0)
+        {
+            page = totalPages;
+        }
+        page = Math.Max(1, Math.Min(page, totalPages));
         var pagedInventories = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         // Return paginated and filtered result

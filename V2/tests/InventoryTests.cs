@@ -50,9 +50,9 @@ namespace inventory.TestsV2
 
             //Assert
             var okResult = value.Result as OkObjectResult;
-            var returnedItems = okResult.Value as IEnumerable<InventoryCS>;
+            var returnedItems = okResult.Value as PaginationCS<InventoryCS>;
             Assert.IsNotNull(okResult);
-            Assert.AreEqual(2, returnedItems.Count());
+            Assert.AreEqual(2, returnedItems.Data.Count());
 
             httpContext.Items["UserRole"] = "NoRole";
             _inventoryController.ControllerContext = new ControllerContext

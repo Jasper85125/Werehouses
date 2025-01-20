@@ -52,8 +52,8 @@ public class WarehouseController : ControllerBase
     //example route /warehouses?City=Amsterdam
     [HttpGet()]
     public ActionResult<PaginationCS<WarehouseCS>> GetAllWarehouses(
-        [FromQuery] warehouseFilter tofilter, 
-        [FromQuery] int page = 1, 
+        [FromQuery] warehouseFilter tofilter,
+        [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
         List<string> listOfAllowedRoles = new List<string>()
@@ -65,7 +65,8 @@ public class WarehouseController : ControllerBase
             return Unauthorized();
         }
         // Filter logic
-        if(tofilter == null){
+        if (tofilter == null)
+        {
             tofilter = new warehouseFilter();
         }
         var warehouses = _warehouseService.GetAllWarehouses();
@@ -106,7 +107,8 @@ public class WarehouseController : ControllerBase
 
         // Pagination logic
         int totalPages = (int)Math.Ceiling(warehousesCount / (double)pageSize);
-        if (page <= 0){
+        if (page <= 0)
+        {
             page = totalPages;
         }
         page = Math.Max(1, Math.Min(page, totalPages));
@@ -213,7 +215,8 @@ public class WarehouseController : ControllerBase
     //PATCH: Warehouse/{id}/{property_to_change}
     //''   :     ''   /  ''/      contact == werkt niet
     [HttpPatch("{id}")]
-    public ActionResult<WarehouseCS> PatchWarehouse([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue){
+    public ActionResult<WarehouseCS> PatchWarehouse([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue)
+    {
         List<string> listOfAllowedRoles = new List<string>() { "Admin" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
 
@@ -221,7 +224,8 @@ public class WarehouseController : ControllerBase
         {
             return Unauthorized();
         }
-        if(newvalue is null){
+        if (newvalue is null)
+        {
             return NotFound("Erhm what?");
         }
         var result = _warehouseService.PatchWarehouse(id, property, newvalue);
@@ -252,7 +256,7 @@ public class WarehouseController : ControllerBase
     [HttpDelete("batch")]
     public ActionResult DeleteWarehouses([FromBody] List<int> ids)
     {
-        List<string> listOfAllowedRoles = new List<string> () {"Admin"};
+        List<string> listOfAllowedRoles = new List<string>() { "Admin" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
 
         if (userRole == null || !listOfAllowedRoles.Contains(userRole))
