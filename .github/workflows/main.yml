@@ -9,7 +9,7 @@ jobs:
   csharp-build-and-test:
     runs-on: ubuntu-latest
     env:
-      DOTNET_INSTALL_DIR: ..dotnet
+      DOTNET_INSTALL_DIR: ../dotnet
 
     strategy:
       matrix:
@@ -25,7 +25,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
+        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
 
@@ -38,13 +38,12 @@ jobs:
 
     - name: Restore dependencies
       if: matrix.language == 'csharp'
-      run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
+      run: dotnet restore ./${{ matrix.version }}/Cargohub/Warehouses.sln
 
     - name: Build solution
       if: matrix.language == 'csharp'
       run: |
-        dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore
-      continue-on-error: true
+        dotnet build ./${{ matrix.version }}/Cargohub/Warehouses.sln --configuration Release --no-restore
 
     - name: Clean Up Old Test and Coverage Results
       if: matrix.language == 'csharp'
@@ -60,7 +59,6 @@ jobs:
           --collect:"XPlat Code Coverage" \
           --results-directory TestResults \
           /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
-      continue-on-error: true
 
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
@@ -86,21 +84,22 @@ jobs:
 
     - name: Coverage Report Summary
       run: |
-        ls -l coverage-report-${{ matrix.version }}
-        percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
-
-        total_coverage=0
-        count=0
-        while read -r line; do
-            total_coverage=$(echo "$total_coverage + $line" | bc)
-            count=$((count + 1))
-        done <<< "$percentages"
-
-        if [[ $count -gt 0 ]]; then
-            total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
-            echo "Total Percentage Covered: $total_percentage%"
+        if [[ -f coverage-report-${{ matrix.version }}/Cobertura.xml ]]; then
+          percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
+          total_coverage=0
+          count=0
+          while read -r line; do
+              total_coverage=$(echo "$total_coverage + $line" | bc)
+              count=$((count + 1))
+          done <<< "$percentages"
+          if [[ $count -gt 0 ]]; then
+              total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
+              echo "Total Percentage Covered: $total_percentage%"
+          else
+              echo "No coverage data found."
+          fi
         else
-            echo "No coverage data found."
+          echo "Coverage report not generated."
         fi
 
   python-tests:
@@ -119,7 +118,7 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
@@ -128,10 +127,10 @@ jobs:
 
     - name: Run application
       run: |
-        dotnet build ./V1/Cargohub/Werehouses.csproj --configuration Release
-        dotnet build ./V2/Cargohub/Werehouses.csproj --configuration Release
-        dotnet run --configuration Release --project ./V1/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
-        dotnet run --configuration Release --project ./V2/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
+        dotnet build ./V1/Cargohub/Warehouses.csproj --configuration Release
+        dotnet build ./V2/Cargohub/Warehouses.csproj --configuration Release
+        dotnet run --configuration Release --project ./V1/Cargohub/Warehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
+        dotnet run --configuration Release --project ./V2/Cargohub/Warehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
 
     - name: Run Python Tests
       run: |
@@ -142,9 +141,7 @@ jobs:
       run: |
         cd "Tests/V2/Integration Tests"
         pytest --cov=. --cov-report=term-missing -v -s
-        coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
         coverage report --fail-under=80
-      continue-on-error: true
 
     - name: Upload Python Test Reports
       uses: actions/upload-artifact@v4
