@@ -110,12 +110,12 @@ jobs:
 
     - name: Run Tests with Coverage
       run: |
-        pip install pytest pytest-cov
-        cd "V2/tests"
-        pytest --cov=. --cov-report=term-missing -v -s
-        coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-        coverage report --fail-under=80
-      continue-on-error: true
+          pip install pytest pytest-cov
+          cd "PythonTests"
+          pytest --cov=. --cov-report=term-missing -v -s
+          coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+          coverage report --fail-under=80
+          continue-on-error: true
 
   python-tests:
     runs-on: ubuntu-latest
