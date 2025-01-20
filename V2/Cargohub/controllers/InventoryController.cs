@@ -27,59 +27,9 @@ public class InventoryController : ControllerBase
         _inventoryService = inventoryService;
         _locationService = locationService;
     }
-    
 
-    // GET: /inventories
     [HttpGet()]
-    public ActionResult<IEnumerable<InventoryCS>> GetAllInventories()
-    {
-        var userRole = HttpContext.Items["UserRole"]?.ToString();
-        if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is string warehouseID))
-        {
-            return BadRequest("WarehouseID is missing or invalid.");
-        }
-
-        var allowedRoles = new List<string> { "Admin", "Warehouse Manager", "Inventory Manager", "Floor Manager", "Sales", "Analyst", "Logistics" };
-        if (string.IsNullOrEmpty(userRole) || !allowedRoles.Contains(userRole))
-        {
-            if (userRole == "Operative" || userRole == "Supervisor")
-            {
-
-                var warehouseid = warehouseID.Split(',').Select(int.Parse).ToList();
-                // get location from the inventories and then look in the location for the warehouse_id
-                // location can be found in the data/locations.json file and the location variable is the same as the id in the json file. the file has a variable called warehouse id
-                // use the locationservice to get all the locations and then filter the locations
-                
-                var locations = _locationService.GetAllLocations();
-                var filteredLocations = locations.Where(location => warehouseid.Contains(location.warehouse_id)).ToList();
-
-
-                var locationsByWarehouse = filteredLocations.GroupBy(location => location.warehouse_id);
-
-                var locationIds = filteredLocations.Select(location => location.Id).ToList();
-
-                var inventoriesByLocation = _inventoryService.GetInventoriesByLocationId(locationIds);
-
-                var warehouseInventoryList = locationsByWarehouse
-                    .Select(group => group
-                        .SelectMany(location => inventoriesByLocation
-                            .Where(inventory => inventory.Locations.Any(loc => loc == location.Id)))
-                        .ToList())
-                    .ToList();
-
-                return Ok(warehouseInventoryList);
-            }
-            else
-            {
-                return Unauthorized();
-            }
-        }
-        var inventoriesall = _inventoryService.GetAllInventories();
-        return Ok(inventoriesall);
-    }
-
-    [HttpGet("page")]
-    public ActionResult<PaginationCS<InventoryCS>> GetAllItems(
+    public ActionResult<PaginationCS<InventoryCS>> GetAllInventories(
         [FromQuery] inventoryFilter tofilter, 
         [FromQuery] int page = 1, 
         [FromQuery] int pageSize = 10)
@@ -98,44 +48,53 @@ public class InventoryController : ControllerBase
         var query = inventories.AsQueryable();
 
         //filter inventories
-        if (tofilter.Id != 0)
+        if (tofilter != null)
         {
-            query = query.Where(x => x.Id == tofilter.Id);
+            if (tofilter.Id != 0)
+            {
+                query = query.Where(x => x.Id == tofilter.Id);
+            }
+            if (tofilter.item_id != null)
+            {
+                query = query.Where(x => x.item_id == tofilter.item_id);
+            }
+            if (tofilter.LocationsCount != 0)
+            {
+                query = query.Where(x => x.Locations.Count >= tofilter.LocationsCount);
+            }
+            if (tofilter.total_on_hand != 0)
+            {
+                query = query.Where(x => x.total_on_hand == tofilter.total_on_hand);
+            }
+            if (tofilter.total_expected != 0)
+            {
+                query = query.Where(x => x.total_expected == tofilter.total_expected);
+            }
+            if (tofilter.total_ordered != 0)
+            {
+                query = query.Where(x => x.total_ordered == tofilter.total_ordered);
+            }
+            if (tofilter.total_allocated != 0)
+            {
+                query = query.Where(x => x.total_allocated == tofilter.total_allocated);
+            }
+            if (tofilter.total_available != 0)
+            {
+                query = query.Where(x => x.total_available == tofilter.total_available);
+            }
         }
-        if (tofilter.item_id != null)
-        {
-            query = query.Where(x => x.item_id == tofilter.item_id);
-        }
-        if (tofilter.LocationsCount != 0)
-        {
-            query = query.Where(x => x.Locations.Count >= tofilter.LocationsCount);
-        }
-        if (tofilter.total_on_hand != 0)
-        {
-            query = query.Where(x => x.total_on_hand == tofilter.total_on_hand);
-        }
-        if (tofilter.total_expected != 0)
-        {
-            query = query.Where(x => x.total_expected == tofilter.total_expected);
-        }
-        if (tofilter.total_ordered != 0)
-        {
-            query = query.Where(x => x.total_ordered == tofilter.total_ordered);
-        }
-        if (tofilter.total_allocated != 0)
-        {
-            query = query.Where(x => x.total_allocated == tofilter.total_allocated);
-        }
-        if (tofilter.total_available != 0)
-        {
-            query = query.Where(x => x.total_available == tofilter.total_available);
-        }
+        
 
         // Get the filtered count
         int filteredInventoriesCount = query.Count();
 
         // Pagination logic
         int totalPages = (int)Math.Ceiling(filteredInventoriesCount / (double)pageSize);
+        if (page <= 0)
+        {
+            page = totalPages;
+        }
+        page = Math.Max(1, Math.Min(page, totalPages));
         var pagedInventories = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         // Return paginated and filtered result

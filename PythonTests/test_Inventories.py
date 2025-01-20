@@ -45,9 +45,17 @@ class TestClass(unittest.TestCase):
                     response.status_code, 200,
                     msg=f"Failed to get inventories: {response.content}"
                 )
-                inventories = response.json()
-                last_inventory_id = inventories[-1]["id"] if inventories else 1
-
+                if version == "http://localhost:5001/api/v1":
+                    inventories = response.json()
+                    last_inventory_id = inventories[-1]["id"] if inventories \
+                        else 1
+                else:
+                    response = self.client.get(
+                        url=(version + "/inventories?page=0"),
+                        headers=self.headers)
+                    inventory = response.json()
+                    last_inventory_id = inventory['data'][-1]["id"] \
+                        if inventory else 1
                 response = self.client.get(url=(
                     version + f"/inventories/{last_inventory_id}"),
                                            headers=self.headers)
@@ -76,8 +84,17 @@ class TestClass(unittest.TestCase):
                     response.status_code, 200,
                     msg=f"Failed to get inventories: {response.content}"
                 )
-                inventories = response.json()
-                last_inventory_id = inventories[-1]["id"] if inventories else 1
+                if version == "http://localhost:5001/api/v1":
+                    inventories = response.json()
+                    last_inventory_id = inventories[-1]["id"] if inventories \
+                        else 1
+                else:
+                    response = self.client.get(
+                        url=(version + "/inventories?page=0"),
+                        headers=self.headers)
+                    inventory = response.json()
+                    last_inventory_id = inventory['data'][-1]["id"] \
+                        if inventory else 1
 
                 response = self.client.put(url=(
                     version + f"/inventories/{last_inventory_id}"),
@@ -93,8 +110,17 @@ class TestClass(unittest.TestCase):
                     response.status_code, 200,
                     msg=f"Failed to get inventories: {response.content}"
                 )
-                inventories = response.json()
-                last_inventory_id = inventories[-1]["id"] if inventories else 1
+                if version == "http://localhost:5001/api/v1":
+                    inventories = response.json()
+                    last_inventory_id = inventories[-1]["id"] if inventories \
+                        else 1
+                else:
+                    response = self.client.get(
+                        url=(version + "/inventories?page=0"),
+                        headers=self.headers)
+                    inventory = response.json()
+                    last_inventory_id = inventory['data'][-1]["id"] \
+                        if inventory else 1
 
                 response = self.client.delete(url=(
                     version + f"/inventories/{last_inventory_id}"),

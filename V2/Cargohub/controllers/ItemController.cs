@@ -301,6 +301,13 @@ public class ItemController : ControllerBase
     [HttpPatch("{uid}")]
     public ActionResult<ItemCS> PatchItem([FromRoute] string uid, [FromQuery] string property, [FromBody] object newvalue)
     {
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
         if (string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(property) || newvalue is null)
         {
             return BadRequest("Error in request");

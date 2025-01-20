@@ -46,13 +46,13 @@ namespace inventory.TestsV2
             };
 
             //Act
-            var value = _inventoryController.GetAllInventories();
+            var value = _inventoryController.GetAllInventories(null, 1, 10);
 
             //Assert
             var okResult = value.Result as OkObjectResult;
-            var returnedItems = okResult.Value as IEnumerable<InventoryCS>;
+            var returnedItems = okResult.Value as PaginationCS<InventoryCS>;
             Assert.IsNotNull(okResult);
-            Assert.AreEqual(2, returnedItems.Count());
+            Assert.AreEqual(2, returnedItems.Data.Count());
 
             httpContext.Items["UserRole"] = "NoRole";
             _inventoryController.ControllerContext = new ControllerContext
@@ -61,7 +61,7 @@ namespace inventory.TestsV2
             };
 
             //act
-            var result = _inventoryController.GetAllInventories();
+            var result = _inventoryController.GetAllInventories(null, 1, 10);
 
             //assert
             var unauthorizedResult = result.Result as UnauthorizedResult;

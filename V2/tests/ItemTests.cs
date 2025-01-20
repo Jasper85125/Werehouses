@@ -59,6 +59,19 @@ namespace item.TestsV2
             Assert.IsInstanceOfType(okResult.Value, typeof(PaginationCS<ItemCS>));
             var returnedItems = okResult.Value as PaginationCS<ItemCS>;
             Assert.AreEqual(2, returnedItems.Data.Count());
+
+            httpContext.Items["UserRole"] = "NoRole";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.GetAllItems(null, 1, 10);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -88,6 +101,19 @@ namespace item.TestsV2
             Assert.IsInstanceOfType(okResult.Value, typeof(ItemCS));
             Assert.AreEqual("1", returnedItem.uid);
             Assert.AreEqual("Item1", returnedItem.code);
+
+            httpContext.Items["UserRole"] = "NoRole";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.GetByUid("1");
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -115,9 +141,19 @@ namespace item.TestsV2
         [TestMethod]
         public void GetInventoryForItem_Success()
         {
-            InventoryCS inventory = new InventoryCS { Id = 3, item_id = "P000003", description = "gamers", item_reference = "QVm03739H",
-                                                      Locations = new List<int> {5321, 21960}, total_on_hand = 24, total_expected = 0,
-                                                      total_ordered = 90, total_allocated = 68, total_available = -134};
+            InventoryCS inventory = new InventoryCS
+            {
+                Id = 3,
+                item_id = "P000003",
+                description = "gamers",
+                item_reference = "QVm03739H",
+                Locations = new List<int> { 5321, 21960 },
+                total_on_hand = 24,
+                total_expected = 0,
+                total_ordered = 90,
+                total_allocated = 68,
+                total_available = -134
+            };
             // Arrange
             _mockInventoryService.Setup(service => service.GetInventoriesForItem("P000003")).Returns(inventory);
 
@@ -142,6 +178,19 @@ namespace item.TestsV2
             Assert.AreEqual("P000003", returnedItem.item_id);
             Assert.AreEqual(24, returnedItem.total_on_hand);
             Assert.AreEqual(68, returnedItem.total_allocated);
+
+            httpContext.Items["UserRole"] = "NoRole";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.GetInventoriesForItem("P000003");
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -183,6 +232,18 @@ namespace item.TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(IEnumerable<ItemCS>));
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemTypeController.GetAllItemsInItemType(1);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -213,9 +274,21 @@ namespace item.TestsV2
             Assert.IsInstanceOfType(createdResult.Value, typeof(ItemCS));
             Assert.AreEqual("P000002", returnedItem.uid);
             Assert.AreEqual("NewItem", returnedItem.code);
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.CreateItem(newItem);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
-         [TestMethod]
+        [TestMethod]
         public void CreateMultipleItems_ReturnsCreatedResult_WithNewItems()
         {
             // Arrange
@@ -234,13 +307,13 @@ namespace item.TestsV2
             httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
 
             // Assign HttpContext to the controller
-           _itemController.ControllerContext = new ControllerContext
+            _itemController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
 
             // Act
-            var result =_itemController.CreateMultipleItems(items);
+            var result = _itemController.CreateMultipleItems(items);
             var createdResult = result.Result as ObjectResult;
             var returnedItems = createdResult.Value as List<ItemCS>;
             var firstItem = returnedItems[0];
@@ -251,6 +324,18 @@ namespace item.TestsV2
             Assert.AreEqual(items[0].code, firstItem.code);
             Assert.AreEqual(items[0].supplier_code, firstItem.supplier_code);
             Assert.AreEqual(items[0].item_group, firstItem.item_group);
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.CreateMultipleItems(items);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -282,6 +367,18 @@ namespace item.TestsV2
             Assert.IsInstanceOfType(okResult.Value, typeof(ItemCS));
             Assert.AreEqual("P000001", returnedItem.uid);
             Assert.AreEqual("UpdatedItem", returnedItem.code);
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.UpdateItem("P000001", updatedItem);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -308,21 +405,45 @@ namespace item.TestsV2
         }
 
         [TestMethod]
-        public void PatchItem_Succes(){
+        public void PatchItem_Succes()
+        {
             //Arrange
-            var patcheditem = new ItemCS(){ uid="P000001", code="lol no"};
-            _mockItemService.Setup(service=>service.PatchItem("P000001", "code", "lol no")).Returns(patcheditem);
+            var patcheditem = new ItemCS() { uid = "P000001", code = "lol no" };
+            _mockItemService.Setup(service => service.PatchItem("P000001", "code", "lol no")).Returns(patcheditem);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //Act
             var result = _itemController.PatchItem("P000001", "code", "lol no");
             var resultok = result.Result as OkObjectResult;
             var value = resultok.Value as ItemCS;
+            
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotNull(resultok);
             Assert.IsNotNull(value);
             Assert.AreEqual(resultok.StatusCode, 200);
             Assert.AreEqual(value.code, "lol no");
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.PatchItem("P000001", "code", "lol no");
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
         [TestMethod]
         public void DeleteItem_ReturnsOkResult_WhenItemIsDeleted()
         {
@@ -344,6 +465,18 @@ namespace item.TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.DeleteItem("P000001");
+
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -368,9 +501,21 @@ namespace item.TestsV2
 
             // Act
             var result = _itemController.DeleteMultipleItems(new List<string> { "P000001", "P000002" });
-            
+
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.DeleteMultipleItems(new List<string> { "P000001", "P000002" });
+
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
     }
 }
