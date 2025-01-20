@@ -34,7 +34,6 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
-        install-dir: ${{ runner.temp }}/dotnet
 
     - name: Restore dependencies
       if: matrix.language == 'csharp'
@@ -87,9 +86,6 @@ jobs:
     - name: Coverage Report Summary
       run: |
         ls -l coverage-report-${{ matrix.version }}
-        # cat coverage-report-${{ matrix.version }}/Cobertura.xml
-        # percentage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'line-rate="[^"]+"' | grep -oP '[^"]+')
-        # echo "Code coverage is $percentage"
         # Extract all 'line-rate' values
         percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
 
@@ -97,16 +93,18 @@ jobs:
         total_coverage=0
         count=0
         while read -r line; do
-            total_coverage=$(echo "$total_coverage + $line" | bc)
-            count=$((count + 1))
+          total_coverage=$(echo "$total_coverage + $line" | bc)
+          count=$((count + 1))
         done <<< "$percentages"
 
         # Calculate the average (total percentage coverage)
         if [[ $count -gt 0 ]]; then
-            total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
-            echo "Total Percentage Covered: $total_percentage%"
+          total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
+          echo "Total Percentage Covered: $total_percentage%"
+          echo "Total Percentage Covered: $total_percentage%" >> $GITHUB_STEP_SUMMARY
         else
-            echo "No coverage data found."
+          echo "No coverage data found."
+          echo "No coverage data found." >> $GITHUB_STEP_SUMMARY
         fi
 
   python-tests:

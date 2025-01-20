@@ -49,6 +49,21 @@ namespace TestsV2
             var returnedItems = okResult.Value as PaginationCS<WarehouseCS>;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Data.Count());
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.GetAllWarehouses(null, 1, 10);
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -80,6 +95,20 @@ namespace TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(warehouses[0].Address, returnedItems.Address);
+                        httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.GetWarehouseById(1);
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -102,6 +131,21 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+
+                        httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.GetWarehouseById(1);
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -131,6 +175,21 @@ namespace TestsV2
             var returnedItems = createdResult.Value as WarehouseCS;
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(warehouse.Address, returnedItems.Address);
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.CreateWarehouse(warehouse);
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -168,6 +227,21 @@ namespace TestsV2
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(warehouses[0].Address, firstWarehouse.Address);
             Assert.AreEqual(warehouses[0].Contact, firstWarehouse.Contact);
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.CreateMultipleWarehouse(warehouses);
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -209,6 +283,21 @@ namespace TestsV2
             var returnedWarehouse = createdResult.Value as WarehouseCS;
             Assert.AreEqual(updatedWarehouse.Code, returnedWarehouse.Code);
             Assert.AreEqual(updatedWarehouse.Address, returnedWarehouse.Address);
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.UpdateWarehouse(1, updatedWarehouse);
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -247,10 +336,33 @@ namespace TestsV2
             var createdResult = result.Result as NotFoundObjectResult;
             var returnedWarehouse = createdResult.Value as WarehouseCS;
             Assert.IsNull(returnedWarehouse);
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.UpdateWarehouse(0, updatedWarehouse);
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
         
         [TestMethod]
         public void PatchWarehouse_Succes(){
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
             //Arrange
             var warehouse = new WarehouseCS(){ Id = 1, Code= "LOLJK", Name="KOPLER"};
             _mockWarehouseService.Setup(service=>service.PatchWarehouse(1, "Code", "LOLJK")).Returns(warehouse);
@@ -274,6 +386,21 @@ namespace TestsV2
             Assert.AreEqual(result2ok.StatusCode, 200);
             Assert.AreEqual(result1value.Code, warehouse.Code);
             Assert.AreEqual(result2value.Name, warehouse.Name);
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            var result = _warehouseController.PatchWarehouse(1, "Code", "LOLJK");
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
         [TestMethod]
         public void DeleteWarehouseTest_Success()
@@ -296,6 +423,21 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.DeleteWarehouse(1);
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
         [TestMethod]
         public void DeleteWarehousesTest_Succes()
@@ -319,6 +461,21 @@ namespace TestsV2
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.DeleteWarehouses(idsToDelete);
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -346,6 +503,21 @@ namespace TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(warehouse.Address, returnedItems.Address);
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.GetLatestUpdatedWarehouse();
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -368,6 +540,21 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+
+            httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";  // Set the wrong UserRole in HttpContext
+
+            // Assign HttpContext to the controller
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            //act
+            result = _warehouseController.GetLatestUpdatedWarehouse();
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
     }
 }
