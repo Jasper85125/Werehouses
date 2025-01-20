@@ -34,7 +34,6 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
-        install-dir: ${{ runner.temp }}/dotnet
 
     - name: Restore dependencies
       if: matrix.language == 'csharp'
@@ -86,6 +85,7 @@ jobs:
 
     - name: Coverage Report Summary
       run: |
+        sudo apt-get install -y bc
         ls -l coverage-report-${{ matrix.version }}
         # cat coverage-report-${{ matrix.version }}/Cobertura.xml
         # percentage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'line-rate="[^"]+"' | grep -oP '[^"]+')
@@ -143,6 +143,14 @@ jobs:
       run: |
         mkdir -p ./PythonTests/reports
         python -m xmlrunner discover -o PythonTests/reports
+
+    - name: Run Tests with Coverage
+      run: |
+        cd "Tests/V2/Integration Tests"
+        pytest --cov=. --cov-report=term-missing -v -s
+        coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+        coverage report --fail-under=80
+      continue-on-error: true
 
     - name: Upload Python Test Reports
       uses: actions/upload-artifact@v4
