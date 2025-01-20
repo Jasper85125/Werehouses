@@ -69,7 +69,7 @@ public class ItemTypeService : IItemtypeService
     }
 
     // Method to update an item type
-    public async Task<ItemTypeCS> UpdateItemType(int id, ItemTypeCS itemType)
+    public ItemTypeCS UpdateItemType(int id, ItemTypeCS itemType)
     {
         List<ItemTypeCS> items = GetAllItemtypes();
         var existingItem = items.FirstOrDefault(i => i.Id == id);
@@ -89,10 +89,11 @@ public class ItemTypeService : IItemtypeService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync(path, jsonData);
+        File.WriteAllText(path, jsonData); // Using the synchronous version
 
         return existingItem;
     }
+
     public ItemTypeCS PatchItemType(int id, string property, object newvalue){
         var formattednow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         var itemtypes = GetAllItemtypes();
