@@ -6,11 +6,9 @@ namespace ServicesV1;
 
 public class ItemService : IItemService
 {
-    // Constructor
     private string path = "../../data/items.json";
     public ItemService()
     {
-        // Initialization code here
     }
 
     public List<ItemCS> GetAllItems()

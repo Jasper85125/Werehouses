@@ -7,16 +7,13 @@ namespace ServicesV1;
 
 public class ItemGroupService : ItemService, IitemGroupService
 {
-    // Constructor
     private string Path = "../../data/item_groups.json";
     ItemService itemService;
     public ItemGroupService()
     {
-        // Initialization code here
         itemService = new ItemService();
     }
 
-    // Method to get all Itemgroups
     public List<ItemGroupCS> GetAllItemGroups()
     {
         if (!File.Exists(Path))
@@ -68,7 +65,6 @@ public class ItemGroupService : ItemService, IitemGroupService
         return newItemGroup;
     }
 
-    // Method to update an existing Itemgroup
     public async Task<ItemGroupCS> UpdateItemGroup(int id, ItemGroupCS itemLine)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
@@ -78,10 +74,8 @@ public class ItemGroupService : ItemService, IitemGroupService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         existingItem.Name = itemLine.Name;
@@ -94,7 +88,6 @@ public class ItemGroupService : ItemService, IitemGroupService
         return existingItem;
     }
     
-    // Method to delete an Itemgroup
     public void DeleteItemGroup(int id)
     {
         List<ItemGroupCS> items = GetAllItemGroups();

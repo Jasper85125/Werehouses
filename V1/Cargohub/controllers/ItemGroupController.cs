@@ -17,7 +17,6 @@ public class ItemGroupController : ControllerBase
     }
 
     // GET: itemgroup
-    // Retrieves all itemgroups
     [HttpGet()]
     public ActionResult<IEnumerable<ItemGroupCS>> GetAllItemGroups()
     {
