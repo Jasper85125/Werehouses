@@ -112,6 +112,8 @@ jobs:
     - name: Post Coverage Comment
       uses: actions/github-script@v6
       if: matrix.language == 'csharp'
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
       with:
         script: |
           const coverage = process.env.total_percentage;
