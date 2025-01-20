@@ -29,13 +29,9 @@ namespace ControllersV2
         {
             _orderService = orderService;
         }
-        /*
-        example route: /api/v2/orders/page?page=1&pageSize=10
-        */
         [HttpGet]
         public ActionResult<PaginationCS<OrderCS>> GetAllOrders([FromQuery] orderFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            // Get UserRole and WarehouseID from HttpContext
             var userRole = HttpContext.Items["UserRole"]?.ToString();
             if (!HttpContext.Items.TryGetValue("WarehouseID", out var warehouseIdObj) || !(warehouseIdObj is string warehouseID))
             {
@@ -60,7 +56,6 @@ namespace ControllersV2
                 return Unauthorized();
             }
 
-            // Apply filters
             filter ??= new orderFilter();
             var ordersQuery = _orderService.GetAllOrders().AsQueryable();
 
@@ -72,10 +67,7 @@ namespace ControllersV2
             if (filter.ship_to > 0) ordersQuery = ordersQuery.Where(o => o.ship_to == filter.ship_to);
             if (filter.bill_to > 0) ordersQuery = ordersQuery.Where(o => o.bill_to == filter.bill_to);
             if (filter.itemsCount > 0) ordersQuery = ordersQuery.Where(o => o.items.Count() == filter.itemsCount);
-            // if (!string.IsNullOrWhiteSpace(filter.created_at.ToString())) ordersQuery = ordersQuery.Where(o => o.created_at == filter.created_at);
-            // if (!string.IsNullOrWhiteSpace(filter.updated_at.ToString())) ordersQuery = ordersQuery.Where(o => o.updated_at == filter.updated_at);
 
-            // Pagination
             var ordersCount = ordersQuery.Count();
             var totalPages = (int)Math.Ceiling(ordersCount / (double)pageSize);
             if (page == 0)
@@ -95,30 +87,7 @@ namespace ControllersV2
             });
         }
 
-        // GET: /orders
-        /*
-        [HttpGet()]
-        public ActionResult<IEnumerable<OrderCS>> GetAllOrders()
-        {
-            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-                                                                   "Floor Manager", "Sales", "Analyst", "Logistics" };
-            var userRole = HttpContext.Items["UserRole"]?.ToString();
-            var WarehouseIDFromKey = (int)HttpContext.Items["WarehouseID"];
-
-            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-            {
-                if (userRole == "Operative" || userRole == "Supervisor")
-                {
-                    var ordersForWarehouse = _orderService.GetOrdersByWarehouse(WarehouseIDFromKey);
-                    return Ok(ordersForWarehouse);
-                }
-                return Unauthorized();
-            }
-
-            var orders = _orderService.GetAllOrders();
-            return Ok(orders);
-        }
-        */
+        
         // GET: /orders/{id}
         [HttpGet("{id}")]
         public ActionResult<OrderCS> GetOrderById([FromRoute] int id)
@@ -141,7 +110,6 @@ namespace ControllersV2
             return Ok(orders);
         }
 
-        //get orders for clients using the shipp_to and bill_to fields
         [HttpGet("clients/{client_id}")]
         public ActionResult<IEnumerable<OrderCS>> GetOrdersByClient([FromRoute] int client_id)
         {
@@ -213,7 +181,6 @@ namespace ControllersV2
 
             var createdOrder = _orderService.CreateOrder(order);
 
-            // Return the CreatedAtAction result, which includes the route to the GetOrderById action for the newly created order.
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
         }
 
@@ -256,7 +223,7 @@ namespace ControllersV2
                 return NotFound();
             }
 
-            var updatedItemLine = _orderService.UpdateOrder(id, updateOrder); // Assume this method is synchronous
+            var updatedItemLine = _orderService.UpdateOrder(id, updateOrder);
             return Ok(updatedItemLine);
         }
 
@@ -282,7 +249,7 @@ namespace ControllersV2
                 return BadRequest("The item field is required.");
             }
 
-            var updatedOrder = _orderService.UpdateOrderItems(orderId, items); // Assume this method is synchronous
+            var updatedOrder = _orderService.UpdateOrderItems(orderId, items); 
             return Ok(updatedOrder);
         }
         

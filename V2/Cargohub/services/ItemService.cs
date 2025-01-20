@@ -6,14 +6,11 @@ namespace ServicesV2;
 
 public class ItemService : IItemService
 {
-    // Constructor
     private string path = "../../data/items.json";
     public ItemService()
     {
-        // Initialization code here
     }
 
-    // Method to get all items
     public List<ItemCS> GetAllItems()
     {
         if (!File.Exists(path))
@@ -26,7 +23,6 @@ public class ItemService : IItemService
         return items ?? new List<ItemCS>();
     }
 
-    // Method to get an item by ID
     public ItemCS GetItemById(string uid)
     {
         var items = GetAllItems();

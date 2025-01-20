@@ -9,7 +9,6 @@ public class ItemTypeService : IItemtypeService
 {
     private string path = "../../data/item_types.json";
 
-    // Method to get all item types
     public List<ItemTypeCS> GetAllItemtypes()
     {
         if (!File.Exists(path))
@@ -22,7 +21,6 @@ public class ItemTypeService : IItemtypeService
         return items ?? new List<ItemTypeCS>();
     }
 
-    // Method to get an item type by ID
     public ItemTypeCS GetItemById(int id)
     {
         var items = GetAllItemtypes();
@@ -30,14 +28,12 @@ public class ItemTypeService : IItemtypeService
         return item;
     }
 
-    // Method to create a new item type
     public ItemTypeCS CreateItemType(ItemTypeCS newItemType)
     {
         List<ItemTypeCS> items = GetAllItemtypes();
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        // Auto-increment ID
         if (items.Any())
         {
             newItemType.Id = items.Max(i => i.Id) + 1;
@@ -68,7 +64,6 @@ public class ItemTypeService : IItemtypeService
         return addedItemTypes;
     }
 
-    // Method to update an item type
     public ItemTypeCS UpdateItemType(int id, ItemTypeCS itemType)
     {
         List<ItemTypeCS> items = GetAllItemtypes();
@@ -78,10 +73,8 @@ public class ItemTypeService : IItemtypeService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         existingItem.Name = itemType.Name;
@@ -89,7 +82,7 @@ public class ItemTypeService : IItemtypeService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText(path, jsonData); // Using the synchronous version
+        File.WriteAllText(path, jsonData); 
 
         return existingItem;
     }

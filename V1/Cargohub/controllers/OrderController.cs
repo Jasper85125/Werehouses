@@ -85,7 +85,6 @@ namespace ControllersV1
 
             var createdOrder = _orderService.CreateOrder(order);
 
-            // Return the CreatedAtAction result, which includes the route to the GetOrderById action for the newly created order.
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
         }
 

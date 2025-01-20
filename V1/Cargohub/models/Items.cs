@@ -1,4 +1,3 @@
-// Purpose: This file contains the model for the items table in the database. This model is used to create the items table in the database and to interact with the items table in the database.
 public class ItemCS
 {
     public required string uid { get; set; }
