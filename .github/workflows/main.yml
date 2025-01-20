@@ -107,14 +107,6 @@ jobs:
           echo "No coverage data found." >> $GITHUB_STEP_SUMMARY
         fi
 
-    - name: Run Tests with Coverage
-      run: |
-        cd "V2/Tests"
-        pytest --cov=. --cov-report=term-missing -v -s
-        coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-        coverage report --fail-under=80
-      continue-on-error: true
-
   python-tests:
     runs-on: ubuntu-latest
     needs: csharp-build-and-test
