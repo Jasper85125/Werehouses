@@ -87,27 +87,34 @@ jobs:
       run: |
         sudo apt-get install -y bc
         ls -l coverage-report-${{ matrix.version }}
-        # cat coverage-report-${{ matrix.version }}/Cobertura.xml
-        # percentage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'line-rate="[^"]+"' | grep -oP '[^"]+')
-        # echo "Code coverage is $percentage"
-        # Extract all 'line-rate' values
         percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
-
-        # Add all the line-rate values to compute the total
         total_coverage=0
         count=0
         while read -r line; do
             total_coverage=$(echo "$total_coverage + $line" | bc)
             count=$((count + 1))
         done <<< "$percentages"
-
-        # Calculate the average (total percentage coverage)
         if [[ $count -gt 0 ]]; then
             total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
             echo "Total Percentage Covered: $total_percentage%"
+            echo "total_percentage=$total_percentage" >> $GITHUB_ENV
         else
             echo "No coverage data found."
+            echo "total_percentage=0" >> $GITHUB_ENV
         fi
+
+    - name: Post Coverage Comment
+      uses: actions/github-script@v6
+      if: matrix.language == 'csharp'
+      with:
+        script: |
+          const coverage = process.env.total_percentage;
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `Code Coverage: ${coverage}%`
+          })
 
   python-tests:
     runs-on: ubuntu-latest
