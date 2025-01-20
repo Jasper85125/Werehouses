@@ -49,6 +49,20 @@ namespace TestsV2
             //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Data.Count());
+            
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _shipmentController.GetAllShipments(null, 1, 10);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -80,6 +94,20 @@ namespace TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(shipments[0].source_id, returnedItems.source_id);
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _shipmentController.GetShipmentById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -132,6 +160,20 @@ namespace TestsV2
             //Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _shipmentController.GetShipmentById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -160,6 +202,20 @@ namespace TestsV2
             var returnedItems = createdResult.Value as ShipmentCS;
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(shipment.source_id, returnedItems.source_id);
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _shipmentController.CreateShipment(shipment);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -197,6 +253,20 @@ namespace TestsV2
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(shipments[0].source_id, firstOrder.source_id);
             Assert.AreEqual(shipments[0].order_id, firstOrder.order_id);
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _shipmentController.CreateMultipleShipments(shipments);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         public async Task UpdateShipmentTest_Success()
@@ -224,6 +294,20 @@ namespace TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsInstanceOfType(okResult.Value, typeof(ShipmentCS));
             Assert.AreEqual(updatedShipment.source_id, returnedShipment.source_id);
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _shipmentController.UpdateShipment(1, updatedShipment);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -284,6 +368,20 @@ namespace TestsV2
             Assert.AreEqual(value.Items[0].amount, 100);
             Assert.AreEqual(value.Items[1].amount, 100);
             Assert.AreEqual(value.Items[2].amount, 100);
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _shipmentController.UpdateItemsinShipment(1, newItemsAndAmounts);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -307,6 +405,20 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _shipmentController.UpdateShipment(1, updatedShipment);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -336,6 +448,20 @@ namespace TestsV2
             Assert.IsNotNull(value);
             Assert.AreEqual(resultok.StatusCode, 200);
             Assert.AreEqual(value.Notes, patchedshipment.Notes);
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _shipmentController.PatchShipment(1, "Notes", "EW");
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -359,6 +485,20 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _shipmentController.DeleteShipment(1);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -382,6 +522,20 @@ namespace TestsV2
 
             //assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _shipmentController.DeleteItemFromShipment(1, "P01");
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -406,6 +560,20 @@ namespace TestsV2
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _shipmentController.DeleteShipments(shipmentsToDelete);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
     }
 }
