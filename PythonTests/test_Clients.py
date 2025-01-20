@@ -76,7 +76,6 @@ class TestClass(unittest.TestCase):
             with self.subTest(version=version):
                 self.url = f"{version}"
 
-                # Stuur de request
                 response = self.client.get(
                     url=(self.url + "/clients"), headers=self.headers)
 
