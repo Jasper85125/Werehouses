@@ -122,33 +122,47 @@ public class ItemTypeController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ItemTypeCS>> UpdateItemType(int id, [FromBody] ItemTypeCS itemType)
+    public ActionResult<ItemTypeCS> UpdateItemType(int id, [FromBody] ItemTypeCS itemType)
     {
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
 
+        // Check if the user is unauthorized
         if (userRole == null || !listOfAllowedRoles.Contains(userRole))
         {
             return Unauthorized();
         }
 
+        // Validate the ID in the request
         if (id != itemType.Id)
         {
             return BadRequest();
         }
 
-        var existingItemLine = _itemtypeService.GetItemById(id);
+        // Get the existing item by ID
+        var existingItemLine = _itemtypeService.GetItemById(id); // Assuming this is now a synchronous call
         if (existingItemLine == null)
         {
             return NotFound();
         }
 
-        var updatedItemLine = await _itemtypeService.UpdateItemType(id, itemType);
+        // Update the item synchronously
+        var updatedItemLine = _itemtypeService.UpdateItemType(id, itemType); // Assuming this is now a synchronous call
         return Ok(updatedItemLine);
     }
+
     //zet een nieuwe value in een property van een item_type object 
     [HttpPatch("{id}")]
     public ActionResult<ItemTypeCS> PatchItemType([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue){
+        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager" };
+        var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+        // Check if the user is unauthorized
+        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+        {
+            return Unauthorized();
+        }
+        
         if(int.IsNegative(id) || string.IsNullOrEmpty(property) || newvalue is null){
             return BadRequest("Errors in request");
         }
