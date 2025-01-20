@@ -20,7 +20,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Cache .Net depedencies
+    - name: Cache .Net dependencies
       if: matrix.language == 'csharp'
       uses: actions/cache@v3
       with:
@@ -87,13 +87,8 @@ jobs:
     - name: Coverage Report Summary
       run: |
         ls -l coverage-report-${{ matrix.version }}
-        # cat coverage-report-${{ matrix.version }}/Cobertura.xml
-        # percentage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'line-rate="[^"]+"' | grep -oP '[^"]+')
-        # echo "Code coverage is $percentage"
-        # Extract all 'line-rate' values
         percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
 
-        # Add all the line-rate values to compute the total
         total_coverage=0
         count=0
         while read -r line; do
@@ -101,7 +96,6 @@ jobs:
             count=$((count + 1))
         done <<< "$percentages"
 
-        # Calculate the average (total percentage coverage)
         if [[ $count -gt 0 ]]; then
             total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
             echo "Total Percentage Covered: $total_percentage%"
@@ -143,6 +137,14 @@ jobs:
       run: |
         mkdir -p ./PythonTests/reports
         python -m xmlrunner discover -o PythonTests/reports
+
+    - name: Run Tests with Coverage
+      run: |
+        cd "Tests/V2/Integration Tests"
+        pytest --cov=. --cov-report=term-missing -v -s
+        coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+        coverage report --fail-under=80
+      continue-on-error: true
 
     - name: Upload Python Test Reports
       uses: actions/upload-artifact@v4
