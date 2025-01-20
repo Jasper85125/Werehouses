@@ -5,14 +5,11 @@ using ServicesV2;
 
 public class ItemLineService : IItemLineService
 {
-    // Constructor
     private string _path = "../../data/item_lines.json";
     public ItemLineService()
     {
-        // Initialization code here
     }
 
-    // Method to get all items
     public List<ItemLineCS> GetAllItemlines()
     {
         if (!File.Exists(_path))
@@ -25,7 +22,6 @@ public class ItemLineService : IItemLineService
         return items ?? new List<ItemLineCS>();
     }
 
-    // Method to get an item by ID
     public ItemLineCS GetItemLineById(int id)
     {
         var items = GetAllItemlines();
@@ -33,14 +29,12 @@ public class ItemLineService : IItemLineService
         return item;
     }
 
-    // Method to add a new item
     public ItemLineCS AddItemLine(ItemLineCS newItemLine)
     {
         List<ItemLineCS> items = GetAllItemlines();
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        // Auto-increment ID
         if (items.Any())
         {
             newItemLine.Id = items.Max(i => i.Id) + 1;
@@ -70,7 +64,6 @@ public class ItemLineService : IItemLineService
         return addedItemLines;
     }
 
-    // Method to update an item
     public ItemLineCS UpdateItemLine(int id, ItemLineCS itemLine)
     {
         List<ItemLineCS> items = GetAllItemlines();
@@ -80,10 +73,8 @@ public class ItemLineService : IItemLineService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         existingItem.Name = itemLine.Name;
@@ -149,10 +140,8 @@ public class ItemLineService : IItemLineService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         switch (property)
         {

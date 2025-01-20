@@ -59,7 +59,6 @@ public class ClientService : IClientService
     {
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         var allClients = GetAllClients();
         var clientToUpdate = allClients.Single(client => client.Id == id);

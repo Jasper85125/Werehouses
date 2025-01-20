@@ -9,7 +9,6 @@ public class WarehouseService : IWarehouseService
     private string _path = "../../data/warehouses.json";
     public WarehouseService()
     {
-        // Initialization code here
     }
 
     public List<WarehouseCS> GetAllWarehouses()
@@ -41,7 +40,6 @@ public class WarehouseService : IWarehouseService
         newWarehouse.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         warehouses.Add(newWarehouse);
         
-        // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
         File.WriteAllText(_path, jsonData);
         return newWarehouse;

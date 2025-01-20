@@ -18,7 +18,7 @@ public class AdminController : ControllerBase
         _apikeystorage = new ApiKeyStorage();
     }
 
-    // POST: /AddData. this is a function that is used to add data to the data folder. it can recieve either be a .json or .csv file. but when the function is going to save the file, it will save it as a .json file.
+    // POST: 
     [HttpPost("AddData")]
     public IActionResult AddData([FromForm] IFormFile file)
     {
@@ -55,7 +55,7 @@ public class AdminController : ControllerBase
         }
     }
 
-    // a function that returns a requested file from the data folder
+    // GET: /GetData/{filename}.
     [HttpGet("GetData/{filename}")]
     public IActionResult GetData(string filename)
     {
@@ -78,12 +78,11 @@ public class AdminController : ControllerBase
             return NotFound(new { error = "The requested file does not exist." });
         }
 
-        // Return file directly with correct content disposition
-        var fileType = "application/octet-stream"; // Generic binary file type for downloads
+        var fileType = "application/octet-stream";
         return PhysicalFile(path, fileType, filename);
     }
 
-    // GET: /GenerateReport. Generates a summary report based on JSON data.
+    // GET: /GenerateReport.
     [HttpGet("GenerateReport")]
     public IActionResult GenerateReport()
     {
@@ -115,7 +114,7 @@ public class AdminController : ControllerBase
         }
     }
 
-    // post request to add API keys
+    // GET: /GetAPIKeys.
     [HttpPost("AddAPIKeys")]
     public IActionResult AddAPIKeys([FromBody]ApiKeyModel ApiKey)
     {
@@ -144,7 +143,7 @@ public class AdminController : ControllerBase
         }
     }
 
-    // put request to update the API keys
+
     [HttpPut("UpdateAPIKeys")]
     public IActionResult UpdateAPIKeys([FromQuery]string ApiKey,[FromBody]ApiKeyModel NewApiKey)
     {
@@ -173,7 +172,7 @@ public class AdminController : ControllerBase
         }
     }
 
-    // Delete request to delete the API keys
+
     [HttpDelete("DeleteAPIKeys")]
     public IActionResult DeleteAPIKeys([FromQuery]string ApiKey)
     {

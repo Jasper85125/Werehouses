@@ -16,7 +16,6 @@ public class ItemGroupController : ControllerBase
     }
 
     // GET: itemgroup
-    // Retrieves all itemgroups
     [HttpGet()]
     public ActionResult<IEnumerable<ItemGroupCS>> GetAllItemGroups()
     {
@@ -54,7 +53,6 @@ public class ItemGroupController : ControllerBase
         return Ok(itemtype);
     }
 
-    //GET: all item in item groups
     [HttpGet("{id}/items")]
     public ActionResult<List<ItemCS>> GetAllItemsFromItemGroupId(int id)
     {

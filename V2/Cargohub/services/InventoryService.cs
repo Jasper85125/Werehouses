@@ -8,10 +8,8 @@ namespace ServicesV2;
 public class InventoryService : IInventoryService
 {
     private string Path = "../../data/inventories.json";
-    // Constructor
     public InventoryService()
     {
-        // Initialization code here
     }
 
     public List<InventoryCS> GetAllInventories()

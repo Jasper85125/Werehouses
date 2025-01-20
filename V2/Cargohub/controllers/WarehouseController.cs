@@ -15,9 +15,6 @@ public class warehouseFilter
     public string? City { get; set; }
     public string? Province { get; set; }
     public string? Country { get; set; }
-    // public Dictionary<string, string> Contact { get; set; }
-    // public DateTime created_at { get; set; }
-    // public DateTime updated_at { get; set; }
 }
 
 [ApiController]
@@ -30,25 +27,6 @@ public class WarehouseController : ControllerBase
         _warehouseService = warehouseService;
     }
 
-    // GET: /warehouses
-    // [HttpGet()]
-    // public ActionResult<IEnumerable<WarehouseCS>> GetAllWarehouses()
-    // {
-    //     List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Analyst", "Logistics" };
-    //     var userRole = HttpContext.Items["UserRole"]?.ToString();
-
-    //     if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-    //     {
-    //         return Unauthorized();
-    //     }
-
-    //     var warehouses = _warehouseService.GetAllWarehouses();
-    //     if (warehouses is null)
-    //     {
-    //         return NotFound();
-    //     }
-    //     return Ok(warehouses);
-    // }
     //example route /warehouses?City=Amsterdam
     [HttpGet()]
     public ActionResult<PaginationCS<WarehouseCS>> GetAllWarehouses(
@@ -64,7 +42,6 @@ public class WarehouseController : ControllerBase
         {
             return Unauthorized();
         }
-        // Filter logic
         if (tofilter == null)
         {
             tofilter = new warehouseFilter();
@@ -105,7 +82,6 @@ public class WarehouseController : ControllerBase
         }
         var warehousesCount = query.Count();
 
-        // Pagination logic
         int totalPages = (int)Math.Ceiling(warehousesCount / (double)pageSize);
         if (page <= 0)
         {
@@ -114,7 +90,6 @@ public class WarehouseController : ControllerBase
         page = Math.Max(1, Math.Min(page, totalPages));
         var pagedWarehouses = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-        // Return paginated and filtered result
         var result = new PaginationCS<WarehouseCS>()
         {
             Page = page,
@@ -213,7 +188,6 @@ public class WarehouseController : ControllerBase
         return Ok(updatedWarehouse);
     }
     //PATCH: Warehouse/{id}/{property_to_change}
-    //''   :     ''   /  ''/      contact == werkt niet
     [HttpPatch("{id}")]
     public ActionResult<WarehouseCS> PatchWarehouse([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue)
     {

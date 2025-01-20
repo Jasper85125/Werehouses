@@ -6,11 +6,9 @@ namespace ServicesV2;
 
 public class OrderService : IOrderService
 {
-    // Constructor
     private string path = "../../data/orders.json";
     public OrderService()
     {
-        // Initialization code here
     }
 
     public List<OrderCS> GetAllOrders()
@@ -33,7 +31,6 @@ public class OrderService : IOrderService
 
     public List<OrderCS> GetOrdersByShipmentId(int shipmentId)
     {
-        // the client_id is not a field in the Order class but there are two fields that could be used to identify the client the shipp_to and bill_to fields
         List<OrderCS> orders = GetAllOrders();
         List<OrderCS> shipmentOrders = orders.Where(order => order.shipment_id == shipmentId).ToList();
         if (shipmentOrders == null)
@@ -48,13 +45,11 @@ public class OrderService : IOrderService
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        // Add the new order record to the list
         newOrder.Id = orders.Count > 0 ? orders.Max(o => o.Id) + 1 : 1;
         newOrder.created_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         newOrder.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
         orders.Add(newOrder);
 
-        // Serialize the updated list back to the JSON file
         var jsonData = JsonConvert.SerializeObject(orders, Formatting.Indented);
         File.WriteAllText(path, jsonData);
         return newOrder;
@@ -73,7 +68,6 @@ public class OrderService : IOrderService
 
     public List<OrderCS> GetOrdersByClient(int client_id)
     {
-        // the client_id is not a field in the Order class but there are two fields that could be used to identify the client the shipp_to and bill_to fields
         List<OrderCS> orders = GetAllOrders();
         List<OrderCS> clientOrders = orders.Where(order => order.ship_to == client_id || order.bill_to == client_id).ToList();
         if (clientOrders == null)

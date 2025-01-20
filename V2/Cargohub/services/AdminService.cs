@@ -28,7 +28,6 @@ public class AdminService : IAdminService
         using var reader = new StreamReader(file.OpenReadStream());
         var csvContent = reader.ReadToEnd();
 
-        // Parse CSV into JSON format
         var lines = csvContent.Split('\n', StringSplitOptions.RemoveEmptyEntries);
         var headers = lines[0].Split(',');
 
@@ -52,7 +51,6 @@ public class AdminService : IAdminService
             WriteIndented = true
         });
 
-        // Save as JSON file
         var saveFileName = Path.Combine(Directory.GetCurrentDirectory(),"..","..", "Data", Path.ChangeExtension(file.FileName, ".json"));
         System.IO.File.WriteAllText(saveFileName, jsonContent);
         return saveFileName;
@@ -143,9 +141,7 @@ public class AdminService : IAdminService
     public ApiKeyModel DeleteAPIKeys(string ApiKey)
     {
         var apiKeysPath = Path.Combine(Directory.GetCurrentDirectory(),"..","..", "apikeys.json");
-        // Get all the apikeys
         var ListApiKeys = _apikeystorage.GetApiKeys();
-        // find where the apisecret is stored and then change the apikeys
         var key = ListApiKeys.FirstOrDefault(k => k.Key == ApiKey);
         if (key == null)
         {

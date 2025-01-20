@@ -7,7 +7,6 @@ namespace ControllersV2;
 
 public class shipmentFilter
 {
-    // public int Id { get; set; }
     public int order_id { get; set; }
     public int source_id { get; set; }
     public DateTime order_date { get; set; }
@@ -21,9 +20,6 @@ public class shipmentFilter
     public string? transfer_mode { get; set; }
     public int total_package_count { get; set; }
     public double total_package_weight { get; set; }
-    // public List<ItemIdAndAmount> Items { get; set; }
-    // public DateTime created_at { get; set; }
-    // public DateTime updated_at { get; set; }
 }
 
 [ApiController]
@@ -36,25 +32,6 @@ public class ShipmentController : ControllerBase
         _shipmentService = shipmentService;
     }
 
-    // GET: /shipments
-    /*
-    [HttpGet()]
-    public ActionResult<IEnumerable<ShipmentCS>> GetAllShipments()
-    {
-        List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager",
-                                                                   "Floor Manager", "Sales", "Analyst", "Logistics",
-                                                                   "Operative", "Supervisor" };
-        var userRole = HttpContext.Items["UserRole"]?.ToString();
-
-        if (userRole == null || !listOfAllowedRoles.Contains(userRole))
-        {
-            return Unauthorized();
-        }
-
-        var shipments = _shipmentService.GetAllShipments();
-        return Ok(shipments);
-    }
-    */
     //example route: /shipments?page=1&pageSize=10&order_id=1
     [HttpGet()]
     public ActionResult<PaginationCS<ShipmentCS>> GetAllShipments(
@@ -131,10 +108,8 @@ public class ShipmentController : ControllerBase
             query = query.Where(x => x.total_package_weight >= tofilter.total_package_weight);
         }
 
-        // Get the filtered count
         int filteredShipmentsCount = query.Count();
 
-        // Pagination logic
         int totalPages = (int)Math.Ceiling(filteredShipmentsCount / (double)pageSize);
         if (page <= 0)
         {
@@ -143,7 +118,6 @@ public class ShipmentController : ControllerBase
         page = Math.Max(1, Math.Min(page, totalPages));
         var pagedShipments = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-        // Return paginated and filtered result
         var result = new PaginationCS<ShipmentCS>()
         {
             Page = page,
@@ -176,6 +150,7 @@ public class ShipmentController : ControllerBase
         }
         return Ok(shipment);
     }
+    
     //shipments/{shipment_id}/items
     [HttpGet("{shipment_id}/items")]
     public ActionResult<IEnumerable<ItemIdAndAmount>> GetItemsInShipment([FromRoute] int shipment_id)

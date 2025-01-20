@@ -6,11 +6,9 @@ namespace ServicesV2;
 
 public class ShipmentService : IShipmentService
 {
-    // Constructor
     private string path = "../../data/shipments.json";
     public ShipmentService()
     {
-        // Initialization code here
     }
 
     public List<ShipmentCS> GetAllShipments()
