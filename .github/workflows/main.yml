@@ -1,182 +1,172 @@
-name: CI and Release
-
-on:
-  pull_request:
-    branches:
-      - '**'
+name: Deliver Artifacts
+on: 
+  release:
+    types: [published]
 
 jobs:
   csharp-build-and-test:
-    runs-on: ubuntu-latest
-    env:
-      DOTNET_INSTALL_DIR: ..dotnet
-
-    strategy:
-      matrix:
-        language: [csharp]
-        version: [V1, V2]
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Cache .Net depedencies
-      if: matrix.language == 'csharp'
-      uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
-
-    - name: Setup .NET
-      if: matrix.language == 'csharp'
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
-
-    - name: Restore dependencies
-      if: matrix.language == 'csharp'
-      run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
-
-    - name: Build solution
-      if: matrix.language == 'csharp'
-      run: |
-        dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore
-      continue-on-error: true
-
-    - name: Clean Up Old Test and Coverage Results
-      if: matrix.language == 'csharp'
-      run: |
-        echo "Removing old TestResults and coverage reports..."
-        rm -rf TestResults
-        rm -rf coverage-report-${{ matrix.version }}
-
-    - name: Run MSTest with Coverage
-      if: matrix.language == 'csharp'
-      run: |
-        dotnet test ./${{ matrix.version }}/tests/tests.csproj --configuration Release --verbosity detailed \
-          --collect:"XPlat Code Coverage" \
-          --results-directory TestResults \
-          /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
-      continue-on-error: true
-
-    - name: Install ReportGenerator
-      if: matrix.language == 'csharp'
-      run: dotnet tool install --global dotnet-reportgenerator-globaltool
-
-    - name: Generate Coverage Report
-      if: matrix.language == 'csharp'
-      run: |
-        reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" \
-                        -targetdir:"coverage-report-${{ matrix.version }}" \
-                        -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+      runs-on: ubuntu-latest
       env:
-        PATH: $PATH:/home/runner/.dotnet/tools
-        DOTNET_CLI_TELEMETRY_OPTOUT: 1
-        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-
-    - name: Upload Coverage Report
-      if: matrix.language == 'csharp'
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report-${{ matrix.version }}
-        path: coverage-report-${{ matrix.version }}
-
-    - name: Coverage Report Summary
-      run: |
-        sudo apt-get install -y bc
-        ls -l coverage-report-${{ matrix.version }}
-        # cat coverage-report-${{ matrix.version }}/Cobertura.xml
-        # percentage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'line-rate="[^"]+"' | grep -oP '[^"]+')
-        # echo "Code coverage is $percentage"
-        # Extract all 'line-rate' values
-        percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
-
-        # Add all the line-rate values to compute the total
-        total_coverage=0
-        count=0
-        while read -r line; do
-            total_coverage=$(echo "$total_coverage + $line" | bc)
-            count=$((count + 1))
-        done <<< "$percentages"
-
-        # Calculate the average (total percentage coverage)
-        if [[ $count -gt 0 ]]; then
-            total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
-            echo "Total Percentage Covered: $total_percentage%"
-        else
-            echo "No coverage data found."
-        fi
-
-    - name: Run Tests with Coverage
-      run: |
-        cd "Tests/V2/Integration Tests"
-        pytest --cov=. --cov-report=term-missing -v -s
-        coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-        coverage report --fail-under=80
-      continue-on-error: true
-
-    - name: Post Coverage Comment
-      uses: actions/github-script@v6
-      if: matrix.language == 'csharp'
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
-      with:
-        script: |
-          const coverage = process.env.total_percentage;
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `Code Coverage: ${coverage}%`
-          })
-
+        DOTNET_INSTALL_DIR: ..dotnet
+  
+      strategy:
+        matrix:
+          language: [csharp]
+          version: [V1, V2]
+  
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Cache .Net depedencies
+        if: matrix.language == 'csharp'
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+  
+      - name: Setup .NET
+        if: matrix.language == 'csharp'
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+            install-dir: ${{ runner.temp }}/dotnet
+  
+      - name: Restore dependencies
+        if: matrix.language == 'csharp'
+        run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
+  
+      - name: Build solution
+        if: matrix.language == 'csharp'
+        run: |
+          dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore
+        continue-on-error: true
+  
+      - name: Clean Up Old Test and Coverage Results
+        if: matrix.language == 'csharp'
+        run: |
+          echo "Removing old TestResults and coverage reports..."
+          rm -rf TestResults
+          rm -rf coverage-report-${{ matrix.version }}
+  
+      - name: Run MSTest with Coverage
+        if: matrix.language == 'csharp'
+        run: |
+          dotnet test ./${{ matrix.version }}/tests/tests.csproj --configuration Release --verbosity detailed \
+            --collect:"XPlat Code Coverage" \
+            --results-directory TestResults \
+            /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
+        continue-on-error: true
+  
+      - name: Install ReportGenerator
+        if: matrix.language == 'csharp'
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+  
+      - name: Generate Coverage Report
+        if: matrix.language == 'csharp'
+        run: |
+          reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" \
+                          -targetdir:"coverage-report-${{ matrix.version }}" \
+                          -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+        env:
+          PATH: $PATH:/home/runner/.dotnet/tools
+          DOTNET_CLI_TELEMETRY_OPTOUT: 1
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  
+      - name: Upload Coverage Report
+        if: matrix.language == 'csharp'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ matrix.version }}
+          path: coverage-report-${{ matrix.version }}
+  
+      - name: Coverage Report Summary
+        run: |
+          ls -l coverage-report-${{ matrix.version }}
+          # cat coverage-report-${{ matrix.version }}/Cobertura.xml
+          # percentage=$(cat coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP 'line-rate="[^"]+"' | grep -oP '[^"]+')
+          # echo "Code coverage is $percentage"
+          # Extract all 'line-rate' values
+          percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
+  
+          # Add all the line-rate values to compute the total
+          total_coverage=0
+          count=0
+          while read -r line; do
+              total_coverage=$(echo "$total_coverage + $line" | bc)
+              count=$((count + 1))
+          done <<< "$percentages"
+  
+          # Calculate the average (total percentage coverage)
+          if [[ $count -gt 0 ]]; then
+              total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
+              echo "Total Percentage Covered: $total_percentage%"
+          else
+              echo "No coverage data found."
+          fi
+          
   python-tests:
+      runs-on: ubuntu-latest
+      needs: csharp-build-and-test
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('PythonTests/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+  
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+  
+      - name: Install Python dependencies
+        run: pip install -r ./PythonTests/requirements.txt
+  
+      - name: Run application
+        run: |
+          dotnet build ./V1/Cargohub/Werehouses.csproj --configuration Release
+          dotnet build ./V2/Cargohub/Werehouses.csproj --configuration Release
+          dotnet run --configuration Release --project ./V1/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
+          dotnet run --configuration Release --project ./V2/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
+  
+      - name: Run Python Tests
+        run: |
+          mkdir -p ./PythonTests/reports
+          python -m xmlrunner discover -o PythonTests/reports
+  
+      - name: Upload Python Test Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-test-reports
+          path: PythonTests/reports
+
+        
+  Deliver-Artifacts:
     runs-on: ubuntu-latest
     needs: csharp-build-and-test
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Cache Python dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('PythonTests/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install Python dependencies
-      run: pip install -r ./PythonTests/requirements.txt
-
-    - name: Run application
-      run: |
-        dotnet build ./V1/Cargohub/Werehouses.csproj --configuration Release
-        dotnet build ./V2/Cargohub/Werehouses.csproj --configuration Release
-        dotnet run --configuration Release --project ./V1/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5001/ & sleep 5
-        dotnet run --configuration Release --project ./V2/Cargohub/Werehouses.csproj --urls=http://0.0.0.0:5002/ & sleep 5
-
-    - name: Run Python Tests
-      run: |
-        mkdir -p ./PythonTests/reports
-        python -m xmlrunner discover -o PythonTests/reports
-
-    - name: Run Tests with Coverage
-      run: |
-        cd "Tests/V2/Integration Tests"
-        pytest --cov=. --cov-report=term-missing -v -s
-        coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-        coverage report --fail-under=80
-      continue-on-error: true
-
-    - name: Upload Python Test Reports
+  
+    - name: Build V1 for Linux
+      run: dotnet publish ./V1/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish/V1
+  
+    - name: Build V2 for Linux
+      run: dotnet publish ./V2/Cargohub/Werehouses.csproj -c Release -r linux-x64 --self-contained false -o ./publish/V2
+  
+    - name: Create ZIP package
+      run: zip -r linux-release-v${{ github.run_number }}.zip ./publish
+  
+    - name: Upload ZIP artifact
       uses: actions/upload-artifact@v4
       with:
-        name: python-test-reports
-        path: PythonTests/reports
+        name: linux-release-v${{ github.run_number }}
+        path: linux-release-v${{ github.run_number }}.zip
