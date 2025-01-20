@@ -50,6 +50,20 @@ namespace TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _supplierController.GetAllSuppliers();
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -81,6 +95,20 @@ namespace TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(suppliers[0].Code, returnedItems.Code);
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _supplierController.GetSupplierById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -103,6 +131,20 @@ namespace TestsV2
 
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _supplierController.GetSupplierById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -136,6 +178,20 @@ namespace TestsV2
             Assert.AreEqual("H1M12", returnedSupplier.Code);
             Assert.AreEqual("Joseph", returnedSupplier.Name);
             Assert.AreEqual("Lissabon 402", returnedSupplier.Address);
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.CreateSupplier(newSupplier);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -171,6 +227,20 @@ namespace TestsV2
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(suppliers[0].Name, firstSupplier.Name);
             Assert.AreEqual(suppliers[0].Code, firstSupplier.Code);
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.CreateMultipleSuppliers(suppliers);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -217,6 +287,20 @@ namespace TestsV2
             Assert.AreEqual(updatedSupplier.Address, returnedSupplier.Address);
             Assert.AreEqual(updatedSupplier.contact_name, returnedSupplier.contact_name);
             Assert.AreEqual(updatedSupplier.PhoneNumber, returnedSupplier.PhoneNumber);
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.UpdateSupplier(1, updatedSupplier);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -258,6 +342,20 @@ namespace TestsV2
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
             Assert.IsNull(returnedSupplier);
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.UpdateSupplier(1, updatedSupplier);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -281,6 +379,20 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.DeleteSupplier(1);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -316,6 +428,20 @@ namespace TestsV2
             Assert.IsNotNull(okResult, "Expected OkObjectResult, but got null.");
             Assert.IsNotNull(returnedItems, "Expected returnedItems to be non-null.");
             Assert.AreEqual(2, returnedItems.Count(), "Expected returnedItems to contain 2 items.");
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.GetItemsBySupplierId(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -338,6 +464,20 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.GetItemsBySupplierId(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -399,6 +539,20 @@ namespace TestsV2
             Assert.AreEqual(patchSupplier.Address, returnedSupplier.Address);
             Assert.AreEqual(patchSupplier.contact_name, returnedSupplier.contact_name);
             Assert.AreEqual(patchSupplier.PhoneNumber, returnedSupplier.PhoneNumber);
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.PatchSupplier(1, "Name", "Supp & liers");
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -436,6 +590,20 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.PatchSupplier(1, "Name", "Supp & liers");
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
         [TestMethod]
         public void DeleteSuppliersTest_Succes()
@@ -459,6 +627,20 @@ namespace TestsV2
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
+
+            httpContext.Items["UserRole"] = "Bee";
+            _supplierController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _supplierController.DeleteSuppliers(suppliersToDelete);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
     }
 }
