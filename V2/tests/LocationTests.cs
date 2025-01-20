@@ -50,6 +50,20 @@ namespace TestsV2
             // Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _locationController.GetAllLocations();
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -81,6 +95,20 @@ namespace TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(locations[0].code, returnedItems.code);
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _locationController.GetLocationById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -103,6 +131,20 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _locationController.GetLocationById(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         // GET: /locations/warehouse/{warehouse_id}
@@ -135,6 +177,20 @@ namespace TestsV2
             // Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _locationController.GetLocationsByWarehouseId(1);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -166,6 +222,20 @@ namespace TestsV2
             Assert.IsInstanceOfType(createdResult.Value, typeof(LocationCS));
             Assert.AreEqual("C.3.2", returnedLocation.code);
             Assert.AreEqual(5, returnedLocation.warehouse_id);
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _locationController.CreateLocation(createdLocation);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -199,6 +269,20 @@ namespace TestsV2
             Assert.IsNotNull(returnedItems);
             Assert.AreEqual(locations[0].name, firstLocation.name);
             Assert.AreEqual(locations[0].code, firstLocation.code);
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _locationController.CreateMultipleLocations(locations);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -230,6 +314,20 @@ namespace TestsV2
             Assert.IsInstanceOfType(createdResult.Value, typeof(LocationCS));
             Assert.AreEqual("C.3.2", returnedLocation.code);
             Assert.AreEqual(5, returnedLocation.warehouse_id);
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _locationController.UpdateLocation(1, updatedLocation);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -258,7 +356,22 @@ namespace TestsV2
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
             Assert.IsNull(returnedLocation);
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _locationController.UpdateLocation(1, updatedLocation);
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
         public void PatchLocation_Succes()
         {
             //Arrange
@@ -285,6 +398,20 @@ namespace TestsV2
             Assert.IsNotNull(value);
             Assert.AreEqual(resultok.StatusCode, 200);
             Assert.AreEqual(value.name, patchedlocation.name);
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _locationController.PatchLocation(1, "name","ASS");
+
+            //assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
         
         [TestMethod]
@@ -308,6 +435,20 @@ namespace TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _locationController.DeleteLocation(1);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
         [TestMethod]
@@ -332,6 +473,20 @@ namespace TestsV2
             //Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(resultok.StatusCode, 200);
+
+            httpContext.Items["UserRole"] = "Thief";
+            _locationController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            result = _locationController.DeleteLocations(locationsToDelete);
+
+            //assert
+            var unauthorizedResult = result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
     }
 }
