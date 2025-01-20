@@ -289,6 +289,14 @@ namespace ControllersV2
         [HttpPatch("{id}")]
         public ActionResult<OrderCS> PatchOrder([FromRoute] int id, [FromQuery] string property, [FromBody] object newvalue)
         {
+            List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Sales", "Logistics" };
+            var userRole = HttpContext.Items["UserRole"]?.ToString();
+
+            if (userRole == null || !listOfAllowedRoles.Contains(userRole))
+            {
+                return Unauthorized();
+            }
+            
             if (string.IsNullOrEmpty(property) || newvalue is null)
             {
                 return BadRequest("Missing inputs in request");
