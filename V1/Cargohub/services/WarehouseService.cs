@@ -9,7 +9,6 @@ public class WarehouseService : IWarehouseService
     private string _path = "../../data/warehouses.json";
     public WarehouseService()
     {
-        // Initialization code here
     }
 
     public List<WarehouseCS> GetAllWarehouses()

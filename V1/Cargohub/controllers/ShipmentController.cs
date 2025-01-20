@@ -34,7 +34,6 @@ public class ShipmentController : ControllerBase
         }
         return Ok(shipment);
     }
-    //get-the-system-must-allow-users-to-fetch-all-item-records-in-a-specific-shipment
     [HttpGet("{shipment_id}/items")]
     public ActionResult<IEnumerable<ItemIdAndAmount>> GetItemsInShipment([FromRoute]int shipment_id)
     {

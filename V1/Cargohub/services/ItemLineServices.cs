@@ -5,14 +5,11 @@ using ServicesV1;
 
 public class ItemLineService : IItemLineService
 {
-    // Constructor
     private string path = "../../data/item_lines.json";
     public ItemLineService()
     {
-        // Initialization code here
     }
 
-    // Method to get all items
     public List<ItemLineCS> GetAllItemlines()
     {
         if (!File.Exists(path))
