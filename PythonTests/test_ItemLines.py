@@ -27,7 +27,6 @@ class TestItemLines(unittest.TestCase):
                     "created_at": "2022-08-18T07:05:25"
                 }
 
-                # Send the request
                 response = self.client.post(
                     url=(version + "/itemlines"),
                     headers=self.headers,
@@ -40,7 +39,6 @@ class TestItemLines(unittest.TestCase):
     def test_02_get_item_line_id(self):
         for version in self.versions:
             with self.subTest(version=version):
-                # Send the request
                 response = self.client.get(
                     url=(version + "/itemlines/0"), headers=self.headers
                 )
@@ -48,7 +46,6 @@ class TestItemLines(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
 
                 # Check that the response is a dictionary
-                # (representative of a single item line object)
                 self.assertEqual(type(response.json()), dict)
 
                 # Check that the item line object has the correct properties
@@ -67,11 +64,9 @@ class TestItemLines(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
 
                 # Check that the response is a list
-                # (representative of a list of item lines)
                 self.assertEqual(type(response.json()), list)
 
                 # If the list contains something,
-                # check the first object in the list
                 if len(response.json()) > 0:
                     # Check that each object in the list is a dictionary
                     self.assertEqual(type(response.json()[0]), dict)
@@ -90,7 +85,6 @@ class TestItemLines(unittest.TestCase):
         for version in self.versions:
             with self.subTest(version=version):
 
-                # Send the request to get the item lines
                 response = self.client.get(
                     url=(version + "/itemlines"),
                     headers=self.headers
@@ -120,7 +114,6 @@ class TestItemLines(unittest.TestCase):
     def test_05_delete_item_line_id(self):
         for version in self.versions:
             with self.subTest(version=version):
-                # Send the request to get the item lines
                 response = self.client.get(
                     url=(version + "/itemlines"),
                     headers=self.headers

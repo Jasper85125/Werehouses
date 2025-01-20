@@ -1,6 +1,5 @@
 import unittest
 import httpx
-# from rich import _console
 
 
 def checkWarehouse(warehouse):
@@ -133,7 +132,6 @@ class TestClass(unittest.TestCase):
                 if version == 'http://localhost:5001/api/v1':
                     last_warehouse_id = warehouses[-1]["id"] if warehouses \
                         else 1
-                    # print(last_warehouse_id)
                 else:
                     response = self.warehouse.get(
                         url=(version + "/warehouses?page=0"),
@@ -141,7 +139,6 @@ class TestClass(unittest.TestCase):
                     warehouses = response.json()
                     last_warehouse_id = warehouses['data'][-1]["id"] \
                         if warehouses else 1
-                    # print(last_warehouse_id)
                 response = self.warehouse.put(
                     url=(version + f"/warehouses/{last_warehouse_id}"),
                     headers=self.headers, json=data
