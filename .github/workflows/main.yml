@@ -109,6 +109,14 @@ jobs:
             echo "No coverage data found."
         fi
 
+    - name: Run Tests with Coverage
+      run: |
+        cd "Tests/V2/Integration Tests"
+        pytest --cov=. --cov-report=term-missing -v -s
+        coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+        coverage report --fail-under=80
+      continue-on-error: true
+
     - name: Post Coverage Comment
       uses: actions/github-script@v6
       if: matrix.language == 'csharp'
