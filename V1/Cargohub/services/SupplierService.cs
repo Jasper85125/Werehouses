@@ -7,10 +7,8 @@ namespace ServicesV1;
 public class SupplierService : ISupplierService
 {
     private string _path = "../../data/suppliers.json";
-    // Constructor
     public SupplierService()
     {
-        // Initialization code here
     }
 
     public List<SupplierCS> GetAllSuppliers()

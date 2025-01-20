@@ -12,7 +12,6 @@ public class ItemTypeController : ControllerBase
     private readonly IItemtypeService _itemtypeService;
     private readonly IItemService _itemService;
 
-    // Constructor to initialize the ItemController with an IItemService instance
     public ItemTypeController(IItemtypeService itemtypeService, IItemService itemService)
     {
         _itemtypeService = itemtypeService;
@@ -20,7 +19,6 @@ public class ItemTypeController : ControllerBase
     }
 
     // GET: items
-    // Retrieves all items
     [HttpGet()]
     public ActionResult<IEnumerable<ItemCS>> GetAllItemtypes()
     {
