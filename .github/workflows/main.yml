@@ -38,7 +38,7 @@ jobs:
 
     - name: Restore dependencies
       if: matrix.language == 'csharp'
-      run: dotnet restore ./Warehouses.sln
+      run: dotnet restore ./${{ matrix.version }}/Cargohub/Werehouses.sln
 
     - name: Build solution
       if: matrix.language == 'csharp'
