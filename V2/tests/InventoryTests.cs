@@ -46,7 +46,7 @@ namespace inventory.TestsV2
             };
 
             //Act
-            var value = _inventoryController.GetAllInventories();
+            var value = _inventoryController.GetAllInventories(null, 1, 10);
 
             //Assert
             var okResult = value.Result as OkObjectResult;
@@ -61,7 +61,7 @@ namespace inventory.TestsV2
             };
 
             //act
-            var result = _inventoryController.GetAllInventories();
+            var result = _inventoryController.GetAllInventories(null, 1, 10);
 
             //assert
             var unauthorizedResult = result.Result as UnauthorizedResult;
