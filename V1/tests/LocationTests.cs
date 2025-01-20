@@ -75,8 +75,7 @@ namespace TestsV1
             // Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
-        // GET: /locations/warehouse/{warehouse_id}
-        //GetLocationsByWarehouseId  
+ 
         [TestMethod]
         public void GetLocationsByWarehouseIdTest_Exists()
         {
@@ -97,13 +96,12 @@ namespace TestsV1
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
+
         [TestMethod]
         public void CreateLocationTest_Success()
         {
             // Arrange
             var createdLocation = new LocationCS { Id = 2, warehouse_id = 5, code = "C.3.2" };
-            
-            // Set up the mock service to return the created order
             _mockLocationService.Setup(service => service.CreateLocation(createdLocation)).Returns(createdLocation);
 
             // Act
@@ -124,8 +122,6 @@ namespace TestsV1
         {
             // Arrange
             var updatedLocation = new LocationCS { Id = 1, warehouse_id = 5, code = "C.3.2"};
-
-            // Set up the mock service to return the created order
             _mockLocationService.Setup(service => service.UpdateLocation(updatedLocation, 1)).Returns(updatedLocation);
 
             // Act
@@ -146,8 +142,6 @@ namespace TestsV1
         {
             // Arrange
             var updatedLocation = new LocationCS { Id = 1, warehouse_id = 5, code = "C.3.2"};
-
-            // Set up the mock service to return the created order
             _mockLocationService.Setup(service => service.UpdateLocation(updatedLocation, 0)).Returns((LocationCS)null);
 
             // Act

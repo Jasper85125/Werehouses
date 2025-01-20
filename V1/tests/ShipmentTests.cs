@@ -75,7 +75,7 @@ namespace TestsV1
             //Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
-        //GetItemsInShipment test
+
         [TestMethod]
         public void GetItemsInShipmentTest_Exists()
         {
@@ -96,6 +96,7 @@ namespace TestsV1
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
+
         [TestMethod]
         public void CreateShipment_ReturnsCreatedResult_WithNewShipment()
         {
@@ -107,7 +108,7 @@ namespace TestsV1
             var value = _shipmentController.CreateShipment(shipment);
 
             // Assert
-            var createdResult = value.Result as CreatedAtActionResult;  // Use CreatedAtActionResult
+            var createdResult = value.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdResult);
 
             var returnedItems = createdResult.Value as ShipmentCS;
@@ -200,8 +201,10 @@ namespace TestsV1
             //arrange
             var shipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24, Items=new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P01", amount = 23 }}};
             _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipment);
+
             //act
             var result = _shipmentController.DeleteItemFromShipment(1, "P01");
+            
             //assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }

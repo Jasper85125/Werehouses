@@ -33,9 +33,8 @@ namespace itemtype.TestsV2
         public void GetAllItemtypes_ShouldReturnAllItemTypes()
         {
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -72,9 +71,8 @@ namespace itemtype.TestsV2
             _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(itemType);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";  
 
-            // Assign HttpContext to the controller
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -109,9 +107,8 @@ namespace itemtype.TestsV2
             _mockItemTypeService.Setup(service => service.CreateItemType(newItemType)).Returns(newItemType);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -148,38 +145,35 @@ namespace itemtype.TestsV2
             var existingItemType = new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" };
             var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
             
-            // Synchronous return for mocked methods
             _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(existingItemType);
             _mockItemTypeService.Setup(service => service.UpdateItemType(1, updatedItemType)).Returns(updatedItemType);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin"; // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
 
-            // Act - Synchronous call for update
+            // Act
             var result = _mockItemTypeService.Object.UpdateItemType(1, updatedItemType);
 
-            // Assert - Verify the returned item type is updated
+            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(updatedItemType.Name, result.Name);
             Assert.AreEqual(updatedItemType.description, result.description);
 
-            // Simulate unauthorized context
             httpContext.Items["UserRole"] = "HackerMan";
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
 
-            // Act - Unauthorized access
+            // Act
             var value = _itemTypeController.UpdateItemType(1, updatedItemType);
 
-            // Assert - Check for UnauthorizedResult
+            // Assert
             var unauthorizedResult = value.Result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
@@ -195,7 +189,6 @@ namespace itemtype.TestsV2
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -231,7 +224,6 @@ namespace itemtype.TestsV2
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -264,18 +256,20 @@ namespace itemtype.TestsV2
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
+
             //Arrange
             var patcheditemtype = new ItemTypeCS(){ Id=1, Name="HAHA"};
             _mockItemTypeService.Setup(service=>service.PatchItemType(1, "Name", "HAHA")).Returns(patcheditemtype);
+
             //Act
             var result = _itemTypeController.PatchItemType(1, "Name", "HAHA");
             var resultok = result.Result as OkObjectResult;
             var value = resultok.Value as ItemTypeCS;
+
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotNull(resultok);
@@ -305,9 +299,8 @@ namespace itemtype.TestsV2
             _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(itemType);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -341,9 +334,8 @@ namespace itemtype.TestsV2
             var itemTypesToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemTypeController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

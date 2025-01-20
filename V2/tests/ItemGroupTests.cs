@@ -34,9 +34,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.GetAllItemGroups()).Returns(itemGroups);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -74,9 +73,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(itemGroup);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -114,9 +112,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns((ItemGroupCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -137,9 +134,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.CreateItemGroup(It.IsAny<ItemGroupCS>())).Returns(newItemGroup);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -181,9 +177,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.CreateMultipleItemGroups(itemGroups)).Returns(itemGroups);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin"; 
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -226,9 +221,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.UpdateItemGroup(1, updatedItemGroup)).Returns(updatedItemGroup);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -266,9 +260,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns((ItemGroupCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -288,9 +281,8 @@ namespace itemgroup.TestsV2
             var updatedItemGroup = new ItemGroupCS { Id = 2, Description = "Updated Item" };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -311,9 +303,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(itemGroup);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -363,14 +354,12 @@ namespace itemgroup.TestsV2
                 supplier_id = 27,
                 supplier_code = "SUP545",
                 supplier_part_number = "f-768-s2A",
-                // created_at= "1995-09-07T07:15:07", updated_at= "1996-09-16T17:31:21"
             };
             _mockItemGroupService.Setup(service => service.ItemsFromItemGroupId(1)).Returns(new List<ItemCS>() { testResult });
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -410,9 +399,8 @@ namespace itemgroup.TestsV2
             var itemgroupsToDelete = new List<int>() { 1, 2, 3 };
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -452,9 +440,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.PatchItemGroup(1, "Name", "Updated Group")).Returns(patchItemGroup);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
@@ -495,9 +482,8 @@ namespace itemgroup.TestsV2
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns((ItemGroupCS)null);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";  // Set the UserRole in HttpContext
+            httpContext.Items["UserRole"] = "Admin";
 
-            // Assign HttpContext to the controller
             _itemGroupController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext

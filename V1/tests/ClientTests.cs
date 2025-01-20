@@ -33,10 +33,10 @@ namespace TestsV1
 
             //act
             var result = _clientcontroller.GetAllClients();
-            
-            //assert
             var okResult = result.Result as OkObjectResult;
             var returnedItems = okResult.Value as IEnumerable<ClientCS>;
+            
+            //assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(2, returnedItems.Count());
         }
@@ -48,11 +48,10 @@ namespace TestsV1
             _clientservice.Setup(_ => _.GetClientById(client.Id)).Returns(client);
 
             //act
-            // var result = _clientservice.Setup(_ => _.GetClientById(client.Id)).Returns(client);
             var result = _clientcontroller.GetClientById(1);
+            var resultok = result.Result as OkObjectResult;
 
             //assert
-            var resultok = result.Result as OkObjectResult;
             Assert.IsNotNull(resultok);
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
         }
@@ -67,12 +66,11 @@ namespace TestsV1
             
             // Act
             var result = _clientcontroller.CreateClient(client);
+            var createdResult = result.Result as CreatedAtActionResult;
+            var returnedClients = createdResult.Value as ClientCS;
             
             // Assert
-            var createdResult = result.Result as CreatedAtActionResult;  // Use CreatedAtActionResult here
             Assert.IsNotNull(createdResult);
-            
-            var returnedClients = createdResult.Value as ClientCS;
             Assert.IsNotNull(returnedClients);
             Assert.AreEqual(client.Address, returnedClients.Address);
             Assert.AreEqual(client.City, returnedClients.City);
@@ -88,13 +86,13 @@ namespace TestsV1
 
             // Act
             var result = _clientcontroller.UpdateClient(1, updatedClient);
+            var createdResult = result.Result as OkObjectResult;
+            var returnedClient = createdResult.Value as ClientCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var createdResult = result.Result as OkObjectResult;
             Assert.IsNotNull(createdResult);
             Assert.IsInstanceOfType(createdResult.Value, typeof(ClientCS));
-            var returnedClient = createdResult.Value as ClientCS;
             Assert.AreEqual(updatedClient.City, returnedClient.City);
             Assert.AreEqual(updatedClient.Address, returnedClient.Address);
         }
@@ -109,11 +107,11 @@ namespace TestsV1
 
             // Act
             var result = _clientcontroller.UpdateClient(0, updatedClient);
+            var createdResult = result.Result as NotFoundObjectResult;
+            var returnedClient = createdResult.Value as ClientCS;
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
-            var createdResult = result.Result as NotFoundObjectResult;
-            var returnedClient = createdResult.Value as ClientCS;
             Assert.IsNull(returnedClient);
         }
 
@@ -124,8 +122,10 @@ namespace TestsV1
             // Arrange
             var existingClient = new ClientCS {Address="street", City="city", contact_phone="number", contact_email="email", contact_name="name", Country="Japan", created_at=default, Id=1, Name="name", Province="province", updated_at=default, zip_code="zip"};
             _clientservice.Setup(service => service.GetClientById(1)).Returns(existingClient);
+
             // Act
             var result = _clientcontroller.DeleteClient(1);
+            
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }

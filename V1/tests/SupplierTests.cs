@@ -83,8 +83,6 @@ namespace TestsV1
             // Arrange
             var newSupplier = new SupplierCS { Id = 1, Code = "5KR3T", Name = "Jonathan", Address = "Smokey 404" };
             var createdSupplier = new SupplierCS { Id = 2, Code = "H1M12", Name = "Joseph", Address = "Lissabon 402" };
-
-            // Set up the mock service to return the created order
             _mockSupplierService.Setup(service => service.CreateSupplier(newSupplier)).Returns(createdSupplier);
 
             // Act
@@ -187,8 +185,8 @@ namespace TestsV1
         [TestMethod]
         public void GetItemsBySupplierId_ExistingId()
         {
-            // Arrange: Mock the service responses to ensure the controller returns the expected items
-            var supplier = new SupplierCS { Id = 1 };  // Create a mock supplier
+            // Arrange
+            var supplier = new SupplierCS { Id = 1 };
             _mockSupplierService.Setup(service => service.GetSupplierById(1)).Returns(supplier);
 
             var items = new List<ItemCS>
@@ -198,10 +196,10 @@ namespace TestsV1
             };
             _mockSupplierService.Setup(service => service.GetItemsBySupplierId(1)).Returns(items);
 
-            // Act: Call the controller method
+            // Act
             var result = _supplierController.GetItemsBySupplierId(1);
 
-            // Assert: Verify the result
+            // Assert
             Assert.IsNotNull(result);
             var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult, "Expected OkObjectResult, but got null.");

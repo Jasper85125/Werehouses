@@ -51,10 +51,10 @@ public class ItemLineTests
 
         // Act
         var value = _itemLineController.GetItemLineById(1);
-
-        // Assert
         var okResult = value.Result as OkObjectResult;
         var returnedItem = okResult.Value as ItemLineCS;
+
+        // Assert
         Assert.IsNotNull(okResult);
         Assert.IsNotNull(okResult.Value);
         Assert.AreEqual(itemLine.Description, returnedItem.Description);
@@ -82,10 +82,10 @@ public class ItemLineTests
 
         // Act
         var value = await _itemLineController.AddItemLine(newItemLine);
-
-        // Assert
         var createdResult = value.Result as CreatedAtActionResult;
         var returnedItem = createdResult.Value as ItemLineCS;
+
+        // Assert
         Assert.IsNotNull(createdResult);
         Assert.AreEqual(newItemLine.Description, returnedItem.Description);
     }
@@ -111,10 +111,10 @@ public class ItemLineTests
 
         // Act
         var value = await _itemLineController.UpdateItemLine(1, updatedItemLine);
-
-        // Assert
         var okResult = value.Result as OkObjectResult;
         var returnedItem = okResult.Value as ItemLineCS;
+
+        // Assert
         Assert.IsNotNull(okResult);
         Assert.AreEqual(updatedItemLine.Description, returnedItem.Description);
     }
@@ -164,8 +164,8 @@ public class ItemLineTests
     [TestMethod]
     public void GetItemsByItemLineId_ExistingId()
     {
-        // Arrange: Mock the service responses to ensure the controller returns the expected items
-        var itemLine = new ItemLineCS { Id = 1 };  // Create a mock item line
+        // Arrange
+        var itemLine = new ItemLineCS { Id = 1 };
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(itemLine);
 
         var items = new List<ItemCS>
@@ -175,10 +175,10 @@ public class ItemLineTests
         };
         _mockItemLineService.Setup(service => service.GetItemsByItemLineId(1)).Returns(items);
 
-        // Act: Call the controller method
+        // Act
         var result = _itemLineController.GetItemsByItemLineId(1);
 
-        // Assert: Verify the result
+        // Assert
         Assert.IsNotNull(result);
         var okResult = result.Result as OkObjectResult;
         Assert.IsNotNull(okResult, "Expected OkObjectResult, but got null.");

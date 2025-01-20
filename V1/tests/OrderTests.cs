@@ -101,8 +101,6 @@ namespace TestsV1
             // Arrange
             var newOrder = new OrderCS { Id = 1, source_id = 24, order_status = "Pending" };
             var createdOrder = new OrderCS { Id = 2, source_id = 24, order_status = "Pending" };
-
-            // Set up the mock service to return the created order
             _mockOrderService.Setup(service => service.CreateOrder(newOrder)).Returns(createdOrder);
 
             // Act
