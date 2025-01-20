@@ -7,16 +7,13 @@ namespace ServicesV2;
 
 public class ItemGroupService : ItemService, IitemGroupService
 {
-    // Constructor
     private string Path = "../../data/item_groups.json";
     ItemService itemService;
     public ItemGroupService()
     {
-        // Initialization code here
         itemService = new ItemService();
     }
 
-    // Method to get all Itemgroups
     public List<ItemGroupCS> GetAllItemGroups()
     {
         if (!File.Exists(Path))
@@ -29,7 +26,6 @@ public class ItemGroupService : ItemService, IitemGroupService
         return Itemgroups ?? new List<ItemGroupCS>();
     }
 
-    // Method to get an Itemgroup by ID
     public ItemGroupCS GetItemById(int id)
     {
         var Itemgroups = GetAllItemGroups();
@@ -47,14 +43,12 @@ public class ItemGroupService : ItemService, IitemGroupService
         return find;
     }
 
-    // Method to add a new Itemgroup
     public ItemGroupCS CreateItemGroup(ItemGroupCS newItemGroup)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
         var currentDateTime = DateTime.Now;
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        // Auto-increment ID
         if (items.Any())
         {
             newItemGroup.Id = items.Max(i => i.Id) + 1;
@@ -84,7 +78,6 @@ public class ItemGroupService : ItemService, IitemGroupService
         return addedItemGroups;
     }
 
-    // Method to update an existing Itemgroup
     public ItemGroupCS UpdateItemGroup(int id, ItemGroupCS itemLine)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
@@ -94,10 +87,8 @@ public class ItemGroupService : ItemService, IitemGroupService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
         existingItem.Name = itemLine.Name;
@@ -110,7 +101,6 @@ public class ItemGroupService : ItemService, IitemGroupService
         return existingItem;
     }
 
-    // Method to delete an Itemgroup
     public void DeleteItemGroup(int id)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
@@ -135,10 +125,8 @@ public class ItemGroupService : ItemService, IitemGroupService
             return null;
         }
 
-        // Get the current date and time
         var currentDateTime = DateTime.Now;
 
-        // Format the date and time to the desired format
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         switch(property){
             case "Name":

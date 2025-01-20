@@ -27,7 +27,6 @@ namespace ControllersV2
             return BadRequest("WarehouseID is missing or invalid.");
         }
 
-            //warehouse id is list<string> so we need to convert it to string and split it to get the warehouse id
             var WarehouseIDFromKey = warehouseID.Split(',').Select(int.Parse).ToList();
 
 

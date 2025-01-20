@@ -8,10 +8,8 @@ namespace ServicesV2;
 public class LocationService : ILocationService
 {
     private string _path = "../../data/locations.json";
-    // Constructor
     public LocationService()
     {
-        // Initialization code here
     }
 
     public List<LocationCS> GetAllLocations()

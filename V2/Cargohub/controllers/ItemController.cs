@@ -10,13 +10,13 @@ public class itemFilter()
     public string? upc_code { get; set; }
     public string? model_number { get; set; }
     public string? commodity_code { get; set; }
-    public int? item_line { get; set; } // Changed to nullable
-    public int? item_type { get; set; } // Changed to nullable
-    public int? item_group { get; set; } // Changed to nullable
-    public int? unit_purchase_quantity { get; set; } // Changed to nullable
-    public int? unit_order_quantity { get; set; } // Changed to nullable
-    public int? pack_order_quantity { get; set; } // Changed to nullable
-    public int? supplier_id { get; set; } // Changed to nullable
+    public int? item_line { get; set; } 
+    public int? item_type { get; set; } 
+    public int? item_group { get; set; } 
+    public int? unit_purchase_quantity { get; set; } 
+    public int? unit_order_quantity { get; set; } 
+    public int? pack_order_quantity { get; set; } 
+    public int? supplier_id { get; set; } 
     public string? supplier_code { get; set; }
 }
 [Route("api/v2/items")]
@@ -27,7 +27,6 @@ public class ItemController : ControllerBase
     private readonly IInventoryService _inventoryService;
     private readonly ILocationService _locationService;
 
-    // Constructor to initialize the ItemController with an IItemService instance
     public ItemController(IItemService itemService, IInventoryService inventoryService, ILocationService locationService)
     {
         _itemService = itemService;
@@ -52,10 +51,8 @@ public class ItemController : ControllerBase
         {
             if (userRole == "Operative" || userRole == "Supervisor")
             {
-                // Parse the warehouse IDs from the input
                 var warehouseIds = warehouseID.Split(',').Select(int.Parse).ToList();
 
-                // Get all locations connected to the user's warehouses
                 var locations = _locationService.GetAllLocations();
                 var filteredLocations = locations.Where(location => warehouseIds.Contains(location.warehouse_id)).ToList();
 
@@ -64,10 +61,8 @@ public class ItemController : ControllerBase
                     return NotFound("No locations found for the specified warehouses.");
                 }
 
-                // Extract location IDs for inventory lookup
                 var locationIds = filteredLocations.Select(location => location.Id).ToList();
 
-                // Get all inventories connected to the filtered locations
                 var inventoriesByLocation = _inventoryService.GetInventoriesByLocationId(locationIds);
 
                 if (!inventoriesByLocation.Any())
@@ -78,7 +73,6 @@ public class ItemController : ControllerBase
                 // Get all items
                 var allItems = _itemService.GetAllItems();
 
-                // Filter items that exist in the inventories connected to the user's warehouses
                 var filteredItems = allItems.Where(item => inventoriesByLocation.Any(inventory => inventory.item_id == item.uid)).ToList();
 
                 if (!filteredItems.Any())
@@ -133,10 +127,8 @@ public class ItemController : ControllerBase
             query = query.Where(item => item.item_type == tofilter.item_type.Value);
         }
 
-        // Get the filtered count
         int filteredItemsCount = query.Count();
 
-        // Calculate the total number of pages
         int totalPages = (int)Math.Ceiling(filteredItemsCount / (double)pageSize);
 
         if (page == 0)
@@ -145,10 +137,8 @@ public class ItemController : ControllerBase
         }
         page = Math.Max(1, Math.Min(page, totalPages));
 
-        // Fetch the items for the requested page
         var pagedItems = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-        // Return the paginated and filtered result
         var result = new PaginationCS<ItemCS>()
         {
             Page = page,
@@ -161,7 +151,6 @@ public class ItemController : ControllerBase
     }
     
 
-    //GET: generate a report of a specific item by its uid it wil recieve a list of u and do it for all of the give items. it contains short_description unit_purchase_quantity unit_order_quantity created_at updated_at. it should save the report in a file.
     [HttpGet("report")]
     public ActionResult GenerateReport([FromBody] List<string> uids)
     {
@@ -186,7 +175,6 @@ public class ItemController : ControllerBase
 
 
     // GET: items/5
-    // Retrieves an item by its unique identifier (uid)
     [HttpGet("{uid}")]
     public ActionResult<ItemCS> GetByUid(string uid)
     {
@@ -297,7 +285,7 @@ public class ItemController : ControllerBase
         var updatedItemResult = _itemService.UpdateItem(uid, updatedItem);
         return Ok(updatedItemResult);
     }
-    // change the value of one property in an item object
+
     [HttpPatch("{uid}")]
     public ActionResult<ItemCS> PatchItem([FromRoute] string uid, [FromQuery] string property, [FromBody] object newvalue)
     {
@@ -315,6 +303,7 @@ public class ItemController : ControllerBase
         var result = _itemService.PatchItem(uid, property, newvalue);
         return Ok(result);
     }
+    
     [HttpDelete("{uid}")]
     public ActionResult DeleteItem(string uid)
     {
@@ -337,7 +326,6 @@ public class ItemController : ControllerBase
     }
 
     // Delete: item/multiple/{id}
-    // Deletes multiple items by their ids it can be used to delete multiple items at once so a list input is expected
     [HttpDelete("multiple")]
     public ActionResult DeleteMultipleItems([FromBody] List<string> uids)
     {

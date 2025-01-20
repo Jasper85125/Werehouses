@@ -97,7 +97,6 @@ public class InventoryController : ControllerBase
         page = Math.Max(1, Math.Min(page, totalPages));
         var pagedInventories = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-        // Return paginated and filtered result
         var result = new PaginationCS<InventoryCS>()
         {
             Page = page,
@@ -132,7 +131,6 @@ public class InventoryController : ControllerBase
     }
 
     // GET: /inventories/total/{item_id}
-    // (GET) The system must allow users to fetch inventory totals for a specific item. the total is the total_on_hand + total_allocated it must return either a 200 or 404 status code and the sum of the total_on_hand and total_allocated for the item.
     [HttpGet("total/{item_id}")]
     public ActionResult<int> GetInventoryByItemId([FromRoute] string item_id)
     {
@@ -146,7 +144,6 @@ public class InventoryController : ControllerBase
             return Unauthorized();
         }
 
-        // (GET) The system must allow users to fetch inventory totals for a specific item. the total is the total_on_hand + total_allocated it must return either a 200 or 404 status code and the sum of the total_on_hand and total_allocated for the item.
         var inventory = _inventoryService.GetInventoriesForItem(item_id);
         if (inventory is null)
         {
@@ -202,14 +199,6 @@ public class InventoryController : ControllerBase
     [HttpPut("{id}")]
     public ActionResult<InventoryCS> UpdateInventoryById(int id, [FromBody] InventoryCS value)
     {
-        // Replace with your logic
-        //make use of your update inventory by id service
-        //include a check if value is null
-        // if(value is null || value.created_at == default || value.updated_at == default 
-        // || string.IsNullOrWhiteSpace(value.description) || value.item_id is null || value.item_reference is null 
-        // || value.Locations is null){
-        //     return BadRequest("request is invalid/contains invalid values");
-        // }
         List<string> listOfAllowedRoles = new List<string>() { "Admin", "Warehouse Manager", "Inventory Manager", "Logistics" };
         var userRole = HttpContext.Items["UserRole"]?.ToString();
 
