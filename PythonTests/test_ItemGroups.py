@@ -25,7 +25,6 @@ class TestItemGroups(unittest.TestCase):
 
         for version in self.versions:
             with self.subTest(version=version):
-                # Send the request
                 response = self.client.post(
                     url=(version + "/itemgroups"),
                     headers=self.headers,
@@ -38,7 +37,6 @@ class TestItemGroups(unittest.TestCase):
     def test_02_get_item_group_id(self):
         for version in self.versions:
             with self.subTest(version=version):
-                # Send the request
                 response = self.client.get(
                     url=(version + "/itemgroups/1"), headers=self.headers
                 )
@@ -46,7 +44,6 @@ class TestItemGroups(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
 
                 # Check that the response is a dictionary
-                # (representative of a single item group object)
                 self.assertEqual(type(response.json()), dict)
 
                 # Check that the item group object has the correct properties
@@ -65,7 +62,6 @@ class TestItemGroups(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
 
                 # Check that the response is a list
-                # (representative of a list of item groups)
                 self.assertEqual(type(response.json()), list)
 
                 # If the list contains something, check the
