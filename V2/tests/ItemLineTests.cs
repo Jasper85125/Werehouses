@@ -50,6 +50,20 @@ public class ItemLineTests
         // Assert
         Assert.IsNotNull(okResult);
         Assert.AreEqual(2, returnedItems.Count());
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var result = _itemLineController.GetAllItemLines();
+
+        //assert
+        var unauthorizedResult = result.Result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
     [TestMethod]
@@ -77,6 +91,20 @@ public class ItemLineTests
         Assert.IsNotNull(okResult);
         Assert.IsNotNull(okResult.Value);
         Assert.AreEqual(itemLine.Description, returnedItem.Description);
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var secondResult = _itemLineController.GetItemLineById(1);
+
+        //assert
+        var unauthorizedResult = secondResult.Result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
     [TestMethod]
@@ -99,6 +127,20 @@ public class ItemLineTests
 
         // Assert
         Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var result = _itemLineController.GetItemLineById(1);
+
+        //assert
+        var unauthorizedResult = result.Result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
     [TestMethod]
@@ -125,6 +167,20 @@ public class ItemLineTests
         // Assert
         Assert.IsNotNull(createdResult);
         Assert.AreEqual(newItemLine.Description, returnedItem.Description);
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var result = _itemLineController.AddItemLine(newItemLine);
+
+        //assert
+        var unauthorizedResult = result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
     [TestMethod]
@@ -145,6 +201,20 @@ public class ItemLineTests
 
         // Assert
         Assert.IsInstanceOfType(createdResult, typeof(BadRequestObjectResult));
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var result = _itemLineController.AddItemLine(null);
+
+        //assert
+        var unauthorizedResult = result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
     [TestMethod]
@@ -178,6 +248,20 @@ public class ItemLineTests
         Assert.IsNotNull(returnedItems);
         Assert.AreEqual(itemLines[0].Name, firstItemLine.Name);
         Assert.AreEqual(itemLines[0].Description, firstItemLine.Description);
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        result = _itemLineController.CreateMultipleItemLines(itemLines);
+
+        //assert
+        var unauthorizedResult = result.Result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
     [TestMethod]
@@ -206,6 +290,20 @@ public class ItemLineTests
         // Assert
         Assert.IsNotNull(okResult);
         Assert.AreEqual(updatedItemLine.Description, returnedItem.Description);
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var result = _itemLineController.UpdateItemLine(1, updatedItemLine);
+
+        //assert
+        var unauthorizedResult = result.Result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
     [TestMethod]
@@ -274,6 +372,20 @@ public class ItemLineTests
 
         // Assert
         Assert.IsInstanceOfType(value, typeof(OkResult));
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var result = _itemLineController.DeleteItemLine(1);
+
+        //assert
+        var unauthorizedResult = result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
 
@@ -311,6 +423,20 @@ public class ItemLineTests
         var returnedItems = okResult.Value as IEnumerable<ItemCS>;
         Assert.IsNotNull(returnedItems, "Expected returnedItems to be non-null.");
         Assert.AreEqual(2, returnedItems.Count(), "Expected returnedItems to contain 2 items.");
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        result = _itemLineController.GetItemsByItemLineId(1);
+
+        //assert
+        var unauthorizedResult = result.Result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
 
@@ -357,6 +483,20 @@ public class ItemLineTests
         //Assert
         Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         Assert.AreEqual(resultok.StatusCode, 200);
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var secondResult = _itemLineController.DeleteItemLine(1);
+
+        //assert
+        var unauthorizedResult = secondResult as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
     [TestMethod]
@@ -388,6 +528,20 @@ public class ItemLineTests
         Assert.IsNotNull(okResult);
         Assert.IsInstanceOfType(okResult.Value, typeof(ItemLineCS));
         Assert.AreEqual(patchItemLine.Description, returnedItemLine.Description);
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var secondResult = _itemLineController.PatchItemLine(1, "Description", "Updated Description");
+
+        //assert
+        var unauthorizedResult = secondResult.Result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 
     [TestMethod]
@@ -412,5 +566,19 @@ public class ItemLineTests
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+
+        httpContext.Items["UserRole"] = "NoRole";
+        _itemLineController.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        //act
+        var secondResult = _itemLineController.PatchItemLine(1, "Description", "Updated Description");
+
+        //assert
+        var unauthorizedResult = secondResult.Result as UnauthorizedResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
 }
