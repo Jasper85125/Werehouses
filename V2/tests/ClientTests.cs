@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServicesV2;
 using ControllersV2;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace clients.TestsV2
 {
@@ -19,6 +20,36 @@ namespace clients.TestsV2
         {
             _mockClientService = new Mock<IClientService>();
             _clientController = new ClientController(_mockClientService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/clients.json");
+            var client = new ClientCS
+            {
+                Id = 1,
+                Name = "Raymond Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+
+            var clientList = new List<ClientCS> { client };
+            var json = JsonConvert.SerializeObject(clientList, Formatting.Indented);
+
+            // Create directory if it does not exist
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Write the JSON data to the file
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -393,6 +424,219 @@ namespace clients.TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void GetAllClientsService_Test()
+        {
+            var clientService = new ClientService();
+            var clients = clientService.GetAllClients();
+            Assert.IsNotNull(clients);
+            Assert.AreEqual(1, clients.Count);
+        }
+
+        [TestMethod]
+        public void GetClientByIdService_Test()
+        {
+            var clientService = new ClientService();
+            var clients = clientService.GetClientById(1);
+            Assert.IsNotNull(clients);
+            Assert.AreEqual("Raymond Inc", clients.Name);
+        }
+
+        [TestMethod]
+        public void CreateClientService_Test()
+        {
+            var client = new ClientCS
+            {
+                Id = 2,
+                Name = "Daniel Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var clientService = new ClientService();
+            var clients = clientService.CreateClient(client);
+            Assert.IsNotNull(clients);
+            Assert.AreEqual("Daniel Inc", clients.Name);
+
+            var clientsUpdated = clientService.GetAllClients();
+            Assert.AreEqual(2, clientsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateMultipleClientService_Test()
+        {
+            var client = new List<ClientCS> { new ClientCS
+            {
+                Id = 2,
+                Name = "Daniel Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }, new ClientCS
+            {
+                Id = 3,
+                Name = "Dave Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }};
+            var clientService = new ClientService();
+            var clients = clientService.CreateMultipleClients(client);
+            Assert.IsNotNull(clients);
+            var clientsUpdated = clientService.GetAllClients();
+            Assert.AreEqual(3, clientsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void UpdateClientService_Test()
+        {
+            var client = new ClientCS
+            {
+                Id = 1,
+                Name = "Homer Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var clientService = new ClientService();
+            var clients = clientService.UpdateClient(1, client);
+            Assert.IsNotNull(clients);
+            Assert.AreEqual("Homer Inc", clients.Name);
+        }
+
+        [TestMethod]
+        public void UpdateClientService_Test_Failed()
+        {
+            var client = new ClientCS
+            {
+                Id = 3,
+                Name = "Homer Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var clientService = new ClientService();
+            var clients = clientService.UpdateClient(3, client);
+            Assert.IsNull(clients);
+        }
+
+        [TestMethod]
+        public void DeleteClientService_Test()
+        {
+            var clientService = new ClientService();
+            clientService.DeleteClient(1);
+            var clientsUpdated = clientService.GetAllClients();
+            Assert.AreEqual(0, clientsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void DeleteClientService_Test_Failed()
+        {
+            var clientService = new ClientService();
+            clientService.DeleteClient(3);
+            var clientsUpdated = clientService.GetAllClients();
+            Assert.AreEqual(1, clientsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void DeleteMultipleClientsService_Test()
+        {
+            var client = new ClientCS
+            {
+                Id = 2,
+                Name = "Daniel Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var clientService = new ClientService();
+            var clients = clientService.CreateClient(client);
+            Assert.IsNotNull(clients);
+            Assert.AreEqual("Daniel Inc", clients.Name);
+
+            var clientsUpdated = clientService.GetAllClients();
+            Assert.AreEqual(2, clientsUpdated.Count);
+            List<int> clientsToDelete = new List<int> { 1, 2 };
+            clientService.DeleteClients(clientsToDelete);
+            var clientsAfterDelete = clientService.GetAllClients();
+            Assert.AreEqual(0, clientsAfterDelete.Count);
+        }
+
+        [TestMethod]
+        public void PatchClientService_Test()
+        {
+            var clientService = new ClientService();
+            var clients = clientService.PatchClient(1, "name", "new name");
+            clients = clientService.PatchClient(1, "address", "new address");
+            clients = clientService.PatchClient(1, "city", "new city");
+            clients = clientService.PatchClient(1, "zip_code", "new zip_code");
+            clients = clientService.PatchClient(1, "province", "new Province");
+            clients = clientService.PatchClient(1, "country", "new Country");
+            clients = clientService.PatchClient(1, "contact_name", "new contact_name");
+            clients = clientService.PatchClient(1, "contact_phone", "new contact_phone");
+            clients = clientService.PatchClient(1, "contact_email", "new contact_email");
+            Assert.IsNotNull(clients);
+            Assert.AreEqual("new name", clients.Name);
+            Assert.AreEqual("new address", clients.Address);
+            Assert.AreEqual("new city", clients.City);
+            Assert.AreEqual("new zip_code", clients.zip_code);
+            Assert.AreEqual("new Province", clients.Province);
+            Assert.AreEqual("new Country", clients.Country);
+            Assert.AreEqual("new contact_name", clients.contact_name);
+            Assert.AreEqual("new contact_phone", clients.contact_phone);
+            Assert.AreEqual("new contact_email", clients.contact_email);
+        }
+
+        [TestMethod]
+        public void PatchClientService_Test_Failed()
+        {
+            var clientService = new ClientService();
+            var clients = clientService.PatchClient(3, "name", "new name");
+            Assert.IsNull(clients);
         }
     }
 }
