@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServicesV2;
 using ControllersV2;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace clients.TestsV2
 {
@@ -19,6 +20,36 @@ namespace clients.TestsV2
         {
             _mockClientService = new Mock<IClientService>();
             _clientController = new ClientController(_mockClientService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/clients.json");
+            var client = new ClientCS
+            {
+                Id = 1,
+                Name = "Raymond Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+
+            var clientList = new List<ClientCS> { client };
+            var json = JsonConvert.SerializeObject(clientList, Formatting.Indented);
+
+            // Create directory if it does not exist
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Write the JSON data to the file
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -393,6 +424,15 @@ namespace clients.TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void GetAllClientsService_Test()
+        {
+            var clientService = new ClientService();
+            var clients = clientService.GetAllClients();
+            Assert.IsNotNull(clients);
+            Assert.AreEqual(1, clients.Count);
         }
     }
 }
