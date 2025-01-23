@@ -1,7 +1,7 @@
 name: CI and Release
 
 on:
-  push_request:
+  push:
     branches:
       - '**'
   pull_request:
