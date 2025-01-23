@@ -4,6 +4,7 @@ using Moq.Protected;
 using Microsoft.AspNetCore.Mvc;
 using ServicesV1;
 using ControllersV1;
+using Microsoft.Extensions.Logging;
 
 namespace TestsV1
 {
@@ -18,6 +19,22 @@ namespace TestsV1
         {
             _clientservice = new Mock<IClientService>();
             _clientcontroller = new ClientController(_clientservice.Object);
+        }
+
+        [TestMethod]
+        public void ClientService_GetAllClients_Succes(){
+            //Arrange
+            var clients = new List<ClientCS>(){
+                new ClientCS(),
+                new ClientCS(),
+                new ClientCS(),
+            };
+            //Act
+            var test = _clientservice.Setup(_ => _.GetAllClients()).Returns(clients);
+            var result = _clientservice.Object.GetAllClients();
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Count);
         }
 
         [TestMethod]
