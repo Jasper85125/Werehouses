@@ -5,6 +5,7 @@ using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace itemtype.TestsV2
 {
@@ -27,6 +28,20 @@ namespace itemtype.TestsV2
                 new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" },
                 new ItemTypeCS { Id = 2, Name = "Type2", description = "Description2" }
             };
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/item_types.json");
+            var itemType = new ItemTypeCS { Id = 1, Name = "Group 1", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+
+            var itemTypeList = new List<ItemTypeCS> { itemType };
+            var json = JsonConvert.SerializeObject(itemTypeList, Formatting.Indented);
+
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]

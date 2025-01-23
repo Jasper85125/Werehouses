@@ -4,6 +4,7 @@ using ControllersV2;
 using ServicesV2;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace item.TestsV2
 {
@@ -26,6 +27,22 @@ namespace item.TestsV2
             _mockLocationService = new Mock<ILocationService>();
             _itemController = new ItemController(_mockItemService.Object, _mockInventoryService.Object, _mockLocationService.Object);
             _itemTypeController = new ItemTypeController(_mockItemTypeService.Object, _mockItemService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/items.json");
+            var item = new ItemCS { uid = "P01", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+
+            var itemList = new List<ItemCS> { item };
+            var json = JsonConvert.SerializeObject(itemList, Formatting.Indented);
+
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -501,6 +518,188 @@ namespace item.TestsV2
             var unauthorizedResult = result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+        
+        [TestMethod]
+        public void GetAllItemsService_Test()
+        {
+            var itemService = new ItemService();
+            var items = itemService.GetAllItems();
+            Assert.IsNotNull(items);
+            Assert.AreEqual(1, items.Count);
+        }
+
+        [TestMethod]
+        public void GetItemByIdService_Test()
+        {
+            var itemService = new ItemService();
+            var items = itemService.GetItemById("P01");
+            Assert.IsNotNull(items);
+            Assert.AreEqual("CRD57317J", items.code);
+        }
+
+        [TestMethod]
+        public void GetItemsInItemType_Test()
+        {
+            var itemService = new ItemService();
+            var items = itemService.GetAllItemsInItemType(1);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(1, items.Count());
+        }
+
+        [TestMethod]
+        public void GenerateReportService_Test()
+        {
+            var itemService = new ItemService();
+            itemService.GenerateReport(new List<string> { "P01", "P02" });
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "reports/report.txt");
+            Assert.IsTrue(File.Exists(filePath));
+        }
+
+        [TestMethod]
+        public void CreateItemService_Test()
+        {
+            var itemService = new ItemService();
+            var item = new ItemCS { uid = "P02", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var createdItem = itemService.CreateItem(item);
+            Assert.IsNotNull(createdItem);
+            Assert.AreEqual("CRD57317J", createdItem.code);
+
+            var items = itemService.GetAllItems();
+            Assert.AreEqual(2, items.Count);
+        }
+
+        [TestMethod]
+        public void CreateItemService_Test_Empty()
+        {
+            var itemService = new ItemService();
+            itemService.DeleteItem("P01");
+            var itemEmpty = itemService.GetAllItems();
+            Assert.AreEqual(0, itemEmpty.Count());
+
+            var item = new ItemCS { uid = "P02", code = "Cool", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var createdItem = itemService.CreateItem(item);
+            Assert.IsNotNull(createdItem);
+            Assert.AreEqual("Cool", createdItem.code);
+
+            var items = itemService.GetAllItems();
+            Assert.AreEqual(1, items.Count);
+        }
+
+        [TestMethod]
+        public void CreateMultipleItemGroupsService_Test()
+        {
+            var itemService = new ItemService();
+            var items = new List<ItemCS>
+            {
+                new ItemCS { uid = "P02", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now},
+                new ItemCS { uid = "P03", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now}
+            };
+            var createdItems = itemService.CreateMultipleItems(items);
+            Assert.IsNotNull(createdItems);
+
+            var allItems = itemService.GetAllItems();
+            Assert.AreEqual(3, allItems.Count);
+        }
+
+        [TestMethod]
+        public void UpdateItemService_Test()
+        {
+            var itemService = new ItemService();
+            var item = new ItemCS { uid = "P02", code = "New Code", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var updatedItem = itemService.UpdateItem("P01", item);
+            Assert.IsNotNull(updatedItem);
+            Assert.AreEqual("New Code", updatedItem.code);
+        }
+
+        [TestMethod]
+        public void UpdateItemService_Test_Failed()
+        {
+            var itemService = new ItemService();
+            var item = new ItemCS { uid = "P02", code = "New Code", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var updatedItem = itemService.UpdateItem("P1", item);
+            Assert.IsNull(updatedItem);
+        }
+
+        [TestMethod]
+        public void DeleteItemGroupService_Test()
+        {
+            var itemService = new ItemService();
+            itemService.DeleteItem("P01");
+            var itemEmpty = itemService.GetAllItems();
+            Assert.AreEqual(0, itemEmpty.Count());
+        }
+
+        [TestMethod]
+        public void DeleteItemGroupService_Test_Failed()
+        {
+            var itemService = new ItemService();
+            itemService.DeleteItem("P001");
+            var itemEmpty = itemService.GetAllItems();
+            Assert.AreEqual(1, itemEmpty.Count());
+        }
+        
+        [TestMethod]
+        public void DeleteMultipleItemGroupService_Test()
+        {
+            var itemService = new ItemService();
+            var item = new ItemCS { uid = "P02", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var createdItem = itemService.CreateItem(item);
+            var itemsToDelete = new List<string> { "P01", "P000002" };
+            itemService.DeleteItems(itemsToDelete);
+            var itemEmpty = itemService.GetAllItems();
+            Assert.AreEqual(0, itemEmpty.Count());
+        }
+
+        [TestMethod]
+        public void PatchItemService_Test()
+        {
+            var itemService = new ItemService();
+            var patchedItem = itemService.PatchItem("P01", "code", "new code");
+            patchedItem = itemService.PatchItem("P01", "description", "new description");
+            patchedItem = itemService.PatchItem("P01", "short_description", "new short description");
+            patchedItem = itemService.PatchItem("P01", "upc_code", "new upc code");
+            patchedItem = itemService.PatchItem("P01", "model_number", "new model number");
+            patchedItem = itemService.PatchItem("P01", "commodity_code", "new commodity code");
+            patchedItem = itemService.PatchItem("P01", "item_line", 2);
+            patchedItem = itemService.PatchItem("P01", "item_group", 2);
+            patchedItem = itemService.PatchItem("P01", "item_type", 2);
+            patchedItem = itemService.PatchItem("P01", "unit_purchase_quantity", 4);
+            patchedItem = itemService.PatchItem("P01", "unit_order_quantity", 3);
+            patchedItem = itemService.PatchItem("P01", "pack_order_quantity", 2);
+            patchedItem = itemService.PatchItem("P01", "supplier_id", 2);
+            patchedItem = itemService.PatchItem("P01", "supplier_code", "new supplier code");
+            patchedItem = itemService.PatchItem("P01", "supplier_part_number", "new supplier part number");
+            Assert.IsNotNull(patchedItem);
+            Assert.AreEqual("new code", patchedItem.code);
+            Assert.AreEqual("new description", patchedItem.description);
+            Assert.AreEqual("new short description", patchedItem.short_description);
+            Assert.AreEqual("new upc code", patchedItem.upc_code);
+            Assert.AreEqual("new model number", patchedItem.model_number);
+            Assert.AreEqual("new commodity code", patchedItem.commodity_code);
+            Assert.AreEqual(2, patchedItem.item_line);
+            Assert.AreEqual(2, patchedItem.item_group);
+            Assert.AreEqual(2, patchedItem.item_type);
+            Assert.AreEqual(4, patchedItem.unit_purchase_quantity);
+            Assert.AreEqual(3, patchedItem.unit_order_quantity);
+            Assert.AreEqual(2, patchedItem.pack_order_quantity);
+            Assert.AreEqual(2, patchedItem.supplier_id);
+            Assert.AreEqual("new supplier code", patchedItem.supplier_code);
+            Assert.AreEqual("new supplier part number", patchedItem.supplier_part_number);
         }
     }
 }

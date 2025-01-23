@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace itemgroup.TestsV2
 {
@@ -20,6 +21,20 @@ namespace itemgroup.TestsV2
         {
             _mockItemGroupService = new Mock<IitemGroupService>();
             _itemGroupController = new ItemGroupController(_mockItemGroupService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/item_groups.json");
+            var itemGroup = new ItemGroupCS { Id = 1, Name = "Group 1", Description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+
+            var itemGroupList = new List<ItemGroupCS> { itemGroup };
+            var json = JsonConvert.SerializeObject(itemGroupList, Formatting.Indented);
+
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -494,6 +509,156 @@ namespace itemgroup.TestsV2
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void GetAllItemGroupsService_Test()
+        {
+            var itemGroupService = new ItemGroupService();
+            var itemGroups = itemGroupService.GetAllItemGroups();
+            Assert.IsNotNull(itemGroups);
+            Assert.AreEqual(1, itemGroups.Count);
+        }
+
+        [TestMethod]
+        public void GetItemGroupByIdService_Test()
+        {
+            var itemGroupService = new ItemGroupService();
+            var itemGroups = itemGroupService.GetItemById(1);
+            Assert.IsNotNull(itemGroups);
+            Assert.AreEqual("Group 1", itemGroups.Name);
+        }
+
+        [TestMethod]
+        public void GetItemsInItemGroup_Test()
+        {
+            var itemGroupService = new ItemGroupService();
+            var items = itemGroupService.ItemsFromItemGroupId(2);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(1, items.Count);
+        }
+
+        [TestMethod]
+        public void GetItemsInItemGroup_Test_Failed()
+        {
+            var itemGroupService = new ItemGroupService();
+            var items = itemGroupService.ItemsFromItemGroupId(-1);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(0, items.Count);
+        }
+
+        [TestMethod]
+        public void CreateItemGroupService_Test()
+        {
+            var itemGroup = new ItemGroupCS { Id = 2, Name = "Group 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var itemGroupService = new ItemGroupService();
+            var itemGroups = itemGroupService.CreateItemGroup(itemGroup);
+            Assert.IsNotNull(itemGroups);
+            Assert.AreEqual("Group 2", itemGroups.Name);
+
+            var itemGroupsUpdated = itemGroupService.GetAllItemGroups();
+            Assert.AreEqual(2, itemGroupsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateItemGroupService_Test_Empty()
+        {
+            var itemGroupService = new ItemGroupService();
+            itemGroupService.DeleteItemGroup(1);
+            var itemGroupsUpdated = itemGroupService.GetAllItemGroups();
+            Assert.AreEqual(0, itemGroupsUpdated.Count);
+            
+            var itemGroup = new ItemGroupCS { Id = 1, Name = "Group 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var itemGroups = itemGroupService.CreateItemGroup(itemGroup);
+            Assert.IsNotNull(itemGroups);
+            Assert.AreEqual("Group 2", itemGroups.Name);
+
+            var itemGroupsUpdatedAgain = itemGroupService.GetAllItemGroups();
+            Assert.AreEqual(0, itemGroupsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateMultipleItemGroupService_Test()
+        {
+            var itemGroup = new List<ItemGroupCS> {
+                new ItemGroupCS { Id = 2, Name = "Group 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now },
+                new ItemGroupCS { Id = 3, Name = "Group 3", Description = "Cool items 3", created_at = DateTime.Now, updated_at = DateTime.Now }
+            };
+            var itemGroupService = new ItemGroupService();
+            var itemGroups = itemGroupService.CreateMultipleItemGroups(itemGroup);
+            Assert.IsNotNull(itemGroups);
+
+            var itemGroupsUpdated = itemGroupService.GetAllItemGroups();
+            Assert.AreEqual(3, itemGroupsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void UpdateItemGroupService_Test()
+        {
+            var itemGroup = new ItemGroupCS { Id = 1, Name = "Group 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now }; 
+            var itemGroupService = new ItemGroupService();
+            var itemGroups = itemGroupService.UpdateItemGroup(1, itemGroup);
+            Assert.IsNotNull(itemGroups);
+            Assert.AreEqual("Group 2", itemGroups.Name);
+        }
+
+        [TestMethod]
+        public void UpdateItemGroupService_Test_Failed()
+        {
+            var itemGroup = new ItemGroupCS { Id = 2, Name = "Group 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now }; 
+            var itemGroupService = new ItemGroupService();
+            var itemGroups = itemGroupService.UpdateItemGroup(3, itemGroup);
+            Assert.IsNull(itemGroups);
+        }
+
+        [TestMethod]
+        public void DeleteItemGroupService_Test()
+        {
+            var itemGroupService = new ItemGroupService();
+            itemGroupService.DeleteItemGroup(1);
+            var itemGroupsUpdated = itemGroupService.GetAllItemGroups();
+            Assert.AreEqual(0, itemGroupsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void DeleteItemGroupService_Test_Failed()
+        {
+            var itemGroupService = new ItemGroupService();
+            itemGroupService.DeleteItemGroup(4);
+            var itemGroupsUpdated = itemGroupService.GetAllItemGroups();
+            Assert.AreEqual(1, itemGroupsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void DeleteMultipleItemGroupService_Test()
+        {
+            var itemGroup = new ItemGroupCS { Id = 2, Name = "Group 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var itemGroupService = new ItemGroupService();
+            var itemGroups = itemGroupService.CreateItemGroup(itemGroup);
+            Assert.IsNotNull(itemGroups);
+            Assert.AreEqual("Group 2", itemGroups.Name);
+
+            var itemGroupsUpdated = itemGroupService.GetAllItemGroups();
+            Assert.AreEqual(2, itemGroupsUpdated.Count);
+            List<int> itemGroupsToDelete = new List<int> { 1, 2 };
+            itemGroupService.DeleteItemGroups(itemGroupsToDelete);
+            var itemGroupsUpdatedAgain = itemGroupService.GetAllItemGroups();
+            Assert.AreEqual(0, itemGroupsUpdatedAgain.Count);
+        }
+
+        [TestMethod]
+        public void PatchItemGroupService_Test()
+        {
+            var itemGroupService = new ItemGroupService();
+            var itemGroups = itemGroupService.PatchItemGroup(1, "Name", "Updated Group");
+            itemGroups = itemGroupService.PatchItemGroup(1, "Description", "Updated Description");
+            var itemGroupGoneWrong = itemGroupService.PatchItemGroup(2, "Name", "Updated Group");
+            var itemGroupGoneWrongAgain = itemGroupService.PatchItemGroup(1, "Items", "Updated Items");
+            Assert.IsNotNull(itemGroups);
+            Assert.AreEqual("Updated Group", itemGroups.Name);
+            Assert.AreEqual("Updated Description", itemGroups.Description);
+            Assert.IsNull(itemGroupGoneWrong);
+            Assert.IsNull(itemGroupGoneWrongAgain);
         }
     }
 }
