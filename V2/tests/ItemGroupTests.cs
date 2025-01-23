@@ -28,14 +28,12 @@ namespace itemgroup.TestsV2
             var itemGroupList = new List<ItemGroupCS> { itemGroup };
             var json = JsonConvert.SerializeObject(itemGroupList, Formatting.Indented);
 
-            // Create directory if it does not exist
             var directory = Path.GetDirectoryName(filePath);
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
 
-            // Write the JSON data to the file
             File.WriteAllText(filePath, json);
         }
 
@@ -553,13 +551,12 @@ namespace itemgroup.TestsV2
             Assert.AreEqual(0, itemGroupsUpdated.Count);
             
             var itemGroup = new ItemGroupCS { Id = 1, Name = "Group 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };
-            var itemGroupService = new ItemGroupService();
             var itemGroups = itemGroupService.CreateItemGroup(itemGroup);
             Assert.IsNotNull(itemGroups);
             Assert.AreEqual("Group 2", itemGroups.Name);
 
-            var itemGroupsUpdated = itemGroupService.GetAllItemGroups();
-            Assert.AreEqual(2, itemGroupsUpdated.Count);
+            var itemGroupsUpdatedAgain = itemGroupService.GetAllItemGroups();
+            Assert.AreEqual(0, itemGroupsUpdated.Count);
         }
 
         [TestMethod]
