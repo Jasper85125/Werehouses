@@ -530,6 +530,24 @@ namespace itemgroup.TestsV2
         }
 
         [TestMethod]
+        public void GetItemsInItemGroup_Test()
+        {
+            var itemGroupService = new ItemGroupService();
+            var items = itemGroupService.ItemsFromItemGroupId(2);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(1, items.Count);
+        }
+
+        [TestMethod]
+        public void GetItemsInItemGroup_Test_Failed()
+        {
+            var itemGroupService = new ItemGroupService();
+            var items = itemGroupService.ItemsFromItemGroupId(-1);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(0, items.Count);
+        }
+
+        [TestMethod]
         public void CreateItemGroupService_Test()
         {
             var itemGroup = new ItemGroupCS { Id = 2, Name = "Group 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };

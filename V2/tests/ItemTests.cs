@@ -31,7 +31,7 @@ namespace item.TestsV2
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/items.json");
             var item = new ItemCS { uid = "P01", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
                                        short_description = "particularly", upc_code = "9538419150098", item_line = 33,
-                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+                                       item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
 
             var itemList = new List<ItemCS> { item };
             var json = JsonConvert.SerializeObject(itemList, Formatting.Indented);
@@ -578,7 +578,7 @@ namespace item.TestsV2
             itemService.DeleteItem("P01");
             var itemEmpty = itemService.GetAllItems();
             Assert.AreEqual(0, itemEmpty.Count());
-            
+
             var item = new ItemCS { uid = "P02", code = "Cool", description = "Organic asymmetric data-warehouse",
                                        short_description = "particularly", upc_code = "9538419150098", item_line = 33,
                                        item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
@@ -681,7 +681,7 @@ namespace item.TestsV2
             patchedItem = itemService.PatchItem("P01", "unit_purchase_quantity", 4);
             patchedItem = itemService.PatchItem("P01", "unit_order_quantity", 3);
             patchedItem = itemService.PatchItem("P01", "pack_order_quantity", 2);
-            patchedItem = itemService.PatchItem("P01", "supplier_id", 1);
+            patchedItem = itemService.PatchItem("P01", "supplier_id", 2);
             patchedItem = itemService.PatchItem("P01", "supplier_code", "new supplier code");
             patchedItem = itemService.PatchItem("P01", "supplier_part_number", "new supplier part number");
             Assert.IsNotNull(patchedItem);
@@ -697,7 +697,7 @@ namespace item.TestsV2
             Assert.AreEqual(4, patchedItem.unit_purchase_quantity);
             Assert.AreEqual(3, patchedItem.unit_order_quantity);
             Assert.AreEqual(2, patchedItem.pack_order_quantity);
-            Assert.AreEqual(1, patchedItem.supplier_id);
+            Assert.AreEqual(2, patchedItem.supplier_id);
             Assert.AreEqual("new supplier code", patchedItem.supplier_code);
             Assert.AreEqual("new supplier part number", patchedItem.supplier_part_number);
         }
