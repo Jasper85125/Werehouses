@@ -684,7 +684,9 @@ namespace item.TestsV2
             patchedItem = itemService.PatchItem("P01", "supplier_id", 2);
             patchedItem = itemService.PatchItem("P01", "supplier_code", "new supplier code");
             patchedItem = itemService.PatchItem("P01", "supplier_part_number", "new supplier part number");
+            var patchedItemGoneWrong = itemService.PatchItem("-1", "supplier_part_number", "new supplier part number");
             Assert.IsNotNull(patchedItem);
+            Assert.IsNull(patchedItemGoneWrong);
             Assert.AreEqual("new code", patchedItem.code);
             Assert.AreEqual("new description", patchedItem.description);
             Assert.AreEqual("new short description", patchedItem.short_description);
