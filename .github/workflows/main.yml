@@ -106,7 +106,8 @@ jobs:
           if [[ "$base_filename" == "Microsoft.NET.Test.Sdk.Program.cs" ]] || \
               [[ "$base_filename" == "Program.cs" ]] || \
               [[ "$base_filename" == "BaseCS.cs" ]] || \
-              [[ "$base_filename" == "ApiKey.cs" ]]; then
+              [[ "$base_filename" == "ApiKey.cs" ]] || \
+              [[ "$base_filename" == "ApiKeyMiddleware.cs" ]]; then
             continue
           fi
 
