@@ -753,6 +753,7 @@ namespace TestsV2
             var transferService = new TransferService();
             var result = transferService.CommitTransfer(1);
             Assert.IsNotNull(result);
+            Assert.AreEqual("Processed", result.transfer_status);
         }
 
         [TestMethod]

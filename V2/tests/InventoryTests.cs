@@ -31,7 +31,7 @@ namespace inventory.TestsV2
                 item_id = "P01",
                 description = "Cool items",
                 item_reference = "REF-123",
-                Locations = new List<int> { 1, 202, 303 },
+                Locations = new List<int> { 1 },
                 total_on_hand = 50,
                 total_expected = 20,
                 total_ordered = 15,
