@@ -99,21 +99,20 @@ jobs:
         while read -r line; do
           filename=$(echo "$line" | grep -oP 'filename="[^"]+"' | cut -d'"' -f2)
           line_rate=$(echo "$line" | grep -oP 'line-rate="[^"]+"' | cut -d'"' -f2)
+          
+          # Skip specific files
+          if [[ "$filename" == "/home/runner/.nuget/packages/microsoft.net.test.sdk/17.11.1/build/netcoreapp3.1/Microsoft.NET.Test.Sdk.Program.cs" ]] || \
+              [[ "$filename" == "/home/runner/work/Werehouses/Werehouses/V2/Cargohub/Program.cs" ]] || \
+              [[ "$filename" == "/home/runner/work/Werehouses/Werehouses/V2/Cargohub/models/BaseCS.cs" ]]; then
+            continue
+          fi
+
           percentage=$(echo "scale=2; $line_rate * 100" | bc)
           echo "- **$filename**: $percentage%" >> $GITHUB_STEP_SUMMARY
 
           # Aggregate total coverage
           total_coverage=$(echo "$total_coverage + $line_rate" | bc)
           count=$((count + 1))
-        done <<< "$coverage_details"
-
-        # Calculate and display total coverage
-        if [[ $count -gt 0 ]]; then
-          total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
-          echo "### Total Percentage Covered: $total_percentage%" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "### No coverage data found." >> $GITHUB_STEP_SUMMARY
-        fi
 
 
   python-tests:
