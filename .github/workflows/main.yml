@@ -83,29 +83,12 @@ jobs:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
 
-    - name: Coverage Report Summary
-      run: |
-        ls -l coverage-report-${{ matrix.version }}
-        # Extract all 'line-rate' values
-        percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
-
-        # Add all the line-rate values to compute the total
-        total_coverage=0
-        count=0
-        while read -r line; do
-          total_coverage=$(echo "$total_coverage + $line" | bc)
-          count=$((count + 1))
-        done <<< "$percentages"
-
-        # Calculate the average (total percentage coverage)
-        if [[ $count -gt 0 ]]; then
-          total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
-          echo "Total Percentage Covered: $total_percentage%"
-          echo "Total Percentage Covered: $total_percentage%" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "No coverage data found."
-          echo "No coverage data found." >> $GITHUB_STEP_SUMMARY
-        fi
+    - name: Code Coverage Summary
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: 'TestResults/coverage-results/coverage.cobertura.xml'
+        badge: true
+        fail_below_min: true
 
   python-tests:
     runs-on: ubuntu-latest
