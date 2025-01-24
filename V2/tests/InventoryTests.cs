@@ -6,6 +6,7 @@ using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace inventory.TestsV2
 {
@@ -22,6 +23,34 @@ namespace inventory.TestsV2
             _mockInventoryService = new Mock<IInventoryService>();
             _mockLocationService = new Mock<ILocationService>();
             _inventoryController = new InventoryController(_mockInventoryService.Object, _mockLocationService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/inventories.json");
+            var inventory = new InventoryCS
+            {
+                Id = 1,
+                item_id = "P01",
+                description = "Cool items",
+                item_reference = "REF-123",
+                Locations = new List<int> { 1 },
+                total_on_hand = 50,
+                total_expected = 20,
+                total_ordered = 15,
+                total_allocated = 10,
+                total_available = 45,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+
+            var inventoryList = new List<InventoryCS> { inventory };
+            var json = JsonConvert.SerializeObject(inventoryList, Formatting.Indented);
+
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
