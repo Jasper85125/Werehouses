@@ -20,14 +20,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Cache .Net depedencies
-      if: matrix.language == 'csharp'
-      uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
+    # - name: Cache .Net depedencies
+    #   if: matrix.language == 'csharp'
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: ~/.nuget/packages
+    #     key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
+    #     restore-keys: |
+    #       ${{ runner.os }}-nuget-
 
     - name: Setup .NET
       if: matrix.language == 'csharp'
@@ -85,27 +85,67 @@ jobs:
 
     - name: Coverage Report Summary
       run: |
-        ls -l coverage-report-${{ matrix.version }}
-        # Extract all 'line-rate' values
-        percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
+        echo "Generating coverage summary for each page..."
 
-        # Add all the line-rate values to compute the total
+        # Extract 'line-rate' values with their corresponding filenames
+        coverage_details=$(grep -oP '<class name="[^"]+" filename="[^"]+" line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml)
+
+        # Initialize total coverage variables
         total_coverage=0
         count=0
-        while read -r line; do
-          total_coverage=$(echo "$total_coverage + $line" | bc)
-          count=$((count + 1))
-        done <<< "$percentages"
 
-        # Calculate the average (total percentage coverage)
+        # Initialize an associative array to track processed filenames
+        declare -A processed_files
+
+        # Parse each entry and add to the summary
+        echo "### Coverage Details Per Page" >> $GITHUB_STEP_SUMMARY
+        echo "| File | Coverage |" >> $GITHUB_STEP_SUMMARY
+        echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+        while read -r line; do
+          filename=$(echo "$line" | grep -oP 'filename="[^"]+"' | cut -d'"' -f2)
+          line_rate=$(echo "$line" | grep -oP 'line-rate="[^"]+"' | cut -d'"' -f2)
+          percentage=$(printf "%.2f" $(echo "scale=2; $line_rate * 100" | bc))
+          base_filename=$(basename "$filename")
+
+          # Skip specific files
+          if [[ "$base_filename" == "Microsoft.NET.Test.Sdk.Program.cs" ]] || \
+            [[ "$base_filename" == "Program.cs" ]] || \
+            [[ "$base_filename" == "BaseCS.cs" ]] || \
+            [[ "$base_filename" == "ApiKey.cs" ]] || \
+            [[ "$base_filename" == "ApiKeyMiddleware.cs" ]]; then
+          continue
+          fi
+
+          # Skip duplicate filenames
+          if [[ -n "${processed_files[$base_filename]}" ]]; then
+          continue
+          fi
+
+          # Add checkmark or X based on coverage percentage
+          if (( $(echo "$percentage >= 80" | bc -l) )); then
+          status=":white_check_mark:"
+          else
+          status=":x:"
+          fi
+
+          echo "| **$base_filename** | $percentage% $status |" >> $GITHUB_STEP_SUMMARY
+
+          # Mark this filename as processed
+          processed_files[$base_filename]=1
+
+          # Aggregate total coverage
+          total_coverage=$(echo "$total_coverage + $line_rate" | bc)
+          count=$((count + 1))
+        done <<< "$coverage_details"
+
+        # Calculate and display total coverage
         if [[ $count -gt 0 ]]; then
           total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
-          echo "Total Percentage Covered: $total_percentage%"
-          echo "Total Percentage Covered: $total_percentage%" >> $GITHUB_STEP_SUMMARY
+          echo "### Total Percentage Covered: $total_percentage%" >> $GITHUB_STEP_SUMMARY
         else
-          echo "No coverage data found."
-          echo "No coverage data found." >> $GITHUB_STEP_SUMMARY
+          echo "### No coverage data found." >> $GITHUB_STEP_SUMMARY
         fi
+
 
   python-tests:
     runs-on: ubuntu-latest
@@ -114,13 +154,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Cache Python dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('PythonTests/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+    # - name: Cache Python dependencies
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: ~/.cache/pip
+    #     key: ${{ runner.os }}-pip-${{ hashFiles('PythonTests/requirements.txt') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-pip-
 
     - name: Setup Python
       uses: actions/setup-python@v2
