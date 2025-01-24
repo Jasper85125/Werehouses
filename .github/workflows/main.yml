@@ -111,7 +111,7 @@ jobs:
             continue
           fi
 
-          echo "- **$base_filename**: $percentage%" >> $GITHUB_STEP_SUMMARY
+          echo "- **$filename**: $percentage%" >> $GITHUB_STEP_SUMMARY
 
           # Aggregate total coverage
           total_coverage=$(echo "$total_coverage + $line_rate" | bc)
