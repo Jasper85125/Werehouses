@@ -99,7 +99,7 @@ jobs:
         while read -r line; do
           filename=$(echo "$line" | grep -oP 'filename="[^"]+"' | cut -d'"' -f2)
           line_rate=$(echo "$line" | grep -oP 'line-rate="[^"]+"' | cut -d'"' -f2)
-          percentage=$(echo "scale=2; $line_rate * 100" | bc)
+          percentage=$(printf "%.2f" $(echo "scale=2; $line_rate * 100" | bc))
           base_filename=$(basename "$filename")
 
           # Skip specific files
