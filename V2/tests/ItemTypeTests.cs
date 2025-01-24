@@ -30,7 +30,7 @@ namespace itemtype.TestsV2
             };
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/item_types.json");
-            var itemType = new ItemTypeCS { Id = 1, Name = "Group 1", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var itemType = new ItemTypeCS { Id = 1, Name = "Type 1", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
 
             var itemTypeList = new List<ItemTypeCS> { itemType };
             var json = JsonConvert.SerializeObject(itemTypeList, Formatting.Indented);
@@ -377,6 +377,145 @@ namespace itemtype.TestsV2
             var unauthorizedResult = unauth_attempt as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetAllItemTypesService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var itemTypes = itemTypeService.GetAllItemtypes();
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual(1, itemTypes.Count);
+        }
+
+        [TestMethod]
+        public void GetItemTypeByIdService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var itemTypes = itemTypeService.GetItemById(1);
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual("Type 1", itemTypes.Name);
+        }
+
+        [TestMethod]
+        public void CreateItemTypeService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var newItemType = new ItemTypeCS { Id = 2, Name = "Type 2", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var itemTypes = itemTypeService.CreateItemType(newItemType);
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual("Type 2", itemTypes.Name);
+
+            var itemTypesUpdated = itemTypeService.GetAllItemtypes();
+            Assert.IsNotNull(itemTypesUpdated);
+            Assert.AreEqual(2, itemTypesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateItemTypeService_Test_Empty()
+        {
+            var itemTypeService = new ItemTypeService();
+
+            itemTypeService.DeleteItemType(1);
+            var itemTypesGet = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(0, itemTypesGet.Count);
+
+            var newItemType = new ItemTypeCS { Id = 2, Name = "Type 2", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var itemTypes = itemTypeService.CreateItemType(newItemType);
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual("Type 2", itemTypes.Name);
+
+            var itemTypesUpdated = itemTypeService.GetAllItemtypes();
+            Assert.IsNotNull(itemTypesUpdated);
+            Assert.AreEqual(1, itemTypesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateMultipleItemTypes_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var newItemType = new List<ItemTypeCS> {new ItemTypeCS { Id = 2, Name = "Type 2", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now },
+                new ItemTypeCS { Id = 3, Name = "Type 3", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now }};
+            var itemTypes = itemTypeService.CreateMultipleItemTypes(newItemType);
+            Assert.IsNotNull(itemTypes);
+
+            var itemTypesUpdated = itemTypeService.GetAllItemtypes();
+            Assert.IsNotNull(itemTypesUpdated);
+            Assert.AreEqual(3, itemTypesUpdated.Count);   
+        }
+
+        [TestMethod]
+        public void UpdateItemTypeService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var newItemType = new ItemTypeCS { Id = 2, Name = "Updated Type", description = "Updated Description", created_at = DateTime.Now, updated_at = DateTime.Now };
+
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "Updated Type", description = "Updated Description" };
+            var itemTypesUpdated2 = itemTypeService.UpdateItemType(1, updatedItemType);
+            Assert.IsNotNull(itemTypesUpdated2);
+            Assert.AreEqual("Updated Type", itemTypesUpdated2.Name);
+        }
+
+        [TestMethod]
+        public void UpdateItemTypeService_Test_Failed()
+        {
+            var itemTypeService = new ItemTypeService();
+            var newItemType = new ItemTypeCS { Id = 2, Name = "Updated Type", description = "Updated Description", created_at = DateTime.Now, updated_at = DateTime.Now };
+
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "Updated Type", description = "Updated Description" };
+            var itemTypesUpdated2 = itemTypeService.UpdateItemType(5, updatedItemType);
+            Assert.IsNull(itemTypesUpdated2);
+        }
+
+        [TestMethod]
+        public void DeleteItemTypeService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            itemTypeService.DeleteItemType(1);
+            var itemTypesGet = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(0, itemTypesGet.Count);
+        }
+
+        [TestMethod]
+        public void DeleteItemTypeService_Test_Failed()
+        {
+            var itemTypeService = new ItemTypeService();
+            itemTypeService.DeleteItemType(5);
+            var itemTypesGet = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(1, itemTypesGet.Count);
+        }
+
+        [TestMethod]
+        public void DeleteMultipleItemTypeService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+
+            var newItemType = new ItemTypeCS { Id = 2, Name = "Type 2", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var itemTypes = itemTypeService.CreateItemType(newItemType);
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual("Type 2", itemTypes.Name);
+
+            var itemTypesUpdated = itemTypeService.GetAllItemtypes();
+            Assert.IsNotNull(itemTypesUpdated);
+            Assert.AreEqual(2, itemTypesUpdated.Count);
+
+            List<int> itemTypesToDelete = new List<int>() { 1, 2 };
+            itemTypeService.DeleteItemTypes(itemTypesToDelete);
+            var itemTypesGet = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(0, itemTypesGet.Count);
+        }
+
+        [TestMethod]
+        public void PatchItemTypeService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var patcheditemtype = itemTypeService.PatchItemType(1, "Name", "New Type");
+            patcheditemtype = itemTypeService.PatchItemType(1, "description", "New Description");
+            var PatchedItemGoneWrong = itemTypeService.PatchItemType(3, "Name", "New Description");
+            Assert.IsNotNull(patcheditemtype);
+            Assert.IsNull(PatchedItemGoneWrong);
+            Assert.AreEqual("New Type", patcheditemtype.Name);
+            Assert.AreEqual("New Description", patcheditemtype.description);
         }
     }
 }
