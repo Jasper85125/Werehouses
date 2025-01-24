@@ -100,15 +100,16 @@ jobs:
           filename=$(echo "$line" | grep -oP 'filename="[^"]+"' | cut -d'"' -f2)
           line_rate=$(echo "$line" | grep -oP 'line-rate="[^"]+"' | cut -d'"' -f2)
           percentage=$(echo "scale=2; $line_rate * 100" | bc)
+          base_filename=$(basename "$filename")
 
           # Skip specific files
-          if [[ "$filename" == "/home/runner/.nuget/packages/microsoft.net.test.sdk/17.11.1/build/netcoreapp3.1/Microsoft.NET.Test.Sdk.Program.cs" ]] || \
-              [[ "$filename" == "/home/runner/work/Werehouses/Werehouses/V2/Cargohub/Program.cs" ]] || \
-              [[ "$filename" == "/home/runner/work/Werehouses/Werehouses/V2/Cargohub/models/BaseCS.cs" ]]; then
+          if [[ "$base_filename" == "Microsoft.NET.Test.Sdk.Program.cs" ]] || \
+              [[ "$base_filename" == "Program.cs" ]] || \
+              [[ "$base_filename" == "BaseCS.cs" ]]; then
             continue
           fi
 
-          echo "- **$filename**: $percentage%" >> $GITHUB_STEP_SUMMARY
+          echo "- **$base_filename**: $percentage%" >> $GITHUB_STEP_SUMMARY
 
           # Aggregate total coverage
           total_coverage=$(echo "$total_coverage + $line_rate" | bc)
