@@ -36,7 +36,8 @@ namespace TestsV2
             total_amount = 500,
             total_discount = 50,
             total_tax = 25,
-            total_surcharge = 10
+            total_surcharge = 10,
+            items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "1", amount = 10 } }
         };
 
         var orderList = new List<OrderCS> { order };
@@ -712,6 +713,13 @@ namespace TestsV2
         }
 
         [TestMethod]
+        public void GetOrdersByShipmetIdService_Test_Fail(){
+            var orderService = new OrderService();
+            var order = orderService.GetOrdersByShipmentId(10);
+            Assert.AreEqual(0,order.Count);
+        }
+
+        [TestMethod]
         public void CreateOrderService_Test(){
             var order = new OrderCS{
                 Id = 2,
@@ -816,8 +824,230 @@ namespace TestsV2
             Assert.AreEqual("Pending", createdOrders[1].order_status);
 
             var ordersUpdated = orderService.GetAllOrders();
-            //Assert.AreEqual(4, ordersUpdated.Count);
             Assert.AreEqual(3, ordersUpdated.Count);
+
+        }
+
+        [TestMethod]
+        public void GetOrdersByClientService_Test(){
+            var orderService = new OrderService();
+            var orders = orderService.GetOrdersByClient(1);
+            Assert.IsNotNull(orders);
+            Assert.AreEqual(1,orders.Count);
+            Assert.AreEqual("Pending",orders[0].order_status);
+        }
+
+        [TestMethod]
+        public void GetOrdersByClientService_Test_Fail(){
+            var orderService = new OrderService();
+            var orders = orderService.GetOrdersByClient(2);
+            Assert.AreEqual(0,orders.Count);
+        }
+
+        [TestMethod]
+        public void GetOrdersByWarehouseService_Test()
+        {
+            var orderService = new OrderService();
+            var orders = orderService.GetOrdersByWarehouse(1);
+            Assert.IsNotNull(orders);
+            Assert.AreEqual(1,orders.Count);
+            Assert.AreEqual("Pending",orders[0].order_status);
+        }
+
+        [TestMethod]
+        public void GetOrdersByWarehouseService_Test_Fail()
+        {
+            var orderService = new OrderService();
+            var orders = orderService.GetOrdersByWarehouse(2);
+            Assert.AreEqual(0,orders.Count);
+        }
+
+        [TestMethod]
+        public void UpdateOrderService_Test(){
+            var order = new OrderCS
+            {
+                Id = 1,
+                source_id = 99,
+                order_date = "2023-10-01T10:00:00Z",
+                request_date = "2023-10-05T10:00:00Z",
+                order_status = "Completed",
+                warehouse_id = 1,
+                ship_to = 1,
+                bill_to = 3,
+                shipment_id = 5,
+                total_amount = 500,
+                total_discount = 50,
+                total_tax = 25,
+                total_surcharge = 10
+            };
+
+            var orderService = new OrderService();
+            var orders = orderService.UpdateOrder(1,order);
+            Assert.IsNotNull(orders);
+            Assert.AreEqual("Completed", orders.order_status);
+        }
+
+        [TestMethod]
+        public void UpdateOrderService_Test_Failed()
+        {
+            var order = new OrderCS
+            {
+                Id = 3,
+                source_id = 99,
+                order_date = "2023-10-01T10:00:00Z",
+                request_date = "2023-10-05T10:00:00Z",
+                order_status = "Completed",
+                warehouse_id = 1,
+                ship_to = 1,
+                bill_to = 3,
+                shipment_id = 5,
+                total_amount = 500,
+                total_discount = 50,
+                total_tax = 25,
+                total_surcharge = 10
+            };
+
+            var orderService = new OrderService();
+            var orders = orderService.UpdateOrder(3,order);
+            Assert.IsNull(orders);
+        }
+        [TestMethod]
+        public void PatchOrderService_Test()
+        {
+            // Arrange
+            var orderService = new OrderService(); // Assuming this is where PatchOrder is defined
+
+            
+            // Act
+            var updatedOrder = orderService.PatchOrder(1, "source_id", 123);
+            updatedOrder = orderService.PatchOrder(1, "order_date", "2025-01-01");
+            updatedOrder = orderService.PatchOrder(1, "request_date", "2025-02-01");
+            updatedOrder = orderService.PatchOrder(1, "Reference", "New Reference");
+            updatedOrder = orderService.PatchOrder(1, "reference_extra", "Extra Reference");
+            updatedOrder = orderService.PatchOrder(1, "order_status", "Completed");
+            updatedOrder = orderService.PatchOrder(1, "Notes", "Test Notes");
+            updatedOrder = orderService.PatchOrder(1, "shipping_notes", "Shipping Notes");
+            updatedOrder = orderService.PatchOrder(1, "picking_notes", "Picking Notes");
+            updatedOrder = orderService.PatchOrder(1, "warehouse_id", 456);
+            updatedOrder = orderService.PatchOrder(1, "ship_to", 789);
+            updatedOrder = orderService.PatchOrder(1, "bill_to", 101);
+            updatedOrder = orderService.PatchOrder(1, "shipment_id", 202);
+            updatedOrder = orderService.PatchOrder(1, "total_amount", 5000);
+            updatedOrder = orderService.PatchOrder(1, "total_discount", 500);
+            updatedOrder = orderService.PatchOrder(1, "total_tax", 1000);
+            updatedOrder = orderService.PatchOrder(1, "total_surcharge", 200);
+            updatedOrder = orderService.PatchOrder(1, "items", new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "1", amount = 10 } });
+
+            // Assert
+            Assert.IsNotNull(updatedOrder);
+            Assert.AreEqual(123, updatedOrder.source_id);
+            Assert.AreEqual("2025-01-01", updatedOrder.order_date);
+            Assert.AreEqual("2025-02-01", updatedOrder.request_date);
+            Assert.AreEqual("New Reference", updatedOrder.Reference);
+            Assert.AreEqual("Extra Reference", updatedOrder.reference_extra);
+            Assert.AreEqual("Completed", updatedOrder.order_status);
+            Assert.AreEqual("Test Notes", updatedOrder.Notes);
+            Assert.AreEqual("Shipping Notes", updatedOrder.shipping_notes);
+            Assert.AreEqual("Picking Notes", updatedOrder.picking_notes);
+            Assert.AreEqual(456, updatedOrder.warehouse_id);
+            Assert.AreEqual(789, updatedOrder.ship_to);
+            Assert.AreEqual(101, updatedOrder.bill_to);
+            Assert.AreEqual(202, updatedOrder.shipment_id);
+            Assert.AreEqual(5000, updatedOrder.total_amount);
+            Assert.AreEqual(500, updatedOrder.total_discount);
+            Assert.AreEqual(1000, updatedOrder.total_tax);
+            Assert.AreEqual(200, updatedOrder.total_surcharge);
+            Assert.IsNotNull(updatedOrder.items);
+            Assert.AreEqual(1, updatedOrder.items.Count);
+            Assert.AreEqual("1", updatedOrder.items[0].item_id);
+            Assert.AreEqual(10, updatedOrder.items[0].amount);
+        }
+
+        [TestMethod]
+        public void DeleteOrderService_Test()
+        {
+            var orderService = new OrderService();
+            orderService.DeleteOrder(1);
+            var orderUpdated = orderService.GetAllOrders();
+            Assert.AreEqual(0, orderUpdated.Count);
+        }
+        
+        [TestMethod]
+        public void DeleteOrderService_Test_failed()
+        {
+            var orderService = new OrderService();
+            orderService.DeleteOrder(3);
+            var orderUpdated = orderService.GetAllOrders();
+            Assert.AreEqual(1, orderUpdated.Count);
+        }
+
+        [TestMethod]
+        public void GetItemsByOrderIdService_Test()
+        {
+            var orderService = new OrderService();
+            var items = orderService.GetItemsByOrderId(1);
+            Assert.IsNotNull(items);
+            Assert.AreEqual("1",items[0].item_id);
+        }
+        
+        [TestMethod]
+        public void GetItemsByOrderIdService_Test_Fail()
+        {
+            var orderService = new OrderService();
+            var items = orderService.GetItemsByOrderId(2);
+            Assert.IsNull(items);
+        }
+
+        [TestMethod]
+        public void UpdateOrderItemsService_Test()
+        {
+            var item = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "2", amount = 20 } };
+            var orderService = new OrderService();
+            var orders = orderService.UpdateOrderItems(1,item);
+            Assert.IsNotNull(orders);
+            Assert.AreEqual("2",orders.items[0].item_id);
+        }
+        
+        [TestMethod]
+        public void UpdateOrderItemsService_Test_Fail()
+        {
+            var item = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "2", amount = 20 } };
+            var orderService = new OrderService();
+            var orders = orderService.UpdateOrderItems(2,item);
+            Assert.IsNull(orders);
+        }
+
+        [TestMethod]
+        public void DeleteOrdersService_Test()
+        {
+            var order = new OrderCS
+            {
+                Id = 1,
+                source_id = 22,
+                order_date = "2023-10-01T10:00:00Z",
+                request_date = "2023-10-05T10:00:00Z",
+                order_status = "Pending",
+                warehouse_id = 1,
+                ship_to = 1,
+                bill_to = 3,
+                shipment_id = 5,
+                total_amount = 500,
+                total_discount = 50,
+                total_tax = 25,
+                total_surcharge = 10,
+                items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "1", amount = 10 } }
+            };
+            var orderService = new OrderService();
+            var orders = orderService.CreateOrder(order);
+            Assert.IsNotNull(orders);
+            Assert.AreEqual("Pending", orders.order_status);
+
+            var ordersUpdated = orderService.GetAllOrders();
+            Assert.AreEqual(2, ordersUpdated.Count);
+            var ordersToDelete = new List<int> {1,2};
+            orderService.DeleteOrders(ordersToDelete);
+            var ordersAfterDelete = orderService.GetAllOrders();
+            Assert.AreEqual(0,ordersAfterDelete.Count);
 
         }
     }
