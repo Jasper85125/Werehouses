@@ -115,6 +115,14 @@ jobs:
           count=$((count + 1))
         done
 
+        # Calculate and print the average coverage
+        if [ $count -gt 0 ]; then
+          average_coverage=$(echo "scale=2; $total_coverage / $count * 100" | bc)
+          echo "### Average Coverage: $average_coverage%" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "### No coverage data available" >> $GITHUB_STEP_SUMMARY
+        fi
+
 
   python-tests:
     runs-on: ubuntu-latest
