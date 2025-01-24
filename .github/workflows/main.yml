@@ -113,6 +113,7 @@ jobs:
           # Aggregate total coverage
           total_coverage=$(echo "$total_coverage + $line_rate" | bc)
           count=$((count + 1))
+        done
 
 
   python-tests:
