@@ -751,9 +751,16 @@ namespace TestsV2
         public void CommitTransferService_Test()
         {
             var transferService = new TransferService();
+            var InventoryService = new InventoryService();
             var result = transferService.CommitTransfer(1);
             Assert.IsNotNull(result);
             Assert.AreEqual("Processed", result.transfer_status);
+
+            var resultAgain = InventoryService.GetInventoryById(1);
+            Assert.IsNotNull(resultAgain);
+            Assert.AreEqual(27, resultAgain.total_on_hand);
+            Assert.AreEqual(47, resultAgain.total_expected);
+            Assert.AreEqual(17, resultAgain.total_available);
         }
 
         [TestMethod]
