@@ -47,7 +47,7 @@ public class ClientService : IClientService
     public ClientCS UpdateClient(int id, ClientCS updateClient)
     {
         var allClients = GetAllClients();
-        var clientToUpdate = allClients.Single(client => client.Id == id);
+        var clientToUpdate = allClients.FirstOrDefault(client => client.Id == id);
 
         if (clientToUpdate is not null)
         {

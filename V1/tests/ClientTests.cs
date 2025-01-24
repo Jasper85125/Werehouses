@@ -4,6 +4,8 @@ using Moq.Protected;
 using Microsoft.AspNetCore.Mvc;
 using ServicesV1;
 using ControllersV1;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace TestsV1
 {
@@ -18,8 +20,132 @@ namespace TestsV1
         {
             _clientservice = new Mock<IClientService>();
             _clientcontroller = new ClientController(_clientservice.Object);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/clients.json");
+            var client = new ClientCS(){
+                Id = 1,
+                Name = "Raymond Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var clientlist = new List<ClientCS>(){ client };
+            var json = JsonConvert.SerializeObject(clientlist, Formatting.Indented);
+            //if directory does not exist then create it
+            var directory = Path.GetDirectoryName(filePath);
+            if(!Directory.Exists(directory)){
+                Directory.CreateDirectory(directory);
+            }
+            File.WriteAllText(filePath, json);
         }
 
+        [TestMethod]
+        public void GetAllClientsService_Test_Succes(){
+            var clientservice = new ClientService();
+            var result = clientservice.GetAllClients();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+        }
+        [TestMethod]
+        public void GetClientByIdService_Test_Succes(){
+            var clientservice = new ClientService();
+            var result = clientservice.GetClientById(1);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Raymond Inc", result.Name);
+        }
+        [TestMethod]
+        public void CreateClientService_Test_Succes(){
+            var client = new ClientCS
+            {
+                Id = 2,
+                Name = "Daniel Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var clientservice = new ClientService();
+            var result = clientservice.CreateClient(client);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Daniel Inc", result.Name);
+            var clientsupdated = clientservice.GetAllClients();
+            Assert.IsNotNull(clientsupdated);
+            Assert.AreEqual(2, clientsupdated.Count);
+        }
+        [TestMethod]
+        public void UpdateClientService_Test()
+        {
+            var client = new ClientCS
+            {
+                Id = 1,
+                Name = "Homer Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var clientService = new ClientService();
+            var clients = clientService.UpdateClient(1, client);
+            Assert.IsNotNull(clients);
+            Assert.AreEqual("Homer Inc", clients.Name);
+        }
+        [TestMethod]
+        public void UpdateClientService_Test_Failed()
+        {
+            var client = new ClientCS
+            {
+                Id = 3,
+                Name = "Homer Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                contact_phone = "242.732.3483x2573x2573",
+                contact_email = "robertcharles@example.net",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var clientService = new ClientService();
+            var clients = clientService.UpdateClient(3, client);
+            Assert.IsNull(clients);
+        }
+        [TestMethod]
+        public void DeleteClientService_Test()
+        {
+            var clientService = new ClientService();
+            clientService.DeleteClient(1);
+            var clientsUpdated = clientService.GetAllClients();
+            Assert.AreEqual(0, clientsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void DeleteClientService_Test_Failed()
+        {
+            var clientService = new ClientService();
+            clientService.DeleteClient(3);
+            var clientsUpdated = clientService.GetAllClients();
+            Assert.AreEqual(1, clientsUpdated.Count);
+        }
         [TestMethod]
         public void GetAllClients_Test_returns_true()
         {
