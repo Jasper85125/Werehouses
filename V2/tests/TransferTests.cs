@@ -27,7 +27,7 @@ namespace TestsV2
                 Id = 1,
                 Reference = "JoJo",
                 transfer_from = 1,
-                transfer_to = null,
+                transfer_to = 1,
                 transfer_status = "completed",
                 created_at = default,
                 updated_at = default,
