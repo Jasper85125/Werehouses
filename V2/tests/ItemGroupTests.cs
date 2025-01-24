@@ -574,7 +574,7 @@ namespace itemgroup.TestsV2
             Assert.AreEqual("Group 2", itemGroups.Name);
 
             var itemGroupsUpdatedAgain = itemGroupService.GetAllItemGroups();
-            Assert.AreEqual(0, itemGroupsUpdated.Count);
+            Assert.AreEqual(1, itemGroupsUpdatedAgain.Count);
         }
 
         [TestMethod]
