@@ -83,17 +83,6 @@ jobs:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
 
-    - name: Check coverage
-      id: coverage
-      run: |
-        COVERAGE=$(grep -o '^[0-9]*' coverage/summary.txt)
-        echo "Coverage: $COVERAGE%"
-        if [ "$COVERAGE" -ge 80 ]; then
-          echo "::set-output name=coverage_status::✔️"
-        else
-          echo "::set-output name=coverage_status::❌"
-        fi
-
     - name: Coverage Report Summary
       run: |
         echo "Generating coverage summary for each page..."
@@ -120,19 +109,26 @@ jobs:
 
           # Skip specific files
           if [[ "$base_filename" == "Microsoft.NET.Test.Sdk.Program.cs" ]] || \
-              [[ "$base_filename" == "Program.cs" ]] || \
-              [[ "$base_filename" == "BaseCS.cs" ]] || \
-              [[ "$base_filename" == "ApiKey.cs" ]] || \
-              [[ "$base_filename" == "ApiKeyMiddleware.cs" ]]; then
-            continue
+            [[ "$base_filename" == "Program.cs" ]] || \
+            [[ "$base_filename" == "BaseCS.cs" ]] || \
+            [[ "$base_filename" == "ApiKey.cs" ]] || \
+            [[ "$base_filename" == "ApiKeyMiddleware.cs" ]]; then
+          continue
           fi
 
           # Skip duplicate filenames
           if [[ -n "${processed_files[$base_filename]}" ]]; then
-            continue
+          continue
           fi
 
-          echo "| **$base_filename** | $percentage% |" >> $GITHUB_STEP_SUMMARY
+          # Add checkmark or X based on coverage percentage
+          if (( $(echo "$percentage >= 80" | bc -l) )); then
+          status=":white_check_mark:"
+          else
+          status=":x:"
+          fi
+
+          echo "| **$base_filename** | $percentage% $status |" >> $GITHUB_STEP_SUMMARY
 
           # Mark this filename as processed
           processed_files[$base_filename]=1
