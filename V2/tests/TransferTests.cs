@@ -820,6 +820,27 @@ namespace TestsV2
             Assert.AreEqual(1, result.Count);
         }
 
+        [TestMethod]
+        public void PatchTransferService_Test()
+        {
+            var transferService = new TransferService();
+            var result = transferService.PatchTransfer(1, "Reference", "Updated JoJo");
+            result = transferService.PatchTransfer(1, "transfer_from", 5);
+            result = transferService.PatchTransfer(1, "transfer_to", 5);
+            result = transferService.PatchTransfer(1, "transfer_status", "Processing");
+            result = transferService.PatchTransfer(1, "Items", new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P01", amount = 25 } });
+            var resultGoneWrong = transferService.PatchTransfer(1, "Wrong", "Updated JoJo");
+            var resultGoneWrongAgain = transferService.PatchTransfer(-1, "Reference", "Updated JoJo");
+            Assert.IsNotNull(result);
+            Assert.IsNull(resultGoneWrong);
+            Assert.IsNull(resultGoneWrongAgain);
+            Assert.AreEqual("Updated JoJo", result.Reference);
+            Assert.AreEqual(5, result.transfer_from);
+            Assert.AreEqual(5, result.transfer_to);
+            Assert.AreEqual("Processing", result.transfer_status);
+            Assert.AreEqual(25, result.Items.First().amount);
+        }
+
     }
 }
 

@@ -57,10 +57,10 @@ public class TransferService : ITransferService
         return newTransfer;
     }
 
-    public List<TransferCS> CreateMultipleTransfers(List<TransferCS>newTransfer)
+    public List<TransferCS> CreateMultipleTransfers(List<TransferCS> newTransfer)
     {
         List<TransferCS> addedTransfer = new List<TransferCS>();
-        foreach(TransferCS transfer in newTransfer)
+        foreach (TransferCS transfer in newTransfer)
         {
             TransferCS addTransfer = CreateTransfer(transfer);
             addedTransfer.Add(addTransfer);
@@ -102,7 +102,7 @@ public class TransferService : ITransferService
         {
             return null;
         }
-        
+
         foreach (ItemIdAndAmount items in transfer.Items)
         {
             InventoryCS inventory = inventoryService.GetInventoriesForItem(items.item_id);
@@ -113,25 +113,31 @@ public class TransferService : ITransferService
                     inventory.total_on_hand -= items.amount;
                     inventory.total_expected = inventory.total_on_hand + inventory.total_expected;
                     inventory.total_available = inventory.total_on_hand - inventory.total_allocated;
-                    inventoryService.UpdateInventoryById(inventory.Id, inventory); 
+                    inventoryService.UpdateInventoryById(inventory.Id, inventory);
                 }
-                else if(location == transfer.transfer_to)
+                else if (location == transfer.transfer_to)
                 {
                     inventory.total_on_hand += items.amount;
                     inventory.total_expected = inventory.total_on_hand + inventory.total_ordered;
                     inventory.total_available = inventory.total_on_hand - inventory.total_allocated;
-                    inventoryService.UpdateInventoryById(inventory.Id, inventory); 
+                    inventoryService.UpdateInventoryById(inventory.Id, inventory);
                 }
             }
-        } 
+        }
         transfer.transfer_status = "Processed";
         TransferCS updatedTransfer = UpdateTransfer(transfer.Id, transfer);
         return updatedTransfer;
     }
-    public TransferCS PatchTransfer(int id, string property, object newvalue){
+    public TransferCS PatchTransfer(int id, string property, object newvalue)
+    {
         var transfers = GetAllTransfers();
-        var transfer = transfers.Find(_=>_.Id == id);
-        switch(property){
+        var transfer = transfers.Find(_ => _.Id == id);
+        if (transfer is null)
+        {
+            return null;
+        }
+        switch (property)
+        {
             case "Reference":
                 transfer.Reference = newvalue.ToString();
                 break;
@@ -150,9 +156,6 @@ public class TransferService : ITransferService
             default:
                 return null;
         }
-        if(transfer == transfers[id]){
-            return null;
-        }
         var json = JsonConvert.SerializeObject(transfers, Formatting.Indented);
         File.WriteAllText(_path, json);
         return transfer;
@@ -169,11 +172,14 @@ public class TransferService : ITransferService
             File.WriteAllText(_path, jsonData);
         }
     }
-    public void DeleteTransfers(List<int> ids){
+    public void DeleteTransfers(List<int> ids)
+    {
         var transfers = GetAllTransfers();
-        foreach(int id in ids){
-            var transfer = transfers.Find(_=>_.Id == id);
-            if(transfer is not null){
+        foreach (int id in ids)
+        {
+            var transfer = transfers.Find(_ => _.Id == id);
+            if (transfer is not null)
+            {
                 transfers.Remove(transfer);
             }
         }
