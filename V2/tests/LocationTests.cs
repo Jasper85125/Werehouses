@@ -5,6 +5,7 @@ using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace TestsV2
 {
@@ -19,6 +20,20 @@ namespace TestsV2
         {
             _mockLocationService = new Mock<ILocationService>();
             _locationController = new LocationController(_mockLocationService.Object);
+            
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/locations.json");
+            var location = new LocationCS { Id = 1, warehouse_id = 1, code = "B.2.1", name = "Row: B, Rack: 2, Shelf: 1", created_at = DateTime.Now, updated_at = DateTime.Now };
+
+            var locationList = new List<LocationCS> { location };
+            var json = JsonConvert.SerializeObject(locationList, Formatting.Indented);
+
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
