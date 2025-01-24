@@ -83,6 +83,17 @@ jobs:
         name: coverage-report-${{ matrix.version }}
         path: coverage-report-${{ matrix.version }}
 
+    - name: Check coverage
+      id: coverage
+      run: |
+        COVERAGE=$(grep -o '^[0-9]*' coverage/summary.txt)
+        echo "Coverage: $COVERAGE%"
+        if [ "$COVERAGE" -ge 80 ]; then
+          echo "::set-output name=coverage_status::✔️"
+        else
+          echo "::set-output name=coverage_status::❌"
+        fi
+
     - name: Coverage Report Summary
       run: |
         echo "Generating coverage summary for each page..."
