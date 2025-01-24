@@ -5,6 +5,7 @@ using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace TestsV2
 {
@@ -19,6 +20,37 @@ namespace TestsV2
         {
             _mockOrderService = new Mock<IOrderService>();
             _orderController = new OrderController(_mockOrderService.Object);
+
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/orders.json");
+        var order = new OrderCS
+        {
+            Id = 1,
+            source_id = 22,
+            order_date = "2023-10-01T10:00:00Z",
+            request_date = "2023-10-05T10:00:00Z",
+            order_status = "Pending",
+            warehouse_id = 1,
+            ship_to = 1,
+            bill_to = 3,
+            shipment_id = 5,
+            total_amount = 500,
+            total_discount = 50,
+            total_tax = 25,
+            total_surcharge = 10
+        };
+
+        var orderList = new List<OrderCS> { order };
+        var json = JsonConvert.SerializeObject(orderList, Formatting.Indented);
+
+        // Create directory if it does not exist
+        var directory = Path.GetDirectoryName(filePath);
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        // Write the JSON data to the file
+        File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -650,6 +682,143 @@ namespace TestsV2
             var unauthorizedResult = result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        // test for the service
+
+        [TestMethod]
+        public void GetAllOrdersService_Test(){
+            var orderService = new OrderService();
+            var orders = orderService.GetAllOrders();
+            Assert.IsNotNull(orders);
+            Assert.AreEqual(1, orders.Count);
+
+        }
+
+        [TestMethod]
+        public void GetOrdersByIdService_Test(){
+            var orderService = new OrderService();
+            var order = orderService.GetOrderById(1);
+            Assert.IsNotNull(order);
+            Assert.AreEqual("Pending", order.order_status);
+        }
+
+        [TestMethod]
+        public void GetOrdersByShipmetIdService_Test(){
+            var orderService = new OrderService();
+            var order = orderService.GetOrdersByShipmentId(5);
+            Assert.IsNotNull(order);
+            Assert.AreEqual("Pending", order[0].order_status);
+        }
+
+        [TestMethod]
+        public void CreateOrderService_Test(){
+            var order = new OrderCS{
+                Id = 2,
+                source_id = 24,
+                order_date = "2023-10-01T10:00:00Z",
+                request_date = "2023-10-05T10:00:00Z",
+                Reference = "OrderRef123",
+                reference_extra = "ExtraRef",
+                order_status = "Pending",
+                Notes = "Order notes",
+                shipping_notes = "Shipping notes",
+                picking_notes = "Picking notes",
+                warehouse_id = 1,
+                ship_to = 1,
+                bill_to = 3,
+                shipment_id = 5,
+                total_amount = 500,
+                total_discount = 50,
+                total_tax = 25,
+                total_surcharge = 10,
+                created_at = DateTime.UtcNow,
+                updated_at = DateTime.UtcNow,
+                items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "ITEM1", amount = 20 },
+                    new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
+                }
+            };
+            var orderService = new OrderService();
+            var orders = orderService.CreateOrder(order);
+            Assert.IsNotNull(orders);
+            Assert.AreEqual("Pending",orders.order_status);
+
+            var ordersUpdated = orderService.GetAllOrders();
+            Assert.AreEqual(2, ordersUpdated.Count);
+
+        }
+
+        [TestMethod]
+        public void CreateMultipleOrdersService_Test()
+        {
+            var orders = new List<OrderCS> {new OrderCS
+            {
+                source_id = 29,
+                order_date = "2023-10-01T10:00:00Z",
+                request_date = "2023-10-05T10:00:00Z",
+                Reference = "OrderRef123",
+                reference_extra = "ExtraRef",
+                order_status = "Pending",
+                Notes = "Order notes",
+                shipping_notes = "Shipping notes",
+                picking_notes = "Picking notes",
+                warehouse_id = 1,
+                ship_to = 1,
+                bill_to = 3,
+                shipment_id = 5,
+                total_amount = 500,
+                total_discount = 50,
+                total_tax = 25,
+                total_surcharge = 10,
+                created_at = DateTime.UtcNow,
+                updated_at = DateTime.UtcNow,
+                items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "ITEM1", amount = 250 },
+                    new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
+                }
+                }, new OrderCS
+                {
+                
+                source_id = 27,
+                order_date = "2043-10-01 T10:00:00Z",
+                request_date = "2024-10-05T10:00:00Z",
+                Reference = "OrderRf123",
+                reference_extra = "xtraRef",
+                order_status = "Pending",
+                Notes = "Order tes",
+                shipping_notes = "Shping notes",
+                picking_notes = "Piing notes",
+                warehouse_id = 2,
+                ship_to = 2,
+                bill_to = 3,
+                shipment_id = 6,
+                total_amount = 5100,
+                total_discount = 520,
+                total_tax = 252,
+                total_surcharge = 120,
+                created_at = DateTime.UtcNow,
+                updated_at = DateTime.UtcNow,
+                items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "ITEM1", amount = 1 },
+                    new ItemIdAndAmount { item_id = "ITEM2", amount = 5 }
+                }
+            }};
+
+            var orderService = new OrderService();
+            var createdOrders = orderService.CreateMultipleOrders(orders);
+            Assert.IsNotNull(createdOrders);
+            Assert.AreEqual(2, createdOrders.Count);
+            Assert.AreEqual("Pending", createdOrders[0].order_status);
+            Assert.AreEqual("Pending", createdOrders[1].order_status);
+
+            var ordersUpdated = orderService.GetAllOrders();
+            //Assert.AreEqual(4, ordersUpdated.Count);
+            Assert.AreEqual(3, ordersUpdated.Count);
+
         }
     }
 }
