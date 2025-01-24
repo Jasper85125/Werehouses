@@ -94,6 +94,9 @@ jobs:
         total_coverage=0
         count=0
 
+        # Initialize an associative array to track processed filenames
+        declare -A processed_files
+
         # Parse each entry and add to the summary
         echo "### Coverage Details Per Page" >> $GITHUB_STEP_SUMMARY
         while read -r line; do
@@ -111,7 +114,15 @@ jobs:
             continue
           fi
 
+          # Skip duplicate filenames
+          if [[ -n "${processed_files[$base_filename]}" ]]; then
+            continue
+          fi
+
           echo "- **$base_filename**: $percentage%" >> $GITHUB_STEP_SUMMARY
+
+          # Mark this filename as processed
+          processed_files[$base_filename]=1
 
           # Aggregate total coverage
           total_coverage=$(echo "$total_coverage + $line_rate" | bc)
