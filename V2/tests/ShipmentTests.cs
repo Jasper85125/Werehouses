@@ -835,6 +835,16 @@ namespace TestsV2
             shipment = shipmentService.PatchShipment(1, "payment_type", "Credit");
             shipment = shipmentService.PatchShipment(1, "transfer_mode", "Air");
             shipment = shipmentService.PatchShipment(1, "Notes", "Updated Notes");
+            shipment = shipmentService.PatchShipment(1, "order_id", 2);
+            shipment = shipmentService.PatchShipment(1, "source_id", 35);
+            shipment = shipmentService.PatchShipment(1, "order_date", "2023-10-01 12:00:00");
+            shipment = shipmentService.PatchShipment(1, "request_date", "2023-10-02 12:00:00");
+            shipment = shipmentService.PatchShipment(1, "shipment_date", "2023-10-03 12:00:00");
+            shipment = shipmentService.PatchShipment(1, "shipment_type", "E");
+            shipment = shipmentService.PatchShipment(1, "carrier_description", "New Carrier Description");
+            shipment = shipmentService.PatchShipment(1, "total_package_count", 50);
+            shipment = shipmentService.PatchShipment(1, "total_package_weight", 100);
+            shipment = shipmentService.PatchShipment(1, "Items", new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P03", amount = 10 } });
             Assert.IsNotNull(shipment);
             Assert.AreEqual("Delivered", shipment.shipment_status);
             Assert.AreEqual("UPS", shipment.carrier_code);
@@ -842,6 +852,18 @@ namespace TestsV2
             Assert.AreEqual("Credit", shipment.payment_type);
             Assert.AreEqual("Air", shipment.transfer_mode);
             Assert.AreEqual("Updated Notes", shipment.Notes);
+            Assert.AreEqual(2, shipment.order_id);
+            Assert.AreEqual(35, shipment.source_id);
+            Assert.AreEqual(DateTime.ParseExact("2023-10-01 12:00:00", "yyyy-MM-dd HH:mm:ss", null), shipment.order_date);
+            Assert.AreEqual(DateTime.ParseExact("2023-10-02 12:00:00", "yyyy-MM-dd HH:mm:ss", null), shipment.request_date);
+            Assert.AreEqual(DateTime.ParseExact("2023-10-03 12:00:00", "yyyy-MM-dd HH:mm:ss", null), shipment.shipment_date);
+            Assert.AreEqual("E", shipment.shipment_type);
+            Assert.AreEqual("New Carrier Description", shipment.carrier_description);
+            Assert.AreEqual(50, shipment.total_package_count);
+            Assert.AreEqual(100, shipment.total_package_weight);
+            Assert.AreEqual(1, shipment.Items.Count);
+            Assert.AreEqual("P03", shipment.Items[0].item_id);
+            Assert.AreEqual(10, shipment.Items[0].amount);
         }
 
         [TestMethod]
@@ -850,6 +872,148 @@ namespace TestsV2
             var shipmentService = new ShipmentService();
             var shipment = shipmentService.PatchShipment(3, "Notes", "Updated Notes");
             Assert.IsNull(shipment);
+        }
+
+        [TestMethod]
+        public void GetItemsInShipmentService_Test()
+        {
+            var shipmentService = new ShipmentService();
+            var items = shipmentService.GetItemsInShipment(1);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(1, items.Count);
+        }
+
+        [TestMethod]
+        public void UpdateItemsInShipmentService_Test()
+        {
+            var shipmentService = new ShipmentService();
+            List<ItemIdAndAmount> newItemsAndAmounts = new List<ItemIdAndAmount>()
+            {
+                new ItemIdAndAmount(){ item_id= "P007435", amount= 100},
+                new ItemIdAndAmount(){ item_id= "P009553", amount= 100},
+                new ItemIdAndAmount(){ item_id= "P002084", amount= 100}
+            };
+            var shipment = shipmentService.UpdateItemsInShipment(1, newItemsAndAmounts);
+            Assert.IsNotNull(shipment);
+            Assert.AreEqual(3, shipment.Items.Count);
+        }
+
+
+        [TestMethod]
+        public void GetItemsInShipmentTest_NotFound()
+        {
+            // Arrange
+            _mockShipmentService.Setup(service => service.GetItemsInShipment(1)).Returns((List<ItemIdAndAmount>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var value = _shipmentController.GetItemsInShipment(1);
+
+            // Assert
+            Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _shipmentController.GetItemsInShipment(1);
+
+            // Assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+        
+        
+        public void GetAllShipmentsTest()
+        {
+            // Arrange
+            var shipments = new List<ShipmentCS>
+            {
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24 },
+                new ShipmentCS { Id = 2, order_id = 4, source_id = 10 },
+            };
+            _mockShipmentService.Setup(service => service.GetAllShipments()).Returns(shipments);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _shipmentController.GetAllShipments(null, 1, 10);
+            var okResult = result.Result as OkObjectResult;
+            var returnedItems = okResult.Value as PaginationCS<ShipmentCS>;
+
+            // Assert
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Data.Count());
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            result = _shipmentController.GetAllShipments(null, 1, 10);
+
+            // Assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetShipmentById_ServiceTest_Exists()
+        {
+            // Arrange
+            var shipments = new List<ShipmentCS>
+            {
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24 },
+                new ShipmentCS { Id = 2, order_id = 4, source_id = 10 },
+            };
+            var shipmentService = new ShipmentService();
+            var shipment = shipmentService.GetShipmentById(1);
+
+            // Act
+            var result = shipments.FirstOrDefault(s => s.Id == 1);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+        }
+
+        [TestMethod]
+        public void GetShipmentById_ServiceTest_NotFound()
+        {
+            // Arrange
+            var shipments = new List<ShipmentCS>
+            {
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24 },
+                new ShipmentCS { Id = 2, order_id = 4, source_id = 10 },
+            };
+            var shipmentService = new ShipmentService();
+            var shipment = shipmentService.GetShipmentById(3);
+
+            // Act
+            var result = shipments.FirstOrDefault(s => s.Id == 3);
+
+            // Assert
+            Assert.IsNull(result);
         }
     }
 }
