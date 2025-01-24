@@ -105,7 +105,8 @@ jobs:
           # Skip specific files
           if [[ "$base_filename" == "Microsoft.NET.Test.Sdk.Program.cs" ]] || \
               [[ "$base_filename" == "Program.cs" ]] || \
-              [[ "$base_filename" == "BaseCS.cs" ]]; then
+              [[ "$base_filename" == "BaseCS.cs" ]] || \
+              [[ "$base_filename" == "ApiKey.cs" ]]; then
             continue
           fi
 
