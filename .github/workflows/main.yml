@@ -96,6 +96,7 @@ jobs:
 
         # Parse each entry and add to the summary
         echo "### Coverage Details Per Page" >> $GITHUB_STEP_SUMMARY
+        counter=1
         while read -r line; do
           filename=$(echo "$line" | grep -oP 'filename="[^"]+"' | cut -d'"' -f2)
           line_rate=$(echo "$line" | grep -oP 'line-rate="[^"]+"' | cut -d'"' -f2)
@@ -105,13 +106,13 @@ jobs:
           # Skip specific files
           if [[ "$base_filename" == "Microsoft.NET.Test.Sdk.Program.cs" ]] || \
               [[ "$base_filename" == "Program.cs" ]] || \
-              [[ "$base_filename" == "BaseCS.cs" ]] || \
-              [[ "$base_filename" == "ApiKey.cs" ]] || \
-              [[ "$base_filename" == "ApiKeyMiddleware.cs" ]]; then
+              [[ "$base_filename" == "BaseCS.cs" ]]; then
             continue
           fi
 
-          echo "- **$filename**: $percentage%" >> $GITHUB_STEP_SUMMARY
+          unique_filename="${base_filename%.*}_$counter.${base_filename##*.}"
+          echo "- **$unique_filename**: $percentage%" >> $GITHUB_STEP_SUMMARY
+          counter=$((counter + 1))
 
           # Aggregate total coverage
           total_coverage=$(echo "$total_coverage + $line_rate" | bc)
@@ -120,7 +121,7 @@ jobs:
 
         # Calculate and display total coverage
         if [[ $count -gt 0 ]]; then
-          total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
+          total_percentage=$(printf "%.2f" $(echo "scale=2; ($total_coverage / $count) * 100" | bc))
           echo "### Total Percentage Covered: $total_percentage%" >> $GITHUB_STEP_SUMMARY
         else
           echo "### No coverage data found." >> $GITHUB_STEP_SUMMARY
