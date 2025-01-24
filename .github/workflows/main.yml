@@ -89,26 +89,27 @@ jobs:
     - name: Coverage Report Summary
       run: |
         ls -l coverage-report-${{ matrix.version }}
-        # Extract all 'line-rate' values
-        percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
+        echo "Generating detailed coverage summary..."
 
-        # Add all the line-rate values to compute the total
-        total_coverage=0
-        count=0
-        while read -r line; do
-          total_coverage=$(echo "$total_coverage + $line" | bc)
-          count=$((count + 1))
-        done <<< "$percentages"
+        # Parse Cobertura XML to extract line, branch, and method coverage
+        total_line_rate=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
+        total_branch_rate=$(grep -oP 'branch-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
+        total_methods=$(grep -c '<method ' coverage-report-${{ matrix.version }}/Cobertura.xml)
 
-        # Calculate the average (total percentage coverage)
-        if [[ $count -gt 0 ]]; then
-          total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
-          echo "Total Percentage Covered: $total_percentage%"
-          echo "Total Percentage Covered: $total_percentage%" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "No coverage data found."
-          echo "No coverage data found." >> $GITHUB_STEP_SUMMARY
-        fi
+        # Calculate average line and branch coverage as percentages
+        line_coverage=$(echo "scale=2; ($total_line_rate * 100)" | bc)
+        branch_coverage=$(echo "scale=2; ($total_branch_rate * 100)" | bc)
+
+        # Print results
+        echo "Line Coverage: $line_coverage%" >> $GITHUB_STEP_SUMMARY
+        echo "Branch Coverage: $branch_coverage%" >> $GITHUB_STEP_SUMMARY
+        echo "Total Methods Covered: $total_methods" >> $GITHUB_STEP_SUMMARY
+
+        # Output results for logs
+        echo "Detailed Coverage Summary:"
+        echo "Line Coverage: $line_coverage%"
+        echo "Branch Coverage: $branch_coverage%"
+        echo "Total Methods Covered: $total_methods"
 
   python-tests:
     runs-on: ubuntu-latest
