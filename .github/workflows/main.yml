@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - '**'
-  push:
-    branches:
-      - '**'
 
 jobs:
   csharp-build-and-test:
@@ -23,12 +20,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Cache .Net depedencies
+    - name: Cache .Net dependencies
       if: matrix.language == 'csharp'
       uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
+        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
 
@@ -46,7 +43,6 @@ jobs:
       if: matrix.language == 'csharp'
       run: |
         dotnet build ./${{ matrix.version }}/Cargohub/Werehouses.sln --configuration Release --no-restore
-      continue-on-error: true
 
     - name: Clean Up Old Test and Coverage Results
       if: matrix.language == 'csharp'
@@ -62,7 +58,6 @@ jobs:
           --collect:"XPlat Code Coverage" \
           --results-directory TestResults \
           /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage-results/ /p:CoverletOutputFormat=cobertura
-      continue-on-error: true
 
     - name: Install ReportGenerator
       if: matrix.language == 'csharp'
@@ -87,29 +82,39 @@ jobs:
         path: coverage-report-${{ matrix.version }}
 
     - name: Coverage Report Summary
+      if: matrix.language == 'csharp'
       run: |
-        ls -l coverage-report-${{ matrix.version }}
-        echo "Generating detailed coverage summary..."
+        echo "Parsing coverage report summary for ${{ matrix.version }}..."
+        
+        # Check if the report exists
+        if [ ! -f "coverage-report-${{ matrix.version }}/Cobertura.xml" ]; then
+          echo "Coverage report not found for ${{ matrix.version }}."
+          exit 1
+        fi
 
-        # Parse Cobertura XML to extract line, branch, and method coverage
-        total_line_rate=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
-        total_branch_rate=$(grep -oP 'branch-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
-        total_methods=$(grep -c '<method ' coverage-report-${{ matrix.version }}/Cobertura.xml)
+        # Extract all 'line-rate' values
+        percentages=$(grep -oP 'line-rate="[^"]+"' coverage-report-${{ matrix.version }}/Cobertura.xml | grep -oP '[0-9.]+')
 
-        # Calculate average line and branch coverage as percentages
-        line_coverage=$(echo "scale=2; ($total_line_rate * 100)" | bc)
-        branch_coverage=$(echo "scale=2; ($total_branch_rate * 100)" | bc)
+        if [[ -z "$percentages" ]]; then
+          echo "No coverage data found."
+          exit 1
+        fi
 
-        # Print results
-        echo "Line Coverage: $line_coverage%" >> $GITHUB_STEP_SUMMARY
-        echo "Branch Coverage: $branch_coverage%" >> $GITHUB_STEP_SUMMARY
-        echo "Total Methods Covered: $total_methods" >> $GITHUB_STEP_SUMMARY
+        # Calculate total percentage
+        total_coverage=0
+        count=0
+        while read -r line; do
+          total_coverage=$(echo "$total_coverage + $line" | bc)
+          count=$((count + 1))
+        done <<< "$percentages"
 
-        # Output results for logs
-        echo "Detailed Coverage Summary:"
-        echo "Line Coverage: $line_coverage%"
-        echo "Branch Coverage: $branch_coverage%"
-        echo "Total Methods Covered: $total_methods"
+        if [[ $count -gt 0 ]]; then
+          total_percentage=$(echo "scale=2; ($total_coverage / $count) * 100" | bc)
+          echo "Total Coverage Percentage for ${{ matrix.version }}: $total_percentage%"
+          echo "Total Coverage Percentage: $total_percentage%" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "No valid coverage data to summarize."
+        fi
 
   python-tests:
     runs-on: ubuntu-latest
@@ -151,11 +156,3 @@ jobs:
       with:
         name: python-test-reports
         path: PythonTests/reports
-
-    - name: Run Tests with Coverage
-      run: |
-        cd "Tests/V2/Integration Tests"
-        pytest --cov=. --cov-report=term-missing -v -s
-        coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-        coverage report --fail-under=80
-      continue-on-error: true
