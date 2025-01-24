@@ -52,12 +52,14 @@ namespace TestsV1
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count);
         }
+        [TestMethod]
         public void GetClientByIdService_Test_Succes(){
             var clientservice = new ClientService();
             var result = clientservice.GetClientById(1);
             Assert.IsNotNull(result);
             Assert.AreEqual("Raymond Inc", result.Name);
         }
+        [TestMethod]
         public void CreateClientService_Test_Succes(){
             var client = new ClientCS
             {
