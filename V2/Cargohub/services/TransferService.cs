@@ -71,7 +71,7 @@ public class TransferService : ITransferService
     public TransferCS UpdateTransfer(int id, TransferCS updateTransfer)
     {
         var allTransfers = GetAllTransfers();
-        var transferToUpdate = allTransfers.Single(transfer => transfer.Id == id);
+        var transferToUpdate = allTransfers.FirstOrDefault(transfer => transfer.Id == id);
 
         if (transferToUpdate is not null)
         {
