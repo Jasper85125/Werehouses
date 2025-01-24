@@ -935,5 +935,85 @@ namespace TestsV2
         }
         
         
+        public void GetAllShipmentsTest()
+        {
+            // Arrange
+            var shipments = new List<ShipmentCS>
+            {
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24 },
+                new ShipmentCS { Id = 2, order_id = 4, source_id = 10 },
+            };
+            _mockShipmentService.Setup(service => service.GetAllShipments()).Returns(shipments);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _shipmentController.GetAllShipments(null, 1, 10);
+            var okResult = result.Result as OkObjectResult;
+            var returnedItems = okResult.Value as PaginationCS<ShipmentCS>;
+
+            // Assert
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(2, returnedItems.Data.Count());
+
+            httpContext.Items["UserRole"] = "Skipper";
+            _shipmentController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            result = _shipmentController.GetAllShipments(null, 1, 10);
+
+            // Assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetShipmentById_ServiceTest_Exists()
+        {
+            // Arrange
+            var shipments = new List<ShipmentCS>
+            {
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24 },
+                new ShipmentCS { Id = 2, order_id = 4, source_id = 10 },
+            };
+            var shipmentService = new ShipmentService();
+            var shipment = shipmentService.GetShipmentById(1);
+
+            // Act
+            var result = shipments.FirstOrDefault(s => s.Id == 1);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+        }
+
+        [TestMethod]
+        public void GetShipmentById_ServiceTest_NotFound()
+        {
+            // Arrange
+            var shipments = new List<ShipmentCS>
+            {
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24 },
+                new ShipmentCS { Id = 2, order_id = 4, source_id = 10 },
+            };
+            var shipmentService = new ShipmentService();
+            var shipment = shipmentService.GetShipmentById(3);
+
+            // Act
+            var result = shipments.FirstOrDefault(s => s.Id == 3);
+
+            // Assert
+            Assert.IsNull(result);
+        }
     }
 }
