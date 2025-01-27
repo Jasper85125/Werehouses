@@ -5,6 +5,7 @@ using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace TestsV2
 {
@@ -19,6 +20,40 @@ namespace TestsV2
         {
             _mockWarehouseService = new Mock<IWarehouseService>();
             _warehouseController = new WarehouseController(_mockWarehouseService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/warehouses.json");
+            var warehouse = new WarehouseCS
+            {
+                Id = 1,
+                Code = "WH001",
+                Name = "Main Warehouse",
+                Address = "123 Warehouse St",
+                Zip = "12345",
+                City = "Warehouse City",
+                Province = "Warehouse Province",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+                {
+                    { "name", "John Doe" },
+                    { "phone", "123-456-7890" },
+                    { "email", "john.doe@example.com" }
+                },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+
+            var warehouseList = new List<WarehouseCS> { warehouse };
+            var json = JsonConvert.SerializeObject(warehouseList, Formatting.Indented);
+
+            // Create directory if it does not exist
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Write the JSON data to the file
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -92,7 +127,7 @@ namespace TestsV2
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(warehouses[0].Address, returnedItems.Address);
-                        httpContext = new DefaultHttpContext();
+            httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Client";
 
             _warehouseController.ControllerContext = new ControllerContext
@@ -127,7 +162,7 @@ namespace TestsV2
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
 
-                        httpContext = new DefaultHttpContext();
+            httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Client";
 
             _warehouseController.ControllerContext = new ControllerContext
@@ -338,9 +373,10 @@ namespace TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
-        
+
         [TestMethod]
-        public void PatchWarehouse_Succes(){
+        public void PatchWarehouse_Succes()
+        {
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";
 
@@ -349,9 +385,9 @@ namespace TestsV2
                 HttpContext = httpContext
             };
             //Arrange
-            var warehouse = new WarehouseCS(){ Id = 1, Code= "LOLJK", Name="KOPLER"};
-            _mockWarehouseService.Setup(service=>service.PatchWarehouse(1, "Code", "LOLJK")).Returns(warehouse);
-            _mockWarehouseService.Setup(service=>service.PatchWarehouse(1, "Name", "KOPLER")).Returns(warehouse);
+            var warehouse = new WarehouseCS() { Id = 1, Code = "LOLJK", Name = "KOPLER" };
+            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Code", "LOLJK")).Returns(warehouse);
+            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Name", "KOPLER")).Returns(warehouse);
             //Act
             var result1 = _warehouseController.PatchWarehouse(1, "Code", "LOLJK");
             var result2 = _warehouseController.PatchWarehouse(1, "Name", "KOPLER");
@@ -531,6 +567,308 @@ namespace TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        [TestMethod]
+        public void GetAllWarehousesService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouses = warehouseService.GetAllWarehouses();
+            Assert.IsNotNull(warehouses);
+            Assert.AreEqual(1, warehouses.Count);
+        }
+
+        [TestMethod]
+        public void GetWarehouseByIdService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.GetWarehouseById(1);
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("Main Warehouse", warehouse.Name);
+        }
+
+        [TestMethod]
+        public void CreateWarehouseService_Test()
+        {
+            var warehouse = new WarehouseCS
+            {
+                Id = 2,
+                Code = "WH002",
+                Name = "Secondary Warehouse",
+                Address = "456 Warehouse Ave",
+                Zip = "67890",
+                City = "Warehouse Town",
+                Province = "Warehouse State",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+            {
+                { "name", "Jane Doe" },
+                { "phone", "987-654-3210" },
+                { "email", "jane.doe@example.com" }
+            },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var warehouseService = new WarehouseService();
+            var createdWarehouse = warehouseService.CreateWarehouse(warehouse);
+            Assert.IsNotNull(createdWarehouse);
+            Assert.AreEqual("Secondary Warehouse", createdWarehouse.Name);
+
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(2, warehousesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateMultipleWarehouseService_Test()
+        {
+            var warehouses = new List<WarehouseCS>
+            {
+            new WarehouseCS
+            {
+                Id = 2,
+                Code = "WH002",
+                Name = "Secondary Warehouse",
+                Address = "456 Warehouse Ave",
+                Zip = "67890",
+                City = "Warehouse Town",
+                Province = "Warehouse State",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+                {
+                { "name", "Jane Doe" },
+                { "phone", "987-654-3210" },
+                { "email", "jane.doe@example.com" }
+                },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            },
+            new WarehouseCS
+            {
+                Id = 3,
+                Code = "WH003",
+                Name = "Tertiary Warehouse",
+                Address = "789 Warehouse Blvd",
+                Zip = "11223",
+                City = "Warehouse City",
+                Province = "Warehouse Province",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+                {
+                { "name", "John Smith" },
+                { "phone", "555-555-5555" },
+                { "email", "john.smith@example.com" }
+                },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }
+            };
+            var warehouseService = new WarehouseService();
+            var createdWarehouses = warehouseService.CreateMultipleWarehouse(warehouses);
+            Assert.IsNotNull(createdWarehouses);
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(3, warehousesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void UpdateWarehouseService_Test()
+        {
+            var warehouse = new WarehouseCS
+            {
+                Id = 1,
+                Code = "WH001",
+                Name = "Updated Warehouse",
+                Address = "123 Updated St",
+                Zip = "54321",
+                City = "Updated City",
+                Province = "Updated Province",
+                Country = "Updated Country",
+                Contact = new Dictionary<string, string>
+            {
+                { "name", "John Doe" },
+                { "phone", "123-456-7890" },
+                { "email", "john.doe@example.com" }
+            },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var warehouseService = new WarehouseService();
+            var updatedWarehouse = warehouseService.UpdateWarehouse(1, warehouse);
+            Assert.IsNotNull(updatedWarehouse);
+            Assert.AreEqual("Updated Warehouse", updatedWarehouse.Name);
+        }
+
+        [TestMethod]
+        public void DeleteWarehouseService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            warehouseService.DeleteWarehouse(1);
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(0, warehousesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void DeleteWarehouseService_Test_Failed()
+        {
+            var warehouseService = new WarehouseService();
+            warehouseService.DeleteWarehouse(3);
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(1, warehousesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void DeleteMultipleWarehousesService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouses = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(1, warehouses.Count);
+
+            var warehouse = new WarehouseCS
+            {
+                Id = 2,
+                Code = "WH002",
+                Name = "Secondary Warehouse",
+                Address = "456 Warehouse Ave",
+                Zip = "67890",
+                City = "Warehouse Town",
+                Province = "Warehouse State",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+            {
+                { "name", "Jane Doe" },
+                { "phone", "987-654-3210" },
+                { "email", "jane.doe@example.com" }
+            },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            warehouseService.CreateWarehouse(warehouse);
+
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(2, warehousesUpdated.Count);
+
+            List<int> warehousesToDelete = new List<int> { 1, 2 };
+            warehouseService.DeleteWarehouses(warehousesToDelete);
+            var warehousesAfterDelete = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(0, warehousesAfterDelete.Count);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_Failed()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(3, "Name", "Patched Warehouse");
+            Assert.IsNull(warehouse);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_Success()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(1, "Name", "Patched Warehouse");
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("Patched Warehouse", warehouse.Name);
+        }
+
+        [TestMethod]
+        public void GetLatestUpdatedWarehouseService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouses = warehouseService.GetLatestUpdatedWarehouse(1);
+            Assert.IsNotNull(warehouses);
+            Assert.AreEqual(1, warehouses.Count);
+        }
+
+        [TestMethod]
+        public void GetLatestUpdatedWarehouseService_Test_Success()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouses = warehouseService.GetLatestUpdatedWarehouse(1);
+            Assert.IsNotNull(warehouses);
+            Assert.AreEqual(1, warehouses.Count);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_Code_Success()
+        {
+            // Arrange
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(1, "Code", "WH999");
+
+            // Assert
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("WH999", warehouse.Code);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_Name_Success()
+        {
+            // Arrange
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(1, "Name", "New Warehouse Name");
+
+            // Assert
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("New Warehouse Name", warehouse.Name);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_Address_Success()
+        {
+            // Arrange
+            var warehouseService = new WarehouseService();
+            var newAddress = new WarehouseCS { Address = "New Address" };
+            var warehouse = warehouseService.PatchWarehouse(1, "Address", newAddress);
+
+            // Assert
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("New Address", warehouse.Address);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_Zip_Success()
+        {
+            // Arrange
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(1, "Zip", "99999");
+
+            // Assert
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("99999", warehouse.Zip);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_City_Success()
+        {
+            // Arrange
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(1, "City", "New City");
+
+            // Assert
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("New City", warehouse.City);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_Province_Success()
+        {
+            // Arrange
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(1, "Province", "New Province");
+
+            // Assert
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("New Province", warehouse.Province);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_Country_Success()
+        {
+            // Arrange
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(1, "Country", "New Country");
+
+            // Assert
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("New Country", warehouse.Country);
+        }
     }
 }
-
