@@ -35,13 +35,13 @@ public class ItemGroupService : ItemService, IitemGroupService
     public List<ItemCS> ItemsFromItemGroupId(int groupid){
         var items = itemService.GetAllItems();
         var find = items.FindAll(_ => _.item_group == groupid);
-        if(find is null){
+        if(find.Count <= 0){
             return null;
         }
         return find;
     }
 
-    public async Task<ItemGroupCS> CreateItemGroup(ItemGroupCS newItemGroup)
+    public ItemGroupCS CreateItemGroup(ItemGroupCS newItemGroup)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
         var currentDateTime = DateTime.Now;
@@ -60,12 +60,12 @@ public class ItemGroupService : ItemService, IitemGroupService
         items.Add(newItemGroup);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync(Path, jsonData);
+        File.WriteAllText(Path, jsonData);
 
         return newItemGroup;
     }
 
-    public async Task<ItemGroupCS> UpdateItemGroup(int id, ItemGroupCS itemLine)
+    public ItemGroupCS UpdateItemGroup(int id, ItemGroupCS itemgroup)
     {
         List<ItemGroupCS> items = GetAllItemGroups();
         var existingItem = items.FirstOrDefault(i => i.Id == id);
@@ -78,12 +78,12 @@ public class ItemGroupService : ItemService, IitemGroupService
 
         var formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-        existingItem.Name = itemLine.Name;
-        existingItem.Description = itemLine.Description;
+        existingItem.Name = itemgroup.Name;
+        existingItem.Description = itemgroup.Description;
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync("../../data/item_groups.json", jsonData);
+        File.WriteAllText("../../data/item_groups.json", jsonData);
 
         return existingItem;
     }
@@ -100,6 +100,6 @@ public class ItemGroupService : ItemService, IitemGroupService
         items.Remove(item);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllTextAsync(Path, jsonData);
+        File.WriteAllText(Path, jsonData);
     }
 }
