@@ -50,7 +50,7 @@ public class OrderService : IOrderService
     {
         List<OrderCS> orders = GetAllOrders();
         List<OrderCS> clientOrders = orders.Where(order => order.ship_to == client_id || order.bill_to == client_id).ToList();
-        if (clientOrders == null)
+        if (clientOrders.Count == 0)
         {
             return null;
         }
