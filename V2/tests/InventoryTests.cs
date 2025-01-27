@@ -59,9 +59,21 @@ namespace inventory.TestsV2
             //arrange
             var inventories = new List<InventoryCS>
             {
-                new InventoryCS { Id = 1, item_id = "P01", description = "Big blocks", item_reference = "LBJ" },
-                new InventoryCS { Id = 2, item_id = "P01", description = "Bricks", item_reference = "LBJ jr" }
-            };
+            new InventoryCS
+            {
+                Id = 2,
+                item_id = "P02",
+                description = "Cool items2",
+                item_reference = "REF-1234",
+                Locations = new List<int> { 1 },
+                total_on_hand = 60,
+                total_expected = 40,
+                total_ordered = 15,
+                total_allocated = 15,
+                total_available = 50,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }};
             _mockInventoryService.Setup(service => service.GetAllInventories()).Returns(inventories);
 
             var httpContext = new DefaultHttpContext();
@@ -80,7 +92,7 @@ namespace inventory.TestsV2
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as PaginationCS<InventoryCS>;
             Assert.IsNotNull(okResult);
-            Assert.AreEqual(2, returnedItems.Data.Count());
+            Assert.AreEqual(1, returnedItems.Data.Count());
 
             httpContext.Items["UserRole"] = "NoRole";
             _inventoryController.ControllerContext = new ControllerContext
@@ -95,6 +107,64 @@ namespace inventory.TestsV2
             var unauthorizedResult = result.Result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetInventoriesTest_Exists_filtered()
+        {
+            //arrange
+            var filtered = new inventoryFilter { Id = 2, item_id = "P02", LocationsCount = 1, total_on_hand = 60, total_expected = 40, total_ordered = 15, total_allocated = 15, total_available = 50 };
+            var inventories = new List<InventoryCS>
+            {
+            new InventoryCS
+            {
+                Id = 2,
+                item_id = "P02",
+                description = "Cool items2",
+                item_reference = "REF-1234",
+                Locations = new List<int> { 1 },
+                total_on_hand = 60,
+                total_expected = 40,
+                total_ordered = 15,
+                total_allocated = 15,
+                total_available = 50,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            },
+             new InventoryCS
+            {
+                Id = 3,
+                item_id = "P03",
+                description = "Cool items3",
+                item_reference = "REF-12345",
+                Locations = new List<int> { 1 },
+                total_on_hand = 50,
+                total_expected = 20,
+                total_ordered = 15,
+                total_allocated = 10,
+                total_available = 45,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }};
+            _mockInventoryService.Setup(service => service.GetAllInventories()).Returns([inventories[0]]);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin"; 
+            httpContext.Items["WarehouseID"] = "1,2,3,4";
+
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var value = _inventoryController.GetAllInventories(filtered, 1, 10);
+
+            //Assert
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as PaginationCS<InventoryCS>;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(1, returnedItems.Data.Count());
         }
 
         [TestMethod]
