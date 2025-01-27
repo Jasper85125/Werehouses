@@ -4,10 +4,7 @@ on:
   pull_request:
     branches:
       - '**'
-
-  push:
-    branches:
-      - '**'
+      
 jobs:
   csharp-build-and-test:
     runs-on: ubuntu-latest
