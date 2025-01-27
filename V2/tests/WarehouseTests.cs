@@ -21,7 +21,6 @@ namespace TestsV2
         {
             _mockWarehouseService = new Mock<IWarehouseService>();
             _warehouseController = new WarehouseController(_mockWarehouseService.Object);
-            _warehouseService = _mockWarehouseService.Object;
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/warehouses.json");
             var warehouse = new WarehouseCS
@@ -570,330 +569,247 @@ namespace TestsV2
         }
 
         [TestMethod]
-        public void GetAllWarehouses_ReturnsAllWarehouses()
+        public void GetAllWarehousesService_Test()
         {
-            // Arrange
+            var warehouseService = new WarehouseService();
+            var warehouses = warehouseService.GetAllWarehouses();
+            Assert.IsNotNull(warehouses);
+            Assert.AreEqual(1, warehouses.Count);
+        }
+
+        [TestMethod]
+        public void GetWarehouseByIdService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.GetWarehouseById(1);
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("Main Warehouse", warehouse.Name);
+        }
+
+        [TestMethod]
+        public void CreateWarehouseService_Test()
+        {
+            var warehouse = new WarehouseCS
+            {
+            Id = 2,
+            Code = "WH002",
+            Name = "Secondary Warehouse",
+            Address = "456 Warehouse Ave",
+            Zip = "67890",
+            City = "Warehouse Town",
+            Province = "Warehouse State",
+            Country = "Warehouse Country",
+            Contact = new Dictionary<string, string>
+            {
+                { "name", "Jane Doe" },
+                { "phone", "987-654-3210" },
+                { "email", "jane.doe@example.com" }
+            },
+            created_at = DateTime.Now,
+            updated_at = DateTime.Now
+            };
+            var warehouseService = new WarehouseService();
+            var createdWarehouse = warehouseService.CreateWarehouse(warehouse);
+            Assert.IsNotNull(createdWarehouse);
+            Assert.AreEqual("Secondary Warehouse", createdWarehouse.Name);
+
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(2, warehousesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateMultipleWarehouseService_Test()
+        {
             var warehouses = new List<WarehouseCS>
             {
-                new WarehouseCS { Id = 1, Address = "Straat 1" },
-                new WarehouseCS { Id = 2, Address = "Warenhuislaan 280" }
-            };
-            _mockWarehouseService.Setup(service => service.GetAllWarehouses()).Returns(warehouses);
-
-            // Act
-            var result = _warehouseService.GetAllWarehouses();
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
-        }
-
-        [TestMethod]
-        public void GetWarehouseById_ReturnsWarehouse()
-        {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
-
-            // Act
-            var result = _warehouseService.GetWarehouseById(1);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(warehouse.Address, result.Address);
-        }
-
-        [TestMethod]
-        public void GetWarehouseById_ReturnsNull_WhenWarehouseNotFound()
-        {
-            // Arrange
-            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns((WarehouseCS)null);
-
-            // Act
-            var result = _warehouseService.GetWarehouseById(1);
-
-            // Assert
-            Assert.IsNull(result);
-        }
-
-        [TestMethod]
-        public void CreateWarehouse_ReturnsCreatedWarehouse()
-        {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.CreateWarehouse(warehouse)).Returns(warehouse);
-
-            // Act
-            var result = _warehouseService.CreateWarehouse(warehouse);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(warehouse.Address, result.Address);
-        }
-
-        [TestMethod]
-        public void CreateMultipleWarehouse_ReturnsCreatedWarehouses()
-        {
-            // Arrange
-            var warehouses = new List<WarehouseCS>
+            new WarehouseCS
             {
-                new WarehouseCS { Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
-                                                Country= "GER", Contact= new Dictionary<string, string>{
-                                                {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}},
-                new WarehouseCS { Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
-                                                Country= "GER", Contact= new Dictionary<string, string>{
-                                                {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}}
-            };
-            _mockWarehouseService.Setup(service => service.CreateMultipleWarehouse(warehouses)).Returns(warehouses);
-
-            // Act
-            var result = _warehouseService.CreateMultipleWarehouse(warehouses);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
-        }
-
-        [TestMethod]
-        public void UpdateWarehouse_ReturnsUpdatedWarehouse()
-        {
-            // Arrange
-            var updatedWarehouse = new WarehouseCS
+                Id = 2,
+                Code = "WH002",
+                Name = "Secondary Warehouse",
+                Address = "456 Warehouse Ave",
+                Zip = "67890",
+                City = "Warehouse Town",
+                Province = "Warehouse State",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+                {
+                { "name", "Jane Doe" },
+                { "phone", "987-654-3210" },
+                { "email", "jane.doe@example.com" }
+                },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            },
+            new WarehouseCS
             {
-                Id = 1,
-                Code = "X",
-                Name = "cargo hub",
-                Address = "bruv",
-                Zip = "4002 AZ",
-                City = "hub",
-                Province = "Utrecht",
-                Country = "GER",
-                Contact = new Dictionary<string, string> { { "name", "Fem Keijzer" }, { "phone", "(078) 0013363" }, { "email", "blamore@example.net" } }
+                Id = 3,
+                Code = "WH003",
+                Name = "Tertiary Warehouse",
+                Address = "789 Warehouse Blvd",
+                Zip = "11223",
+                City = "Warehouse City",
+                Province = "Warehouse Province",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+                {
+                { "name", "John Smith" },
+                { "phone", "555-555-5555" },
+                { "email", "john.smith@example.com" }
+                },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }
             };
-            _mockWarehouseService.Setup(service => service.UpdateWarehouse(1, updatedWarehouse)).Returns(updatedWarehouse);
-
-            // Act
-            var result = _warehouseService.UpdateWarehouse(1, updatedWarehouse);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(updatedWarehouse.Address, result.Address);
+            var warehouseService = new WarehouseService();
+            var createdWarehouses = warehouseService.CreateMultipleWarehouse(warehouses);
+            Assert.IsNotNull(createdWarehouses);
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(3, warehousesUpdated.Count);
         }
 
         [TestMethod]
-        public void UpdateWarehouse_ReturnsNull_WhenWarehouseNotFound()
+        public void UpdateWarehouseService_Test()
         {
-            // Arrange
-            var updatedWarehouse = new WarehouseCS
+            var warehouse = new WarehouseCS
             {
-                Id = 1,
-                Code = "X",
-                Name = "cargo hub",
-                Address = "bruv",
-                Zip = "4002 AZ",
-                City = "hub",
-                Province = "Utrecht",
-                Country = "GER",
-                Contact = new Dictionary<string, string> { { "name", "Fem Keijzer" }, { "phone", "(078) 0013363" }, { "email", "blamore@example.net" } }
-            };
-            _mockWarehouseService.Setup(service => service.UpdateWarehouse(0, updatedWarehouse)).Returns((WarehouseCS)null);
-
-            // Act
-            var result = _warehouseService.UpdateWarehouse(0, updatedWarehouse);
-
-            // Assert
-            Assert.IsNull(result);
-        }
-
-        [TestMethod]
-        public void DeleteWarehouse_Success()
-        {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
-
-            // Act
-            _warehouseService.DeleteWarehouse(1);
-
-            // Assert
-            _mockWarehouseService.Verify(service => service.DeleteWarehouse(1), Times.Once);
-        }
-
-        [TestMethod]
-        public void DeleteWarehouses_Success()
-        {
-            // Arrange
-            var idsToDelete = new List<int> { 1, 2, 3 };
-
-            // Act
-            _warehouseService.DeleteWarehouses(idsToDelete);
-
-            // Assert
-            _mockWarehouseService.Verify(service => service.DeleteWarehouses(idsToDelete), Times.Once);
-        }
-
-        [TestMethod]
-        public void GetLatestUpdatedWarehouse_ReturnsLatestUpdatedWarehouses()
-        {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.GetLatestUpdatedWarehouse(It.IsAny<int>())).Returns(new List<WarehouseCS> { warehouse });
-
-            // Act
-            var result = _warehouseService.GetLatestUpdatedWarehouse();
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(warehouse.Address, result[0].Address);
-        }
-
-        [TestMethod]
-        public void GetLatestUpdatedWarehouse_ReturnsNull_WhenNoWarehousesFound()
-        {
-            // Arrange
-            _mockWarehouseService.Setup(service => service.GetLatestUpdatedWarehouse(It.IsAny<int>())).Returns((List<WarehouseCS>)null);
-
-            // Act
-            var result = _warehouseService.GetLatestUpdatedWarehouse();
-
-            // Assert
-            Assert.IsNull(result);
-        }
-
-        [TestMethod]
-        public void PatchWarehouse_Success()
-        {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Code", "LOLJK")).Returns(warehouse);
-            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Name", "KOPLER")).Returns(warehouse);
-
-            // Act
-            var result1 = _warehouseService.PatchWarehouse(1, "Code", "LOLJK");
-            var result2 = _warehouseService.PatchWarehouse(1, "Name", "KOPLER");
-
-            // Assert
-            Assert.IsNotNull(result1);
-            Assert.IsNotNull(result2);
-            Assert.AreEqual(warehouse.Address, result1.Address);
-            Assert.AreEqual(warehouse.Address, result2.Address);
-        }
-
-        [TestMethod]
-        public void PatchWarehouse_ReturnsNull_WhenWarehouseNotFound()
-        {
-            // Arrange
-            _mockWarehouseService.Setup(service => service.PatchWarehouse(0, "Code", "LOLJK")).Returns((WarehouseCS)null);
-
-            // Act
-            var result = _warehouseService.PatchWarehouse(0, "Code", "LOLJK");
-
-            // Assert
-            Assert.IsNull(result);
-        }
-
-        [TestMethod]
-        public void PatchWarehouse_ReturnsNull_WhenPropertyNotFound()
-        {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Code", "LOLJK")).Returns((WarehouseCS)null);
-            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Name", "KOPLER")).Returns(warehouse);
-
-            // Act
-            var result = _warehouseService.PatchWarehouse(1, "Code", "LOLJK");
-
-            // Assert
-            Assert.IsNull(result);
-        }
-
-        [TestMethod]
-        public void PatchWarehouse_ReturnsNull_WhenValueIsNull()
-        {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Code", "LOLJK")).Returns(warehouse);
-            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Name", "KOPLER")).Returns((WarehouseCS)null);
-
-            // Act
-            var result = _warehouseService.PatchWarehouse(1, "Name", "KOPLER");
-
-            // Assert
-            Assert.IsNull(result);
-        }
-
-        [TestMethod]
-        public void GetWarehouseById_ReturnsWarehouse_WhenIdExists()
-        {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
-
-            var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";
-
-            _warehouseController.ControllerContext = new ControllerContext
+            Id = 1,
+            Code = "WH001",
+            Name = "Updated Warehouse",
+            Address = "123 Updated St",
+            Zip = "54321",
+            City = "Updated City",
+            Province = "Updated Province",
+            Country = "Updated Country",
+            Contact = new Dictionary<string, string>
             {
-                HttpContext = httpContext
+                { "name", "John Doe" },
+                { "phone", "123-456-7890" },
+                { "email", "john.doe@example.com" }
+            },
+            created_at = DateTime.Now,
+            updated_at = DateTime.Now
             };
-
-            // Act
-            var result = _warehouseController.GetWarehouseById(1);
-
-            // Assert
-            var okResult = result.Result as OkObjectResult;
-            var returnedWarehouse = okResult.Value as WarehouseCS;
-            Assert.IsNotNull(okResult);
-            Assert.IsNotNull(returnedWarehouse);
-            Assert.AreEqual(warehouse.Address, returnedWarehouse.Address);
+            var warehouseService = new WarehouseService();
+            var updatedWarehouse = warehouseService.UpdateWarehouse(1, warehouse);
+            Assert.IsNotNull(updatedWarehouse);
+            Assert.AreEqual("Updated Warehouse", updatedWarehouse.Name);
         }
 
         [TestMethod]
-        public void GetWarehouseById_ReturnsNotFound_WhenIdDoesNotExist()
+        public void UpdateWarehouseService_Test_Failed()
         {
-            // Arrange
-            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns((WarehouseCS)null);
-
-            var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin";
-
-            _warehouseController.ControllerContext = new ControllerContext
+            var warehouse = new WarehouseCS
             {
-                HttpContext = httpContext
+            Id = 3,
+            Code = "WH003",
+            Name = "Nonexistent Warehouse",
+            Address = "999 Nowhere St",
+            Zip = "00000",
+            City = "Nowhere",
+            Province = "Nowhere",
+            Country = "Nowhere",
+            Contact = new Dictionary<string, string>
+            {
+                { "name", "No One" },
+                { "phone", "000-000-0000" },
+                { "email", "no.one@example.com" }
+            },
+            created_at = DateTime.Now,
+            updated_at = DateTime.Now
             };
-
-            // Act
-            var result = _warehouseController.GetWarehouseById(1);
-
-            // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+            var warehouseService = new WarehouseService();
+            var updatedWarehouse = warehouseService.UpdateWarehouse(3, warehouse);
+            Assert.IsNull(updatedWarehouse);
         }
 
         [TestMethod]
-        public void GetWarehouseById_ReturnsUnauthorized_WhenUserRoleIsInvalid()
+        public void DeleteWarehouseService_Test()
         {
-            // Arrange
-            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
-            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
-
-            var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Client";
-
-            _warehouseController.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
-            // Act
-            var result = _warehouseController.GetWarehouseById(1);
-
-            // Assert
-            var unauthorizedResult = result.Result as UnauthorizedResult;
-            Assert.IsNotNull(unauthorizedResult);
-            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+            var warehouseService = new WarehouseService();
+            warehouseService.DeleteWarehouse(1);
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(0, warehousesUpdated.Count);
         }
 
-    }
-}
+        [TestMethod]
+        public void DeleteWarehouseService_Test_Failed()
+        {
+            var warehouseService = new WarehouseService();
+            warehouseService.DeleteWarehouse(3);
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(1, warehousesUpdated.Count);
+        }
 
+        [TestMethod]
+        public void DeleteMultipleWarehousesService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouses = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(1, warehouses.Count);
+
+            var warehouse = new WarehouseCS
+            {
+            Id = 2,
+            Code = "WH002",
+            Name = "Secondary Warehouse",
+            Address = "456 Warehouse Ave",
+            Zip = "67890",
+            City = "Warehouse Town",
+            Province = "Warehouse State",
+            Country = "Warehouse Country",
+            Contact = new Dictionary<string, string>
+            {
+                { "name", "Jane Doe" },
+                { "phone", "987-654-3210" },
+                { "email", "jane.doe@example.com" }
+            },
+            created_at = DateTime.Now,
+            updated_at = DateTime.Now
+            };
+            warehouseService.CreateWarehouse(warehouse);
+
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(2, warehousesUpdated.Count);
+
+            List<int> warehousesToDelete = new List<int> { 1, 2 };
+            warehouseService.DeleteWarehouses(warehousesToDelete);
+            var warehousesAfterDelete = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(0, warehousesAfterDelete.Count);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(1, "Name", "Patched Warehouse");
+            warehouse = warehouseService.PatchWarehouse(1, "Address", "123 Patched St");
+            warehouse = warehouseService.PatchWarehouse(1, "City", "Patched City");
+            warehouse = warehouseService.PatchWarehouse(1, "Zip", "54321");
+            warehouse = warehouseService.PatchWarehouse(1, "Province", "Patched Province");
+            warehouse = warehouseService.PatchWarehouse(1, "Country", "Patched Country");
+            warehouse = warehouseService.PatchWarehouse(1, "Contact", new Dictionary<string, string>
+            {
+            { "name", "Patched Name" },
+            { "phone", "123-456-7890" },
+            { "email", "patched@example.com" }
+            });
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("Patched Warehouse", warehouse.Name);
+            Assert.AreEqual("123 Patched St", warehouse.Address);
+            Assert.AreEqual("Patched City", warehouse.City);
+            Assert.AreEqual("54321", warehouse.Zip);
+            Assert.AreEqual("Patched Province", warehouse.Province);
+            Assert.AreEqual("Patched Country", warehouse.Country);
+            Assert.AreEqual("Patched Name", warehouse.Contact["name"]);
+            Assert.AreEqual("123-456-7890", warehouse.Contact["phone"]);
+            Assert.AreEqual("patched@example.com", warehouse.Contact["email"]);
+        }
+
+        [TestMethod]
+        public void PatchWarehouseService_Test_Failed()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(3, "Name", "Patched Warehouse");
+            Assert.IsNull(warehouse);
+        }
