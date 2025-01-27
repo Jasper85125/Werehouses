@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServicesV2;
 using ControllersV2;
 using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 
 namespace clients.TestsV2
 {
@@ -34,7 +35,7 @@ namespace clients.TestsV2
 
             _mockAdminService
                 .Setup(service => service.UpdateAPIKeys(apiKey, newApiKey))
-                .Returns(newApiKey); 
+                .Returns(newApiKey);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";
@@ -82,7 +83,7 @@ namespace clients.TestsV2
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         }
-        
+
         [TestMethod]
         public void TestAddAPIKeys_Success()
         {
@@ -174,7 +175,7 @@ namespace clients.TestsV2
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             _mockAdminService.Verify(service => service.DeleteAPIKeys(apiKey), Times.Once);
         }
-        
+
         [TestMethod]
         public void TestDeleteAPIKeys_Failed()
         {
@@ -201,5 +202,97 @@ namespace clients.TestsV2
             _mockAdminService.Verify(service => service.DeleteAPIKeys(apiKey), Times.Once);
         }
 
+        [TestMethod]
+        public void TestFileProcessing_JsonFile()
+        {
+            // Arrange
+            var fileMock = new Mock<IFormFile>();
+            var content = "{\"key\":\"value\"}";
+            var fileName = "test.json";
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms);
+            writer.Write(content);
+            writer.Flush();
+            ms.Position = 0;
+            fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
+            fileMock.Setup(_ => _.FileName).Returns(fileName);
+            fileMock.Setup(_ => _.Length).Returns(ms.Length);
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "data", fileName);
+
+            // Act
+            var result = ProcessFile(fileMock.Object);
+
+            // Assert
+            Assert.AreEqual(fileName, result);
+            Assert.IsTrue(File.Exists(path));
+        }
+
+        [TestMethod]
+        public void TestFileProcessing_CsvFile()
+        {
+            // Arrange
+            var fileMock = new Mock<IFormFile>();
+            var content = "header1,header2\nvalue1,value2";
+            var fileName = "test.csv";
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms);
+            writer.Write(content);
+            writer.Flush();
+            ms.Position = 0;
+            fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
+            fileMock.Setup(_ => _.FileName).Returns(fileName);
+            fileMock.Setup(_ => _.Length).Returns(ms.Length);
+
+            var saveFileName = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Data", Path.ChangeExtension(fileName, ".json"));
+
+            // Act
+            var result = ProcessFile(fileMock.Object);
+
+            // Assert
+            Assert.AreEqual(saveFileName, result);
+            Assert.IsTrue(File.Exists(saveFileName));
+        }
+
+        private string ProcessFile(IFormFile file)
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "data", file.FileName);
+            if (Path.GetExtension(file.FileName) == ".json")
+            {
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                return file.FileName;
+            }
+            using var reader = new StreamReader(file.OpenReadStream());
+            var csvContent = reader.ReadToEnd();
+            var lines = csvContent.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            var headers = lines[0].Split(',');
+
+            var clients = new List<Dictionary<string, string>>();
+
+            for (int i = 1; i < lines.Length; i++)
+            {
+                var values = lines[i].Split(',');
+                var client = new Dictionary<string, string>();
+
+                for (int j = 0; j < headers.Length; j++)
+                {
+                    client[headers[j].Trim()] = values[j].Trim();
+                }
+
+                clients.Add(client);
+            }
+
+            var jsonContent = JsonSerializer.Serialize(clients, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            var saveFileName = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Data", Path.ChangeExtension(file.FileName, ".json"));
+            File.WriteAllText(saveFileName, jsonContent);
+            return saveFileName;
+        }
     }
 }
