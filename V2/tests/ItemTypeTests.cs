@@ -621,6 +621,82 @@ namespace itemtype.TestsV2
             Assert.AreEqual("ItemType data is null", badRequestResult.Value);
         }
 
+        [TestMethod]
+        public void UpdateItemType_IdMismatch_ShouldReturnBadRequest_2()
+        {
+            // Arrange
+            var updatedItemType = new ItemTypeCS { Id = 2, Name = "UpdatedType", description = "UpdatedDescription" };
 
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            var badRequestResult = result.Result as BadRequestResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void UpdateItemType_ItemNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            var notFoundResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void UpdateItemType_ValidItem_ShouldReturnUpdatedItemType_2()
+        {
+            // Arrange
+            var existingItemType = new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" };
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
+
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(existingItemType);
+            _mockItemTypeService.Setup(service => service.UpdateItemType(1, updatedItemType)).Returns(updatedItemType);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+            var returnedItemType = okResult.Value as ItemTypeCS;
+            Assert.IsNotNull(returnedItemType);
+            Assert.AreEqual(updatedItemType.Name, returnedItemType.Name);
+            Assert.AreEqual(updatedItemType.description, returnedItemType.description);
+        }
     }
 }
