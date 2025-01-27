@@ -4,6 +4,8 @@ using Moq;
 using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+
 
 namespace TestsV1
 {
@@ -18,6 +20,33 @@ namespace TestsV1
         {
             _mockTransferService = new Mock<ITransferService>();
             _transferController = new TransferController(_mockTransferService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/transfers.json");
+            var transfer = new TransferCS
+            {
+                Id = 1,
+                Reference = "JoJo",
+                transfer_from = 1,
+                transfer_to = 1,
+                transfer_status = "completed",
+                created_at = default,
+                updated_at = default,
+                Items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "P01", amount = 23 }
+                }
+            };
+
+            var transferList = new List<TransferCS> { transfer };
+            var json = JsonConvert.SerializeObject(transferList, Formatting.Indented);
+
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -221,6 +250,116 @@ namespace TestsV1
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+
+        [TestMethod]
+        public void GetAllTransfersService_Test()
+        {
+            var transferService = new TransferService();
+            var transfers = transferService.GetAllTransfers();
+            Assert.IsNotNull(transfers);
+            Assert.AreEqual(1, transfers.Count);
+        }
+
+        [TestMethod]
+        public void GetTransferByIdService_Test()
+        {
+            var transferService = new TransferService();
+            var transfers = transferService.GetTransferById(1);
+            Assert.IsNotNull(transfers);
+            Assert.AreEqual("JoJo", transfers.Reference);
+        }
+
+        [TestMethod]
+        public void GetItemsInTransferService_Test()
+        {
+            var transferService = new TransferService();
+            var transfers = transferService.GetItemsInTransfer(1);
+            Assert.IsNotNull(transfers);
+            Assert.AreEqual("P01", transfers.First().item_id);
+        }
+
+        [TestMethod]
+        public void GetItemsInTransferService_Test_Failed()
+        {
+            var transferService = new TransferService();
+            var transfers = transferService.GetItemsInTransfer(4);
+            Assert.IsNull(transfers);
+        }
+
+        [TestMethod]
+        public void CreateTransferService_Test()
+        {
+            var transferService = new TransferService();
+            var transfer = new TransferCS
+            {
+                Id = 1,
+                Reference = "JoJo",
+                transfer_from = 9292,
+                transfer_to = null,
+                transfer_status = "completed",
+                created_at = default,
+                updated_at = default,
+                Items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "P01", amount = 23 }
+                }
+            };
+            var result = transferService.CreateTransfer(transfer);
+            Assert.IsNotNull(result);
+            
+            var resultAgain = transferService.GetAllTransfers();
+            Assert.AreEqual(2, resultAgain.Count);
+        }
+
+        [TestMethod]
+        public void UpdatedTransferService_Test()
+        {
+            var transferService = new TransferService();
+            var transfer = new TransferCS
+            {
+                Id = 1,
+                Reference = "Updated JoJo",
+                transfer_from = 9292,
+                transfer_to = null,
+                transfer_status = "Pending",
+                created_at = default,
+                updated_at = default,
+                Items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "P02", amount = 23 }
+                }
+            };
+            var result = transferService.UpdateTransfer(1, transfer);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Updated JoJo", result.Reference);
+        }
+
+        [TestMethod]
+        public void CommitTransferService_Test_Failed()
+        {
+            var transferService = new TransferService();
+            var result = transferService.CommitTransfer(5);
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void DeleteTransferService_Test()
+        {
+            var transferService = new TransferService();
+            transferService.DeleteTransfer(1);
+            var resultAgain = transferService.GetAllTransfers();
+            Assert.AreEqual(0, resultAgain.Count);
+        }
+
+        [TestMethod]
+        public void DeleteTransferService_Test_Failed()
+        {
+            var transferService = new TransferService();
+            transferService.DeleteTransfer(5);
+            var resultAgain = transferService.GetAllTransfers();
+            Assert.AreEqual(1, resultAgain.Count);
+        }
+
     }
 }
 
