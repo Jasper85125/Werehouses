@@ -90,7 +90,7 @@ public class LocationService : ILocationService
     }
     public LocationCS PatchLocation(int id, string property, object newvalue){
         var locations = GetAllLocations();
-        if (locations is not null || locations.Count > 0){
+        if (locations is not null ){
             var location = locations.Find(_=>_.Id == id);
             if(location is null){
                 return null;
@@ -111,7 +111,9 @@ public class LocationService : ILocationService
             File.WriteAllText(_path, json);
             return location;
         }
-        return null;
+        else{
+            return null;
+        }
     }
     public void DeleteLocation(int locationId)
     {
