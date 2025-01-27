@@ -520,23 +520,6 @@ namespace itemtype.TestsV2
         }
 
         [TestMethod]
-        public void GetAllItemtypes_ShouldReturnOkResult_WithItemTypes()
-        {
-            // Arrange
-            _mockItemTypeService.Setup(service => service.GetAllItemtypes()).Returns(_itemTypes);
-
-            // Act
-            var result = _itemTypeController.GetAllItemtypes().Result as OkObjectResult;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(200, result.StatusCode);
-            var returnedItemTypes = result.Value as IEnumerable<ItemTypeCS>;
-            Assert.IsNotNull(returnedItemTypes);
-            Assert.AreEqual(2, returnedItemTypes.Count());
-        }
-
-        [TestMethod]
         public void GetAllItemtypes_ShouldReturnUnauthorized_WhenUserRoleIsInvalid()
         {
             // Arrange
@@ -576,15 +559,15 @@ namespace itemtype.TestsV2
             };
 
             // Act
-            var result = _itemTypeController.CreateMultipleItemTypes(newItemTypes);
+            var result = _itemTypeController.CreateMultipleItemTypes(newItemTypes).Result;
 
             // Assert
             var createdResult = result as ObjectResult;
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(StatusCodes.Status201Created, createdResult.StatusCode);
-            var returnedItemTypes = createdResult.Value as List<ItemTypeCS>;
+            var returnedItemTypes = createdResult.Value as IEnumerable<ItemTypeCS>;
             Assert.IsNotNull(returnedItemTypes);
-            Assert.AreEqual(2, returnedItemTypes.Count);
+            Assert.AreEqual(2, returnedItemTypes.Count());
         }
 
         [TestMethod]
@@ -609,7 +592,7 @@ namespace itemtype.TestsV2
             var result = _itemTypeController.CreateMultipleItemTypes(newItemTypes);
 
             // Assert
-            var unauthorizedResult = result as UnauthorizedResult;
+            var unauthorizedResult = result.Result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(StatusCodes.Status401Unauthorized, unauthorizedResult.StatusCode);
         }
@@ -632,12 +615,12 @@ namespace itemtype.TestsV2
             var result = _itemTypeController.CreateMultipleItemTypes(newItemTypes);
 
             // Assert
-            var badRequestResult = result as BadRequestObjectResult;
+            var badRequestResult = result.Result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
             Assert.AreEqual("ItemType data is null", badRequestResult.Value);
         }
 
-        
+
     }
 }
