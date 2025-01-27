@@ -5,6 +5,7 @@ using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace TestsV2
 {
@@ -19,7 +20,39 @@ namespace TestsV2
         {
             _mockSupplierService = new Mock<ISupplierService>();
             _supplierController = new SupplierController(_mockSupplierService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/suppliers.json");
+            var supplier = new SupplierCS { 
+                Id = 1,
+                Code = "SUP0001",
+                Name = "Lee, Parks and Johnson",
+                Address = "5989 Sullivan Drives",
+                address_extra = "Apt. 996",
+                City = "Port Anitaburgh",
+                zip_code = "91688",
+                Province = "Illinois",
+                Country = "Czech Republic",
+                contact_name = "Toni Barnett",
+                PhoneNumber = "363.541.7282x36825",
+                Reference = "LPaJ-SUP0001",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+                };
+
+            var supplierlist = new List<SupplierCS> { supplier };
+            var json = JsonConvert.SerializeObject(supplierlist, Formatting.Indented);
+
+            // Create directory if it does not exist
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Write the JSON data to the file
+            File.WriteAllText(filePath, json);
         }
+        
 
         [TestMethod]
         public void GetSuppliersTest_Exists()
@@ -628,6 +661,17 @@ namespace TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        // Test for the services
+        [TestMethod]
+        public void GetAllSuppliersService_Test(){
+
+            var supplierService = new SupplierService();
+            var suppliers = supplierService.GetAllSuppliers();
+            Assert.IsNotNull(suppliers);
+            Assert.AreEqual(1, suppliers.Count);
+        }
     }
 }
+
 
