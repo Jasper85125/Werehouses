@@ -693,7 +693,6 @@ namespace TestsV2
             var orders = orderService.GetAllOrders();
             Assert.IsNotNull(orders);
             Assert.AreEqual(1, orders.Count);
-
         }
 
         [TestMethod]
@@ -911,6 +910,7 @@ namespace TestsV2
             var orders = orderService.UpdateOrder(3,order);
             Assert.IsNull(orders);
         }
+        
         [TestMethod]
         public void PatchOrderService_Test()
         {
