@@ -761,6 +761,139 @@ namespace TestsV2
             Assert.IsNull(result);
         }
 
+        [TestMethod]
+        public void PatchWarehouse_Success()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Code", "LOLJK")).Returns(warehouse);
+            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Name", "KOPLER")).Returns(warehouse);
+
+            // Act
+            var result1 = _warehouseService.PatchWarehouse(1, "Code", "LOLJK");
+            var result2 = _warehouseService.PatchWarehouse(1, "Name", "KOPLER");
+
+            // Assert
+            Assert.IsNotNull(result1);
+            Assert.IsNotNull(result2);
+            Assert.AreEqual(warehouse.Address, result1.Address);
+            Assert.AreEqual(warehouse.Address, result2.Address);
+        }
+
+        [TestMethod]
+        public void PatchWarehouse_ReturnsNull_WhenWarehouseNotFound()
+        {
+            // Arrange
+            _mockWarehouseService.Setup(service => service.PatchWarehouse(0, "Code", "LOLJK")).Returns((WarehouseCS)null);
+
+            // Act
+            var result = _warehouseService.PatchWarehouse(0, "Code", "LOLJK");
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void PatchWarehouse_ReturnsNull_WhenPropertyNotFound()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Code", "LOLJK")).Returns((WarehouseCS)null);
+            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Name", "KOPLER")).Returns(warehouse);
+
+            // Act
+            var result = _warehouseService.PatchWarehouse(1, "Code", "LOLJK");
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void PatchWarehouse_ReturnsNull_WhenValueIsNull()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Code", "LOLJK")).Returns(warehouse);
+            _mockWarehouseService.Setup(service => service.PatchWarehouse(1, "Name", "KOPLER")).Returns((WarehouseCS)null);
+
+            // Act
+            var result = _warehouseService.PatchWarehouse(1, "Name", "KOPLER");
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void GetWarehouseById_ReturnsWarehouse_WhenIdExists()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _warehouseController.GetWarehouseById(1);
+
+            // Assert
+            var okResult = result.Result as OkObjectResult;
+            var returnedWarehouse = okResult.Value as WarehouseCS;
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(returnedWarehouse);
+            Assert.AreEqual(warehouse.Address, returnedWarehouse.Address);
+        }
+
+        [TestMethod]
+        public void GetWarehouseById_ReturnsNotFound_WhenIdDoesNotExist()
+        {
+            // Arrange
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns((WarehouseCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _warehouseController.GetWarehouseById(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void GetWarehouseById_ReturnsUnauthorized_WhenUserRoleIsInvalid()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Client";
+
+            _warehouseController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _warehouseController.GetWarehouseById(1);
+
+            // Assert
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
     }
 }
 
