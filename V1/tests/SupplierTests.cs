@@ -4,6 +4,8 @@ using Moq;
 using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+
 
 namespace TestsV1
 {
@@ -18,6 +20,38 @@ namespace TestsV1
         {
             _mockSupplierService = new Mock<ISupplierService>();
             _supplierController = new SupplierController(_mockSupplierService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/suppliers.json");
+            var supplier = new SupplierCS
+            {
+                Id = 1,
+                Code = "SUP0001",
+                Name = "Lee, Parks and Johnson",
+                Address = "5989 Sullivan Drives",
+                address_extra = "Apt. 996",
+                City = "Port Anitaburgh",
+                zip_code = "91688",
+                Province = "Illinois",
+                Country = "Czech Republic",
+                contact_name = "Toni Barnett",
+                PhoneNumber = "363.541.7282x36825",
+                Reference = "LPaJ-SUP0001",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+
+            var supplierlist = new List<SupplierCS> { supplier };
+            var json = JsonConvert.SerializeObject(supplierlist, Formatting.Indented);
+
+            // Create directory if it does not exist
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Write the JSON data to the file
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -221,6 +255,111 @@ namespace TestsV1
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+        public void GetAllSuppliersService_Test()
+        {
+
+            var supplierService = new SupplierService();
+            var suppliers = supplierService.GetAllSuppliers();
+            Assert.IsNotNull(suppliers);
+            Assert.AreEqual(1, suppliers.Count);
+        }
+
+        [TestMethod]
+        public void GetSupplierByIdService_Test()
+        {
+
+            var supplierService = new SupplierService();
+            var supplier = supplierService.GetSupplierById(1);
+            Assert.IsNotNull(supplier);
+            Assert.AreEqual("Lee, Parks and Johnson", supplier.Name);
+        }
+
+        [TestMethod]
+        public void CreateSupplierService_Test()
+        {
+
+            var supplierService = new SupplierService();
+            var supplier = new SupplierCS
+            {
+                Id = 2,
+                Code = "SUP0002",
+                Name = "Daniel Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                address_extra = "Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                PhoneNumber = "242.732.3483x2573x2573",
+                Reference = "DInc-SUP0002",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var suppliers = supplierService.CreateSupplier(supplier);
+            Assert.IsNotNull(suppliers);
+            Assert.AreEqual("Daniel Inc", suppliers.Name);
+
+            var suppliersUpdated = supplierService.GetAllSuppliers();
+            Assert.AreEqual(2, suppliersUpdated.Count);
+        }
+
+        [TestMethod]
+        public void UpdateSupplierService_Test()
+        {
+            var supplierService = new SupplierService();
+            var supplier = new SupplierCS
+            {
+                Id = 1,
+                Code = "SUP0001",
+                Name = "Lee, Par",
+                Address = "5989 Sullivan Drives",
+                address_extra = "Apt. 996",
+                City = "Port Anitaburgh",
+                zip_code = "91688",
+                Province = "Illinois",
+                Country = "Czech Republic",
+                contact_name = "Toni Barnett",
+                PhoneNumber = "363.541.7282x36825",
+                Reference = "LPaJ-SUP0001",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var supplierUpdated = supplierService.UpdateSupplier(1, supplier);
+            Assert.IsNotNull(supplierUpdated);
+            Assert.AreEqual("Lee, Par", supplierUpdated.Name);
+        }
+
+        [TestMethod]
+        public void DeleteSupplierService_Test()
+        {
+            var supplierService = new SupplierService();
+            supplierService.DeleteSupplier(1);
+            var suppliers = supplierService.GetAllSuppliers();
+            Assert.AreEqual(0, suppliers.Count);
+        }
+
+        [TestMethod]
+        public void DeleteSupplierService_FailTest()
+        {
+            var supplierService = new SupplierService();
+            supplierService.DeleteSupplier(2);
+            var suppliers = supplierService.GetAllSuppliers();
+            Assert.AreEqual(1, suppliers.Count);
+        }
+
+        [TestMethod]
+        public void GetItemsBySupplierIdService_Test()
+        {
+            var supplierService = new SupplierService();
+            var items = supplierService.GetItemsBySupplierId(1);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(0, items.Count);
+        }
+
     }
 }
+
 
