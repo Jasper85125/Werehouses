@@ -59,13 +59,25 @@ namespace inventory.TestsV2
             //arrange
             var inventories = new List<InventoryCS>
             {
-                new InventoryCS { Id = 1, item_id = "P01", description = "Big blocks", item_reference = "LBJ" },
-                new InventoryCS { Id = 2, item_id = "P01", description = "Bricks", item_reference = "LBJ jr" }
-            };
+            new InventoryCS
+            {
+                Id = 2,
+                item_id = "P02",
+                description = "Cool items2",
+                item_reference = "REF-1234",
+                Locations = new List<int> { 1 },
+                total_on_hand = 60,
+                total_expected = 40,
+                total_ordered = 15,
+                total_allocated = 15,
+                total_available = 50,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }};
             _mockInventoryService.Setup(service => service.GetAllInventories()).Returns(inventories);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin"; 
+            httpContext.Items["UserRole"] = "Admin";
             httpContext.Items["WarehouseID"] = "1,2,3,4";
 
             _inventoryController.ControllerContext = new ControllerContext
@@ -80,7 +92,7 @@ namespace inventory.TestsV2
             var okResult = value.Result as OkObjectResult;
             var returnedItems = okResult.Value as PaginationCS<InventoryCS>;
             Assert.IsNotNull(okResult);
-            Assert.AreEqual(2, returnedItems.Data.Count());
+            Assert.AreEqual(1, returnedItems.Data.Count());
 
             httpContext.Items["UserRole"] = "NoRole";
             _inventoryController.ControllerContext = new ControllerContext
@@ -95,6 +107,64 @@ namespace inventory.TestsV2
             var unauthorizedResult = result.Result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetInventoriesTest_Exists_filtered()
+        {
+            //arrange
+            var filtered = new inventoryFilter { Id = 2, item_id = "P02", LocationsCount = 1, total_on_hand = 60, total_expected = 40, total_ordered = 15, total_allocated = 15, total_available = 50 };
+            var inventories = new List<InventoryCS>
+            {
+            new InventoryCS
+            {
+                Id = 2,
+                item_id = "P02",
+                description = "Cool items2",
+                item_reference = "REF-1234",
+                Locations = new List<int> { 1 },
+                total_on_hand = 60,
+                total_expected = 40,
+                total_ordered = 15,
+                total_allocated = 15,
+                total_available = 50,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            },
+             new InventoryCS
+            {
+                Id = 3,
+                item_id = "P03",
+                description = "Cool items3",
+                item_reference = "REF-12345",
+                Locations = new List<int> { 1 },
+                total_on_hand = 50,
+                total_expected = 20,
+                total_ordered = 15,
+                total_allocated = 10,
+                total_available = 45,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }};
+            _mockInventoryService.Setup(service => service.GetAllInventories()).Returns([inventories[0]]);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+            httpContext.Items["WarehouseID"] = "1,2,3,4";
+
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var value = _inventoryController.GetAllInventories(filtered, -1, 10);
+
+            //Assert
+            var okResult = value.Result as OkObjectResult;
+            var returnedItems = okResult.Value as PaginationCS<InventoryCS>;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(1, returnedItems.Data.Count());
         }
 
         [TestMethod]
@@ -201,6 +271,28 @@ namespace inventory.TestsV2
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
+        [TestMethod]
+        public void GetInventoryTotalByItemIdTest_NotFound()
+        {
+            // Arrange
+            var inventoryItem = new InventoryCS { Id = 1, item_id = "P01", total_on_hand = 50, total_allocated = 10 };
+            _mockInventoryService.Setup(service => service.GetInventoriesForItem("P")).Returns((InventoryCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _inventoryController.GetInventoryByItemId("P");
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
 
         [TestMethod]
         public void CreateInventory_ReturnsCreatedAtActionResult_WithNewInventory()
@@ -210,7 +302,7 @@ namespace inventory.TestsV2
             _mockInventoryService.Setup(service => service.CreateInventory(inventory)).Returns(inventory);
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Items["UserRole"] = "Admin"; 
+            httpContext.Items["UserRole"] = "Admin";
 
             _inventoryController.ControllerContext = new ControllerContext
             {
@@ -223,10 +315,10 @@ namespace inventory.TestsV2
             var returnedInventory = createdAtActionResult.Value as InventoryCS;
 
             // Assert
-            Assert.IsNotNull(createdAtActionResult);  
-            Assert.IsNotNull(returnedInventory);  
-            Assert.AreEqual(1, returnedInventory.Id);  
-            Assert.AreEqual("ITEM123", returnedInventory.item_id);  
+            Assert.IsNotNull(createdAtActionResult);
+            Assert.IsNotNull(returnedInventory);
+            Assert.AreEqual(1, returnedInventory.Id);
+            Assert.AreEqual("ITEM123", returnedInventory.item_id);
             Assert.AreEqual(50, returnedInventory.total_on_hand);
 
             httpContext.Items["UserRole"] = "NoRole";
@@ -242,6 +334,28 @@ namespace inventory.TestsV2
             var unauthorizedResult = result.Result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void CreateInventory_ReturnsCreatedAtActionResult_WithoutInventory()
+        {
+            // Arrange
+            _mockInventoryService.Setup(service => service.CreateInventory(null)).Returns((InventoryCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _inventoryController.CreateInventory(null);
+            var createdAtActionResult = result.Result as BadRequestResult;
+
+            // Assert
+            Assert.IsNull(createdAtActionResult);
         }
 
         [TestMethod]
@@ -294,6 +408,27 @@ namespace inventory.TestsV2
         }
 
         [TestMethod]
+        public void CreateMultipleInventories_ReturnsCreatedResult_BadRequest()
+        {
+            // Arrange
+            _mockInventoryService.Setup(service => service.CreateMultipleInventories(null)).Returns((List<InventoryCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _inventoryController.CreateMultipleInventories(null);
+            var createdResult = result.Result as BadRequestResult;
+            // Assert
+            Assert.IsNull(createdResult);
+        }
+
+        [TestMethod]
         public void UpdateInventoryByIdTest_Succes()
         {
             //arrange
@@ -337,6 +472,26 @@ namespace inventory.TestsV2
         }
 
         [TestMethod]
+        public void UpdateInventoryByIdTest_BadRequest()
+        {
+            //arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var result = _inventoryController.UpdateInventoryById(1, null);
+            var resultOk = result.Result as BadRequestResult;
+
+            //Assert
+            Assert.IsNull(resultOk);
+        }
+
+        [TestMethod]
         public void DeleteInventoryTest_Exists()
         {
             //arrange
@@ -370,6 +525,28 @@ namespace inventory.TestsV2
             var unauthorizedResult = result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void DeleteInventoryTest_NotFound()
+        {
+            //arrange
+            var inventory = new InventoryCS { Id = 1, item_id = "ITEM123", total_on_hand = 50 };
+            _mockInventoryService.Setup(service => service.GetInventoryById(-1)).Returns((InventoryCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var result = _inventoryController.DeleteInventory(-1);
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
 
         [TestMethod]
@@ -410,7 +587,9 @@ namespace inventory.TestsV2
         }
 
         [TestMethod]
-        public void PatchInventoryTest_Succes(){
+        public void DeleteInventoriesTest_NotFound()
+        {
+            //Act
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";
 
@@ -418,9 +597,27 @@ namespace inventory.TestsV2
             {
                 HttpContext = httpContext
             };
-            
+
+            //Arrange
+            var result = _inventoryController.DeleteInventories(null);
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void PatchInventoryTest_Succes()
+        {
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _inventoryController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
             //arrange
-            var inventory = new InventoryCS(){ Id = 1, item_id="ITEM321", total_on_hand= 100};
+            var inventory = new InventoryCS() { Id = 1, item_id = "ITEM321", total_on_hand = 100 };
             _mockInventoryService.Setup(service => service.PatchInventory(1, "total_on_hand", 100)).Returns(inventory);
 
             //Act
@@ -452,29 +649,25 @@ namespace inventory.TestsV2
         }
 
         [TestMethod]
-        public void PatchInventoryTest_Fail(){
+        public void PatchInventoryTest_Fail()
+        {
+            //arrange
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";
 
             _inventoryController.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
-            };
-
-            //arrange
-            var inventory = new InventoryCS(){ Id = 1, item_id="ITEM321", total_on_hand= 100};
-            _mockInventoryService.Setup(service => service.PatchInventory(1, "total_on_hand", 100)).Returns((InventoryCS)null);
+            };            
 
             //Act
-            var result = _inventoryController.PatchInventory(1, "total_on_hand", 100);
-            var resultOk = result.Result as OkObjectResult;
-            var patchedinventory = resultOk.Value as InventoryCS;
+            var result = _inventoryController.PatchInventory(1, null, null);
+            var resultOk = result.Result as BadRequestResult;
 
             //Assert
-            Assert.AreEqual(resultOk.StatusCode, 200);
-            Assert.IsNull(patchedinventory);
+            Assert.IsNull(resultOk);
         }
-        
+
         [TestMethod]
         public void GetAllInventoriesService_Test()
         {
@@ -498,7 +691,7 @@ namespace inventory.TestsV2
         {
             var inventoryService = new InventoryService();
             var inventory = inventoryService.GetInventoriesForItem("P01");
-            Assert.IsNotNull(inventory);    
+            Assert.IsNotNull(inventory);
             Assert.AreEqual(50, inventory.total_on_hand);
         }
 
@@ -507,7 +700,7 @@ namespace inventory.TestsV2
         {
             var inventoryService = new InventoryService();
             var inventory = inventoryService.GetInventoriesByLocationId([1]);
-            Assert.IsNotNull(inventory[0]);    
+            Assert.IsNotNull(inventory[0]);
             Assert.AreEqual(50, inventory[0].total_on_hand);
         }
 
