@@ -134,8 +134,6 @@ namespace clients.TestsV2
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
-        
-
         [TestMethod]
         public void CreateClient_ReturnsCreatedResult_WithNewClient()
         {
@@ -324,7 +322,6 @@ namespace clients.TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
-
 
         [TestMethod]
         public void DeleteClientsTest_Succes()
