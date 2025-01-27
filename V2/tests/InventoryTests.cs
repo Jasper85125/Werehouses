@@ -475,6 +475,227 @@ namespace inventory.TestsV2
             Assert.IsNull(patchedinventory);
         }
         
+        [TestMethod]
+        public void GetAllInventoriesService_Test()
+        {
+            var inventoryService = new InventoryService();
+            var inventories = inventoryService.GetAllInventories();
+            Assert.IsNotNull(inventories);
+            Assert.AreEqual(1, inventories.Count());
+        }
+
+        [TestMethod]
+        public void GetInventoryByIdService_Test()
+        {
+            var inventoryService = new InventoryService();
+            var inventory = inventoryService.GetInventoryById(1);
+            Assert.IsNotNull(inventory);
+            Assert.AreEqual("REF-123", inventory.item_reference);
+        }
+
+        [TestMethod]
+        public void GetInventoriesForItems_Test()
+        {
+            var inventoryService = new InventoryService();
+            var inventory = inventoryService.GetInventoriesForItem("P01");
+            Assert.IsNotNull(inventory);    
+            Assert.AreEqual(50, inventory.total_on_hand);
+        }
+
+        [TestMethod]
+        public void GetInventoriesByLocation_Test()
+        {
+            var inventoryService = new InventoryService();
+            var inventory = inventoryService.GetInventoriesByLocationId([1]);
+            Assert.IsNotNull(inventory[0]);    
+            Assert.AreEqual(50, inventory[0].total_on_hand);
+        }
+
+        [TestMethod]
+        public void CreateInventoryService_Test()
+        {
+            var inventoryService = new InventoryService();
+            var inventory = new InventoryCS
+            {
+                Id = 1,
+                item_id = "P01",
+                description = "Cool items",
+                item_reference = "REF-123",
+                Locations = new List<int> { 1 },
+                total_on_hand = 50,
+                total_expected = 20,
+                total_ordered = 15,
+                total_allocated = 10,
+                total_available = 45,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var createdInventory = inventoryService.CreateInventory(inventory);
+            Assert.IsNotNull(createdInventory);
+            var updatedInventory = inventoryService.GetAllInventories();
+            Assert.AreEqual(2, updatedInventory.Count());
+        }
+
+        [TestMethod]
+        public void CreateMultipleInventoryService_Test()
+        {
+            var inventoryService = new InventoryService();
+            var inventory = new List<InventoryCS> { new InventoryCS
+            {
+                Id = 2,
+                item_id = "P01",
+                description = "Cool items",
+                item_reference = "REF-123",
+                Locations = new List<int> { 1 },
+                total_on_hand = 50,
+                total_expected = 20,
+                total_ordered = 15,
+                total_allocated = 10,
+                total_available = 45,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }, new InventoryCS
+            {
+                Id = 3,
+                item_id = "P000002",
+                description = "Cool items 2",
+                item_reference = "REF-1234",
+                Locations = new List<int> { 2 },
+                total_on_hand = 50,
+                total_expected = 20,
+                total_ordered = 15,
+                total_allocated = 10,
+                total_available = 45,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }};
+            var createdInventory = inventoryService.CreateMultipleInventories(inventory);
+            Assert.IsNotNull(createdInventory);
+            var updatedInventory = inventoryService.GetAllInventories();
+            Assert.AreEqual(3, updatedInventory.Count());
+        }
+
+        [TestMethod]
+        public void UpdateInventoryByIdService_Test()
+        {
+            var inventoryService = new InventoryService();
+            var inventory = new InventoryCS
+            {
+                Id = 1,
+                item_id = "P01",
+                description = "Cool items 2",
+                item_reference = "REF-456",
+                Locations = new List<int> { 1 },
+                total_on_hand = 50,
+                total_expected = 20,
+                total_ordered = 15,
+                total_allocated = 10,
+                total_available = 45,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var updatedInventory = inventoryService.UpdateInventoryById(1, inventory);
+            Assert.IsNotNull(updatedInventory);
+            Assert.AreEqual("REF-456", updatedInventory.item_reference);
+        }
+
+        [TestMethod]
+        public void UpdateInventoryByIdService_Test_Failed()
+        {
+            var inventoryService = new InventoryService();
+            var inventory = new InventoryCS
+            {
+                Id = 1,
+                item_id = "P01",
+                description = "Cool items 2",
+                item_reference = "REF-456",
+                Locations = new List<int> { 1 },
+                total_on_hand = 50,
+                total_expected = 20,
+                total_ordered = 15,
+                total_allocated = 10,
+                total_available = 45,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var updatedInventory = inventoryService.UpdateInventoryById(0, inventory);
+            Assert.IsNull(updatedInventory);
+        }
+
+        [TestMethod]
+        public void DeleteInventoryService_Test()
+        {
+            var inventoryService = new InventoryService();
+            inventoryService.DeleteInventory(1);
+            var updatedInventory = inventoryService.GetAllInventories();
+            Assert.IsNotNull(updatedInventory);
+            Assert.AreEqual(0, updatedInventory.Count());
+        }
+
+        [TestMethod]
+        public void DeleteInventoryService_Test_Failed()
+        {
+            var inventoryService = new InventoryService();
+            inventoryService.DeleteInventory(-1);
+            var updatedInventory = inventoryService.GetAllInventories();
+            Assert.IsNotNull(updatedInventory);
+            Assert.AreEqual(1, updatedInventory.Count());
+        }
+
+        [TestMethod]
+        public void DeleteInventoriesService_Test()
+        {
+            var inventoryService = new InventoryService();
+            var inventory = new InventoryCS
+            {
+                Id = 1,
+                item_id = "P01",
+                description = "Cool items",
+                item_reference = "REF-123",
+                Locations = new List<int> { 1 },
+                total_on_hand = 50,
+                total_expected = 20,
+                total_ordered = 15,
+                total_allocated = 10,
+                total_available = 45,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var createdInventory = inventoryService.CreateInventory(inventory);
+            Assert.IsNotNull(createdInventory);
+            var updatedInventory = inventoryService.GetAllInventories();
+            Assert.AreEqual(2, updatedInventory.Count());
+
+            var inventoriesToDelete = new List<int>() { 1, 2 };
+            inventoryService.DeleteInventories(inventoriesToDelete);
+            var updatedInventoryAgain = inventoryService.GetAllInventories();
+            Assert.IsNotNull(updatedInventoryAgain);
+            Assert.AreEqual(0, updatedInventoryAgain.Count());
+        }
+
+        [TestMethod]
+        public void PatchInventoryService_Test()
+        {
+            var inventoryService = new InventoryService();
+            var result = inventoryService.PatchInventory(1, "description", "Cool items 2");
+            result = inventoryService.PatchInventory(1, "item_reference", "REF-456");
+            result = inventoryService.PatchInventory(1, "Locations", "[1,2]");
+            result = inventoryService.PatchInventory(1, "total_on_hand", 100);
+            result = inventoryService.PatchInventory(1, "total_expected", 50);
+            result = inventoryService.PatchInventory(1, "total_ordered", 25);
+            result = inventoryService.PatchInventory(1, "total_allocated", 20);
+            result = inventoryService.PatchInventory(1, "total_available", 80);
+            var resultGoneWrong = inventoryService.PatchInventory(2, "description", "Gone Wrong");
+            Assert.IsNotNull(result);
+            Assert.IsNull(resultGoneWrong);
+            Assert.AreEqual("Cool items 2", result.description);
+            Assert.AreEqual("REF-456", result.item_reference);
+            Assert.AreEqual(100, result.total_on_hand);
+            Assert.AreEqual(50, result.total_expected);
+            Assert.AreEqual(25, result.total_ordered);
+            Assert.AreEqual(20, result.total_allocated);
+            Assert.AreEqual(80, result.total_available);
+        }
     }
 }
 
