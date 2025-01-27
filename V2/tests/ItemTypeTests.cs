@@ -749,5 +749,58 @@ namespace itemtype.TestsV2
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
         }
+
+        [TestMethod]
+        public void CreateItemType_ShouldReturnBadRequest_WhenItemTypeIsNull()
+        {
+            // Arrange
+            ItemTypeCS newItemType = null;
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.CreateItemType(newItemType).Result;
+
+            // Assert
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+            Assert.AreEqual("ItemGroup cannot be null", badRequestResult.Value);
+        }
+
+        [TestMethod]
+        public void CreateItemType_ShouldReturnCreatedItemType_2()
+        {
+            // Arrange
+            var newItemType = new ItemTypeCS { Id = 3, Name = "Type3", description = "Description3" };
+            _mockItemTypeService.Setup(service => service.CreateItemType(newItemType)).Returns(newItemType);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.CreateItemType(newItemType).Result;
+
+            // Assert
+            var createdResult = result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(StatusCodes.Status201Created, createdResult.StatusCode);
+            var returnedItemType = createdResult.Value as ItemTypeCS;
+            Assert.IsNotNull(returnedItemType);
+            Assert.AreEqual(newItemType.Id, returnedItemType.Id);
+            Assert.AreEqual(newItemType.Name, returnedItemType.Name);
+            Assert.AreEqual(newItemType.description, returnedItemType.description);
+        }
     }
 }
