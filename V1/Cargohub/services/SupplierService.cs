@@ -94,13 +94,12 @@ public class SupplierService : ISupplierService
 
     public List<ItemCS> GetItemsBySupplierId(int supplierId)
     {
-        var itemsPath = "data/items.json";
-        if (!File.Exists(itemsPath))
+        if (!File.Exists(_path))
         {
             return new List<ItemCS>();
         }
 
-        var jsonData = File.ReadAllText(itemsPath);
+        var jsonData = File.ReadAllText(_path);
         List<ItemCS> items = JsonConvert.DeserializeObject<List<ItemCS>>(jsonData);
 
         return items?.Where(item => item.supplier_id == supplierId).ToList() ?? new List<ItemCS>();
