@@ -5,6 +5,7 @@ using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace TestsV2
 {
@@ -13,12 +14,48 @@ namespace TestsV2
     {
         private Mock<IWarehouseService> _mockWarehouseService;
         private WarehouseController _warehouseController;
+        private IWarehouseService _warehouseService;
 
         [TestInitialize]
         public void Setup()
         {
             _mockWarehouseService = new Mock<IWarehouseService>();
             _warehouseController = new WarehouseController(_mockWarehouseService.Object);
+            _warehouseService = _mockWarehouseService.Object;
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/warehouses.json");
+            var warehouse = new WarehouseCS
+            {
+                Id = 1,
+                Code = "WH001",
+                Name = "Main Warehouse",
+                Address = "123 Warehouse St",
+                Zip = "12345",
+                City = "Warehouse City",
+                Province = "Warehouse Province",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+                {
+                    { "name", "John Doe" },
+                    { "phone", "123-456-7890" },
+                    { "email", "john.doe@example.com" }
+                },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+
+            var warehouseList = new List<WarehouseCS> { warehouse };
+            var json = JsonConvert.SerializeObject(warehouseList, Formatting.Indented);
+
+            // Create directory if it does not exist
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Write the JSON data to the file
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -531,6 +568,199 @@ namespace TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        [TestMethod]
+        public void GetAllWarehouses_ReturnsAllWarehouses()
+        {
+            // Arrange
+            var warehouses = new List<WarehouseCS>
+            {
+                new WarehouseCS { Id = 1, Address = "Straat 1" },
+                new WarehouseCS { Id = 2, Address = "Warenhuislaan 280" }
+            };
+            _mockWarehouseService.Setup(service => service.GetAllWarehouses()).Returns(warehouses);
+
+            // Act
+            var result = _warehouseService.GetAllWarehouses();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count);
+        }
+
+        [TestMethod]
+        public void GetWarehouseById_ReturnsWarehouse()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
+
+            // Act
+            var result = _warehouseService.GetWarehouseById(1);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(warehouse.Address, result.Address);
+        }
+
+        [TestMethod]
+        public void GetWarehouseById_ReturnsNull_WhenWarehouseNotFound()
+        {
+            // Arrange
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns((WarehouseCS)null);
+
+            // Act
+            var result = _warehouseService.GetWarehouseById(1);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void CreateWarehouse_ReturnsCreatedWarehouse()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.CreateWarehouse(warehouse)).Returns(warehouse);
+
+            // Act
+            var result = _warehouseService.CreateWarehouse(warehouse);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(warehouse.Address, result.Address);
+        }
+
+        [TestMethod]
+        public void CreateMultipleWarehouse_ReturnsCreatedWarehouses()
+        {
+            // Arrange
+            var warehouses = new List<WarehouseCS>
+            {
+                new WarehouseCS { Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
+                                                Country= "GER", Contact= new Dictionary<string, string>{
+                                                {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}},
+                new WarehouseCS { Code= "X", Name= "cargo hub", Address= "bruv", Zip= "4002 AZ", City= "hub", Province= "Utrecht",
+                                                Country= "GER", Contact= new Dictionary<string, string>{
+                                                {"name", "Fem Keijzer"}, {"phone", "(078) 0013363"}, {"email", "blamore@example.net"}}}
+            };
+            _mockWarehouseService.Setup(service => service.CreateMultipleWarehouse(warehouses)).Returns(warehouses);
+
+            // Act
+            var result = _warehouseService.CreateMultipleWarehouse(warehouses);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count);
+        }
+
+        [TestMethod]
+        public void UpdateWarehouse_ReturnsUpdatedWarehouse()
+        {
+            // Arrange
+            var updatedWarehouse = new WarehouseCS
+            {
+                Id = 1,
+                Code = "X",
+                Name = "cargo hub",
+                Address = "bruv",
+                Zip = "4002 AZ",
+                City = "hub",
+                Province = "Utrecht",
+                Country = "GER",
+                Contact = new Dictionary<string, string> { { "name", "Fem Keijzer" }, { "phone", "(078) 0013363" }, { "email", "blamore@example.net" } }
+            };
+            _mockWarehouseService.Setup(service => service.UpdateWarehouse(1, updatedWarehouse)).Returns(updatedWarehouse);
+
+            // Act
+            var result = _warehouseService.UpdateWarehouse(1, updatedWarehouse);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(updatedWarehouse.Address, result.Address);
+        }
+
+        [TestMethod]
+        public void UpdateWarehouse_ReturnsNull_WhenWarehouseNotFound()
+        {
+            // Arrange
+            var updatedWarehouse = new WarehouseCS
+            {
+                Id = 1,
+                Code = "X",
+                Name = "cargo hub",
+                Address = "bruv",
+                Zip = "4002 AZ",
+                City = "hub",
+                Province = "Utrecht",
+                Country = "GER",
+                Contact = new Dictionary<string, string> { { "name", "Fem Keijzer" }, { "phone", "(078) 0013363" }, { "email", "blamore@example.net" } }
+            };
+            _mockWarehouseService.Setup(service => service.UpdateWarehouse(0, updatedWarehouse)).Returns((WarehouseCS)null);
+
+            // Act
+            var result = _warehouseService.UpdateWarehouse(0, updatedWarehouse);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void DeleteWarehouse_Success()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.GetWarehouseById(1)).Returns(warehouse);
+
+            // Act
+            _warehouseService.DeleteWarehouse(1);
+
+            // Assert
+            _mockWarehouseService.Verify(service => service.DeleteWarehouse(1), Times.Once);
+        }
+
+        [TestMethod]
+        public void DeleteWarehouses_Success()
+        {
+            // Arrange
+            var idsToDelete = new List<int> { 1, 2, 3 };
+
+            // Act
+            _warehouseService.DeleteWarehouses(idsToDelete);
+
+            // Assert
+            _mockWarehouseService.Verify(service => service.DeleteWarehouses(idsToDelete), Times.Once);
+        }
+
+        [TestMethod]
+        public void GetLatestUpdatedWarehouse_ReturnsLatestUpdatedWarehouses()
+        {
+            // Arrange
+            var warehouse = new WarehouseCS { Id = 1, Address = "Straat 1" };
+            _mockWarehouseService.Setup(service => service.GetLatestUpdatedWarehouse(It.IsAny<int>())).Returns(new List<WarehouseCS> { warehouse });
+
+            // Act
+            var result = _warehouseService.GetLatestUpdatedWarehouse();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(warehouse.Address, result[0].Address);
+        }
+
+        [TestMethod]
+        public void GetLatestUpdatedWarehouse_ReturnsNull_WhenNoWarehousesFound()
+        {
+            // Arrange
+            _mockWarehouseService.Setup(service => service.GetLatestUpdatedWarehouse(It.IsAny<int>())).Returns((List<WarehouseCS>)null);
+
+            // Act
+            var result = _warehouseService.GetLatestUpdatedWarehouse();
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
     }
 }
 
