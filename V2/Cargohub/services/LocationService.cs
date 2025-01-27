@@ -90,7 +90,7 @@ public class LocationService : ILocationService
     }
     public LocationCS PatchLocation(int id, string property, object newvalue){
         var locations = GetAllLocations();
-        if (locations is not null){
+        if (locations is not null || locations.Count > 0){
             var location = locations.Find(_=>_.Id == id);
             if(location is null){
                 return null;
