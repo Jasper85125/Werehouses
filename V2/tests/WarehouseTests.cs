@@ -813,3 +813,6 @@ namespace TestsV2
             var warehouse = warehouseService.PatchWarehouse(3, "Name", "Patched Warehouse");
             Assert.IsNull(warehouse);
         }
+
+    }
+}
