@@ -156,8 +156,6 @@ namespace clients.TestsV2
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
-<<<<<<< HEAD
-=======
         [TestMethod]
         public void GetClientById_Test_returns_NotFound()
         {
@@ -181,7 +179,6 @@ namespace clients.TestsV2
             Assert.IsNull(resultok);
         }
 
->>>>>>> dd85879790c9a92ca390255e92aecb9a8058f77c
         [TestMethod]
         public void CreateClient_ReturnsCreatedResult_WithNewClient()
         {
@@ -436,8 +433,6 @@ namespace clients.TestsV2
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
-<<<<<<< HEAD
-=======
         [TestMethod]
         public void DeleteClientTest_NotFound()
         {
@@ -458,7 +453,6 @@ namespace clients.TestsV2
         }
 
 
->>>>>>> dd85879790c9a92ca390255e92aecb9a8058f77c
         [TestMethod]
         public void DeleteClientsTest_Succes()
         {
