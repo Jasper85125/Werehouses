@@ -117,13 +117,12 @@ public class LocationService : ILocationService
     {
         var locations = GetAllLocations();
         var location = locations.FirstOrDefault(l => l.Id == locationId);
-        if (location == null)
+        if (location != null)
         {
-            return;
+            locations.Remove(location);
+            var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
+            File.WriteAllText(_path, jsonData);
         }
-        locations.Remove(location);
-        var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
-        File.WriteAllText(_path, jsonData);
     }
     public void DeleteLocations(List<int> ids)
     {
