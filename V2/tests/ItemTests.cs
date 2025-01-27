@@ -90,6 +90,46 @@ namespace item.TestsV2
         }
 
         [TestMethod]
+        public void GetAllItems_ReturnsOkResult_Filtered()
+        {
+            // Arrange
+            var filtered = new itemFilter { code = "JAMADY", upc_code = "5", item_line = 33, item_group = 1, 
+                                            item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6, supplier_id = 28, supplier_code = "SUP467"};
+            var items = new List<ItemCS>
+            {
+                new ItemCS { uid = "P02", code = "JAMADY", description = "COOL", short_description = "Jamper", upc_code = "5", item_line = 33,
+                                       item_group = 1, item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6 ,supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", 
+                                       created_at = DateTime.Now, updated_at = DateTime.Now},
+                new ItemCS { uid = "P03", code = "JOJO", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now}
+
+            };
+            _mockItemService.Setup(service => service.GetAllItems()).Returns([items[0]]);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+            httpContext.Items["WarehouseID"] = "1,2,3,4";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(filtered, 0, 10);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(PaginationCS<ItemCS>));
+            var returnedItems = okResult.Value as PaginationCS<ItemCS>;
+            Assert.AreEqual(1, returnedItems.Data.Count());
+        }
+
+
+        [TestMethod]
         public void GetByUid_ReturnsOkResult_WithItem()
         {
             // Arrange
