@@ -406,6 +406,34 @@ namespace TestsV1
             Assert.AreEqual("Processed", returnedTransfer.transfer_status);
         }
         
+        [TestMethod]
+        public void CommitTransferTest_Failed()
+        {
+            // Arrange
+            _mockTransferService.Setup(service => service.CommitTransfer(0)).Returns((TransferCS)null);
+
+            // Act
+            var result = _transferController.CommitTransfer(0);
+            var notFoundResult = result.Result as NotFoundObjectResult;
+
+            // Assert
+            Assert.IsNotNull(notFoundResult);
+        }
+
+        [TestMethod]
+        public void GetItemsInTransferTest_Failed()
+        {
+            //arrange
+            _mockTransferService.Setup(service => service.GetItemsInTransfer(1)).Returns((List<ItemIdAndAmount>)null);
+
+            //Act
+            var value = _transferController.GetItemsInTransfer(1);
+
+            //Assert
+            Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
+        }
+
+        
     }
 }
 
