@@ -5,6 +5,7 @@ using ControllersV2;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace TestsV2
 {
@@ -19,7 +20,39 @@ namespace TestsV2
         {
             _mockSupplierService = new Mock<ISupplierService>();
             _supplierController = new SupplierController(_mockSupplierService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/suppliers.json");
+            var supplier = new SupplierCS { 
+                Id = 1,
+                Code = "SUP0001",
+                Name = "Lee, Parks and Johnson",
+                Address = "5989 Sullivan Drives",
+                address_extra = "Apt. 996",
+                City = "Port Anitaburgh",
+                zip_code = "91688",
+                Province = "Illinois",
+                Country = "Czech Republic",
+                contact_name = "Toni Barnett",
+                PhoneNumber = "363.541.7282x36825",
+                Reference = "LPaJ-SUP0001",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+                };
+
+            var supplierlist = new List<SupplierCS> { supplier };
+            var json = JsonConvert.SerializeObject(supplierlist, Formatting.Indented);
+
+            // Create directory if it does not exist
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Write the JSON data to the file
+            File.WriteAllText(filePath, json);
         }
+        
 
         [TestMethod]
         public void GetSuppliersTest_Exists()
@@ -628,6 +661,280 @@ namespace TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        // Test for the services
+        [TestMethod]
+        public void GetAllSuppliersService_Test(){
+
+            var supplierService = new SupplierService();
+            var suppliers = supplierService.GetAllSuppliers();
+            Assert.IsNotNull(suppliers);
+            Assert.AreEqual(1, suppliers.Count);
+        }
+
+        [TestMethod]
+        public void GetSupplierByIdService_Test(){
+
+            var supplierService = new SupplierService();
+            var supplier = supplierService.GetSupplierById(1);
+            Assert.IsNotNull(supplier);
+            Assert.AreEqual("Lee, Parks and Johnson", supplier.Name);
+        }
+
+        [TestMethod]
+        public void CreateSupplierService_Test(){
+
+            var supplierService = new SupplierService();
+            var supplier = new SupplierCS
+            {
+                Id = 2,
+                Code = "SUP0002",
+                Name = "Daniel Inc",
+                Address = "1296 Daniel Road Apt. 349",
+                address_extra = "Apt. 349",
+                City = "Pierceview",
+                zip_code = "28301",
+                Province = "Colorado",
+                Country = "United States",
+                contact_name = "Bryan Clark",
+                PhoneNumber = "242.732.3483x2573x2573",
+                Reference = "DInc-SUP0002",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var suppliers = supplierService.CreateSupplier(supplier);
+            Assert.IsNotNull(suppliers);
+            Assert.AreEqual("Daniel Inc", suppliers.Name);
+
+            var suppliersUpdated = supplierService.GetAllSuppliers();
+            Assert.AreEqual(2, suppliersUpdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateMultipleSuppliersService_Test(){
+            var supplierService = new SupplierService();
+            var suppliers = new List<SupplierCS>
+            {
+                new SupplierCS
+                {
+                    Id = 3,
+                    Code = "SUP0003",
+                    Name = "Daniel Inc",
+                    Address = "1296 Daniel Road Apt. 349",
+                    address_extra = "Apt. 349",
+                    City = "Pierceview",
+                    zip_code = "28301",
+                    Province = "Colorado",
+                    Country = "United States",
+                    contact_name = "Bryan Clark",
+                    PhoneNumber = "242.732.3483x2573x2573",
+                    Reference = "DInc-SUP0003",
+                    created_at = DateTime.Now,
+                    updated_at = DateTime.Now
+                },
+                new SupplierCS
+                {
+                    Id = 4,
+                    Code = "SUP0004",
+                    Name = "Daniel Inc",
+                    Address = "1296 Daniel Road Apt. 349",
+                    address_extra = "Apt. 349",
+                    City = "Pierceview",
+                    zip_code = "28301",
+                    Province = "Colorado",
+                    Country = "United States",
+                    contact_name = "Bryan Clark",
+                    PhoneNumber = "242.732.3483x2573x2573",
+                    Reference = "DInc-SUP0004",
+                    created_at = DateTime.Now,
+                    updated_at = DateTime.Now
+                }
+            };
+            var suppliersAdded = supplierService.CreateMultipleSuppliers(suppliers);
+            Assert.IsNotNull(suppliersAdded);
+            Assert.AreEqual(2, suppliersAdded.Count);
+
+            var suppliersUpdated = supplierService.GetAllSuppliers();
+            Assert.AreEqual(3, suppliersUpdated.Count);
+        }
+
+        [TestMethod]
+        public void UpdateSupplierService_Test(){
+            var supplierService = new SupplierService();
+            var supplier = new SupplierCS
+            {
+                Id = 1,
+                Code = "SUP0001",
+                Name = "Lee, Par",
+                Address = "5989 Sullivan Drives",
+                address_extra = "Apt. 996",
+                City = "Port Anitaburgh",
+                zip_code = "91688",
+                Province = "Illinois",
+                Country = "Czech Republic",
+                contact_name = "Toni Barnett",
+                PhoneNumber = "363.541.7282x36825",
+                Reference = "LPaJ-SUP0001",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var supplierUpdated = supplierService.UpdateSupplier(1, supplier);
+            Assert.IsNotNull(supplierUpdated);
+            Assert.AreEqual("Lee, Par", supplierUpdated.Name);
+        }
+
+        [TestMethod]
+        public void UpdateSupplierService_FailTest(){
+            var supplierService = new SupplierService();
+            var supplier = new SupplierCS
+            {
+                Id = 1,
+                Code = "SUP0001",
+                Name = "Lee, Par",
+                Address = "5989 Sullivan Drives",
+                address_extra = "Apt. 996",
+                City = "Port Anitaburgh",
+                zip_code = "91688",
+                Province = "Illinois",
+                Country = "Czech Republic",
+                contact_name = "Toni Barnett",
+                PhoneNumber = "363.541.7282x36825",
+                Reference = "LPaJ-SUP0001",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var supplierUpdated = supplierService.UpdateSupplier(2, supplier);
+            Assert.IsNull(supplierUpdated);
+        }  
+
+        [TestMethod]
+        public void DeleteSupplierService_Test(){
+            var supplierService = new SupplierService();
+            supplierService.DeleteSupplier(1);
+            var suppliers = supplierService.GetAllSuppliers();
+            Assert.AreEqual(0, suppliers.Count);
+        }
+
+        [TestMethod]
+        public void DeleteSupplierService_FailTest(){
+            var supplierService = new SupplierService();
+            supplierService.DeleteSupplier(2);
+            var suppliers = supplierService.GetAllSuppliers();
+            Assert.AreEqual(1, suppliers.Count);
+        } 
+
+        [TestMethod]
+        public void GetItemsBySupplierIdService_Test(){
+            var supplierService = new SupplierService();
+            var items = supplierService.GetItemsBySupplierId(1);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(0, items.Count);
+        }
+
+        [TestMethod]
+        public void PatchSupplierService_Test(){
+            //  var clientService = new ClientService();
+            // var clients = clientService.PatchClient(1, "name", "new name");
+            // clients = clientService.PatchClient(1, "address", "new address");
+            // clients = clientService.PatchClient(1, "city", "new city");
+            // clients = clientService.PatchClient(1, "zip_code", "new zip_code");
+            // clients = clientService.PatchClient(1, "province", "new Province");
+            // clients = clientService.PatchClient(1, "country", "new Country");
+            // clients = clientService.PatchClient(1, "contact_name", "new contact_name");
+            // clients = clientService.PatchClient(1, "contact_phone", "new contact_phone");
+            // clients = clientService.PatchClient(1, "contact_email", "new contact_email");
+            // Assert.IsNotNull(clients);
+            // Assert.AreEqual("new name", clients.Name);
+            // Assert.AreEqual("new address", clients.Address);
+            // Assert.AreEqual("new city", clients.City);
+            // Assert.AreEqual("new zip_code", clients.zip_code);
+            // Assert.AreEqual("new Province", clients.Province);
+            // Assert.AreEqual("new Country", clients.Country);
+            // Assert.AreEqual("new contact_name", clients.contact_name);
+            // Assert.AreEqual("new contact_phone", clients.contact_phone);
+            // Assert.AreEqual("new contact_email", clients.contact_email);
+
+            var supplierService = new SupplierService();
+            var suppliers = supplierService.PatchSupplier(1, "Name", "New Name");
+            suppliers = supplierService.PatchSupplier(1, "Code", "New Code");
+            suppliers = supplierService.PatchSupplier(1, "Address", "New Address");
+            suppliers = supplierService.PatchSupplier(1, "address_extra", "New Address Extra");
+            suppliers = supplierService.PatchSupplier(1, "City", "New City");
+            suppliers = supplierService.PatchSupplier(1, "zip_code", "New Zip Code");
+            suppliers = supplierService.PatchSupplier(1, "Province", "New Province");
+            suppliers = supplierService.PatchSupplier(1, "Country", "New Country");
+            suppliers = supplierService.PatchSupplier(1, "contact_name", "New Contact Name");
+            suppliers = supplierService.PatchSupplier(1, "PhoneNumber", "New Phone Number");
+            suppliers = supplierService.PatchSupplier(1, "Reference", "New Reference");
+            Assert.IsNotNull(suppliers);
+            Assert.AreEqual("New Name", suppliers.Name);
+            Assert.AreEqual("New Code", suppliers.Code);
+            Assert.AreEqual("New Address", suppliers.Address);
+            Assert.AreEqual("New Address Extra", suppliers.address_extra);
+            Assert.AreEqual("New City", suppliers.City);
+            Assert.AreEqual("New Zip Code", suppliers.zip_code);
+            Assert.AreEqual("New Province", suppliers.Province);
+            Assert.AreEqual("New Country", suppliers.Country);
+            Assert.AreEqual("New Contact Name", suppliers.contact_name);
+            Assert.AreEqual("New Phone Number", suppliers.PhoneNumber);
+            Assert.AreEqual("New Reference", suppliers.Reference);
+        }
+
+        [TestMethod]
+        public void PatchSupplierService_FailTest(){
+            var supplierService = new SupplierService();
+            var suppliers = supplierService.PatchSupplier(2, "Name", "New Name");
+            Assert.IsNull(suppliers);
+        }
+
+        [TestMethod]
+        public void DeleteSuppliersService_Test(){
+            //create and add a list first to delete
+            var suppliers = new List<SupplierCS>
+            {
+                new SupplierCS
+                {
+                    Id = 2,
+                    Code = "SUP0002",
+                    Name = "Daniel Inc",
+                    Address = "1296 Daniel Road Apt. 349",
+                    address_extra = "Apt. 349",
+                    City = "Pierceview",
+                    zip_code = "28301",
+                    Province = "Colorado",
+                    Country = "United States",
+                    contact_name = "Bryan Clark",
+                    PhoneNumber = "242.732.3483x2573x2573",
+                    Reference = "DInc-SUP0002",
+                    created_at = DateTime.Now,
+                    updated_at = DateTime.Now
+                },
+                new SupplierCS
+                {
+                    Id = 3,
+                    Code = "SUP0003",
+                    Name = "Another Supplier",
+                    Address = "1234 Another St",
+                    address_extra = "Suite 100",
+                    City = "Another City",
+                    zip_code = "12345",
+                    Province = "Another Province",
+                    Country = "Another Country",
+                    contact_name = "Another Contact",
+                    PhoneNumber = "123-456-7890",
+                    Reference = "ASUP-SUP0003",
+                    created_at = DateTime.Now,
+                    updated_at = DateTime.Now
+                }
+            };
+            var supplierService = new SupplierService();
+            supplierService.CreateMultipleSuppliers(suppliers);
+            var suppliersToDelete = new List<int>() { 1, 2, 3 };
+            supplierService.DeleteSuppliers(suppliersToDelete);
+            var totalSuppliers = supplierService.GetAllSuppliers();
+            Assert.AreEqual(0, totalSuppliers.Count);
+        }
     }
 }
+
 
