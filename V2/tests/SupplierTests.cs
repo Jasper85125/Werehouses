@@ -833,27 +833,7 @@ namespace TestsV2
 
         [TestMethod]
         public void PatchSupplierService_Test(){
-            //  var clientService = new ClientService();
-            // var clients = clientService.PatchClient(1, "name", "new name");
-            // clients = clientService.PatchClient(1, "address", "new address");
-            // clients = clientService.PatchClient(1, "city", "new city");
-            // clients = clientService.PatchClient(1, "zip_code", "new zip_code");
-            // clients = clientService.PatchClient(1, "province", "new Province");
-            // clients = clientService.PatchClient(1, "country", "new Country");
-            // clients = clientService.PatchClient(1, "contact_name", "new contact_name");
-            // clients = clientService.PatchClient(1, "contact_phone", "new contact_phone");
-            // clients = clientService.PatchClient(1, "contact_email", "new contact_email");
-            // Assert.IsNotNull(clients);
-            // Assert.AreEqual("new name", clients.Name);
-            // Assert.AreEqual("new address", clients.Address);
-            // Assert.AreEqual("new city", clients.City);
-            // Assert.AreEqual("new zip_code", clients.zip_code);
-            // Assert.AreEqual("new Province", clients.Province);
-            // Assert.AreEqual("new Country", clients.Country);
-            // Assert.AreEqual("new contact_name", clients.contact_name);
-            // Assert.AreEqual("new contact_phone", clients.contact_phone);
-            // Assert.AreEqual("new contact_email", clients.contact_email);
-
+ 
             var supplierService = new SupplierService();
             var suppliers = supplierService.PatchSupplier(1, "Name", "New Name");
             suppliers = supplierService.PatchSupplier(1, "Code", "New Code");
