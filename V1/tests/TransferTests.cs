@@ -306,7 +306,7 @@ namespace TestsV1
             };
             var result = transferService.CreateTransfer(transfer);
             Assert.IsNotNull(result);
-            
+
             var resultAgain = transferService.GetAllTransfers();
             Assert.AreEqual(2, resultAgain.Count);
         }
@@ -360,6 +360,52 @@ namespace TestsV1
             Assert.AreEqual(1, resultAgain.Count);
         }
 
+        [TestMethod]
+        public void CommitTransferTest_Success()
+        {
+            // Arrange
+            var transfer = new TransferCS
+            {
+                Id = 1,
+                Reference = "JoJo",
+                transfer_from = 1,
+                transfer_to = 1,
+                transfer_status = "completed",
+                created_at = default,
+                updated_at = default,
+                Items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "P01", amount = 23 }
+                }
+            };
+            var committedTransfer = new TransferCS
+            {
+                Id = 1,
+                Reference = "JoJo",
+                transfer_from = 1,
+                transfer_to = 1,
+                transfer_status = "Processed",
+                created_at = default,
+                updated_at = default,
+                Items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "P01", amount = 23 }
+                }
+            };
+
+            _mockTransferService.Setup(service => service.CommitTransfer(1)).Returns(committedTransfer);
+
+            // Act
+            var result = _transferController.CommitTransfer(1);
+            var okResult = result.Result as OkObjectResult;
+            var returnedTransfer = okResult.Value as TransferCS;
+
+            // Assert
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(returnedTransfer);
+            Assert.AreEqual("Processed", returnedTransfer.transfer_status);
+        }
+        
     }
 }
 
