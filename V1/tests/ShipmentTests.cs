@@ -480,5 +480,46 @@ namespace TestsV1
             // Assert
             Assert.IsNull(result);
         }
+
+        [TestMethod]
+        public void DeleteItemFromShipmentTest_Success()
+        {
+            // Arrange
+            var shipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24, Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P01", amount = 23 } } };
+            _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipment);
+
+            // Act
+            var result = _shipmentController.DeleteItemFromShipment(1, "P01");
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
+
+        [TestMethod]
+        public void DeleteItemFromShipmentTest_NotFound()
+        {
+            // Arrange
+            _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns((ShipmentCS)null);
+
+            // Act
+            var result = _shipmentController.DeleteItemFromShipment(1, "P01");
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void DeleteItemFromShipmentTest_ItemNotFound()
+        {
+            // Arrange
+            var shipment = new ShipmentCS { Id = 1, order_id = 1, source_id = 24, Items = new List<ItemIdAndAmount> { new ItemIdAndAmount { item_id = "P02", amount = 23 } } };
+            _mockShipmentService.Setup(service => service.GetShipmentById(1)).Returns(shipment);
+
+            // Act
+            var result = _shipmentController.DeleteItemFromShipment(1, "P01");
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
     }
 }
