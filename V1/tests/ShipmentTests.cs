@@ -441,5 +441,44 @@ namespace TestsV1
             // Assert
             Assert.IsNull(result);
         }
+
+        [TestMethod]
+        public void GetItemsInShipment_ServiceTest_Exists()
+        {
+            // Arrange
+            var items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "P01", amount = 23 },
+                new ItemIdAndAmount { item_id = "P02", amount = 12 },
+            };
+            var shipmentService = new ShipmentService();
+            var itemsInShipment = shipmentService.GetItemsInShipment(1);
+
+            // Act
+            var result = itemsInShipment.FirstOrDefault(i => i.item_id == "P01");
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(23, result.amount);
+        }
+
+        [TestMethod]
+        public void GetItemsInShipment_ServiceTest_NotFound()
+        {
+            // Arrange
+            var items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "P01", amount = 23 },
+                new ItemIdAndAmount { item_id = "P02", amount = 12 },
+            };
+            var shipmentService = new ShipmentService();
+            var itemsInShipment = shipmentService.GetItemsInShipment(1);
+
+            // Act
+            var result = itemsInShipment.FirstOrDefault(i => i.item_id == "P03");
+
+            // Assert
+            Assert.IsNull(result);
+        }
     }
 }
