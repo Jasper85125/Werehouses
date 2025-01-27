@@ -58,10 +58,12 @@ namespace itemtype.TestsV2
             _mockItemTypeService.Setup(service => service.GetAllItemtypes()).Returns(_itemTypes);
 
             // Act
-            var result = _mockItemTypeService.Object.GetAllItemtypes();
+            var result = _itemTypeController.GetAllItemtypes();
+            var okResult = result.Result as OkObjectResult;
 
             // Assert
-            Assert.AreEqual(2, result.Count);
+            var itemTypes = okResult.Value as IEnumerable<ItemTypeCS>;
+            Assert.AreEqual(2, itemTypes.Count());
 
             httpContext.Items["UserRole"] = "HackerMan";
             _itemTypeController.ControllerContext = new ControllerContext
