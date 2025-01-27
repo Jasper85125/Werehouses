@@ -309,6 +309,29 @@ namespace itemtype.TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        [TestMethod]
+        public void PatchItemType_Failed()
+        {
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Arrange
+            _mockItemTypeService.Setup(service => service.PatchItemType(-1, "Name", "HAHA")).Returns((ItemTypeCS)null);
+
+            //Act
+            var result = _itemTypeController.PatchItemType(-1, "Name", "HAHA");
+            var resultok = result.Result as BadRequestResult;
+
+            //Assert
+            Assert.IsNull(resultok);
+        }
+
         [TestMethod]
         public void DeleteItemTypeTest_Exists()
         {
@@ -346,6 +369,27 @@ namespace itemtype.TestsV2
         }
 
         [TestMethod]
+        public void DeleteItemTypeTest_Failed()
+        {
+            // Arrange
+            _mockItemTypeService.Setup(service => service.GetItemById(-1)).Returns((ItemTypeCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.DeleteItemType(-1) as ActionResult;
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
         public void DeleteItemTypesTest_Succes()
         {
             //Arrange
@@ -380,6 +424,27 @@ namespace itemtype.TestsV2
             var unauthorizedResult = unauth_attempt as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void DeleteItemTypesTest_Failed()
+        {
+            
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var result = _itemTypeController.DeleteItemTypes(null);
+            var resultok = result as ActionResult;
+
+            //Assert
+            Assert.IsInstanceOfType(resultok, typeof(NotFoundResult));
+
         }
 
         [TestMethod]
