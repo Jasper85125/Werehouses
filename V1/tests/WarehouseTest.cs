@@ -4,6 +4,8 @@ using Moq;
 using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+ 
 
 namespace TestsV1
 {
@@ -18,6 +20,40 @@ namespace TestsV1
         {
             _mockWarehouseService = new Mock<IWarehouseService>();
             _warehouseController = new WarehouseController(_mockWarehouseService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/warehouses.json");
+            var warehouse = new WarehouseCS
+            {
+                Id = 1,
+                Code = "WH001",
+                Name = "Main Warehouse",
+                Address = "123 Warehouse St",
+                Zip = "12345",
+                City = "Warehouse City",
+                Province = "Warehouse Province",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+                {
+                    { "name", "John Doe" },
+                    { "phone", "123-456-7890" },
+                    { "email", "john.doe@example.com" }
+                },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+
+            var warehouseList = new List<WarehouseCS> { warehouse };
+            var json = JsonConvert.SerializeObject(warehouseList, Formatting.Indented);
+
+            // Create directory if it does not exist
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Write the JSON data to the file
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -180,6 +216,155 @@ namespace TestsV1
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+
+        [TestMethod]
+        public void GetAllWarehousesService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouses = warehouseService.GetAllWarehouses();
+            Assert.IsNotNull(warehouses);
+            Assert.AreEqual(1, warehouses.Count);
+        }
+
+        [TestMethod]
+        public void GetWarehouseByIdService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.GetWarehouseById(1);
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("Main Warehouse", warehouse.Name);
+        }
+
+        [TestMethod]
+        public void CreateWarehouseService_Test()
+        {
+            var warehouse = new WarehouseCS
+            {
+                Id = 2,
+                Code = "WH002",
+                Name = "Secondary Warehouse",
+                Address = "456 Warehouse Ave",
+                Zip = "67890",
+                City = "Warehouse Town",
+                Province = "Warehouse State",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+            {
+                { "name", "Jane Doe" },
+                { "phone", "987-654-3210" },
+                { "email", "jane.doe@example.com" }
+            },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var warehouseService = new WarehouseService();
+            var createdWarehouse = warehouseService.CreateWarehouse(warehouse);
+            Assert.IsNotNull(createdWarehouse);
+            Assert.AreEqual("Secondary Warehouse", createdWarehouse.Name);
+
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(2, warehousesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateMultipleWarehouseService_Test()
+        {
+            var warehouses = new List<WarehouseCS>
+            {
+            new WarehouseCS
+            {
+                Id = 2,
+                Code = "WH002",
+                Name = "Secondary Warehouse",
+                Address = "456 Warehouse Ave",
+                Zip = "67890",
+                City = "Warehouse Town",
+                Province = "Warehouse State",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+                {
+                { "name", "Jane Doe" },
+                { "phone", "987-654-3210" },
+                { "email", "jane.doe@example.com" }
+                },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            },
+            new WarehouseCS
+            {
+                Id = 3,
+                Code = "WH003",
+                Name = "Tertiary Warehouse",
+                Address = "789 Warehouse Blvd",
+                Zip = "11223",
+                City = "Warehouse City",
+                Province = "Warehouse Province",
+                Country = "Warehouse Country",
+                Contact = new Dictionary<string, string>
+                {
+                { "name", "John Smith" },
+                { "phone", "555-555-5555" },
+                { "email", "john.smith@example.com" }
+                },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            }
+            };
+            var warehouseService = new WarehouseService();
+            var createdWarehouses = warehouseService.CreateMultipleWarehouse(warehouses);
+            Assert.IsNotNull(createdWarehouses);
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(3, warehousesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void UpdateWarehouseService_Test()
+        {
+            var warehouse = new WarehouseCS
+            {
+                Id = 1,
+                Code = "WH001",
+                Name = "Updated Warehouse",
+                Address = "123 Updated St",
+                Zip = "54321",
+                City = "Updated City",
+                Province = "Updated Province",
+                Country = "Updated Country",
+                Contact = new Dictionary<string, string>
+            {
+                { "name", "John Doe" },
+                { "phone", "123-456-7890" },
+                { "email", "john.doe@example.com" }
+            },
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var warehouseService = new WarehouseService();
+            var updatedWarehouse = warehouseService.UpdateWarehouse(1, warehouse);
+            Assert.IsNotNull(updatedWarehouse);
+            Assert.AreEqual("Updated Warehouse", updatedWarehouse.Name);
+        }
+
+        [TestMethod]
+        public void DeleteWarehouseService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            warehouseService.DeleteWarehouse(1);
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(0, warehousesUpdated.Count);
+        }
+
+        [TestMethod]
+        public void DeleteWarehouseService_Test_Failed()
+        {
+            var warehouseService = new WarehouseService();
+            warehouseService.DeleteWarehouse(3);
+            var warehousesUpdated = warehouseService.GetAllWarehouses();
+            Assert.AreEqual(1, warehousesUpdated.Count);
+        }
+
     }
 }
+
+
 
