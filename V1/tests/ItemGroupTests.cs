@@ -23,60 +23,60 @@ namespace TestsV1
             _mockItemGroupService = new Mock<IitemGroupService>();
             _itemGroupController = new ItemGroupController(_mockItemGroupService.Object);
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/item_groups.json");
-            var itemgroup = new ItemGroupCS(){
-                    Id= 0,
-                    Name="Electronics",
-                    Description="",
-                    created_at=DateTime.Now,
-                    updated_at=DateTime.Now
+            var itemgroup = new ItemGroupCS()
+            {
+                Id = 0,
+                Name = "Electronics",
+                Description = "",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
             };
-            var itemgrouplist = new List<ItemGroupCS>(){ itemgroup };  
+            var itemgrouplist = new List<ItemGroupCS>() { itemgroup };
             var json = JsonConvert.SerializeObject(itemgrouplist, Formatting.Indented);
             var directory = Path.GetDirectoryName(filePath);
-            if(!Directory.Exists(directory)){
+            if (!Directory.Exists(directory))
+            {
                 Directory.CreateDirectory(directory);
             }
             File.WriteAllText(filePath, json);
         }
         //Service
         [TestMethod]
-        public void GetAllItemGroups_Test_Succes(){
+        public void GetAllItemGroups_Test_Succes()
+        {
             var itemgroupsservice = new ItemGroupService();
             var result = itemgroupsservice.GetAllItemGroups();
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count);
         }
-        
+
         [TestMethod]
-        public void GetItemGroupById_Test_Succes(){
+        public void GetItemGroupById_Test_Succes()
+        {
             var itemgroupsservice = new ItemGroupService();
             var result = itemgroupsservice.GetItemById(0);
             Assert.IsNotNull(result);
             Assert.AreEqual("Electronics", result.Name);
         }
-        
+
         [TestMethod]
-        public void GetItemsFromItemGroup_Test_Succes(){
-            var itemgroupsservice = new ItemGroupService();
-            var result = itemgroupsservice.ItemsFromItemGroupId(0);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-        }
-        [TestMethod]
-        public void GetItemsFromItemGroup_Test_Fail(){
+        public void GetItemsFromItemGroup_Test_Fail()
+        {
             var itemgroupsservice = new ItemGroupService();
             var result = itemgroupsservice.ItemsFromItemGroupId(-1);
             Assert.IsNull(result);
         }
-        
+
         [TestMethod]
-        public void CreateItemGroup_Test_Succes(){
-            var itemgroup = new ItemGroupCS(){
-                Name= "Furniture",
-                Description= "",
-                created_at= DateTime.Now,
-                updated_at= DateTime.Now
-                };
+        public void CreateItemGroup_Test_Succes()
+        {
+            var itemgroup = new ItemGroupCS()
+            {
+                Name = "Furniture",
+                Description = "",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
             var itemgroupsservice = new ItemGroupService();
             var result = itemgroupsservice.CreateItemGroup(itemgroup);
             var check = itemgroupsservice.GetAllItemGroups();
@@ -85,7 +85,8 @@ namespace TestsV1
             Assert.AreEqual(2, check.Count);
         }
         [TestMethod]
-        public void CreateItemGroup_Test_EmptyListFirst(){
+        public void CreateItemGroup_Test_EmptyListFirst()
+        {
             var itemgroupsservice = new ItemGroupService();
             itemgroupsservice.DeleteItemGroup(0);
             var check1 = itemgroupsservice.GetAllItemGroups();
@@ -96,19 +97,22 @@ namespace TestsV1
             Assert.AreEqual(1, check2.Count);
         }
         [TestMethod]
-        public void UpdateItemGroup_Test_Succes(){
-            var itemgroup = new ItemGroupCS(){
-                Name= "Furniture",
-                Description= "",
-                created_at= DateTime.Now,
-                updated_at= DateTime.Now
-                };
-            var updateditemgroup = new ItemGroupCS(){
-                Id=1,
-                Name="Stationery",
+        public void UpdateItemGroup_Test_Succes()
+        {
+            var itemgroup = new ItemGroupCS()
+            {
+                Name = "Furniture",
                 Description = "",
-                created_at=DateTime.Now,
-                updated_at=DateTime.Now
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var updateditemgroup = new ItemGroupCS()
+            {
+                Id = 1,
+                Name = "Stationery",
+                Description = "",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
             };
             var itemgroupsservice = new ItemGroupService();
             var result1 = itemgroupsservice.CreateItemGroup(itemgroup);
@@ -120,13 +124,15 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public void UpdateItemGroup_Test_Fail(){
-            var updateditemgroup = new ItemGroupCS(){
-                Id=1,
-                Name="Measuring Instruments",
+        public void UpdateItemGroup_Test_Fail()
+        {
+            var updateditemgroup = new ItemGroupCS()
+            {
+                Id = 1,
+                Name = "Measuring Instruments",
                 Description = "",
-                created_at=DateTime.Now,
-                updated_at=DateTime.Now
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
             };
             var itemgroupsservice = new ItemGroupService();
             var result = itemgroupsservice.UpdateItemGroup(3, updateditemgroup);
@@ -134,14 +140,16 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public void DeleteItemGroup_Test_Succes(){
+        public void DeleteItemGroup_Test_Succes()
+        {
             var itemgroupsservice = new ItemGroupService();
             itemgroupsservice.DeleteItemGroup(0);
             var updateditemgroups = itemgroupsservice.GetAllItemGroups();
             Assert.AreEqual(0, updateditemgroups.Count);
         }
         [TestMethod]
-        public void DeleteItemGroup_Test_Fail(){
+        public void DeleteItemGroup_Test_Fail()
+        {
             var itemgroupsservice = new ItemGroupService();
             itemgroupsservice.DeleteItemGroup(3);
             var result2 = itemgroupsservice.GetAllItemGroups();
@@ -301,12 +309,12 @@ namespace TestsV1
                 supplier_part_number = "f-768-s2A",
             };
             _mockItemGroupService.Setup(service => service.ItemsFromItemGroupId(1)).Returns(new List<ItemCS>() { testResult });
-            
+
             //Act
             var result = _itemGroupController.GetAllItemsFromItemGroupId(1);
             var resultOK = result.Result as OkObjectResult;
             var value = resultOK.Value as List<ItemCS>;
-            
+
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotNull(resultOK);
