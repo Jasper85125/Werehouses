@@ -35,7 +35,7 @@ public class ItemGroupService : ItemService, IitemGroupService
     public List<ItemCS> ItemsFromItemGroupId(int groupid){
         var items = itemService.GetAllItems();
         var find = items.FindAll(_ => _.item_group == groupid);
-        if(find is null){
+        if(find.Count <= 0){
             return null;
         }
         return find;

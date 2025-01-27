@@ -48,7 +48,7 @@ namespace TestsV1
         }
         
         [TestMethod]
-        public void GetItemGroupByIdTest_Succes(){
+        public void GetItemGroupById_Test_Succes(){
             var itemgroupsservice = new ItemGroupService();
             var result = itemgroupsservice.GetItemById(0);
             Assert.IsNotNull(result);
@@ -56,11 +56,17 @@ namespace TestsV1
         }
         
         [TestMethod]
-        public void ItemsFromItemGroupId_Test_Succes(){
+        public void GetItemsFromItemGroup_Test_Succes(){
             var itemgroupsservice = new ItemGroupService();
-            var result = itemgroupsservice.ItemsFromItemGroupId(1);
+            var result = itemgroupsservice.ItemsFromItemGroupId(0);
             Assert.IsNotNull(result);
-            Assert.AreEqual(0, result.Count);
+            Assert.AreEqual(1, result.Count);
+        }
+        [TestMethod]
+        public void GetItemsFromItemGroup_Test_Fail(){
+            var itemgroupsservice = new ItemGroupService();
+            var result = itemgroupsservice.ItemsFromItemGroupId(-1);
+            Assert.IsNull(result);
         }
         
         [TestMethod]
@@ -78,7 +84,17 @@ namespace TestsV1
             Assert.AreEqual(1, result.Id);
             Assert.AreEqual(2, check.Count);
         }
-        
+        [TestMethod]
+        public void CreateItemGroup_Test_EmptyListFirst(){
+            var itemgroupsservice = new ItemGroupService();
+            itemgroupsservice.DeleteItemGroup(0);
+            var check1 = itemgroupsservice.GetAllItemGroups();
+            Assert.AreEqual(0, check1.Count);
+            var result2 = itemgroupsservice.CreateItemGroup(new ItemGroupCS());
+            var check2 = itemgroupsservice.GetAllItemGroups();
+            Assert.IsNotNull(result2);
+            Assert.AreEqual(1, check2.Count);
+        }
         [TestMethod]
         public void UpdateItemGroup_Test_Succes(){
             var itemgroup = new ItemGroupCS(){
