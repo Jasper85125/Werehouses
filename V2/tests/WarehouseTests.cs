@@ -14,7 +14,6 @@ namespace TestsV2
     {
         private Mock<IWarehouseService> _mockWarehouseService;
         private WarehouseController _warehouseController;
-        private IWarehouseService _warehouseService;
 
         [TestInitialize]
         public void Setup()
