@@ -488,7 +488,7 @@ namespace TestsV2
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
-        //testing the locatoin service
+        //testing the location service
         [TestMethod]
         public void GetAllLocationsService_Test()
         {
