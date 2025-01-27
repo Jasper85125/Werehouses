@@ -67,7 +67,7 @@ public class LocationService : ILocationService
     public LocationCS UpdateLocation(LocationCS updatedLocation, int locationId)
     {
         var allLocations = GetAllLocations();
-        var locationToUpdate = allLocations.Single(location => location.Id == locationId);
+        var locationToUpdate = allLocations.SingleOrDefault(location => location.Id == locationId);
 
         if (locationToUpdate is not null)
         {
@@ -92,6 +92,9 @@ public class LocationService : ILocationService
         var locations = GetAllLocations();
         if (locations is not null){
             var location = locations.Find(_=>_.Id == id);
+            if(location is null){
+                return null;
+            }
             switch(property){
                 case"warehouse_id":
                 location.warehouse_id = (int) newvalue;
