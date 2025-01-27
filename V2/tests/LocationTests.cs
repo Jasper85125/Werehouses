@@ -566,27 +566,6 @@ namespace TestsV2
         }
 
         [TestMethod]
-        public void PatchLocationService_Test()
-        {
-            var locationService = new LocationService();
-            var location = locationService.PatchLocation(1, "name", "New Name");
-            location = locationService.PatchLocation(1, "code", "New Code");
-            location = locationService.PatchLocation(1, "warehouse_id", 2);
-            Assert.IsNotNull(location);
-            Assert.AreEqual("New Name", location.name);
-            Assert.AreEqual("New Code", location.code);
-            Assert.AreEqual(2, location.warehouse_id);
-        }
-
-        [TestMethod]
-        public void PatchLocationService_Failed()
-        {
-            var locationService = new LocationService();
-            var location = locationService.PatchLocation(0, "name", "New Name");
-            Assert.IsNull(location);
-        }
-
-        [TestMethod]
         public void PatchLocationService_EmptyFail(){
             var LocationService = new LocationService();
             LocationService.DeleteLocation(1);
@@ -632,5 +611,25 @@ namespace TestsV2
             Assert.AreEqual(0, locations.Count);
         }
 
+        [TestMethod]
+        public void PatchLocationService_Test()
+        {
+            var locationService = new LocationService();
+            var location = locationService.PatchLocation(1, "name", "New Name");
+            location = locationService.PatchLocation(1, "code", "New Code");
+            location = locationService.PatchLocation(1, "warehouse_id", 2);
+            Assert.IsNotNull(location);
+            Assert.AreEqual("New Name", location.name);
+            Assert.AreEqual("New Code", location.code);
+            Assert.AreEqual(2, location.warehouse_id);
+        }
+
+        [TestMethod]
+        public void PatchLocationService_Failed()
+        {
+            var locationService = new LocationService();
+            var location = locationService.PatchLocation(0, "name", "New Name");
+            Assert.IsNull(location);
+        }
     }
 }

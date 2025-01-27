@@ -128,6 +128,105 @@ namespace item.TestsV2
             Assert.AreEqual(1, returnedItems.Data.Count());
         }
 
+        [TestMethod]
+        public void GetAllItems_BadRequestOnWarehouseID()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.GetAllItems()).Returns((List<ItemCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+            httpContext.Items["WarehouseID"] = 1;
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(null, 0, 10);
+
+            // Assert
+            var okResult = result.Result as BadRequestResult;
+            Assert.IsNull(okResult);
+        }
+
+        [TestMethod]
+        public void GetAllItems_NotFoundOnWarehouseID()
+        {
+            // Arrange
+            var filtered = new itemFilter { code = "JAMADY", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33, item_group = 1, 
+                                            item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6, supplier_id = 28, supplier_code = "SUP467"};
+            var items = new List<ItemCS>
+            {
+                new ItemCS { uid = "P02", code = "JAMADY", description = "COOL", short_description = "Jamper", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33,
+                                       item_group = 1, item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6 ,supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", 
+                                       created_at = DateTime.Now, updated_at = DateTime.Now},
+                new ItemCS { uid = "P03", code = "JOJO", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now}
+
+            };
+            _mockItemService.Setup(service => service.GetAllItems()).Returns((List<ItemCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Operative";  
+            httpContext.Items["WarehouseID"] = "666";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(null, 0, 10);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        }
+
+        [TestMethod]
+        public void GetAllItems_NotFoundOnLocationWithWarehouseID()
+        {
+            // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Operative";  
+            httpContext.Items["WarehouseID"] = "1";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(null, 0, 10);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        }
+
+        [TestMethod]
+        public void GetAllItems_NotFoundOnInventoryByLocationId()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.GetAllItems()).Returns((List<ItemCS>)null);
+            _mockInventoryService.Setup(service => service.GetInventoriesByLocationId(new List<int>{1})).Returns((List<InventoryCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Operative";  
+            httpContext.Items["WarehouseID"] = "1";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(null, 0, 10);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        }
 
         [TestMethod]
         public void GetByUid_ReturnsOkResult_WithItem()
@@ -294,6 +393,32 @@ namespace item.TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        [TestMethod]
+        public void GetItemsWithItemType_BadRequest()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.GetAllItemsInItemType(-1)).Returns((List<ItemCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin"; 
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.GetAllItemsInItemType(-1);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        }
+
 
         [TestMethod]
         public void CreateItem_ReturnsCreatedResult_WithNewItem()
