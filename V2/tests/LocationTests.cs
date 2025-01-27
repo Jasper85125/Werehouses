@@ -587,6 +587,13 @@ namespace TestsV2
         }
 
         [TestMethod]
+        public void PatchLocationService_EmptyFail(){
+            var LocationService = new LocationService();
+            LocationService.DeleteLocation(1);
+            var location = LocationService.PatchLocation(1, "name", "New Name");
+            Assert.IsNull(location);
+        }
+        [TestMethod]
         public void DeleteLocationService_Test()
         {
             var locationService = new LocationService();
