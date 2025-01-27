@@ -61,21 +61,21 @@ namespace TestsV1
             Assert.AreEqual(1, result.Count);
         }
         [TestMethod]
-        public void GetInventoryById_Test_Succes(){
+        public void GetInventoryByIdService_Test_Succes(){
             var inventoryservice = new InventoryService();
             var result = inventoryservice.GetInventoryById(1);
             Assert.IsNotNull(result);
             Assert.AreEqual("P000001", result.item_id);
         }
         [TestMethod]
-        public void GetInventoriesForItem_Test_Succes(){
+        public void GetInventoriesForItemService_Test_Succes(){
             var inventoryservice = new InventoryService();
             var result = inventoryservice.GetInventoriesForItem("P000001");
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Id);
         }
         [TestMethod]
-        public void CreateInventory_Test_Succes(){
+        public void CreateInventoryService_Test_Succes(){
             var inventory = new InventoryCS(){
                 Id= 2,
                 item_id= "P000002",
@@ -109,7 +109,18 @@ namespace TestsV1
                 Assert.AreEqual("P000002", updatedinventories[1].item_id);
         }
         [TestMethod]
-        public void UpdateInventoryById_Test_Succes(){
+        public void CreateInventoryService_Test_EmptyListFirst(){
+            var inventoryservice = new InventoryService();
+            inventoryservice.DeleteInventory(1);
+            var result1 = inventoryservice.GetAllInventories();
+            Assert.AreEqual(0, result1.Count);
+            var result2 = inventoryservice.CreateInventory(new InventoryCS());
+            var check = inventoryservice.GetAllInventories();
+            Assert.IsNotNull(result2);
+            Assert.AreEqual(1, check.Count);
+        }
+        [TestMethod]
+        public void UpdateInventoryByIdService_Test_Succes(){
             var updatedinventory = new InventoryCS(){
                 Id= 1,
                 item_id= "P000001",
@@ -139,12 +150,26 @@ namespace TestsV1
             Assert.AreEqual("updated test", result.description);
         }
         [TestMethod]
+        public void UpdateInventoryByIdService_Test_Fail(){
+            var inventoryservice = new InventoryService();
+            var result = inventoryservice.UpdateInventoryById(-1, new InventoryCS());
+            Assert.IsNull(result);
+        }
+        [TestMethod]
         public void DeleteInventoryService_Test_Succes(){
             var inventoryservice = new InventoryService();
             inventoryservice.DeleteInventory(1);
             var updatedinventories = inventoryservice.GetAllInventories();
             Assert.AreEqual(0, updatedinventories.Count);
         }
+        [TestMethod]
+        public void DeleteInventoryService_Test_Fail(){
+            var inventoryservice = new InventoryService();
+            inventoryservice.DeleteInventory(-1);
+            var result = inventoryservice.GetAllInventories();
+            Assert.AreEqual(1, result.Count);
+        }
+        [TestMethod]
         public void GetInventoriesTest_Exists()
         {
             //arrange
