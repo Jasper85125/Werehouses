@@ -368,7 +368,7 @@ namespace TestsV1
         public void GetOrdersByShipmetIdService_Test_Fail(){
             var orderService = new OrderService();
             var order = orderService.GetOrdersByShipmentId(10);
-            Assert.AreEqual(0,order.Count);
+            Assert.IsNull(order);
         }
 
         [TestMethod]

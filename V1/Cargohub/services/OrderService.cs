@@ -61,7 +61,7 @@ public class OrderService : IOrderService
     {
         List<OrderCS> orders = GetAllOrders();
         List<OrderCS> shipmentOrders = orders.Where(order => order.shipment_id == shipmentId).ToList();
-        if (shipmentOrders == null)
+        if (shipmentOrders.Count == 0)
         {
             return null;
         }
