@@ -4,6 +4,7 @@ using Moq;
 using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace TestsV1
 {
@@ -18,6 +19,46 @@ namespace TestsV1
         {
             _mockShipmentService = new Mock<IShipmentService>();
             _shipmentController = new ShipmentController(_mockShipmentService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/shipments.json");
+            var shipment = new ShipmentCS
+            {
+                Id = 1,
+                order_id = 1,
+                source_id = 33,
+                order_date = DateTime.Parse("2000-03-09T00:00:00"),
+                request_date = DateTime.Parse("2000-03-11T00:00:00"),
+                shipment_date = DateTime.Parse("2000-03-13T00:00:00"),
+                shipment_type = "I",
+                shipment_status = "Pending",
+                Notes = "Zee vertrouwen klas rots heet lachen oneven begrijpen.",
+                carrier_code = "DPD",
+                carrier_description = "Dynamic Parcel Distribution",
+                service_code = "Fastest",
+                payment_type = "Manual",
+                transfer_mode = "Ground",
+                total_package_count = 31,
+                total_package_weight = 594.42,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now,
+                Items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "P01", amount = 23 }
+                }
+            };
+
+            var shipmentList = new List<ShipmentCS> { shipment };
+            var json = JsonConvert.SerializeObject(shipmentList, Formatting.Indented);
+
+            // Create directory if it does not exist
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Write the JSON data to the file
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -208,6 +249,197 @@ namespace TestsV1
             //assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
+  
+        [TestMethod]
+        public void GetAllShipmentsService_Test()
+        {
+            var shipmentService = new ShipmentService();
+            var shipments = shipmentService.GetAllShipments();
+            Assert.IsNotNull(shipments);
+            Assert.AreEqual(1, shipments.Count);
+        }
+
+        [TestMethod]
+        public void GetShipmentByIdService_Test()
+        {
+            var shipmentService = new ShipmentService();
+            var shipment = shipmentService.GetShipmentById(1);
+            Assert.IsNotNull(shipment);
+            Assert.AreEqual(1, shipment.Id);
+        }
+
+        [TestMethod]
+        public void CreateShipmentService_Test()
+        {
+            var shipment = new ShipmentCS
+            {
+                Id = 2,
+                order_id = 1,
+                source_id = 24,
+                shipment_type = "I",
+                shipment_status = "Pending",
+                carrier_code = "DPD",
+                carrier_description = "Dynamic Parcel Distribution",
+                service_code = "Fastest",
+                payment_type = "Manual",
+                transfer_mode = "Ground",
+                total_package_count = 31,
+                total_package_weight = 594.42,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now,
+                Items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "P01", amount = 23 }
+            }
+            };
+            var shipmentService = new ShipmentService();
+            var createdShipment = shipmentService.CreateShipment(shipment);
+            Assert.IsNotNull(createdShipment);
+            Assert.AreEqual(2, createdShipment.Id);
+
+            var shipmentsUpdated = shipmentService.GetAllShipments();
+            Assert.AreEqual(2, shipmentsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void UpdateShipmentService_Test()
+        {
+            var shipment = new ShipmentCS
+            {
+                Id = 1,
+                order_id = 1,
+                source_id = 24,
+                shipment_type = "I",
+                shipment_status = "Pending",
+                carrier_code = "DPD",
+                carrier_description = "Dynamic Parcel Distribution",
+                service_code = "Fastest",
+                payment_type = "Manual",
+                transfer_mode = "Ground",
+                total_package_count = 31,
+                total_package_weight = 594.42,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now,
+                Items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "P01", amount = 23 }
+            }
+            };
+            var shipmentService = new ShipmentService();
+            var updatedShipment = shipmentService.UpdateShipment(1, shipment);
+            Assert.IsNotNull(updatedShipment);
+            Assert.AreEqual(1, updatedShipment.Id);
+        }
+
+        [TestMethod]
+        public void UpdateShipmentService_Test_Failed()
+        {
+            var shipment = new ShipmentCS
+            {
+                Id = 3,
+                order_id = 1,
+                source_id = 24,
+                shipment_type = "I",
+                shipment_status = "Pending",
+                carrier_code = "DPD",
+                carrier_description = "Dynamic Parcel Distribution",
+                service_code = "Fastest",
+                payment_type = "Manual",
+                transfer_mode = "Ground",
+                total_package_count = 31,
+                total_package_weight = 594.42,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now,
+                Items = new List<ItemIdAndAmount>
+            {
+                new ItemIdAndAmount { item_id = "P01", amount = 23 }
+            }
+            };
+            var shipmentService = new ShipmentService();
+            var updatedShipment = shipmentService.UpdateShipment(3, shipment);
+            Assert.IsNull(updatedShipment);
+        }
+
+        [TestMethod]
+        public void DeleteShipmentService_Test()
+        {
+            var shipmentService = new ShipmentService();
+            shipmentService.DeleteShipment(1);
+            var shipmentsUpdated = shipmentService.GetAllShipments();
+            Assert.AreEqual(0, shipmentsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void DeleteShipmentService_Test_Failed()
+        {
+            var shipmentService = new ShipmentService();
+            shipmentService.DeleteShipment(3);
+            var shipmentsUpdated = shipmentService.GetAllShipments();
+            Assert.AreEqual(1, shipmentsUpdated.Count);
+        }
+
+        [TestMethod]
+        public void GetItemsInShipmentService_Test()
+        {
+            var shipmentService = new ShipmentService();
+            var items = shipmentService.GetItemsInShipment(1);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(1, items.Count);
+        }
+
+        [TestMethod]
+        public void UpdateItemsInShipmentService_Test()
+        {
+            var shipmentService = new ShipmentService();
+            List<ItemIdAndAmount> newItemsAndAmounts = new List<ItemIdAndAmount>()
+            {
+                new ItemIdAndAmount(){ item_id= "P007435", amount= 100},
+                new ItemIdAndAmount(){ item_id= "P009553", amount= 100},
+                new ItemIdAndAmount(){ item_id= "P002084", amount= 100}
+            };
+            var shipment = shipmentService.UpdateItemsInShipment(1, newItemsAndAmounts);
+            Assert.IsNotNull(shipment);
+            Assert.AreEqual(3, shipment.Items.Count);
+        }
+        
+
+        [TestMethod]
+        public void GetShipmentById_ServiceTest_Exists()
+        {
+            // Arrange
+            var shipments = new List<ShipmentCS>
+            {
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24 },
+                new ShipmentCS { Id = 2, order_id = 4, source_id = 10 },
+            };
+            var shipmentService = new ShipmentService();
+            var shipment = shipmentService.GetShipmentById(1);
+
+            // Act
+            var result = shipments.FirstOrDefault(s => s.Id == 1);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+        }
+
+        [TestMethod]
+        public void GetShipmentById_ServiceTest_NotFound()
+        {
+            // Arrange
+            var shipments = new List<ShipmentCS>
+            {
+                new ShipmentCS { Id = 1, order_id = 1, source_id = 24 },
+                new ShipmentCS { Id = 2, order_id = 4, source_id = 10 },
+            };
+            var shipmentService = new ShipmentService();
+            var shipment = shipmentService.GetShipmentById(3);
+
+            // Act
+            var result = shipments.FirstOrDefault(s => s.Id == 3);
+
+            // Assert
+            Assert.IsNull(result);
+        }
     }
 }
-
