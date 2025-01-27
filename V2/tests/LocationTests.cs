@@ -487,6 +487,150 @@ namespace TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        //testing the location service
+        [TestMethod]
+        public void GetAllLocationsService_Test()
+        {
+            var locationService = new LocationService();
+            var locations = locationService.GetAllLocations();
+            Assert.IsNotNull(locations);
+            Assert.AreEqual(1, locations.Count);
+        }
+
+        [TestMethod]
+        public void GetLocationByIdService_Test()
+        {
+            var locationService = new LocationService();
+            var location = locationService.GetLocationById(1);
+            Assert.IsNotNull(location);
+            Assert.AreEqual(1, location.Id);
+        }
+
+        [TestMethod]
+        public void GetLocationsByWarehouseIdService_Test()
+        {
+            var locationService = new LocationService();
+            var locations = locationService.GetLocationsByWarehouseId(1);
+            Assert.IsNotNull(locations);
+            Assert.AreEqual(1, locations.Count);
+        }
+
+        [TestMethod]
+        public void CreateLocationService_Test()
+        {
+            var locationService = new LocationService();
+            var newLocation = new LocationCS { Id = 2, warehouse_id = 5, code = "C.3.2", name = "Row: C, Rack: 3, Shelf: 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var createdLocation = locationService.CreateLocation(newLocation);
+            Assert.IsNotNull(createdLocation);
+            Assert.AreEqual(5, createdLocation.warehouse_id);
+
+            var locationsupdated = locationService.GetAllLocations();
+            Assert.AreEqual(2, locationsupdated.Count);
+        }
+
+        [TestMethod]
+        public void CreateMultipleLocatoinsService_test()
+        {
+            var locationService = new LocationService();
+            var locations = new List<LocationCS>
+            {
+                new LocationCS { Id = 2, warehouse_id = 6, code = "C.3.2", name =  "Row: C, Rack: 3, Shelf: 2"},
+                new LocationCS { Id = 3, warehouse_id = 7, code = "C.3.2", name =  "Row: C, Rack: 3, Shelf: 2"}
+            };
+            var createdLocations = locationService.CreateMultipleLocations(locations);
+            Assert.IsNotNull(createdLocations);
+            Assert.AreEqual(2, createdLocations.Count);
+
+            var locationsupdated = locationService.GetAllLocations();
+            Assert.AreEqual(3, locationsupdated.Count);
+        }
+
+        [TestMethod]
+        public void UpdateLocationService_Test()
+        {
+            var locationService = new LocationService();
+            var updatedLocation = new LocationCS { Id = 1, warehouse_id = 3, code = "C.3.2", name = "Row: C, Rack: 3, Shelf: 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var updatedLocationResult = locationService.UpdateLocation(updatedLocation, 1);
+            Assert.IsNotNull(updatedLocationResult);
+            Assert.AreEqual(3, updatedLocationResult.warehouse_id);
+        }
+
+        [TestMethod]
+        public void UpdateLocationService_Failed()
+        {
+            var locationService = new LocationService();
+            var updatedLocation = new LocationCS { Id = 1, warehouse_id = 3, code = "C.3.2", name = "Row: C, Rack: 3, Shelf: 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var updatedLocationResult = locationService.UpdateLocation(updatedLocation, 0);
+            Assert.IsNull(updatedLocationResult);
+        }
+
+        [TestMethod]
+        public void PatchLocationService_Test()
+        {
+            var locationService = new LocationService();
+            var location = locationService.PatchLocation(1, "name", "New Name");
+            location = locationService.PatchLocation(1, "code", "New Code");
+            location = locationService.PatchLocation(1, "warehouse_id", 2);
+            Assert.IsNotNull(location);
+            Assert.AreEqual("New Name", location.name);
+            Assert.AreEqual("New Code", location.code);
+            Assert.AreEqual(2, location.warehouse_id);
+        }
+
+        [TestMethod]
+        public void PatchLocationService_Failed()
+        {
+            var locationService = new LocationService();
+            var location = locationService.PatchLocation(0, "name", "New Name");
+            Assert.IsNull(location);
+        }
+
+        [TestMethod]
+        public void PatchLocationService_EmptyFail(){
+            var LocationService = new LocationService();
+            LocationService.DeleteLocation(1);
+            var location = LocationService.PatchLocation(1, "name", "New Name");
+            Assert.IsNull(location);
+        }
+        [TestMethod]
+        public void DeleteLocationService_Test()
+        {
+            var locationService = new LocationService();
+            var location = locationService.GetLocationById(1);
+            Assert.IsNotNull(location);
+
+            locationService.DeleteLocation(1);
+            location = locationService.GetLocationById(1);
+            Assert.IsNull(location);
+        }
+
+        [TestMethod]
+        public void DeleteLocationService_Failed()
+        {
+            var locationService = new LocationService();
+            var location = locationService.GetLocationById(0);
+            Assert.IsNull(location);
+        }
+
+        [TestMethod]
+        public void DeleteLocationsService_Test()
+        {
+            // create multiple locations for id 1, 2, 3
+            var locationsToAdd = new List<LocationCS>{
+                new LocationCS { Id = 2, warehouse_id = 1, code = "B.2.1", name = "Row: B, Rack: 2, Shelf: 1", created_at = DateTime.Now, updated_at = DateTime.Now },
+                new LocationCS { Id = 3, warehouse_id = 1, code = "B.2.2", name = "Row: B, Rack: 2, Shelf: 2", created_at = DateTime.Now, updated_at = DateTime.Now },
+            };
+            var locationService = new LocationService();
+            locationService.CreateMultipleLocations(locationsToAdd);
+            var locations = locationService.GetAllLocations();
+            Assert.IsNotNull(locations);
+            Assert.AreEqual(3, locations.Count);
+
+            locationService.DeleteLocations(new List<int> { 1,2,3 });
+            locations = locationService.GetAllLocations();
+            Assert.AreEqual(0, locations.Count);
+        }
+
     }
 }
-

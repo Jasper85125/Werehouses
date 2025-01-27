@@ -96,6 +96,28 @@ namespace clients.TestsV2
         }
 
         [TestMethod]
+        public void GetAllClients_Test_returns_NotFound()
+        {
+            //arrange
+            _mockClientService.Setup(_ => _.GetAllClients()).Returns((List<ClientCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _clientController.GetAllClients();
+
+            //assert
+            var okResult = result.Result as NotFoundObjectResult;
+            Assert.IsNull(okResult);
+        }
+
+        [TestMethod]
         public void GetClientById_Test_returns_true()
         {
             //arrange
@@ -134,6 +156,32 @@ namespace clients.TestsV2
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
+<<<<<<< HEAD
+=======
+        [TestMethod]
+        public void GetClientById_Test_returns_NotFound()
+        {
+            //arrange
+            var client = new ClientCS() { Id = 1, Address = "", City = "", contact_phone = "", contact_email = "", contact_name = "", Country = "", created_at = default, updated_at = default, Name = "", Province = "", zip_code = "" };
+            _mockClientService.Setup(_ => _.GetClientById(2)).Returns((ClientCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //act
+            var result = _clientController.GetClientById(2);
+
+            //assert
+            var resultok = result.Result as NotFoundObjectResult;
+            Assert.IsNull(resultok);
+        }
+
+>>>>>>> dd85879790c9a92ca390255e92aecb9a8058f77c
         [TestMethod]
         public void CreateClient_ReturnsCreatedResult_WithNewClient()
         {
@@ -173,6 +221,26 @@ namespace clients.TestsV2
             var unauthorizedResult = result.Result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void CreateClient_ReturnsCreatedResult_WithoutClient()
+        {
+            // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin"; 
+
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _clientController.CreateClient(null);
+
+            // Assert
+            var createdResult = result.Result as BadRequestResult;
+            Assert.IsNull(createdResult);
         }
 
         [TestMethod]
@@ -221,6 +289,27 @@ namespace clients.TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        [TestMethod]
+        public void CreateMultipleClient_ReturnsCreatedResult_WithoutClients()
+        {
+            // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _clientController.CreateMultipleClients(null);
+            var createdResult = result.Result as BadRequestResult;
+
+            // Assert
+            Assert.IsNull(createdResult);
+        }
+            
 
         [TestMethod]
         public void UpdatedClientTest_Success()
@@ -290,6 +379,30 @@ namespace clients.TestsV2
         }
 
         [TestMethod]
+        public void UpdatedClientTest_Failed_BadRequest()
+        {
+            // Arrange
+            var updatedClient = new ClientCS { Address = "street", City = "city", contact_phone = "number", contact_email = "email", contact_name = "name", Country = "Japan", created_at = default, Id = 1, Name = "name", Province = "province", updated_at = default, zip_code = "zip" };
+
+            _mockClientService.Setup(service => service.UpdateClient(0, updatedClient)).Returns((ClientCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _clientController.UpdateClient(1, null);
+
+            // Assert
+            var createdResult = result.Result as BadRequestResult;
+            Assert.IsNull(createdResult);
+        }
+
+        [TestMethod]
         public void DeleteClientTest_Success()
         {
             // Arrange
@@ -323,6 +436,29 @@ namespace clients.TestsV2
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
 
+<<<<<<< HEAD
+=======
+        [TestMethod]
+        public void DeleteClientTest_NotFound()
+        {
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _clientController.DeleteClient(-1);
+            var createdResult = result as NotFoundObjectResult;
+
+            // Assert
+            Assert.IsNull(createdResult);
+        }
+
+
+>>>>>>> dd85879790c9a92ca390255e92aecb9a8058f77c
         [TestMethod]
         public void DeleteClientsTest_Succes()
         {
@@ -355,6 +491,27 @@ namespace clients.TestsV2
 
             var unauthorizedResult = resultUn as UnauthorizedResult;
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void DeleteClientsTest_NotFound()
+        {
+            //Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var result = _clientController.DeleteClients(null);
+            var createdResult = result as NotFoundObjectResult;
+
+            //Assert
+            Assert.IsNull(createdResult);
+            
         }
 
         [TestMethod]
@@ -398,6 +555,32 @@ namespace clients.TestsV2
             var unauthorizedResult = result.Result as UnauthorizedResult;
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void PatchClientTest_BadRequest()
+        {
+            // Arrange
+            var existingClient = new ClientCS { Id = 1, Address = "old street", City = "old city", contact_phone = "old number", contact_email = "old email", contact_name = "old name", Country = "old country", Name = "old name", Province = "old province", zip_code = "old zip" };
+            var patchClient = new ClientCS { Address = "new street",City = "old city", contact_phone = "old number", contact_email = "old email", contact_name = "old name", Country = "old country", Name = "old name", Province = "old province", zip_code = "old zip" };
+
+            _mockClientService.Setup(service => service.GetClientById(1)).Returns(existingClient);
+            _mockClientService.Setup(service => service.PatchClient(-1, "address", "new street")).Returns((ClientCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _clientController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _clientController.PatchClient(-1, "address", "new street");
+            var createdResult = result.Result as BadRequestResult;
+
+            // Assert
+           Assert.IsNull(createdResult);
         }
 
         [TestMethod]

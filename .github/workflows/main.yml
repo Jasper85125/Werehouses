@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - '**'
-
+      
 jobs:
   csharp-build-and-test:
     runs-on: ubuntu-latest
@@ -20,14 +20,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # - name: Cache .Net depedencies
-    #   if: matrix.language == 'csharp'
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ~/.nuget/packages
-    #     key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
-    #     restore-keys: |
-    #       ${{ runner.os }}-nuget-
+    - name: Cache .Net depedencies
+      if: matrix.language == 'csharp'
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj')}}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
 
     - name: Setup .NET
       if: matrix.language == 'csharp'
@@ -154,13 +154,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # - name: Cache Python dependencies
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ~/.cache/pip
-    #     key: ${{ runner.os }}-pip-${{ hashFiles('PythonTests/requirements.txt') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-pip-
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('PythonTests/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Setup Python
       uses: actions/setup-python@v2
