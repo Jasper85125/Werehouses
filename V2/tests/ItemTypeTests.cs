@@ -698,5 +698,56 @@ namespace itemtype.TestsV2
             Assert.AreEqual(updatedItemType.Name, returnedItemType.Name);
             Assert.AreEqual(updatedItemType.description, returnedItemType.description);
         }
+
+        [TestMethod]
+        public void GetItemById_ShouldReturnCorrectItemType_2()
+        {
+            // Arrange
+            var itemType = _itemTypes[0];
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(itemType);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.GetItemById(1);
+
+            // Assert
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+            var returnedItemType = okResult.Value as ItemTypeCS;
+            Assert.IsNotNull(returnedItemType);
+            Assert.AreEqual(itemType.Name, returnedItemType.Name);
+            Assert.AreEqual(itemType.description, returnedItemType.description);
+        }
+
+        [TestMethod]
+        public void GetItemById_ShouldReturnNotFound_WhenItemTypeIsNull()
+        {
+            // Arrange
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.GetItemById(1);
+
+            // Assert
+            var notFoundResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        }
     }
 }
