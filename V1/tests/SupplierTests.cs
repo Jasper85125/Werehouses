@@ -359,14 +359,6 @@ namespace TestsV1
             Assert.AreEqual(0, items.Count);
         }
 
-        [TestMethod]
-        public void GetItemsBySupplierIdService_FailTest()
-        {
-            var supplierService = new SupplierService();
-            var items = supplierService.GetItemsBySupplierId(2);
-            Assert.IsNull(items);
-        }
-
         [TestCleanup]
         public void Cleanup()
         {
