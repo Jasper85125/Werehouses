@@ -93,11 +93,11 @@ namespace item.TestsV2
         public void GetAllItems_ReturnsOkResult_Filtered()
         {
             // Arrange
-            var filtered = new itemFilter { code = "JAMADY", upc_code = "5", item_line = 33, item_group = 1, 
+            var filtered = new itemFilter { code = "JAMADY", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33, item_group = 1, 
                                             item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6, supplier_id = 28, supplier_code = "SUP467"};
             var items = new List<ItemCS>
             {
-                new ItemCS { uid = "P02", code = "JAMADY", description = "COOL", short_description = "Jamper", upc_code = "5", item_line = 33,
+                new ItemCS { uid = "P02", code = "JAMADY", description = "COOL", short_description = "Jamper", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33,
                                        item_group = 1, item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6 ,supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", 
                                        created_at = DateTime.Now, updated_at = DateTime.Now},
                 new ItemCS { uid = "P03", code = "JOJO", description = "Organic asymmetric data-warehouse",
