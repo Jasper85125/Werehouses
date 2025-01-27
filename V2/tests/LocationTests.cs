@@ -487,6 +487,16 @@ namespace TestsV2
             Assert.IsNotNull(unauthorizedResult);
             Assert.AreEqual(401, unauthorizedResult.StatusCode);
         }
+
+        //testing the locatoin service
+        [TestMethod]
+        public void GetAllLocationsTest()
+        {
+            var locationService = new LocationService();
+            var locations = locationService.GetAllLocations();
+            Assert.IsNotNull(locations);
+            Assert.AreEqual(1, locations.Count);
+        }
     }
 }
 
