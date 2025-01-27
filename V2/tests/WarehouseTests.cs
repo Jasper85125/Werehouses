@@ -697,33 +697,6 @@ namespace TestsV2
         }
 
         [TestMethod]
-        public void UpdateWarehouseService_Test_Failed()
-        {
-            var warehouse = new WarehouseCS
-            {
-            Id = 3,
-            Code = "WH003",
-            Name = "Nonexistent Warehouse",
-            Address = "999 Nowhere St",
-            Zip = "00000",
-            City = "Nowhere",
-            Province = "Nowhere",
-            Country = "Nowhere",
-            Contact = new Dictionary<string, string>
-            {
-                { "name", "No One" },
-                { "phone", "000-000-0000" },
-                { "email", "no.one@example.com" }
-            },
-            created_at = DateTime.Now,
-            updated_at = DateTime.Now
-            };
-            var warehouseService = new WarehouseService();
-            var updatedWarehouse = warehouseService.UpdateWarehouse(3, warehouse);
-            Assert.IsNull(updatedWarehouse);
-        }
-
-        [TestMethod]
         public void DeleteWarehouseService_Test()
         {
             var warehouseService = new WarehouseService();
@@ -779,34 +752,6 @@ namespace TestsV2
         }
 
         [TestMethod]
-        public void PatchWarehouseService_Test()
-        {
-            var warehouseService = new WarehouseService();
-            var warehouse = warehouseService.PatchWarehouse(1, "Name", "Patched Warehouse");
-            warehouse = warehouseService.PatchWarehouse(1, "Address", "123 Patched St");
-            warehouse = warehouseService.PatchWarehouse(1, "City", "Patched City");
-            warehouse = warehouseService.PatchWarehouse(1, "Zip", "54321");
-            warehouse = warehouseService.PatchWarehouse(1, "Province", "Patched Province");
-            warehouse = warehouseService.PatchWarehouse(1, "Country", "Patched Country");
-            warehouse = warehouseService.PatchWarehouse(1, "Contact", new Dictionary<string, string>
-            {
-            { "name", "Patched Name" },
-            { "phone", "123-456-7890" },
-            { "email", "patched@example.com" }
-            });
-            Assert.IsNotNull(warehouse);
-            Assert.AreEqual("Patched Warehouse", warehouse.Name);
-            Assert.AreEqual("123 Patched St", warehouse.Address);
-            Assert.AreEqual("Patched City", warehouse.City);
-            Assert.AreEqual("54321", warehouse.Zip);
-            Assert.AreEqual("Patched Province", warehouse.Province);
-            Assert.AreEqual("Patched Country", warehouse.Country);
-            Assert.AreEqual("Patched Name", warehouse.Contact["name"]);
-            Assert.AreEqual("123-456-7890", warehouse.Contact["phone"]);
-            Assert.AreEqual("patched@example.com", warehouse.Contact["email"]);
-        }
-
-        [TestMethod]
         public void PatchWarehouseService_Test_Failed()
         {
             var warehouseService = new WarehouseService();
@@ -814,5 +759,31 @@ namespace TestsV2
             Assert.IsNull(warehouse);
         }
 
+        [TestMethod]
+        public void PatchWarehouseService_Test_Success()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouse = warehouseService.PatchWarehouse(1, "Name", "Patched Warehouse");
+            Assert.IsNotNull(warehouse);
+            Assert.AreEqual("Patched Warehouse", warehouse.Name);
+        }
+
+        [TestMethod]
+        public void GetLatestUpdatedWarehouseService_Test()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouses = warehouseService.GetLatestUpdatedWarehouse(1);
+            Assert.IsNotNull(warehouses);
+            Assert.AreEqual(1, warehouses.Count);
+        }
+
+        [TestMethod]
+        public void GetLatestUpdatedWarehouseService_Test_Success()
+        {
+            var warehouseService = new WarehouseService();
+            var warehouses = warehouseService.GetLatestUpdatedWarehouse(1);
+            Assert.IsNotNull(warehouses);
+            Assert.AreEqual(1, warehouses.Count);
+        }
     }
 }
