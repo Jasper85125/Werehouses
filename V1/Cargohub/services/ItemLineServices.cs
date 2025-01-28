@@ -29,7 +29,7 @@ public class ItemLineService : IItemLineService
         return item;
     }
 
-    public async Task<ItemLineCS> AddItemLine(ItemLineCS newItemLine)
+    public ItemLineCS AddItemLine(ItemLineCS newItemLine)
     {
         List<ItemLineCS> items = GetAllItemlines();
         var currentDateTime = DateTime.Now;
@@ -48,12 +48,12 @@ public class ItemLineService : IItemLineService
         items.Add(newItemLine);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync(path, jsonData);
+        File.WriteAllText(path, jsonData);
 
         return newItemLine;
     }
 
-    public async Task<ItemLineCS> UpdateItemLine(int id, ItemLineCS itemLine)
+    public ItemLineCS UpdateItemLine(int id, ItemLineCS itemLine)
     {
         List<ItemLineCS> items = GetAllItemlines();
         var existingItem = items.FirstOrDefault(i => i.Id == id);
@@ -71,7 +71,7 @@ public class ItemLineService : IItemLineService
         existingItem.updated_at = DateTime.ParseExact(formattedDateTime, "yyyy-MM-dd HH:mm:ss", null);
 
         var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync(path, jsonData);
+        File.WriteAllText(path, jsonData);
 
         return existingItem;
     }
@@ -93,7 +93,7 @@ public class ItemLineService : IItemLineService
 
     public List<ItemCS> GetItemsByItemLineId(int itemlineId)
     {
-        var itemsPath = "data/items.json";
+        var itemsPath = "../../data/items.json";
         if (!File.Exists(itemsPath))
         {
             return new List<ItemCS>();

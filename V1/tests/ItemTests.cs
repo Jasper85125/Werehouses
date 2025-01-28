@@ -27,7 +27,7 @@ namespace TestsV1
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/items.json");
             var item = new ItemCS { uid = "P01", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
-                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 0,
                                        item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
 
             var itemList = new List<ItemCS> { item };
@@ -293,6 +293,24 @@ namespace TestsV1
         }
 
         [TestMethod]
+        public void DeleteItemGroupService_Test()
+        {
+            var itemService = new ItemService();
+            itemService.DeleteItem("P01");
+            var itemEmpty = itemService.GetAllItems();
+            Assert.AreEqual(0, itemEmpty.Count());
+        }
+
+        [TestMethod]
+        public void DeleteItemService_Test_Failed()
+        {
+            var itemService = new ItemService();
+            itemService.DeleteItem("P001");
+            var itemEmpty = itemService.GetAllItems();
+            Assert.AreEqual(1, itemEmpty.Count());
+        }
+
+        [TestMethod]
         public void UpdateItemService_Test_Failed()
         {
             var itemService = new ItemService();
@@ -304,21 +322,15 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public void DeleteItemGroupService_Test()
+        public void UpdateItemService_Test_Extra()
         {
             var itemService = new ItemService();
-            itemService.DeleteItem("P01");
-            var itemEmpty = itemService.GetAllItems();
-            Assert.AreEqual(0, itemEmpty.Count());
-        }
-
-        [TestMethod]
-        public void DeleteItemGroupService_Test_Failed()
-        {
-            var itemService = new ItemService();
-            itemService.DeleteItem("P001");
-            var itemEmpty = itemService.GetAllItems();
-            Assert.AreEqual(1, itemEmpty.Count());
+            var item = new ItemCS { uid = "P02", code = "New Code", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 2,
+                                       item_group = 2, item_type= 2, supplier_id = 2, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var updatedItem = itemService.UpdateItem("P01", item);
+            Assert.IsNotNull(updatedItem);
+            Assert.AreEqual("New Code", updatedItem.code);
         }
     }
 }
