@@ -67,7 +67,7 @@ jobs:
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content":"✅ Tests passed for version ${{ matrix.version }}!", "embeds": [{"image": {"url": "https://media.giphy.com/media/3a53VvGpzUgh05qq7W/giphy.gif"}}]}' \
-          ${{ secrets.DISCORD_SECRET_WEBHOOK }}
+          ${{ secrets.DISCORD_SECRET }}
 
       # Discord notification on failure
       - name: Send Discord Notification on Failure
@@ -75,7 +75,7 @@ jobs:
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content":"❌ Tests failed for version ${{ matrix.version }}. Please check the logs.", "embeds": [{"image": {"url": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzByYm1qcnZlOTJlMWM3YXdkZXJ0NWR2MnEzd3I2aXFia2FvMzBhNSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/D7knpKzFbgDPBmdrVM/giphy.gif"}}]}' \
-          ${{ secrets.DISCORD_SECRET_WEBHOOK }}
+          ${{ secrets.DISCORD_SECRET }}
 
       - name: Install ReportGenerator
         if: matrix.language == 'csharp'
