@@ -166,6 +166,9 @@ jobs:
             echo "Coverage is above 80% threshold."
           else
             echo "Coverage is below 80% threshold."
+            curl -X POST -H "Content-Type: application/json" \
+            -d '{"content":"❌ Tests failed for version ${{ matrix.version }}. Please check the logs.", "embeds": [{"image": {"url": "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm9mMXoycnFpbzduY254MDNnZTY0NWd3anV4a3QxNXgyOGN6ZnVlbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/obBRY85qHrHIOX7TsF/giphy.gif"}}]}' \
+            ${{ secrets.DISCORD_SECRET }}
             exit 1
           fi
 
