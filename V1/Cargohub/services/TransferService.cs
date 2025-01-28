@@ -95,33 +95,37 @@ public class TransferService : ITransferService
         foreach (ItemIdAndAmount items in transfer.Items)
         {
             InventoryCS inventory = inventoryService.GetInventoriesForItem(items.item_id);
-            foreach (int location in inventory.Locations)
-            {
-                if (location == transfer.transfer_from)
-                {
-                    inventory.total_on_hand -= items.amount;
-                    inventory.total_expected = inventory.total_on_hand + inventory.total_expected;
-                    inventory.total_available = inventory.total_on_hand - inventory.total_allocated;
-                    inventoryService.UpdateInventoryById(inventory.Id, inventory); 
-                }
-                else if(location == transfer.transfer_to)
-                {
-                    inventory.total_on_hand += items.amount;
-                    inventory.total_expected = inventory.total_on_hand + inventory.total_ordered;
-                    inventory.total_available = inventory.total_on_hand - inventory.total_allocated;
-                    inventoryService.UpdateInventoryById(inventory.Id, inventory); 
-                }
-            }
+            CommitTransferAssist(inventory, items, transfer);
         } 
         transfer.transfer_status = "Processed";
         TransferCS updatedTransfer = UpdateTransfer(transfer.Id, transfer);
         return updatedTransfer;
     }
 
+    public void CommitTransferAssist(InventoryCS inventory, ItemIdAndAmount items, TransferCS transfer)
+    {
+        InventoryService inventoryService = new InventoryService();
+        foreach (int location in inventory.Locations)
+        {
+            if (location == transfer.transfer_from)
+            {
+                inventory.total_on_hand -= items.amount;
+                inventory.total_expected = inventory.total_on_hand + inventory.total_expected;
+                inventory.total_available = inventory.total_on_hand - inventory.total_allocated;
+                inventoryService.UpdateInventoryById(inventory.Id, inventory); 
+            }
+            else if(location == transfer.transfer_to)
+            {
+                inventory.total_on_hand += items.amount;
+                inventory.total_expected = inventory.total_on_hand + inventory.total_ordered;
+                inventory.total_available = inventory.total_on_hand - inventory.total_allocated;
+                inventoryService.UpdateInventoryById(inventory.Id, inventory); 
+            }
+        }
+    }
+
     public void DeleteTransfer(int id)
     {
-        
-
         List<TransferCS> transfers = GetAllTransfers();
         TransferCS transfer = transfers.FirstOrDefault(transfer => transfer.Id == id);
         if (transfer != null)
