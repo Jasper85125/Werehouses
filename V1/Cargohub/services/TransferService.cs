@@ -16,10 +16,6 @@ public class TransferService : ITransferService
 
     public List<TransferCS> GetAllTransfers()
     {
-        if (!File.Exists(_path))
-        {
-            return new List<TransferCS>();
-        }
         var jsonData = File.ReadAllText(_path);
         List<TransferCS> transfers = JsonConvert.DeserializeObject<List<TransferCS>>(jsonData);
         return transfers ?? new List<TransferCS>();

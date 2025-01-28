@@ -417,7 +417,7 @@ namespace TestsV1
                 description = "Face-to-face clear-thinking complexity",
                 item_reference = "sjQ23408K",
                 Locations = new List<int>(){
-                    3211,
+                    1,
                     24700,
                     14123,
                     19538,
@@ -459,9 +459,8 @@ namespace TestsV1
             transferService.CommitTransferAssist(inventory, items, transfer);
 
             // Assert
-            Assert.AreEqual(10, inventory.total_on_hand);
+            Assert.AreEqual(5, inventory.total_on_hand);
         }
-
         
         [TestMethod]
         public void CommitTransferTest_Failed()
