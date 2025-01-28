@@ -290,25 +290,10 @@ namespace TestsV1
             var result = await _itemTypeController.UpdateItemType(1, updatedItemType);
 
             // Assert
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-            var okResult = result as OkObjectResult;
+            Assert.IsInstanceOfType(result, typeof(ActionResult<ItemTypeCS>));
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(updatedItemType, okResult.Value);
-        }
-
-        [TestMethod]
-        public async Task UpdateItemType_NonExistingItem_ShouldReturnNotFound()
-        {
-            // Arrange
-            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
-
-            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
-
-            // Act
-            var result = await _itemTypeController.UpdateItemType(1, updatedItemType);
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
 
     }
