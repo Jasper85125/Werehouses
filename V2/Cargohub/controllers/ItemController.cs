@@ -54,9 +54,13 @@ public class ItemController : ControllerBase
                 var warehouseIds = warehouseID.Split(',').Select(int.Parse).ToList();
 
                 var locations = _locationService.GetAllLocations();
+                if (locations is null || locations.Count() <= 0)
+                {
+                    return NotFound("No locations found.");
+                }
                 var filteredLocations = locations.Where(location => warehouseIds.Contains(location.warehouse_id)).ToList();
 
-                if (!filteredLocations.Any())
+                if (filteredLocations is null || filteredLocations.Count() <= 0)
                 {
                     return NotFound("No locations found for the specified warehouses.");
                 }
@@ -65,7 +69,7 @@ public class ItemController : ControllerBase
 
                 var inventoriesByLocation = _inventoryService.GetInventoriesByLocationId(locationIds);
 
-                if (!inventoriesByLocation.Any())
+                if (inventoriesByLocation is null || inventoriesByLocation.Count() <= 0)
                 {
                     return NotFound("No inventories found for the specified locations.");
                 }
