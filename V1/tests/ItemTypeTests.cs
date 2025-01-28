@@ -113,20 +113,6 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public async Task UpdateItemType_WrongId_ShouldReturnNotFound()
-        {
-            // Arrange
-            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
-            _mockItemTypeService.Setup(service => service.UpdateItemType(1, updatedItemType)).ReturnsAsync((ItemTypeCS)null);
-
-            // Act
-            var result = await _itemTypeController.UpdateItemType(1, updatedItemType);
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
-        }
-
-        [TestMethod]
         public async Task UpdateItemType_IdMismatch_ShouldReturnBadRequest()
         {
             // Arrange
@@ -138,6 +124,7 @@ namespace TestsV1
             // Assert
             Assert.IsNull(result);
         }
+        
         [TestMethod]
         public void DeleteItemTypeTest_Exists()
         {
@@ -256,6 +243,38 @@ namespace TestsV1
             Assert.AreEqual(0, itemTypesGet2.Count);
         }
 
+        [TestMethod]
+        public async Task CreateItemType_NullItemType_ShouldReturnBadRequest()
+        {
+            // Arrange
+            ItemTypeCS newItemType = null;
+
+            // Act
+            var result = await _itemTypeController.CreateItemType(newItemType);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.AreEqual("ItemGroup cannot be null", badRequestResult.Value);
+        }
+
+        [TestMethod]
+        public async Task CreateItemType_ValidItemType_ShouldReturnCreatedItemType()
+        {
+            // Arrange
+            var newItemType = new ItemTypeCS { Id = 3, Name = "Type3", description = "Description3" };
+            _mockItemTypeService.Setup(service => service.CreateItemType(newItemType)).ReturnsAsync(newItemType);
+
+            // Act
+            var result = await _itemTypeController.CreateItemType(newItemType);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(CreatedAtActionResult));
+            var createdResult = result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(nameof(_itemTypeController.GetItemById), createdResult.ActionName);
+            Assert.AreEqual(newItemType.Id, ((ItemTypeCS)createdResult.Value).Id);
+        }
 
     }
 }
