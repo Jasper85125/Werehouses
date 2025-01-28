@@ -45,704 +45,704 @@ namespace item.TestsV2
             File.WriteAllText(filePath, json);
         }
 
-        // [TestMethod]
-        // public void GetAllItems_ReturnsOkResult_WithListOfItems()
-        // {
-        //     // Arrange
-        //     var items = new List<ItemCS>
-        //     {
-        //         new ItemCS { uid = "1", code = "Item1" },
-        //         new ItemCS { uid = "2", code = "Item2" }
-        //     };
-        //     _mockItemService.Setup(service => service.GetAllItems()).Returns(items);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";  
-        //     httpContext.Items["WarehouseID"] = "1,2,3,4";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetAllItems(null, 1, 10);
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-        //     var okResult = result.Result as OkObjectResult;
-        //     Assert.IsNotNull(okResult);
-        //     Assert.IsInstanceOfType(okResult.Value, typeof(PaginationCS<ItemCS>));
-        //     var returnedItems = okResult.Value as PaginationCS<ItemCS>;
-        //     Assert.AreEqual(2, returnedItems.Data.Count());
-
-        //     httpContext.Items["UserRole"] = "NoRole";  
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     result = _itemController.GetAllItems(null, 1, 10);
-
-        //     var unauthorizedResult = result.Result as UnauthorizedResult;
-        //     Assert.IsNotNull(unauthorizedResult);
-        //     Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        // }
-
-        // [TestMethod]
-        // public void GetAllItems_ReturnsOkResult_Filtered()
-        // {
-        //     // Arrange
-        //     var filtered = new itemFilter { code = "JAMADY", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33, item_group = 1, 
-        //                                     item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6, supplier_id = 28, supplier_code = "SUP467"};
-        //     var items = new List<ItemCS>
-        //     {
-        //         new ItemCS { uid = "P02", code = "JAMADY", description = "COOL", short_description = "Jamper", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33,
-        //                                item_group = 1, item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6 ,supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", 
-        //                                created_at = DateTime.Now, updated_at = DateTime.Now},
-        //         new ItemCS { uid = "P03", code = "JOJO", description = "Organic asymmetric data-warehouse",
-        //                                short_description = "particularly", upc_code = "9538419150098", item_line = 33,
-        //                                item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now}
-
-        //     };
-        //     _mockItemService.Setup(service => service.GetAllItems()).Returns([items[0]]);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";  
-        //     httpContext.Items["WarehouseID"] = "1,2,3,4";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetAllItems(filtered, 0, 10);
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-        //     var okResult = result.Result as OkObjectResult;
-        //     Assert.IsNotNull(okResult);
-        //     Assert.IsInstanceOfType(okResult.Value, typeof(PaginationCS<ItemCS>));
-        //     var returnedItems = okResult.Value as PaginationCS<ItemCS>;
-        //     Assert.AreEqual(1, returnedItems.Data.Count());
-        // }
-
-        // [TestMethod]
-        // public void GetAllItems_BadRequestOnWarehouseID()
-        // {
-        //     // Arrange
-        //     _mockItemService.Setup(service => service.GetAllItems()).Returns((List<ItemCS>)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";  
-        //     httpContext.Items["WarehouseID"] = 1;
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetAllItems(null, 0, 10);
-
-        //     // Assert
-        //     var okResult = result.Result as BadRequestResult;
-        //     Assert.IsNull(okResult);
-        // }
-
-        // [TestMethod]
-        // public void GetAllItems_NotFoundOnWarehouseID()
-        // {
-        //     // Arrange
-        //     var filtered = new itemFilter { code = "JAMADY", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33, item_group = 1, 
-        //                                     item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6, supplier_id = 28, supplier_code = "SUP467"};
-        //     var items = new List<ItemCS>
-        //     {
-        //         new ItemCS { uid = "P02", code = "JAMADY", description = "COOL", short_description = "Jamper", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33,
-        //                                item_group = 1, item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6 ,supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", 
-        //                                created_at = DateTime.Now, updated_at = DateTime.Now},
-        //         new ItemCS { uid = "P03", code = "JOJO", description = "Organic asymmetric data-warehouse",
-        //                                short_description = "particularly", upc_code = "9538419150098", item_line = 33,
-        //                                item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now}
-
-        //     };
-        //     _mockItemService.Setup(service => service.GetAllItems()).Returns((List<ItemCS>)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Operative";  
-        //     httpContext.Items["WarehouseID"] = "666";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetAllItems(null, 0, 10);
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
-        // }
-
-        // [TestMethod]
-        // public void GetAllItems_NotFoundOnLocationWithWarehouseID()
-        // {
-        //     // Arrange
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Operative";  
-        //     httpContext.Items["WarehouseID"] = "1";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetAllItems(null, 0, 10);
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
-        // }
-
-        // [TestMethod]
-        // public void GetAllItems_NotFoundOnInventoryByLocationId()
-        // {
-        //     // Arrange
-        //     _mockItemService.Setup(service => service.GetAllItems()).Returns((List<ItemCS>)null);
-        //     _mockInventoryService.Setup(service => service.GetInventoriesByLocationId(new List<int>{1})).Returns((List<InventoryCS>)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Operative";  
-        //     httpContext.Items["WarehouseID"] = "1";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetAllItems(null, 0, 10);
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
-        // }
-
-        // [TestMethod]
-        // public void GenerateReportTest_Success()
-        // {
-        //     var httpContext = new DefaultHttpContext();
-        //     // httpContext.Items["UserRole"] = "Admin";  
-        //     // httpContext.Items["WarehouseID"] = "1";
-
-        //     // _itemController.ControllerContext = new ControllerContext
-        //     // {
-        //     //     HttpContext = httpContext
-        //     // };
-        //     // var result = _itemController.GenerateReport(null);
-
-        //     // Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-
-        //     httpContext.Items["UserRole"] = "NoRole";  
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     var resultAgain = _itemController.GenerateReport(null);
-
-        //     var unauthorizedResult = resultAgain as UnauthorizedResult;
-        //     Assert.IsNotNull(unauthorizedResult);
-        //     Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        // }
-
-        // [TestMethod]
-        // public void GenerateReportTest_BadRequest()
-        // {
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";  
-        //     httpContext.Items["WarehouseID"] = "1";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     var result = _itemController.GenerateReport(null);
-
-        //     Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-        // }
-
-        // [TestMethod]
-        // public void GetByUid_ReturnsOkResult_WithItem()
-        // {
-        //     // Arrange
-        //     var item = new ItemCS { uid = "1", code = "Item1" };
-        //     _mockItemService.Setup(service => service.GetItemById("1")).Returns(item);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetByUid("1");
-        //     var okResult = result.Result as OkObjectResult;
-        //     var returnedItem = okResult.Value as ItemCS;
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-        //     Assert.IsNotNull(okResult);
-        //     Assert.IsInstanceOfType(okResult.Value, typeof(ItemCS));
-        //     Assert.AreEqual("1", returnedItem.uid);
-        //     Assert.AreEqual("Item1", returnedItem.code);
-
-        //     httpContext.Items["UserRole"] = "NoRole";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     result = _itemController.GetByUid("1");
-
-        //     var unauthorizedResult = result.Result as UnauthorizedResult;
-        //     Assert.IsNotNull(unauthorizedResult);
-        //     Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        // }
-
-        // [TestMethod]
-        // public void GetByUid_ReturnsNotFound_WhenItemDoesNotExist()
-        // {
-        //     // Arrange
-        //     _mockItemService.Setup(service => service.GetItemById("1")).Returns((ItemCS)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetByUid("1");
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
-        // }
-
-        // [TestMethod]
-        // public void GetInventoryForItem_Success()
-        // {
-        //     InventoryCS inventory = new InventoryCS
-        //     {
-        //         Id = 3,
-        //         item_id = "P000003",
-        //         description = "gamers",
-        //         item_reference = "QVm03739H",
-        //         Locations = new List<int> { 5321, 21960 },
-        //         total_on_hand = 24,
-        //         total_expected = 0,
-        //         total_ordered = 90,
-        //         total_allocated = 68,
-        //         total_available = -134
-        //     };
-        //     // Arrange
-        //     _mockInventoryService.Setup(service => service.GetInventoriesForItem("P000003")).Returns(inventory);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";  
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetInventoriesForItem("P000003");
-        //     var okResult = result.Result as OkObjectResult;
-        //     var returnedItem = okResult.Value as InventoryCS;
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-        //     Assert.IsNotNull(okResult);
-        //     Assert.IsInstanceOfType(okResult.Value, typeof(InventoryCS));
-        //     Assert.AreEqual("P000003", returnedItem.item_id);
-        //     Assert.AreEqual(24, returnedItem.total_on_hand);
-        //     Assert.AreEqual(68, returnedItem.total_allocated);
-
-        //     httpContext.Items["UserRole"] = "NoRole";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     result = _itemController.GetInventoriesForItem("P000003");
-
-        //     var unauthorizedResult = result.Result as UnauthorizedResult;
-        //     Assert.IsNotNull(unauthorizedResult);
-        //     Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        // }
-
-        // [TestMethod]
-        // public void GetInventoryForItem_NotFound()
-        // {
-        //     // Arrange
-        //     _mockInventoryService.Setup(service => service.GetInventoriesForItem("P000003")).Returns((InventoryCS)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";  
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.GetInventoriesForItem("P000003");
-        //     var okResult = result.Result as NotFoundResult;
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
-        // }
-
-        // [TestMethod]
-        // public void GetItemsWithItemType_Success()
-        // {
-        //     // Arrange
-        //     List<ItemCS> items = new List<ItemCS>
-        //     {
-        //         new ItemCS { uid = "P000123", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
-        //                                short_description = "particularly", upc_code = "9538419150098", item_line = 33,
-        //                                item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"},
-        //         new ItemCS { uid = "P100000", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
-        //                                short_description = "particularly", upc_code = "9538419150098", item_line = 33,
-        //                                item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"}
-        //     };
-
-        //     _mockItemService.Setup(service => service.GetAllItemsInItemType(1)).Returns(items);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin"; 
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     _itemTypeController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemTypeController.GetAllItemsInItemType(1);
-        //     var okResult = result.Result as OkObjectResult;
-        //     var returnedItems = okResult.Value as IEnumerable<ItemCS>;
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-        //     Assert.IsNotNull(okResult);
-        //     Assert.IsInstanceOfType(okResult.Value, typeof(IEnumerable<ItemCS>));
-        //     Assert.AreEqual(2, returnedItems.Count());
-
-        //     httpContext.Items["UserRole"] = "NoRole";
-
-        //     _itemTypeController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     result = _itemTypeController.GetAllItemsInItemType(1);
-
-        //     var unauthorizedResult = result.Result as UnauthorizedResult;
-        //     Assert.IsNotNull(unauthorizedResult);
-        //     Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        // }
-
-        // [TestMethod]
-        // public void GetItemsWithItemType_BadRequest()
-        // {
-        //     // Arrange
-        //     _mockItemService.Setup(service => service.GetAllItemsInItemType(-1)).Returns((List<ItemCS>)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin"; 
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     _itemTypeController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemTypeController.GetAllItemsInItemType(-1);
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
-        // }
-
-
-        // [TestMethod]
-        // public void CreateItem_ReturnsCreatedResult_WithNewItem()
-        // {
-        //     // Arrange
-        //     var newItem = new ItemCS { uid = "P000001", code = "NewItem" };
-        //     var createdItem = new ItemCS { uid = "P000002", code = "NewItem" };
-        //     _mockItemService.Setup(service => service.CreateItem(newItem)).Returns(createdItem);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.CreateItem(newItem);
-        //     var createdResult = result.Result as CreatedAtActionResult;
-        //     var returnedItem = createdResult.Value as ItemCS;
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
-        //     Assert.IsNotNull(createdResult);
-        //     Assert.IsInstanceOfType(createdResult.Value, typeof(ItemCS));
-        //     Assert.AreEqual("P000002", returnedItem.uid);
-        //     Assert.AreEqual("NewItem", returnedItem.code);
-
-        //     httpContext.Items["UserRole"] = "NoRole";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     result = _itemController.CreateItem(newItem);
-
-        //     var unauthorizedResult = result.Result as UnauthorizedResult;
-        //     Assert.IsNotNull(unauthorizedResult);
-        //     Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        // }
-
-        // [TestMethod]
-        // public void CreateItem_BadRequest()
-        // {
-        //     // Arrange
-        //     _mockItemService.Setup(service => service.CreateItem(null)).Returns((ItemCS)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.CreateItem(null);
-        //     var createdResult = result.Result as BadRequestResult;
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
-        // }
-
-        // [TestMethod]
-        // public void CreateMultipleItems_ReturnsCreatedResult_WithNewItems()
-        // {
-        //     // Arrange
-        //     List<ItemCS> items = new List<ItemCS>
-        //     {
-        //         new ItemCS { uid = "P000123", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
-        //                                short_description = "particularly", upc_code = "9538419150098", item_line = 33,
-        //                                item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"},
-        //         new ItemCS { uid = "P100000", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
-        //                                short_description = "particularly", upc_code = "9538419150098", item_line = 33,
-        //                                item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"}
-        //     };
-        //     _mockItemService.Setup(service => service.CreateMultipleItems(items)).Returns(items);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.CreateMultipleItems(items);
-        //     var createdResult = result.Result as ObjectResult;
-        //     var returnedItems = createdResult.Value as List<ItemCS>;
-        //     var firstItem = returnedItems[0];
-
-        //     // Assert
-        //     Assert.IsNotNull(createdResult);
-        //     Assert.IsNotNull(returnedItems);
-        //     Assert.AreEqual(items[0].code, firstItem.code);
-        //     Assert.AreEqual(items[0].supplier_code, firstItem.supplier_code);
-        //     Assert.AreEqual(items[0].item_group, firstItem.item_group);
-
-        //     httpContext.Items["UserRole"] = "NoRole";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     result = _itemController.CreateMultipleItems(items);
-
-        //     var unauthorizedResult = result.Result as UnauthorizedResult;
-        //     Assert.IsNotNull(unauthorizedResult);
-        //     Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        // }
-
-        // [TestMethod]
-        // public void CreateMultipleItems_BadRequest()
-        // {
-        //     // Arrange
-        //     _mockItemService.Setup(service => service.CreateMultipleItems(null)).Returns((List<ItemCS>)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.CreateMultipleItems(null);
-        //     var createdResult = result.Result as BadRequestResult;
-
-        //     // Assert
-        //     Assert.IsNull(createdResult);
-        // }
-
-        // [TestMethod]
-        // public void UpdateItem_ReturnsOkResult_WithUpdatedItem()
-        // {
-        //     // Arrange
-        //     var existingItem = new ItemCS { uid = "P000001", code = "ExistingItem" };
-        //     var updatedItem = new ItemCS { uid = "P000001", code = "UpdatedItem" };
-        //     _mockItemService.Setup(service => service.GetItemById("P000001")).Returns(existingItem);
-        //     _mockItemService.Setup(service => service.UpdateItem("P000001", updatedItem)).Returns(updatedItem);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.UpdateItem("P000001", updatedItem);
-        //     var okResult = result.Result as OkObjectResult;
-        //     var returnedItem = okResult.Value as ItemCS;
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-        //     Assert.IsNotNull(okResult);
-        //     Assert.IsInstanceOfType(okResult.Value, typeof(ItemCS));
-        //     Assert.AreEqual("P000001", returnedItem.uid);
-        //     Assert.AreEqual("UpdatedItem", returnedItem.code);
-
-        //     httpContext.Items["UserRole"] = "NoRole";
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     result = _itemController.UpdateItem("P000001", updatedItem);
-
-        //     var unauthorizedResult = result.Result as UnauthorizedResult;
-        //     Assert.IsNotNull(unauthorizedResult);
-        //     Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        // }
-
-        // [TestMethod]
-        // public void UpdateItem_ReturnsNotFound_WhenItemDoesNotExist()
-        // {
-        //     // Arrange
-        //     var updatedItem = new ItemCS { uid = "P000001", code = "UpdatedItem" };
-        //     _mockItemService.Setup(service => service.GetItemById("P000001")).Returns((ItemCS)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin"; 
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.UpdateItem("P000001", updatedItem);
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
-        // }
-
-        // [TestMethod]
-        // public void UpdateItem_BadRequest()
-        // {
-        //     // Arrange
-        //     _mockItemService.Setup(service => service.GetItemById("P000001")).Returns((ItemCS)null);
-
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin"; 
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     // Act
-        //     var result = _itemController.UpdateItem("P000001", null);
-
-        //     // Assert
-        //     Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
-        // }
-
-        // [TestMethod]
-        // public void PatchItem_Succes()
-        // {
-        //     //Arrange
-        //     var patcheditem = new ItemCS() { uid = "P000001", code = "lol no" };
-        //     _mockItemService.Setup(service => service.PatchItem("P000001", "code", "lol no")).Returns(patcheditem);
-        //     var httpContext = new DefaultHttpContext();
-        //     httpContext.Items["UserRole"] = "Admin";  
-
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-
-        //     //Act
-        //     var result = _itemController.PatchItem("P000001", "code", "lol no");
-        //     var resultok = result.Result as OkObjectResult;
-        //     var value = resultok.Value as ItemCS;
+        [TestMethod]
+        public void GetAllItems_ReturnsOkResult_WithListOfItems()
+        {
+            // Arrange
+            var items = new List<ItemCS>
+            {
+                new ItemCS { uid = "1", code = "Item1" },
+                new ItemCS { uid = "2", code = "Item2" }
+            };
+            _mockItemService.Setup(service => service.GetAllItems()).Returns(items);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+            httpContext.Items["WarehouseID"] = "1,2,3,4";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(null, 1, 10);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(PaginationCS<ItemCS>));
+            var returnedItems = okResult.Value as PaginationCS<ItemCS>;
+            Assert.AreEqual(2, returnedItems.Data.Count());
+
+            httpContext.Items["UserRole"] = "NoRole";  
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.GetAllItems(null, 1, 10);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetAllItems_ReturnsOkResult_Filtered()
+        {
+            // Arrange
+            var filtered = new itemFilter { code = "JAMADY", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33, item_group = 1, 
+                                            item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6, supplier_id = 28, supplier_code = "SUP467"};
+            var items = new List<ItemCS>
+            {
+                new ItemCS { uid = "P02", code = "JAMADY", description = "COOL", short_description = "Jamper", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33,
+                                       item_group = 1, item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6 ,supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", 
+                                       created_at = DateTime.Now, updated_at = DateTime.Now},
+                new ItemCS { uid = "P03", code = "JOJO", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now}
+
+            };
+            _mockItemService.Setup(service => service.GetAllItems()).Returns([items[0]]);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+            httpContext.Items["WarehouseID"] = "1,2,3,4";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(filtered, 0, 10);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(PaginationCS<ItemCS>));
+            var returnedItems = okResult.Value as PaginationCS<ItemCS>;
+            Assert.AreEqual(1, returnedItems.Data.Count());
+        }
+
+        [TestMethod]
+        public void GetAllItems_BadRequestOnWarehouseID()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.GetAllItems()).Returns((List<ItemCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+            httpContext.Items["WarehouseID"] = 1;
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(null, 0, 10);
+
+            // Assert
+            var okResult = result.Result as BadRequestResult;
+            Assert.IsNull(okResult);
+        }
+
+        [TestMethod]
+        public void GetAllItems_NotFoundOnWarehouseID()
+        {
+            // Arrange
+            var filtered = new itemFilter { code = "JAMADY", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33, item_group = 1, 
+                                            item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6, supplier_id = 28, supplier_code = "SUP467"};
+            var items = new List<ItemCS>
+            {
+                new ItemCS { uid = "P02", code = "JAMADY", description = "COOL", short_description = "Jamper", upc_code = "5", model_number = "16", commodity_code = "C2", item_line = 33,
+                                       item_group = 1, item_type= 1, unit_purchase_quantity = 5, unit_order_quantity = 10, pack_order_quantity = 6 ,supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", 
+                                       created_at = DateTime.Now, updated_at = DateTime.Now},
+                new ItemCS { uid = "P03", code = "JOJO", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now}
+
+            };
+            _mockItemService.Setup(service => service.GetAllItems()).Returns((List<ItemCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Operative";  
+            httpContext.Items["WarehouseID"] = "666";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(null, 0, 10);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        }
+
+        [TestMethod]
+        public void GetAllItems_NotFoundOnLocationWithWarehouseID()
+        {
+            // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Operative";  
+            httpContext.Items["WarehouseID"] = "1";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(null, 0, 10);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        }
+
+        [TestMethod]
+        public void GetAllItems_NotFoundOnInventoryByLocationId()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.GetAllItems()).Returns((List<ItemCS>)null);
+            _mockInventoryService.Setup(service => service.GetInventoriesByLocationId(new List<int>{1})).Returns((List<InventoryCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Operative";  
+            httpContext.Items["WarehouseID"] = "1";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetAllItems(null, 0, 10);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        }
+
+        [TestMethod]
+        public void GenerateReportTest_Success()
+        {
+            var httpContext = new DefaultHttpContext();
+            // httpContext.Items["UserRole"] = "Admin";  
+            // httpContext.Items["WarehouseID"] = "1";
+
+            // _itemController.ControllerContext = new ControllerContext
+            // {
+            //     HttpContext = httpContext
+            // };
+            // var result = _itemController.GenerateReport(null);
+
+            // Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+
+            httpContext.Items["UserRole"] = "NoRole";  
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            var resultAgain = _itemController.GenerateReport(null);
+
+            var unauthorizedResult = resultAgain as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GenerateReportTest_BadRequest()
+        {
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+            httpContext.Items["WarehouseID"] = "1";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            var result = _itemController.GenerateReport(null);
+
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public void GetByUid_ReturnsOkResult_WithItem()
+        {
+            // Arrange
+            var item = new ItemCS { uid = "1", code = "Item1" };
+            _mockItemService.Setup(service => service.GetItemById("1")).Returns(item);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetByUid("1");
+            var okResult = result.Result as OkObjectResult;
+            var returnedItem = okResult.Value as ItemCS;
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(ItemCS));
+            Assert.AreEqual("1", returnedItem.uid);
+            Assert.AreEqual("Item1", returnedItem.code);
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.GetByUid("1");
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetByUid_ReturnsNotFound_WhenItemDoesNotExist()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.GetItemById("1")).Returns((ItemCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetByUid("1");
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void GetInventoryForItem_Success()
+        {
+            InventoryCS inventory = new InventoryCS
+            {
+                Id = 3,
+                item_id = "P000003",
+                description = "gamers",
+                item_reference = "QVm03739H",
+                Locations = new List<int> { 5321, 21960 },
+                total_on_hand = 24,
+                total_expected = 0,
+                total_ordered = 90,
+                total_allocated = 68,
+                total_available = -134
+            };
+            // Arrange
+            _mockInventoryService.Setup(service => service.GetInventoriesForItem("P000003")).Returns(inventory);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetInventoriesForItem("P000003");
+            var okResult = result.Result as OkObjectResult;
+            var returnedItem = okResult.Value as InventoryCS;
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(InventoryCS));
+            Assert.AreEqual("P000003", returnedItem.item_id);
+            Assert.AreEqual(24, returnedItem.total_on_hand);
+            Assert.AreEqual(68, returnedItem.total_allocated);
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.GetInventoriesForItem("P000003");
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetInventoryForItem_NotFound()
+        {
+            // Arrange
+            _mockInventoryService.Setup(service => service.GetInventoriesForItem("P000003")).Returns((InventoryCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.GetInventoriesForItem("P000003");
+            var okResult = result.Result as NotFoundResult;
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        }
+
+        [TestMethod]
+        public void GetItemsWithItemType_Success()
+        {
+            // Arrange
+            List<ItemCS> items = new List<ItemCS>
+            {
+                new ItemCS { uid = "P000123", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"},
+                new ItemCS { uid = "P100000", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"}
+            };
+
+            _mockItemService.Setup(service => service.GetAllItemsInItemType(1)).Returns(items);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin"; 
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.GetAllItemsInItemType(1);
+            var okResult = result.Result as OkObjectResult;
+            var returnedItems = okResult.Value as IEnumerable<ItemCS>;
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(IEnumerable<ItemCS>));
+            Assert.AreEqual(2, returnedItems.Count());
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemTypeController.GetAllItemsInItemType(1);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetItemsWithItemType_BadRequest()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.GetAllItemsInItemType(-1)).Returns((List<ItemCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin"; 
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.GetAllItemsInItemType(-1);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        }
+
+
+        [TestMethod]
+        public void CreateItem_ReturnsCreatedResult_WithNewItem()
+        {
+            // Arrange
+            var newItem = new ItemCS { uid = "P000001", code = "NewItem" };
+            var createdItem = new ItemCS { uid = "P000002", code = "NewItem" };
+            _mockItemService.Setup(service => service.CreateItem(newItem)).Returns(createdItem);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.CreateItem(newItem);
+            var createdResult = result.Result as CreatedAtActionResult;
+            var returnedItem = createdResult.Value as ItemCS;
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
+            Assert.IsNotNull(createdResult);
+            Assert.IsInstanceOfType(createdResult.Value, typeof(ItemCS));
+            Assert.AreEqual("P000002", returnedItem.uid);
+            Assert.AreEqual("NewItem", returnedItem.code);
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.CreateItem(newItem);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void CreateItem_BadRequest()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.CreateItem(null)).Returns((ItemCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.CreateItem(null);
+            var createdResult = result.Result as BadRequestResult;
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public void CreateMultipleItems_ReturnsCreatedResult_WithNewItems()
+        {
+            // Arrange
+            List<ItemCS> items = new List<ItemCS>
+            {
+                new ItemCS { uid = "P000123", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"},
+                new ItemCS { uid = "P100000", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467"}
+            };
+            _mockItemService.Setup(service => service.CreateMultipleItems(items)).Returns(items);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.CreateMultipleItems(items);
+            var createdResult = result.Result as ObjectResult;
+            var returnedItems = createdResult.Value as List<ItemCS>;
+            var firstItem = returnedItems[0];
+
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(returnedItems);
+            Assert.AreEqual(items[0].code, firstItem.code);
+            Assert.AreEqual(items[0].supplier_code, firstItem.supplier_code);
+            Assert.AreEqual(items[0].item_group, firstItem.item_group);
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.CreateMultipleItems(items);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void CreateMultipleItems_BadRequest()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.CreateMultipleItems(null)).Returns((List<ItemCS>)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.CreateMultipleItems(null);
+            var createdResult = result.Result as BadRequestResult;
+
+            // Assert
+            Assert.IsNull(createdResult);
+        }
+
+        [TestMethod]
+        public void UpdateItem_ReturnsOkResult_WithUpdatedItem()
+        {
+            // Arrange
+            var existingItem = new ItemCS { uid = "P000001", code = "ExistingItem" };
+            var updatedItem = new ItemCS { uid = "P000001", code = "UpdatedItem" };
+            _mockItemService.Setup(service => service.GetItemById("P000001")).Returns(existingItem);
+            _mockItemService.Setup(service => service.UpdateItem("P000001", updatedItem)).Returns(updatedItem);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.UpdateItem("P000001", updatedItem);
+            var okResult = result.Result as OkObjectResult;
+            var returnedItem = okResult.Value as ItemCS;
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            Assert.IsNotNull(okResult);
+            Assert.IsInstanceOfType(okResult.Value, typeof(ItemCS));
+            Assert.AreEqual("P000001", returnedItem.uid);
+            Assert.AreEqual("UpdatedItem", returnedItem.code);
+
+            httpContext.Items["UserRole"] = "NoRole";
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.UpdateItem("P000001", updatedItem);
+
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void UpdateItem_ReturnsNotFound_WhenItemDoesNotExist()
+        {
+            // Arrange
+            var updatedItem = new ItemCS { uid = "P000001", code = "UpdatedItem" };
+            _mockItemService.Setup(service => service.GetItemById("P000001")).Returns((ItemCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin"; 
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.UpdateItem("P000001", updatedItem);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void UpdateItem_BadRequest()
+        {
+            // Arrange
+            _mockItemService.Setup(service => service.GetItemById("P000001")).Returns((ItemCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin"; 
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemController.UpdateItem("P000001", null);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        }
+
+        [TestMethod]
+        public void PatchItem_Succes()
+        {
+            //Arrange
+            var patcheditem = new ItemCS() { uid = "P000001", code = "lol no" };
+            _mockItemService.Setup(service => service.PatchItem("P000001", "code", "lol no")).Returns(patcheditem);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";  
+
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            //Act
+            var result = _itemController.PatchItem("P000001", "code", "lol no");
+            var resultok = result.Result as OkObjectResult;
+            var value = resultok.Value as ItemCS;
             
-        //     //Assert
-        //     Assert.IsNotNull(result);
-        //     Assert.IsNotNull(resultok);
-        //     Assert.IsNotNull(value);
-        //     Assert.AreEqual(resultok.StatusCode, 200);
-        //     Assert.AreEqual(value.code, "lol no");
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(resultok);
+            Assert.IsNotNull(value);
+            Assert.AreEqual(resultok.StatusCode, 200);
+            Assert.AreEqual(value.code, "lol no");
 
-        //     httpContext.Items["UserRole"] = "NoRole";
+            httpContext.Items["UserRole"] = "NoRole";
 
-        //     _itemController.ControllerContext = new ControllerContext
-        //     {
-        //         HttpContext = httpContext
-        //     };
-        //     result = _itemController.PatchItem("P000001", "code", "lol no");
+            _itemController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            result = _itemController.PatchItem("P000001", "code", "lol no");
 
-        //     var unauthorizedResult = result.Result as UnauthorizedResult;
-        //     Assert.IsNotNull(unauthorizedResult);
-        //     Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        // }
+            var unauthorizedResult = result.Result as UnauthorizedResult;
+            Assert.IsNotNull(unauthorizedResult);
+            Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        }
 
         [TestMethod]
         public void PatchItem_BadRequest()

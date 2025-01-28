@@ -151,12 +151,12 @@ jobs:
           if (( $(echo "$total_percentage >= 80" | bc -l) )); then
             echo "Coverage is above 80% threshold."
             curl -X POST -H "Content-Type: application/json" \
-            -d '{"content":"✅ Tests passed for version ${{ matrix.version }}!", "embeds": [{"image": {"url": "https://media.giphy.com/media/LZElUsjl1Bu6c/giphy.gif?cid=ecf05e474uote46u73gz640d1sfaqpd0s1wf2p0xwyurzw7g&ep=v1_gifs_search&rid=giphy.gif&ct=g%5C"}}]}' \
+            -d '{"content":"✅ Tests passed for version ${{ matrix.version }}!\n 80% threshold reached!", "embeds": [{"image": {"url": "https://media.giphy.com/media/LZElUsjl1Bu6c/giphy.gif?cid=ecf05e474uote46u73gz640d1sfaqpd0s1wf2p0xwyurzw7g&ep=v1_gifs_search&rid=giphy.gif&ct=g%5C"}}]}' \
             ${{ secrets.DISCORD_SECRET }}
           else
             echo "Coverage is below 80% threshold."
             curl -X POST -H "Content-Type: application/json" \
-            -d '{"content":"❌ Tests failed for version ${{ matrix.version }}. Please check the logs.", "embeds": [{"image": {"url": "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm9mMXoycnFpbzduY254MDNnZTY0NWd3anV4a3QxNXgyOGN6ZnVlbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/obBRY85qHrHIOX7TsF/giphy.gif"}}]}' \
+            -d '{"content":"❌ Tests failed for version ${{ matrix.version }}. \n 80% threshold not reached!.", "embeds": [{"image": {"url": "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm9mMXoycnFpbzduY254MDNnZTY0NWd3anV4a3QxNXgyOGN6ZnVlbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/obBRY85qHrHIOX7TsF/giphy.gif"}}]}' \
             ${{ secrets.DISCORD_SECRET }}
             exit 1
           fi
