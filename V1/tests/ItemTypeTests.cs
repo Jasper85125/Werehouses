@@ -309,5 +309,31 @@ namespace TestsV1
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
         }
+
+        [TestMethod]
+        public void GetItemById_ItemNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            // Act
+            var result = _itemTypeController.GetItemById(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void DeleteItemType_ItemNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            // Act
+            var result = _itemTypeController.DeleteItemType(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
+        }
     }
 }
