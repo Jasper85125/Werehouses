@@ -124,7 +124,7 @@ namespace TestsV1
             // Assert
             Assert.IsNull(result);
         }
-        
+
         [TestMethod]
         public void DeleteItemTypeTest_Exists()
         {
@@ -274,6 +274,41 @@ namespace TestsV1
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(nameof(_itemTypeController.GetItemById), createdResult.ActionName);
             Assert.AreEqual(newItemType.Id, ((ItemTypeCS)createdResult.Value).Id);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemType_ExistingItem_ShouldReturnUpdatedItemType()
+        {
+            // Arrange
+            var existingItemType = new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" };
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
+
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(existingItemType);
+            _mockItemTypeService.Setup(service => service.UpdateItemType(1, updatedItemType)).ReturnsAsync(updatedItemType);
+
+            // Act
+            var result = await _itemTypeController.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(updatedItemType, okResult.Value);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemType_NonExistingItem_ShouldReturnNotFound()
+        {
+            // Arrange
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
+
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            // Act
+            var result = await _itemTypeController.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
 
     }
