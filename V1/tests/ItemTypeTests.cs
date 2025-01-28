@@ -4,6 +4,8 @@ using Moq;
 using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace TestsV1
 {
@@ -26,6 +28,20 @@ namespace TestsV1
                 new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" },
                 new ItemTypeCS { Id = 2, Name = "Type2", description = "Description2" }
             };
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/item_types.json");
+            var itemType = new ItemTypeCS { Id = 1, Name = "Type 1", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+
+            var itemTypeList = new List<ItemTypeCS> { itemType };
+            var json = JsonConvert.SerializeObject(itemTypeList, Formatting.Indented);
+
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -129,6 +145,96 @@ namespace TestsV1
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
-            
+
+        // ItemTypeService tests
+        [TestMethod]
+        public void GetAllItemTypesService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var itemTypes = itemTypeService.GetAllItemtypes();
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual(1, itemTypes.Count);
+        }
+
+        [TestMethod]
+        public void GetItemTypeByIdService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var itemTypes = itemTypeService.GetItemById(1);
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual("Type 1", itemTypes.Name);
+        }
+
+        [TestMethod]
+        public async Task CreateItemTypeService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var newItemType = new ItemTypeCS { Id = 2, Name = "Type 2", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var itemTypes = await itemTypeService.CreateItemType(newItemType);
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual("Type 2", itemTypes.Name);
+
+            var itemTypesUpdated = itemTypeService.GetAllItemtypes();
+            Assert.IsNotNull(itemTypesUpdated);
+            Assert.AreEqual(2, itemTypesUpdated.Count);
+        }
+
+        [TestMethod]
+        public async Task CreateItemTypeService_Test_Empty()
+        {
+            var itemTypeService = new ItemTypeService();
+
+            itemTypeService.DeleteItemType(1);
+            var itemTypesGet = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(0, itemTypesGet.Count);
+
+            var newItemType = new ItemTypeCS { Id = 2, Name = "Type 2", description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var itemTypes = await itemTypeService.CreateItemType(newItemType);
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual("Type 2", itemTypes.Name);
+
+            var itemTypesUpdated = itemTypeService.GetAllItemtypes();
+            Assert.IsNotNull(itemTypesUpdated);
+            Assert.AreEqual(1, itemTypesUpdated.Count);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemTypeService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            var newItemType = new ItemTypeCS { Id = 2, Name = "Updated Type", description = "Updated Description", created_at = DateTime.Now, updated_at = DateTime.Now };
+
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "Updated Type", description = "Updated Description" };
+            var itemTypesUpdated2 = await itemTypeService.UpdateItemType(1, updatedItemType); // Await the task
+            Assert.IsNotNull(itemTypesUpdated2);
+            Assert.AreEqual("Updated Type", itemTypesUpdated2.Name);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemTypeService_Test_Failed()
+        {
+            var itemTypeService = new ItemTypeService();
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "Updated Type", description = "Updated Description" };
+            var itemTypesUpdated2 = await itemTypeService.UpdateItemType(5, updatedItemType);
+            Assert.IsNull(itemTypesUpdated2);
+        }
+
+        [TestMethod]
+        public void DeleteItemTypeService_Test()
+        {
+            var itemTypeService = new ItemTypeService();
+            itemTypeService.DeleteItemType(1);
+            var itemTypesGet = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(0, itemTypesGet.Count);
+        }
+
+        [TestMethod]
+        public void DeleteItemTypeService_Test_Failed()
+        {
+            var itemTypeService = new ItemTypeService();
+            itemTypeService.DeleteItemType(5);
+            var itemTypesGet = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(1, itemTypesGet.Count);
+        }
     }
 }
