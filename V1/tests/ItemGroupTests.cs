@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TestsV1
 {
@@ -20,10 +22,142 @@ namespace TestsV1
         {
             _mockItemGroupService = new Mock<IitemGroupService>();
             _itemGroupController = new ItemGroupController(_mockItemGroupService.Object);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/item_groups.json");
+            var itemgroup = new ItemGroupCS()
+            {
+                Id = 0,
+                Name = "Electronics",
+                Description = "",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var itemgrouplist = new List<ItemGroupCS>() { itemgroup };
+            var json = JsonConvert.SerializeObject(itemgrouplist, Formatting.Indented);
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            File.WriteAllText(filePath, json);
+        }
+        //Service
+        [TestMethod]
+        public void GetAllItemGroups_Test_Succes()
+        {
+            var itemgroupsservice = new ItemGroupService();
+            var result = itemgroupsservice.GetAllItemGroups();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
         }
 
         [TestMethod]
-        public void GetAllItemGroupsTest_Exists()
+        public void GetItemGroupById_Test_Succes()
+        {
+            var itemgroupsservice = new ItemGroupService();
+            var result = itemgroupsservice.GetItemById(0);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Electronics", result.Name);
+        }
+
+        [TestMethod]
+        public void GetItemsFromItemGroup_Test_Fail()
+        {
+            var itemgroupsservice = new ItemGroupService();
+            var result = itemgroupsservice.ItemsFromItemGroupId(-1);
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void CreateItemGroup_Test_Succes()
+        {
+            var itemgroup = new ItemGroupCS()
+            {
+                Name = "Furniture",
+                Description = "",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var itemgroupsservice = new ItemGroupService();
+            var result = itemgroupsservice.CreateItemGroup(itemgroup);
+            var check = itemgroupsservice.GetAllItemGroups();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual(2, check.Count);
+        }
+        [TestMethod]
+        public void CreateItemGroup_Test_EmptyListFirst()
+        {
+            var itemgroupsservice = new ItemGroupService();
+            itemgroupsservice.DeleteItemGroup(0);
+            var check1 = itemgroupsservice.GetAllItemGroups();
+            Assert.AreEqual(0, check1.Count);
+            var result2 = itemgroupsservice.CreateItemGroup(new ItemGroupCS());
+            var check2 = itemgroupsservice.GetAllItemGroups();
+            Assert.IsNotNull(result2);
+            Assert.AreEqual(1, check2.Count);
+        }
+        [TestMethod]
+        public void UpdateItemGroup_Test_Succes()
+        {
+            var itemgroup = new ItemGroupCS()
+            {
+                Name = "Furniture",
+                Description = "",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var updateditemgroup = new ItemGroupCS()
+            {
+                Id = 1,
+                Name = "Stationery",
+                Description = "",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var itemgroupsservice = new ItemGroupService();
+            var result1 = itemgroupsservice.CreateItemGroup(itemgroup);
+            var result2 = itemgroupsservice.UpdateItemGroup(1, updateditemgroup);
+            Assert.IsNotNull(result1);
+            Assert.IsNotNull(result2);
+            Assert.AreEqual("Furniture", result1.Name);
+            Assert.AreEqual("Stationery", result2.Name);
+        }
+
+        [TestMethod]
+        public void UpdateItemGroup_Test_Fail()
+        {
+            var updateditemgroup = new ItemGroupCS()
+            {
+                Id = 1,
+                Name = "Measuring Instruments",
+                Description = "",
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var itemgroupsservice = new ItemGroupService();
+            var result = itemgroupsservice.UpdateItemGroup(3, updateditemgroup);
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void DeleteItemGroup_Test_Succes()
+        {
+            var itemgroupsservice = new ItemGroupService();
+            itemgroupsservice.DeleteItemGroup(0);
+            var updateditemgroups = itemgroupsservice.GetAllItemGroups();
+            Assert.AreEqual(0, updateditemgroups.Count);
+        }
+        [TestMethod]
+        public void DeleteItemGroup_Test_Fail()
+        {
+            var itemgroupsservice = new ItemGroupService();
+            itemgroupsservice.DeleteItemGroup(3);
+            var result2 = itemgroupsservice.GetAllItemGroups();
+            Assert.AreEqual(1, result2.Count);
+        }
+        //Controller
+        [TestMethod]
+        public void GetAllItemGroups_Test_Exists()
         {
             // Arrange
             var itemGroups = new List<ItemGroupCS>
@@ -44,7 +178,7 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public void GetItemGroupByIdTest_Exists()
+        public void GetItemGroupById_Test_Exists()
         {
             // Arrange
             var itemGroup = new ItemGroupCS { Id = 1, Name = "Group 1" };
@@ -62,7 +196,7 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public void GetItemGroupByIdTest_WrongId()
+        public void GetItemGroupById_Test_WrongId()
         {
             // Arrange
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns((ItemGroupCS)null);
@@ -75,15 +209,15 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public void CreateItemGroupTest_Success()
+        public void CreateItemGroup_Test_Success()
         {
             // Arrange
             var newItemGroup = new ItemGroupCS { Id = 3, Name = "Group 3" };
-            _mockItemGroupService.Setup(service => service.CreateItemGroup(It.IsAny<ItemGroupCS>())).Returns(Task.FromResult(newItemGroup));
+            _mockItemGroupService.Setup(service => service.CreateItemGroup(newItemGroup)).Returns(newItemGroup);
 
             // Act
             var result = _itemGroupController.CreateItemGroup(newItemGroup);
-            var createdResult = result.Result as CreatedAtActionResult;
+            var createdResult = result as CreatedAtActionResult;
             var returnedItem = createdResult.Value as ItemGroupCS;
 
             // Assert
@@ -92,16 +226,16 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public async Task UpdateItemGroupTest_ValidItem()
+        public void UpdateItemGroup_Test_ValidItem()
         {
             // Arrange
             var existingItemGroup = new ItemGroupCS { Id = 1, Description = "Existing Item" };
             var updatedItemGroup = new ItemGroupCS { Id = 1, Description = "Updated Item" };
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns(existingItemGroup);
-            _mockItemGroupService.Setup(service => service.UpdateItemGroup(1, updatedItemGroup)).ReturnsAsync(updatedItemGroup);
+            _mockItemGroupService.Setup(service => service.UpdateItemGroup(1, updatedItemGroup)).Returns(updatedItemGroup);
 
             // Act
-            var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+            var value = _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
             var okResult = value.Result as OkObjectResult;
             var returnedItem = okResult.Value as ItemGroupCS;
 
@@ -111,27 +245,27 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public async Task UpdateItemGroupTest_WrongId()
+        public void UpdateItemGroup_Test_WrongId()
         {
             // Arrange
             var updatedItemGroup = new ItemGroupCS { Id = 1, Description = "Updated Item" };
             _mockItemGroupService.Setup(service => service.GetItemById(1)).Returns((ItemGroupCS)null);
 
             // Act
-            var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+            var value = _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
 
             // Assert
             Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
         }
 
         [TestMethod]
-        public async Task UpdateItemGroupTest_IdMismatch()
+        public void UpdateItemGroupTest_IdMismatch()
         {
             // Arrange
             var updatedItemGroup = new ItemGroupCS { Id = 2, Description = "Updated Item" };
 
             // Act
-            var value = await _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
+            var value = _itemGroupController.UpdateItemGroup(1, updatedItemGroup);
 
             // Assert
             Assert.IsInstanceOfType(value.Result, typeof(BadRequestResult));
@@ -175,12 +309,12 @@ namespace TestsV1
                 supplier_part_number = "f-768-s2A",
             };
             _mockItemGroupService.Setup(service => service.ItemsFromItemGroupId(1)).Returns(new List<ItemCS>() { testResult });
-            
+
             //Act
             var result = _itemGroupController.GetAllItemsFromItemGroupId(1);
             var resultOK = result.Result as OkObjectResult;
             var value = resultOK.Value as List<ItemCS>;
-            
+
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotNull(resultOK);

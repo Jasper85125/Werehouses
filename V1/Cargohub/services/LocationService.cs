@@ -56,7 +56,7 @@ public class LocationService : ILocationService
     public LocationCS UpdateLocation(LocationCS updatedLocation, int locationId)
     {
         var allLocations = GetAllLocations();
-        var locationToUpdate = allLocations.Single(location => location.Id == locationId);
+        var locationToUpdate = allLocations.SingleOrDefault(location => location.Id == locationId);
 
         if (locationToUpdate is not null)
         {
@@ -81,12 +81,12 @@ public class LocationService : ILocationService
     {
         var locations = GetAllLocations();
         var location = locations.FirstOrDefault(l => l.Id == locationId);
-        if (location == null)
+        if (location != null)
         {
-            return;
+            locations.Remove(location);
+            var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
+            File.WriteAllText(_path, jsonData);
         }
-        locations.Remove(location);
-        var jsonData = JsonConvert.SerializeObject(locations, Formatting.Indented);
-        File.WriteAllText(_path, jsonData);
+        
     }
 }
