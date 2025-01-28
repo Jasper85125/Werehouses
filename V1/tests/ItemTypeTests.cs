@@ -53,10 +53,12 @@ namespace TestsV1
             _mockItemTypeService.Setup(service => service.GetAllItemtypes()).Returns(_itemTypes);
 
             // Act
-            var result = _mockItemTypeService.Object.GetAllItemtypes();
+            var result = _itemTypeController.GetAllItemtypes().Result as OkObjectResult;
+            var itemTypes = result.Value as List<ItemTypeCS>;
 
             // Assert
-            Assert.AreEqual(2, result.Count);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, itemTypes.Count);
         }
 
         [TestMethod]
@@ -67,10 +69,12 @@ namespace TestsV1
             _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(itemType);
 
             // Act
-            var result = _mockItemTypeService.Object.GetItemById(1);
+            var result = _itemTypeController.GetItemById(1).Result as OkObjectResult;
+            var returnedItemType = result.Value as ItemTypeCS;
 
             // Assert
-            Assert.AreEqual(itemType, result);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(itemType, returnedItemType);
         }
 
         [TestMethod]
@@ -113,13 +117,13 @@ namespace TestsV1
         {
             // Arrange
             var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
-            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+            _mockItemTypeService.Setup(service => service.UpdateItemType(1, updatedItemType)).ReturnsAsync((ItemTypeCS)null);
 
             // Act
-            var result = await _mockItemTypeService.Object.UpdateItemType(1, updatedItemType);
+            var result = await _itemTypeController.UpdateItemType(1, updatedItemType);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
 
         [TestMethod]
@@ -238,5 +242,20 @@ namespace TestsV1
             var itemTypesGet = itemTypeService.GetAllItemtypes();
             Assert.AreEqual(1, itemTypesGet.Count);
         }
+
+        [TestMethod]
+        public void DeleteItemTypeService_Test_Empty()
+        {
+            var itemTypeService = new ItemTypeService();
+            itemTypeService.DeleteItemType(1);
+            var itemTypesGet = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(0, itemTypesGet.Count);
+
+            itemTypeService.DeleteItemType(1);
+            var itemTypesGet2 = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(0, itemTypesGet2.Count);
+        }
+
+
     }
 }
