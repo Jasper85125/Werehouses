@@ -59,7 +59,16 @@ public class ItemLineTests
         var result = itemlineservice.GetItemLineById(-1);
         Assert.IsNull(result);
     }
-
+    
+    [TestMethod]
+    public void GetItemsByItemLineIdService_Test()
+    {
+        var itemLinesService = new ItemLineService();
+        var items = itemLinesService.GetItemsByItemLineId(2);
+        Assert.IsNotNull(items);
+        Assert.AreEqual(1, items.Count);
+    }
+    
     [TestMethod]
     public void AddItemLineService_Test_Succes(){
         var newitemline = new ItemLineCS(){

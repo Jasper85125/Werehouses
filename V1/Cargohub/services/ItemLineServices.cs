@@ -93,7 +93,7 @@ public class ItemLineService : IItemLineService
 
     public List<ItemCS> GetItemsByItemLineId(int itemlineId)
     {
-        var itemsPath = "data/items.json";
+        var itemsPath = "../../data/items.json";
         if (!File.Exists(itemsPath))
         {
             return new List<ItemCS>();
