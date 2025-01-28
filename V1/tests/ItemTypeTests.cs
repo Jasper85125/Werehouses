@@ -296,5 +296,18 @@ namespace TestsV1
             Assert.AreEqual(updatedItemType, okResult.Value);
         }
 
+        [TestMethod]
+        public async Task UpdateItemType_ItemNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            // Act
+            var result = await _itemTypeController.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
     }
 }
