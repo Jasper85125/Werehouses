@@ -197,6 +197,9 @@ jobs:
       run: |
         mkdir -p ./PythonTests/reports
         python -m xmlrunner discover -o PythonTests/reports
+        curl -X POST -H "Content-Type: application/json" \
+        -d '{"content":"✅ Python tests passed!\n Everything works perfect", "embeds": [{"image": {"url": "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzZ4cTFud2R6cWtqZGdlZHl2cDZpcjFsbnJianl6dGFoajlwYmQ0dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/WzR8zb0PN6bUmfz4DW/giphy.gif"}}]}' \
+        ${{ secrets.DISCORD_SECRET }}
 
     - name: Upload Python Test Reports
       uses: actions/upload-artifact@v4
