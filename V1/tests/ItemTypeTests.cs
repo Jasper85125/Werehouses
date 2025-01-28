@@ -5,6 +5,7 @@ using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace TestsV1
 {
@@ -41,6 +42,8 @@ namespace TestsV1
             }
 
             File.WriteAllText(filePath, json);
+
+
         }
 
         [TestMethod]
@@ -145,6 +148,7 @@ namespace TestsV1
             Assert.IsInstanceOfType(result, typeof(OkResult));
         }
 
+        // ItemTypeService tests
         [TestMethod]
         public void GetAllItemTypesService_Test()
         {
@@ -203,9 +207,18 @@ namespace TestsV1
             var newItemType = new ItemTypeCS { Id = 2, Name = "Updated Type", description = "Updated Description", created_at = DateTime.Now, updated_at = DateTime.Now };
 
             var updatedItemType = new ItemTypeCS { Id = 1, Name = "Updated Type", description = "Updated Description" };
-            var itemTypesUpdated2 = await itemTypeService.UpdateItemType(1, updatedItemType);
+            var itemTypesUpdated2 = await itemTypeService.UpdateItemType(1, updatedItemType); // Await the task
             Assert.IsNotNull(itemTypesUpdated2);
             Assert.AreEqual("Updated Type", itemTypesUpdated2.Name);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemTypeService_Test_Failed()
+        {
+            var itemTypeService = new ItemTypeService();
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "Updated Type", description = "Updated Description" };
+            var itemTypesUpdated2 = await itemTypeService.UpdateItemType(5, updatedItemType);
+            Assert.IsNull(itemTypesUpdated2);
         }
 
         [TestMethod]

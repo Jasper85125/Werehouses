@@ -79,15 +79,12 @@ public class ItemTypeService : IItemtypeService
     {
         List<ItemTypeCS> items = GetAllItemtypes();
         var item = items.FirstOrDefault(i => i.Id == id);
-        if (item == null)
+        if (item != null)
         {
-            return;
-        }
-
-        items.Remove(item);
-
-        var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-        File.WriteAllText(path, jsonData);
+            items.Remove(item);
+            var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
+            File.WriteAllText(path, jsonData);
+        }   
     }
 
 }
