@@ -405,6 +405,62 @@ namespace TestsV1
             Assert.IsNotNull(returnedTransfer);
             Assert.AreEqual("Processed", returnedTransfer.transfer_status);
         }
+
+        [TestMethod]
+        public void CommitTransferAssistTest()
+        {
+            // Arrange
+            var inventory = new InventoryCS
+            {
+                Id = 1,
+                item_id = "P01",
+                description = "Face-to-face clear-thinking complexity",
+                item_reference = "sjQ23408K",
+                Locations = new List<int>(){
+                    1,
+                    24700,
+                    14123,
+                    19538,
+                    31071,
+                    24701,
+                    11606,
+                    11817
+                    },
+                total_on_hand = 10,
+                total_expected = 0,
+                total_ordered = 7,
+                total_allocated = 2,
+                total_available = 1,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now,
+            };
+            var items = new ItemIdAndAmount
+            {
+                item_id = "P01",
+                amount = 5
+            };
+            var transfer = new TransferCS
+            {
+                Id = 1,
+                Reference = "JoJo",
+                transfer_from = 1,
+                transfer_to = null,
+                transfer_status = "completed",
+                created_at = default,
+                updated_at = default,
+                Items = new List<ItemIdAndAmount>
+                {
+                    new ItemIdAndAmount { item_id = "P01", amount = 5 }
+                }
+            };
+
+            // Act
+            var transferService = new TransferService();
+            transferService.CommitTransferAssist(inventory, items, transfer);
+
+            // Assert
+            Assert.AreEqual(5, inventory.total_on_hand);
+        }
         
         [TestMethod]
         public void CommitTransferTest_Failed()

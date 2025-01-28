@@ -38,20 +38,20 @@ public class ItemLineController : ControllerBase
 
     // POST: api/itemLine
     [HttpPost]
-    public async Task<ActionResult<ItemLineCS>> AddItemLine([FromBody] ItemLineCS newItemLine)
+    public ActionResult<ItemLineCS> AddItemLine([FromBody] ItemLineCS newItemLine)
     {
         if (newItemLine == null)
         {
             return BadRequest("ItemLine is null.");
         }
 
-        var createdItemLine = await _itemLineService.AddItemLine(newItemLine);
+        var createdItemLine = _itemLineService.AddItemLine(newItemLine);
         return CreatedAtAction(nameof(GetItemLineById), new { id = createdItemLine.Id }, createdItemLine);
     }
 
     // PUT: api/itemLine/5
     [HttpPut("{id}")]
-    public async Task<ActionResult<ItemLineCS>> UpdateItemLine(int id, [FromBody] ItemLineCS itemLine)
+    public ActionResult<ItemLineCS> UpdateItemLine(int id, [FromBody] ItemLineCS itemLine)
     {
         if (id != itemLine.Id)
         {
@@ -64,7 +64,7 @@ public class ItemLineController : ControllerBase
             return NotFound();
         }
 
-        var updatedItemLine = await _itemLineService.UpdateItemLine(id, itemLine);
+        var updatedItemLine = _itemLineService.UpdateItemLine(id, itemLine);
         return Ok(updatedItemLine);
     }
 

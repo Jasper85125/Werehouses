@@ -22,12 +22,13 @@ namespace TestsV1
             _mockInventoryService = new Mock<IInventoryService>();
             _inventoryController = new InventoryController(_mockInventoryService.Object);
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/inventories.json");
-            var inventory = new InventoryCS(){
-                Id= 1,
-                item_id= "P000001",
-                description="Face-to-face clear-thinking complexity",
-                item_reference="sjQ23408K",
-                Locations= new List<int>(){
+            var inventory = new InventoryCS()
+            {
+                Id = 1,
+                item_id = "P000001",
+                description = "Face-to-face clear-thinking complexity",
+                item_reference = "sjQ23408K",
+                Locations = new List<int>(){
                     3211,
                     24700,
                     14123,
@@ -37,51 +38,57 @@ namespace TestsV1
                     11606,
                     11817
                     },
-                total_on_hand=262,
-                total_expected=0,
-                total_ordered=80,
-                total_allocated=41,
-                total_available=141,
-                created_at=DateTime.Now,
-                updated_at=DateTime.Now,
+                total_on_hand = 262,
+                total_expected = 0,
+                total_ordered = 80,
+                total_allocated = 41,
+                total_available = 141,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now,
             };
-            var inventorieslist = new List<InventoryCS>(){ inventory };
+            var inventorieslist = new List<InventoryCS>() { inventory };
             var json = JsonConvert.SerializeObject(inventorieslist);
             var directory = Path.GetDirectoryName(filePath);
-            if(!Directory.Exists(directory)){
+            if (!Directory.Exists(directory))
+            {
                 Directory.CreateDirectory(directory);
             }
             File.WriteAllText(filePath, json);
         }
         [TestMethod]
-        public void GetAllInventoriesService_Test_Succes(){
+        public void GetAllInventoriesService_Test_Succes()
+        {
             var inventoryservice = new InventoryService();
             var result = inventoryservice.GetAllInventories();
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count);
         }
         [TestMethod]
-        public void GetInventoryByIdService_Test_Succes(){
+        public void GetInventoryByIdService_Test_Succes()
+        {
             var inventoryservice = new InventoryService();
             var result = inventoryservice.GetInventoryById(1);
             Assert.IsNotNull(result);
             Assert.AreEqual("P000001", result.item_id);
         }
         [TestMethod]
-        public void GetInventoriesForItemService_Test_Succes(){
+        public void GetInventoriesForItemService_Test_Succes()
+        {
             var inventoryservice = new InventoryService();
             var result = inventoryservice.GetInventoriesForItem("P000001");
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Id);
         }
         [TestMethod]
-        public void CreateInventoryService_Test_Succes(){
-            var inventory = new InventoryCS(){
-                Id= 2,
-                item_id= "P000002",
-                description="Focused transitional alliance",
-                item_reference="nyg48736S",
-                Locations=new List<int>{
+        public void CreateInventoryService_Test_Succes()
+        {
+            var inventory = new InventoryCS()
+            {
+                Id = 2,
+                item_id = "P000002",
+                description = "Focused transitional alliance",
+                item_reference = "nyg48736S",
+                Locations = new List<int>{
                     19800,
                     23653,
                     3068,
@@ -93,23 +100,24 @@ namespace TestsV1
                     2293,
                     22717
                     },
-                total_on_hand=194,
-                total_expected=0,
-                total_ordered=139,
-                total_allocated=0,
-                total_available=55,
-                created_at=DateTime.Now,
-                updated_at=DateTime.Now
-                };
-                var inventoryservice = new InventoryService();
-                var result = inventoryservice.CreateInventory(inventory);
-                var updatedinventories = inventoryservice.GetAllInventories();
-                Assert.IsNotNull(result);
-                Assert.AreEqual(2, updatedinventories.Count);
-                Assert.AreEqual("P000002", updatedinventories[1].item_id);
+                total_on_hand = 194,
+                total_expected = 0,
+                total_ordered = 139,
+                total_allocated = 0,
+                total_available = 55,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+            var inventoryservice = new InventoryService();
+            var result = inventoryservice.CreateInventory(inventory);
+            var updatedinventories = inventoryservice.GetAllInventories();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, updatedinventories.Count);
+            Assert.AreEqual("P000002", updatedinventories[1].item_id);
         }
         [TestMethod]
-        public void CreateInventoryService_Test_EmptyListFirst(){
+        public void CreateInventoryService_Test_EmptyListFirst()
+        {
             var inventoryservice = new InventoryService();
             inventoryservice.DeleteInventory(1);
             var result1 = inventoryservice.GetAllInventories();
@@ -120,13 +128,15 @@ namespace TestsV1
             Assert.AreEqual(1, check.Count);
         }
         [TestMethod]
-        public void UpdateInventoryByIdService_Test_Succes(){
-            var updatedinventory = new InventoryCS(){
-                Id= 1,
-                item_id= "P000001",
-                description="updated test",
-                item_reference="sjQ23408K",
-                Locations= new List<int>(){
+        public void UpdateInventoryByIdService_Test_Succes()
+        {
+            var updatedinventory = new InventoryCS()
+            {
+                Id = 1,
+                item_id = "P000001",
+                description = "updated test",
+                item_reference = "sjQ23408K",
+                Locations = new List<int>(){
                     3211,
                     24700,
                     14123,
@@ -136,13 +146,13 @@ namespace TestsV1
                     11606,
                     11817
                     },
-                total_on_hand=262,
-                total_expected=0,
-                total_ordered=80,
-                total_allocated=41,
-                total_available=141,
-                created_at=DateTime.Now,
-                updated_at=DateTime.Now,
+                total_on_hand = 262,
+                total_expected = 0,
+                total_ordered = 80,
+                total_allocated = 41,
+                total_available = 141,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now,
             };
             var inventoryservice = new InventoryService();
             var result = inventoryservice.UpdateInventoryById(1, updatedinventory);
@@ -150,20 +160,23 @@ namespace TestsV1
             Assert.AreEqual("updated test", result.description);
         }
         [TestMethod]
-        public void UpdateInventoryByIdService_Test_Fail(){
+        public void UpdateInventoryByIdService_Test_Fail()
+        {
             var inventoryservice = new InventoryService();
             var result = inventoryservice.UpdateInventoryById(-1, new InventoryCS());
             Assert.IsNull(result);
         }
         [TestMethod]
-        public void DeleteInventoryService_Test_Succes(){
+        public void DeleteInventoryService_Test_Succes()
+        {
             var inventoryservice = new InventoryService();
             inventoryservice.DeleteInventory(1);
             var updatedinventories = inventoryservice.GetAllInventories();
             Assert.AreEqual(0, updatedinventories.Count);
         }
         [TestMethod]
-        public void DeleteInventoryService_Test_Fail(){
+        public void DeleteInventoryService_Test_Fail()
+        {
             var inventoryservice = new InventoryService();
             inventoryservice.DeleteInventory(-1);
             var result = inventoryservice.GetAllInventories();
