@@ -53,10 +53,12 @@ namespace TestsV1
             _mockItemTypeService.Setup(service => service.GetAllItemtypes()).Returns(_itemTypes);
 
             // Act
-            var result = _mockItemTypeService.Object.GetAllItemtypes();
+            var result = _itemTypeController.GetAllItemtypes().Result as OkObjectResult;
+            var itemTypes = result.Value as List<ItemTypeCS>;
 
             // Assert
-            Assert.AreEqual(2, result.Count);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, itemTypes.Count);
         }
 
         [TestMethod]
@@ -67,10 +69,12 @@ namespace TestsV1
             _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(itemType);
 
             // Act
-            var result = _mockItemTypeService.Object.GetItemById(1);
+            var result = _itemTypeController.GetItemById(1).Result as OkObjectResult;
+            var returnedItemType = result.Value as ItemTypeCS;
 
             // Assert
-            Assert.AreEqual(itemType, result);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(itemType, returnedItemType);
         }
 
         [TestMethod]
@@ -109,20 +113,6 @@ namespace TestsV1
         }
 
         [TestMethod]
-        public async Task UpdateItemType_WrongId_ShouldReturnNotFound()
-        {
-            // Arrange
-            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
-            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
-
-            // Act
-            var result = await _mockItemTypeService.Object.UpdateItemType(1, updatedItemType);
-
-            // Assert
-            Assert.IsNull(result);
-        }
-
-        [TestMethod]
         public async Task UpdateItemType_IdMismatch_ShouldReturnBadRequest()
         {
             // Arrange
@@ -134,6 +124,7 @@ namespace TestsV1
             // Assert
             Assert.IsNull(result);
         }
+
         [TestMethod]
         public void DeleteItemTypeTest_Exists()
         {
@@ -237,6 +228,112 @@ namespace TestsV1
             itemTypeService.DeleteItemType(5);
             var itemTypesGet = itemTypeService.GetAllItemtypes();
             Assert.AreEqual(1, itemTypesGet.Count);
+        }
+
+        [TestMethod]
+        public void DeleteItemTypeService_Test_Empty()
+        {
+            var itemTypeService = new ItemTypeService();
+            itemTypeService.DeleteItemType(1);
+            var itemTypesGet = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(0, itemTypesGet.Count);
+
+            itemTypeService.DeleteItemType(1);
+            var itemTypesGet2 = itemTypeService.GetAllItemtypes();
+            Assert.AreEqual(0, itemTypesGet2.Count);
+        }
+
+        [TestMethod]
+        public async Task CreateItemType_NullItemType_ShouldReturnBadRequest()
+        {
+            // Arrange
+            ItemTypeCS newItemType = null;
+
+            // Act
+            var result = await _itemTypeController.CreateItemType(newItemType);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.AreEqual("ItemGroup cannot be null", badRequestResult.Value);
+        }
+
+        [TestMethod]
+        public async Task CreateItemType_ValidItemType_ShouldReturnCreatedItemType()
+        {
+            // Arrange
+            var newItemType = new ItemTypeCS { Id = 3, Name = "Type3", description = "Description3" };
+            _mockItemTypeService.Setup(service => service.CreateItemType(newItemType)).ReturnsAsync(newItemType);
+
+            // Act
+            var result = await _itemTypeController.CreateItemType(newItemType);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(CreatedAtActionResult));
+            var createdResult = result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(nameof(_itemTypeController.GetItemById), createdResult.ActionName);
+            Assert.AreEqual(newItemType.Id, ((ItemTypeCS)createdResult.Value).Id);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemType_ExistingItem_ShouldReturnUpdatedItemType()
+        {
+            // Arrange
+            var existingItemType = new ItemTypeCS { Id = 1, Name = "Type1", description = "Description1" };
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
+
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(existingItemType);
+            _mockItemTypeService.Setup(service => service.UpdateItemType(1, updatedItemType)).ReturnsAsync(updatedItemType);
+
+            // Act
+            var result = await _itemTypeController.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(ActionResult<ItemTypeCS>));
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(updatedItemType, okResult.Value);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemType_ItemNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            var updatedItemType = new ItemTypeCS { Id = 1, Name = "UpdatedType", description = "UpdatedDescription" };
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            // Act
+            var result = await _itemTypeController.UpdateItemType(1, updatedItemType);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void GetItemById_ItemNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            // Act
+            var result = _itemTypeController.GetItemById(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void DeleteItemType_ItemNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            // Act
+            var result = _itemTypeController.DeleteItemType(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
     }
 }
