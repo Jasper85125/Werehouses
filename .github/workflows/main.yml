@@ -160,8 +160,6 @@ jobs:
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content":"Test message"}' \
-          # curl -X POST -H "Content-Type: application/json" \
-          # -d '{"content":"✅ Tests passed for version ${{ matrix.version }}!", "embeds": [{"image": {"url": "https://media.giphy.com/media/3a53VvGpzUgh05qq7W/giphy.gif"}}]}' \
           ${{ secrets.DISCORD_SECRET }}
       
       - name: Send Discord Notification on Failure
