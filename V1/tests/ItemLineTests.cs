@@ -5,6 +5,7 @@ using ControllersV1;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace TestsV1;
 
@@ -19,6 +20,124 @@ public class ItemLineTests
     {
         _mockItemLineService = new Mock<IItemLineService>();
         _itemLineController = new ItemLineController(_mockItemLineService.Object);
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/item_lines.json");
+        var itemLine = new ItemLineCS
+        {
+            Id= 0,
+            Name= "Tech Gadgets",
+            Description= "",
+            created_at=DateTime.Now,
+            updated_at=DateTime.Now
+        };
+        var itemlineslist = new List<ItemLineCS>(){ itemLine };
+        var directory = Path.GetDirectoryName(filePath);
+        var json = JsonConvert.SerializeObject(itemlineslist, Formatting.Indented);
+        if(!Directory.Exists(directory)){
+            Directory.CreateDirectory(directory);
+        }
+        File.WriteAllText(filePath, json);
+    }
+    [TestMethod]
+    public void GetAllItemlinesService_Test_Succes(){
+        var itemlineservice = new ItemLineService();
+        var result = itemlineservice.GetAllItemlines();
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+    }
+    
+    [TestMethod]
+    public void GetItemLineByIdService_Test_Succes(){
+        var itemlineservice = new ItemLineService();
+        var result = itemlineservice.GetItemLineById(0);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("Tech Gadgets", result.Name);
+    }
+
+    [TestMethod]
+    public void GetItemLineByIdService_Test_Fail(){
+        var itemlineservice = new ItemLineService();
+        var result = itemlineservice.GetItemLineById(-1);
+        Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public void AddItemLineService_Test_Succes(){
+        var newitemline = new ItemLineCS(){
+            Name="Mountaineering Gear",
+            Description="",
+            created_at=DateTime.Now,
+            updated_at=DateTime.Now
+        };
+        var itemlineservice = new ItemLineService();
+        var result = itemlineservice.AddItemLine(newitemline);
+        var check = itemlineservice.GetAllItemlines();
+        Assert.IsNotNull(result);
+        Assert.AreEqual(2, check.Count);
+    }
+
+    public void AddItemLineService_Test_EmptyListFirst(){
+        var newitemline = new ItemLineCS(){
+            Name="Mountaineering Gear",
+            Description="",
+            created_at=DateTime.Now,
+            updated_at=DateTime.Now
+        };
+        var itemlineservice = new ItemLineService();
+        itemlineservice.DeleteItemLine(0);
+        var result = itemlineservice.AddItemLine(newitemline);
+        var check = itemlineservice.GetAllItemlines();
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, check.Count);
+        Assert.AreEqual(0, check[0].Id);
+    }
+    
+    [TestMethod]
+    public void UpdateItemLineService_Test_Succes(){
+        var updatedItemLine = new ItemLineCS(){
+            Name="Bouldering",
+            Description="",
+            created_at= DateTime.Now,
+            updated_at= DateTime.Now
+        };
+        var itemlineservice = new ItemLineService();
+        var result = itemlineservice.UpdateItemLine(0, updatedItemLine);
+        var check = itemlineservice.GetAllItemlines();
+        Assert.IsNotNull(check);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("Bouldering", check[0].Name);
+    }
+
+    [TestMethod]
+    public void UpdateItemLineService_Test_Fail(){
+        var updatedItemLine = new ItemLineCS(){
+            Name="Bouldering",
+            Description="",
+            created_at= DateTime.Now,
+            updated_at= DateTime.Now
+        };
+        var itemlineservice = new ItemLineService();
+        var result = itemlineservice.UpdateItemLine(-1, updatedItemLine);
+        var check = itemlineservice.GetAllItemlines();
+        Assert.IsNull(result);
+        Assert.AreEqual("Tech Gadgets", check[0].Name);
+    }
+    
+    [TestMethod]
+    public void DeleteItemLineService_Test_Succes(){
+        var itemlineservice = new ItemLineService();
+        itemlineservice.DeleteItemLine(0);
+        var check = itemlineservice.GetAllItemlines();
+        Assert.IsNotNull(check);
+        Assert.AreEqual(0, check.Count);
+    }
+    
+    [TestMethod]
+    public void DeleteItemLineService_Test_Fail(){
+        var itemlineservice = new ItemLineService();
+        itemlineservice.DeleteItemLine(-1);
+        var check = itemlineservice.GetAllItemlines();
+        Assert.IsNotNull(check);
+        Assert.AreEqual(1, check.Count);
     }
 
     [TestMethod]
@@ -74,14 +193,14 @@ public class ItemLineTests
     }
 
     [TestMethod]
-    public async Task AddItemLineTest_ValidItem()
+    public void AddItemLineTest_ValidItem()
     {
         // Arrange
         var newItemLine = new ItemLineCS { Id = 1, Description = "New Item" };
-        _mockItemLineService.Setup(service => service.AddItemLine(newItemLine)).ReturnsAsync(newItemLine);
+        _mockItemLineService.Setup(service => service.AddItemLine(newItemLine)).Returns(newItemLine);
 
         // Act
-        var value = await _itemLineController.AddItemLine(newItemLine);
+        var value = _itemLineController.AddItemLine(newItemLine);
         var createdResult = value.Result as CreatedAtActionResult;
         var returnedItem = createdResult.Value as ItemLineCS;
 
@@ -91,26 +210,26 @@ public class ItemLineTests
     }
 
     [TestMethod]
-    public async Task AddItemLineTest_NullItem()
+    public void AddItemLineTest_NullItem()
     {
         // Act
-        var value = await _itemLineController.AddItemLine(null);
+        var value = _itemLineController.AddItemLine(null);
 
         // Assert
         Assert.IsInstanceOfType(value.Result, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
-    public async Task UpdateItemLineTest_ValidItem()
+    public void UpdateItemLineTest_ValidItem()
     {
         // Arrange
         var existingItemLine = new ItemLineCS { Id = 1, Description = "Existing Item" };
         var updatedItemLine = new ItemLineCS { Id = 1, Description = "Updated Item" };
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns(existingItemLine);
-        _mockItemLineService.Setup(service => service.UpdateItemLine(1, updatedItemLine)).ReturnsAsync(updatedItemLine);
+        _mockItemLineService.Setup(service => service.UpdateItemLine(1, updatedItemLine)).Returns(updatedItemLine);
 
         // Act
-        var value = await _itemLineController.UpdateItemLine(1, updatedItemLine);
+        var value = _itemLineController.UpdateItemLine(1, updatedItemLine);
         var okResult = value.Result as OkObjectResult;
         var returnedItem = okResult.Value as ItemLineCS;
 
@@ -120,27 +239,27 @@ public class ItemLineTests
     }
 
     [TestMethod]
-    public async Task UpdateItemLineTest_WrongId()
+    public void UpdateItemLineTest_WrongId()
     {
         // Arrange
         var updatedItemLine = new ItemLineCS { Id = 1, Description = "Updated Item" };
         _mockItemLineService.Setup(service => service.GetItemLineById(1)).Returns((ItemLineCS)null);
 
         // Act
-        var value = await _itemLineController.UpdateItemLine(1, updatedItemLine);
+        var value = _itemLineController.UpdateItemLine(1, updatedItemLine);
 
         // Assert
         Assert.IsInstanceOfType(value.Result, typeof(NotFoundResult));
     }
 
     [TestMethod]
-    public async Task UpdateItemLineTest_IdMismatch()
+    public void UpdateItemLineTest_IdMismatch()
     {
         // Arrange
         var updatedItemLine = new ItemLineCS { Id = 2, Description = "Updated Item" };
 
         // Act
-        var value = await _itemLineController.UpdateItemLine(1, updatedItemLine);
+        var value = _itemLineController.UpdateItemLine(1, updatedItemLine);
 
         // Assert
         Assert.IsInstanceOfType(value.Result, typeof(BadRequestResult));
@@ -159,7 +278,6 @@ public class ItemLineTests
         // Assert
         Assert.IsInstanceOfType(value, typeof(OkResult));
     }
-
 
     [TestMethod]
     public void GetItemsByItemLineId_ExistingId()
@@ -187,7 +305,6 @@ public class ItemLineTests
         Assert.IsNotNull(returnedItems, "Expected returnedItems to be non-null.");
         Assert.AreEqual(2, returnedItems.Count(), "Expected returnedItems to contain 2 items.");
     }
-
 
     [TestMethod]
     public void GetItemsByItemLineIdTest_WrongId()
