@@ -65,14 +65,14 @@ jobs:
         if: success()
         run: |
           curl -X POST -H "Content-Type: application/json" \
-          -d '{"content":"✅ Tests passed for version ${{ matrix.version }}!", "embeds": [{"image": {"url": "https://images-ext-1.discordapp.net/external/UqQnr98zEa-YQyygQHx342lcjO-oyeSyUrkF2sTJB5U/https/media.tenor.com/FKtdcMXKBhsAAAPo/yippee-happy.mp4"}}]}' \
+          -d '{"content":"✅ Tests passed for version ${{ matrix.version }}!", "embeds": [{"image": {"url": "https://media.giphy.com/media/LZElUsjl1Bu6c/giphy.gif?cid=ecf05e474uote46u73gz640d1sfaqpd0s1wf2p0xwyurzw7g&ep=v1_gifs_search&rid=giphy.gif&ct=g%5C"}}]}' \
           ${{ secrets.DISCORD_SECRET }}
       
       - name: Send Discord Notification on Failure
         if: failure()
         run: |
           curl -X POST -H "Content-Type: application/json" \
-          -d '{"content":"❌ Tests failed for version ${{ matrix.version }}. Please check the logs.", "embeds": [{"image": {"url": "https://images-ext-1.discordapp.net/external/bRrgNCMfilryCOlFiM2J0szTxejJAl7Uzgja8xXHq5M/https/media.tenor.com/3gDYand-WYUAAAPo/blacrswan.mp4"}}]}' \
+          -d '{"content":"❌ Tests failed for version ${{ matrix.version }}. Please check the logs.", "embeds": [{"image": {"url": "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm9mMXoycnFpbzduY254MDNnZTY0NWd3anV4a3QxNXgyOGN6ZnVlbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/obBRY85qHrHIOX7TsF/giphy.gif"}}]}' \
           ${{ secrets.DISCORD_SECRET }}
 
       - name: Install ReportGenerator
