@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace TestsV2;
 
@@ -20,6 +21,20 @@ public class ItemLineTests
     {
         _mockItemLineService = new Mock<IItemLineService>();
         _itemLineController = new ItemLineController(_mockItemLineService.Object);
+    
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/item_lines.json");
+        var itemLine = new ItemLineCS { Id = 1, Name = "Line 1", Description = "Cool items", created_at = DateTime.Now, updated_at = DateTime.Now };
+
+        var itemLineList = new List<ItemLineCS> { itemLine };
+        var json = JsonConvert.SerializeObject(itemLineList, Formatting.Indented);
+
+        var directory = Path.GetDirectoryName(filePath);
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        File.WriteAllText(filePath, json);
     }
 
     [TestMethod]
@@ -567,4 +582,146 @@ public class ItemLineTests
         Assert.IsNotNull(unauthorizedResult);
         Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
+
+    [TestMethod]
+    public void GetAllItemLinesService_Test()
+    {
+        var itemLinesService = new ItemLineService();
+        var itemLines = itemLinesService.GetAllItemlines();
+        Assert.IsNotNull(itemLines);
+        Assert.AreEqual(1, itemLines.Count);
+    }
+
+    [TestMethod]
+    public void GetItemLineByIdService_Test()
+    {
+        var itemLinesService = new ItemLineService();
+        var itemLines = itemLinesService.GetItemLineById(1);
+        Assert.IsNotNull(itemLines);
+        Assert.AreEqual("Line 1", itemLines.Name);
+    }
+
+    [TestMethod]
+    public void GetItemsByItemLineIdService_Test()
+    {
+        var itemLinesService = new ItemLineService();
+        var items = itemLinesService.GetItemsByItemLineId(2);
+        Assert.IsNotNull(items);
+        Assert.AreEqual(1, items.Count);
+    }
+
+    [TestMethod]
+    public void CreateItemLineService_Test()
+    {
+        var itemLine = new ItemLineCS { Id = 2, Name = "Line 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+        var itemLinesService = new ItemLineService();
+        var itemLines = itemLinesService.AddItemLine(itemLine);
+        Assert.IsNotNull(itemLines);
+        Assert.AreEqual("Line 2", itemLines.Name);
+
+        var itemLinesUpdated = itemLinesService.GetAllItemlines();
+        Assert.AreEqual(2, itemLinesUpdated.Count);
+    }
+
+    [TestMethod]
+    public void CreateItemLineService_Test_Empty()
+    {
+        var itemLinesService = new ItemLineService();
+        itemLinesService.DeleteItemLine(1);
+        var itemLinesUpdated = itemLinesService.GetAllItemlines();
+        Assert.AreEqual(0, itemLinesUpdated.Count);
+        
+        var itemLine = new ItemLineCS { Id = 1, Name = "Line 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+        var itemLines = itemLinesService.AddItemLine(itemLine);
+        Assert.IsNotNull(itemLines);
+        Assert.AreEqual("Line 2", itemLines.Name);
+
+        var itemLinesUpdatedAgain = itemLinesService.GetAllItemlines();
+        Assert.AreEqual(1, itemLinesUpdatedAgain.Count);
+    }
+
+    [TestMethod]
+    public void CreateMultipleItemLineService_Test()
+    {
+        var itemLine = new List<ItemLineCS> {
+                new ItemLineCS { Id = 2, Name = "Line 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now },
+                new ItemLineCS { Id = 3, Name = "Line 3", Description = "Cool items 3", created_at = DateTime.Now, updated_at = DateTime.Now }
+            };
+        var itemLinesService = new ItemLineService();
+        var itemLines = itemLinesService.CreateMultipleItemLines(itemLine);
+        Assert.IsNotNull(itemLines);
+
+        var itemLinesUpdated = itemLinesService.GetAllItemlines();
+        Assert.AreEqual(3, itemLinesUpdated.Count);
+    }
+
+    [TestMethod]
+    public void UpdateItemLineService_Test()
+    {
+        var itemLine = new ItemLineCS { Id = 1, Name = "Updated Line", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+        var itemLinesService = new ItemLineService();
+        var itemLines = itemLinesService.UpdateItemLine(1, itemLine);
+        Assert.IsNotNull(itemLines);
+        Assert.AreEqual("Updated Line", itemLines.Name);
+    }
+
+    [TestMethod]
+    public void UpdateItemLineService_Test_Failed()
+    {
+        var itemLine = new ItemLineCS { Id = 1, Name = "Updated Line", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+        var itemLinesService = new ItemLineService();
+        var itemLines = itemLinesService.UpdateItemLine(2, itemLine);
+        Assert.IsNull(itemLines);
+    }
+
+    [TestMethod]
+    public void DeleteItemLineService_Test()
+    {
+        var itemLinesService = new ItemLineService();
+        itemLinesService.DeleteItemLine(1);
+        var itemLinesUpdated = itemLinesService.GetAllItemlines();
+        Assert.AreEqual(0, itemLinesUpdated.Count);
+    }
+
+    [TestMethod]
+    public void DeleteItemLineService_Test_Failed()
+    {
+        var itemLinesService = new ItemLineService();
+        itemLinesService.DeleteItemLine(4);
+        var itemLinesUpdated = itemLinesService.GetAllItemlines();
+        Assert.AreEqual(1, itemLinesUpdated.Count);
+    }
+
+    [TestMethod]
+    public void DeleteMultipleItemLineService_Test()
+    {
+        var itemLinesService = new ItemLineService();
+        var itemLine = new ItemLineCS { Id = 1, Name = "Line 2", Description = "Cool items 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+        var itemLines = itemLinesService.AddItemLine(itemLine);
+        Assert.IsNotNull(itemLines);
+        Assert.AreEqual("Line 2", itemLines.Name);
+
+        var itemLinesUpdated = itemLinesService.GetAllItemlines();
+        Assert.AreEqual(2, itemLinesUpdated.Count);
+
+        List<int> ItemLinesToDelete = new List<int> { 1, 2 };
+        itemLinesService.DeleteItemLines(ItemLinesToDelete);
+        var itemLinesUpdatedAgain = itemLinesService.GetAllItemlines();
+        Assert.AreEqual(0, itemLinesUpdatedAgain.Count);
+    }
+
+    [TestMethod]
+    public void PatchItemLineService_Test()
+    {
+         var itemLinesService = new ItemLineService();
+         var ItemLines = itemLinesService.PatchItemLine(1, "Name", "Updated Name");
+         ItemLines = itemLinesService.PatchItemLine(1, "Description", "Updated Description");
+         var ItemLinesGoneWrong = itemLinesService.PatchItemLine(2, "Name", "Updated Name");
+        Assert.IsNotNull(ItemLines);
+        Assert.IsNull(ItemLinesGoneWrong);
+        Assert.AreEqual("Updated Name", ItemLines.Name);
+        Assert.AreEqual("Updated Description", ItemLines.Description);
+    }
+
+
 }

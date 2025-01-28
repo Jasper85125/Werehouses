@@ -4,6 +4,7 @@ using Moq;
 using ControllersV1;
 using System.Data.Common;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace TestsV1
 {
@@ -18,6 +19,20 @@ namespace TestsV1
         {
             _mockLocationService = new Mock<ILocationService>();
             _locationController = new LocationController(_mockLocationService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/locations.json");
+            var location = new LocationCS { Id = 1, warehouse_id = 1, code = "B.2.1", name = "Row: B, Rack: 2, Shelf: 1", created_at = DateTime.Now, updated_at = DateTime.Now };
+
+            var locationList = new List<LocationCS> { location };
+            var json = JsonConvert.SerializeObject(locationList, Formatting.Indented);
+
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -165,6 +180,79 @@ namespace TestsV1
             
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
+    
+        //testing the location service
+
+        [TestMethod]
+        public void GetAllLocationsService_Test()
+        {
+            var locationService = new LocationService();
+            var locations = locationService.GetAllLocations();
+            Assert.IsNotNull(locations);
+            Assert.AreEqual(1, locations.Count);
+        }
+
+        [TestMethod]
+        public void GetLocationByIdService_Test()
+        {
+            var locationService = new LocationService();
+            var location = locationService.GetLocationById(1);
+            Assert.IsNotNull(location);
+            Assert.AreEqual(1, location.Id);
+        }
+
+        [TestMethod]
+        public void GetLocationsByWarehouseIdService_Test()
+        {
+            var locationService = new LocationService();
+            var locations = locationService.GetLocationsByWarehouseId(1);
+            Assert.IsNotNull(locations);
+            Assert.AreEqual(1, locations.Count);
+        }
+
+        [TestMethod]
+        public void CreateLocationService_Test()
+        {
+            var locationService = new LocationService();
+            var newLocation = new LocationCS { Id = 2, warehouse_id = 5, code = "C.3.2", name = "Row: C, Rack: 3, Shelf: 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var createdLocation = locationService.CreateLocation(newLocation);
+            Assert.IsNotNull(createdLocation);
+            Assert.AreEqual(5, createdLocation.warehouse_id);
+
+            var locationsupdated = locationService.GetAllLocations();
+            Assert.AreEqual(2, locationsupdated.Count);
+        }
+
+        [TestMethod]
+        public void UpdateLocationService_Test()
+        {
+            var locationService = new LocationService();
+            var updatedLocation = new LocationCS { Id = 1, warehouse_id = 3, code = "C.3.2", name = "Row: C, Rack: 3, Shelf: 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var updatedLocationResult = locationService.UpdateLocation(updatedLocation, 1);
+            Assert.IsNotNull(updatedLocationResult);
+            Assert.AreEqual(3, updatedLocationResult.warehouse_id);
+        }
+
+        [TestMethod]
+        public void UpdateLocationService_Failed()
+        {
+            var locationService = new LocationService();
+            var updatedLocation = new LocationCS { Id = 1, warehouse_id = 3, code = "C.3.2", name = "Row: C, Rack: 3, Shelf: 2", created_at = DateTime.Now, updated_at = DateTime.Now };
+            var updatedLocationResult = locationService.UpdateLocation(updatedLocation, 0);
+            Assert.IsNull(updatedLocationResult);
+        }
+
+        [TestMethod]
+        public void DeleteLocationService_Test()
+        {
+            var locationService = new LocationService();
+            var location = locationService.GetLocationById(1);
+            Assert.IsNotNull(location);
+
+            locationService.DeleteLocation(1);
+            location = locationService.GetLocationById(1);
+            Assert.IsNull(location);
         }
     }
 }

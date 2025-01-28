@@ -59,7 +59,7 @@ public class SupplierService : ISupplierService
     public SupplierCS UpdateSupplier(int id, SupplierCS updateSupplier)
     {
         var allSuppliers = GetAllSuppliers();
-        var supplierToUpdate = allSuppliers.Single(supplier => supplier.Id == id);
+        var supplierToUpdate = allSuppliers.SingleOrDefault(supplier => supplier.Id == id);
 
         if (supplierToUpdate is not null)
         {

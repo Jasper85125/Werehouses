@@ -3,6 +3,7 @@ using Moq;
 using ControllersV1;
 using ServicesV1;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace TestsV1
 {
@@ -23,6 +24,22 @@ namespace TestsV1
             _mockInventoryService = new Mock<IInventoryService>();
             _itemController = new ItemController(_mockItemService.Object, _mockInventoryService.Object);
             _itemTypeController = new ItemTypeController(_mockItemTypeService.Object, _mockItemService.Object);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "../../data/items.json");
+            var item = new ItemCS { uid = "P01", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 0,
+                                       item_group = 1, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+
+            var itemList = new List<ItemCS> { item };
+            var json = JsonConvert.SerializeObject(itemList, Formatting.Indented);
+
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(filePath, json);
         }
 
         [TestMethod]
@@ -200,6 +217,120 @@ namespace TestsV1
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));
+        }
+
+        [TestMethod]
+        public void GetAllItemsService_Test()
+        {
+            var itemService = new ItemService();
+            var items = itemService.GetAllItems();
+            Assert.IsNotNull(items);
+            Assert.AreEqual(1, items.Count);
+        }
+
+        [TestMethod]
+        public void GetItemByIdService_Test()
+        {
+            var itemService = new ItemService();
+            var items = itemService.GetItemById("P01");
+            Assert.IsNotNull(items);
+            Assert.AreEqual("CRD57317J", items.code);
+        }
+
+        [TestMethod]
+        public void GetItemsInItemType_Test()
+        {
+            var itemService = new ItemService();
+            var items = itemService.GetAllItemsInItemType(1);
+            Assert.IsNotNull(items);
+            Assert.AreEqual(1, items.Count());
+        }
+
+        [TestMethod]
+        public void CreateItemService_Test()
+        {
+            var itemService = new ItemService();
+            var item = new ItemCS { uid = "P02", code = "CRD57317J", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var createdItem = itemService.CreateItem(item);
+            Assert.IsNotNull(createdItem);
+            Assert.AreEqual("CRD57317J", createdItem.code);
+
+            var items = itemService.GetAllItems();
+            Assert.AreEqual(2, items.Count);
+        }
+
+        [TestMethod]
+        public void CreateItemService_Test_Empty()
+        {
+            var itemService = new ItemService();
+            itemService.DeleteItem("P01");
+            var itemEmpty = itemService.GetAllItems();
+            Assert.AreEqual(0, itemEmpty.Count());
+
+            var item = new ItemCS { uid = "P02", code = "Cool", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var createdItem = itemService.CreateItem(item);
+            Assert.IsNotNull(createdItem);
+            Assert.AreEqual("Cool", createdItem.code);
+
+            var items = itemService.GetAllItems();
+            Assert.AreEqual(1, items.Count);
+        }
+
+        [TestMethod]
+        public void UpdateItemService_Test()
+        {
+            var itemService = new ItemService();
+            var item = new ItemCS { uid = "P02", code = "New Code", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var updatedItem = itemService.UpdateItem("P01", item);
+            Assert.IsNotNull(updatedItem);
+            Assert.AreEqual("New Code", updatedItem.code);
+        }
+
+        [TestMethod]
+        public void DeleteItemGroupService_Test()
+        {
+            var itemService = new ItemService();
+            itemService.DeleteItem("P01");
+            var itemEmpty = itemService.GetAllItems();
+            Assert.AreEqual(0, itemEmpty.Count());
+        }
+
+        [TestMethod]
+        public void DeleteItemService_Test_Failed()
+        {
+            var itemService = new ItemService();
+            itemService.DeleteItem("P001");
+            var itemEmpty = itemService.GetAllItems();
+            Assert.AreEqual(1, itemEmpty.Count());
+        }
+
+        [TestMethod]
+        public void UpdateItemService_Test_Failed()
+        {
+            var itemService = new ItemService();
+            var item = new ItemCS { uid = "P02", code = "New Code", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 33,
+                                       item_group = 2, item_type= 1, supplier_id = 28, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var updatedItem = itemService.UpdateItem("P1", item);
+            Assert.IsNull(updatedItem);
+        }
+
+        [TestMethod]
+        public void UpdateItemService_Test_Extra()
+        {
+            var itemService = new ItemService();
+            var item = new ItemCS { uid = "P02", code = "New Code", description = "Organic asymmetric data-warehouse",
+                                       short_description = "particularly", upc_code = "9538419150098", item_line = 2,
+                                       item_group = 2, item_type= 2, supplier_id = 2, supplier_code = "SUP467", supplier_part_number = "SUP467", created_at = DateTime.Now, updated_at = DateTime.Now};
+            var updatedItem = itemService.UpdateItem("P01", item);
+            Assert.IsNotNull(updatedItem);
+            Assert.AreEqual("New Code", updatedItem.code);
         }
     }
 }

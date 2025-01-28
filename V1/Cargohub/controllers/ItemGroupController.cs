@@ -46,19 +46,19 @@ public class ItemGroupController : ControllerBase
 
     // POST: itemgroups
     [HttpPost()]
-    public async Task<IActionResult> CreateItemGroup([FromBody] ItemGroupCS itemGroup)
+    public IActionResult CreateItemGroup([FromBody] ItemGroupCS itemGroup)
     {
         if (itemGroup == null)
         {
             return BadRequest("ItemGroup cannot be null");
         }
 
-        var createdItemGroup = await _itemgroupService.CreateItemGroup(itemGroup);
+        var createdItemGroup = _itemgroupService.CreateItemGroup(itemGroup);
         return CreatedAtAction(nameof(GetItemById), new { id = createdItemGroup.Id }, createdItemGroup);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ItemGroupCS>> UpdateItemGroup(int id, [FromBody] ItemGroupCS itemGroup)
+    public ActionResult<ItemGroupCS> UpdateItemGroup(int id, [FromBody] ItemGroupCS itemGroup)
     {
         if (id != itemGroup.Id)
         {
@@ -71,7 +71,7 @@ public class ItemGroupController : ControllerBase
             return NotFound();
         }
 
-        var updatedItemLine = await _itemgroupService.UpdateItemGroup(id, itemGroup);
+        var updatedItemLine = _itemgroupService.UpdateItemGroup(id, itemGroup);
         return Ok(updatedItemLine);
     }
     
