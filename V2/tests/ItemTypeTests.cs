@@ -429,7 +429,7 @@ namespace itemtype.TestsV2
         [TestMethod]
         public void DeleteItemTypesTest_Failed()
         {
-            
+
             var httpContext = new DefaultHttpContext();
             httpContext.Items["UserRole"] = "Admin";
 
@@ -869,5 +869,100 @@ namespace itemtype.TestsV2
             Assert.AreEqual(newItemType.Name, returnedItemType.Name);
             Assert.AreEqual(newItemType.description, returnedItemType.description);
         }
+
+        [TestMethod]
+        public void GetAllItemtypes_ShouldReturnAllItemTypes_2()
+        {
+            // Arrange
+            _mockItemTypeService.Setup(service => service.GetAllItemtypes()).Returns(_itemTypes);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.GetAllItemtypes().Result as OkObjectResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+            var itemTypes = result.Value as IEnumerable<ItemTypeCS>;
+            Assert.IsNotNull(itemTypes);
+            Assert.AreEqual(2, itemTypes.Count());
+        }
+
+        [TestMethod]
+        public void GetAllItemtypes_ShouldReturnUnauthorized_WhenUserRoleIsInvalid_2()
+        {
+            // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "HackerMan";
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.GetAllItemtypes().Result as UnauthorizedResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(StatusCodes.Status401Unauthorized, result.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetItemById_ShouldReturnCorrectItemType_3()
+        {
+            // Arrange
+            var itemType = _itemTypes[0];
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns(itemType);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.GetItemById(1);
+
+            // Assert
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+            var returnedItemType = okResult.Value as ItemTypeCS;
+            Assert.IsNotNull(returnedItemType);
+            Assert.AreEqual(itemType.Name, returnedItemType.Name);
+            Assert.AreEqual(itemType.description, returnedItemType.description);
+        }
+
+        [TestMethod]
+        public void GetItemById_ShouldReturnNotFound_WhenItemTypeIsNull_2()
+        {
+            // Arrange
+            _mockItemTypeService.Setup(service => service.GetItemById(1)).Returns((ItemTypeCS)null);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["UserRole"] = "Admin";
+
+            _itemTypeController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act
+            var result = _itemTypeController.GetItemById(1);
+
+            // Assert
+            var notFoundResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        }
+
     }
 }
